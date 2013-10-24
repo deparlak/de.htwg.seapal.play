@@ -1,5 +1,4 @@
 ## PLAY // HTWG Konstanz SeaPal Web
-==================
 
 ### Download play:
 
