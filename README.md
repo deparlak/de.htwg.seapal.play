@@ -1,6 +1,6 @@
 ## PLAY // HTWG Konstanz SeaPal Web
 
-### Download play:
+### Download play
 
 [Play Framework](http://downloads.typesafe.com/play/2.2.0/play-2.2.0.zip)
 
