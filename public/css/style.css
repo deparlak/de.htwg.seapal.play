@@ -107,11 +107,11 @@ body.index .header-wrapper {
 	body.index .header-wrapper {
 		margin:0;
 	}
-	
+
 	#map_canvas {
 		margin:0 !important;
 	}
-	
+
 	.header-wrapper {
 		margin-bottom:10px;
 	}
