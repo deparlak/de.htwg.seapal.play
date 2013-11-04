@@ -2,35 +2,37 @@
 
 <!DOCTYPE HTML>
 <html>
-	<head>
-		<title>@title</title>
-		<!-- CSS -->
-		<link href='http://fonts.googleapis.com/css?family=Droid+Sans:400,700|Droid+Serif:400,700' rel='stylesheet' type='text/css'>
-		<link type="text/css" rel="stylesheet" href="@routes.Assets.at("lib/bootstrap-blue/css/bootstrap.min.css")" />
-		<link type="text/css" rel="stylesheet" href="@routes.Assets.at("css/style.css")" />
-		
-		<!-- JS -->
-		<script src="http://code.jquery.com/jquery-latest.js"></script>
-		<script src="@routes.Assets.at("lib/bootstrap-blue/js/bootstrap.min.js")"></script>
-		@moreScripts
-		
-		<!--[if lt IE 9]>
-		<script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
-		<![endif]-->
-		
-		<!-- META -->
-		<meta name="viewport" content="width=device-width, initial-scale=1.0">
-		<meta charset="utf-8">
-	</head>
-	<body @if(!bodyClass.isEmpty) {class="@bodyClass"}>
-		<div class="header-wrapper">
-			@navbar()
-		</div>
-		<div class="@contentClass">
-			@content
-		</div>
-		<div class="footer-wrapper">
-			@footer()
-		</div>
-	</body>
+<head>
+    <title>@title</title>
+    <link rel="shortcut icon" href="/assets/images/favicon.jpg" type="image/jpg">
+    <!-- CSS -->
+    <link href='http://fonts.googleapis.com/css?family=Droid+Sans:400,700|Droid+Serif:400,700' rel='stylesheet' type='text/css'>
+    <link type="text/css" rel="stylesheet" href="@routes.Assets.at("lib/bootstrap-blue/css/bootstrap.min.css")" />
+    <link type="text/css" rel="stylesheet" href="@routes.Assets.at("css/style.css")" />
+
+    <!-- JS -->
+    <script src="http://code.jquery.com/jquery-latest.js"></script>
+    <script src="@routes.Assets.at("lib/bootstrap-blue/js/bootstrap.min.js")"></script>
+    @moreScripts
+
+    <!--[if lt IE 9]>
+    <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+
+    <!-- META -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="utf-8">
+</head>
+<body
+@if(!bodyClass.isEmpty) {class="@bodyClass"}>
+<div class="header-wrapper">
+    @navbar()
+</div>
+<div class="@contentClass">
+    @content
+</div>
+<div class="footer-wrapper">
+    @footer()
+</div>
+</body>
 </html>
