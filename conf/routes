@@ -6,7 +6,7 @@ GET     /screenshots        						de.htwg.seapal.web.controllers.Application.scr
 GET     /about              						de.htwg.seapal.web.controllers.Application.about()
 GET     /contact            						de.htwg.seapal.web.controllers.Application.contact()
 GET     /user_guide         						de.htwg.seapal.web.controllers.Application.user_guide()
-GET		/seamap										de.htwg.seapal.web.controllers.Application.seamap()
+GET		/app										de.htwg.seapal.web.controllers.Application.app()
 GET		/boat_info									de.htwg.seapal.web.controllers.Application.boat_info()
 GET		/trips										de.htwg.seapal.web.controllers.Application.trip_list(id: UUID = null)
 GET		/boat/$boatId<[0-9a-fA-F\-]+>/trips			de.htwg.seapal.web.controllers.Application.trip_list(boatId: UUID)

@@ -10,11 +10,11 @@
 	* *************************************************************************************
 	*/
 	var options = {
-		defaultRoute 	: null,
-		mode 			: "INTERACTIVE",
-		startLat 		: 47.655,
-		startLong 		: 9.205,
-		zoom 			: 15,
+		defaultRoute 	    : null,
+		mode 			    : "INTERACTIVE",
+		startLat 		    : 47.655,
+		startLong 		    : 9.205,
+		zoom 			    : 10,
 		
 		height : function() {
 			return
@@ -100,7 +100,7 @@
 			}
 		}
 	};
-	
+
 	/**
 	* *************************************************************************************
 	* The seamap object class
@@ -195,6 +195,17 @@
 			}		
 						
 			map = new google.maps.Map(element, {
+                mapTypeId : google.maps.MapTypeId.ROADMAP,
+                disableDefaultUI: true,
+                mapTypeControl: false,
+                panControl: false,
+                zoomControl: false,
+                scaleControl: false,
+                streetViewControl: false,
+                rotateControl: false,
+                rotateControlOptions: false,
+                overviewMapControl: false,
+                OverviewMapControlOptions: false,
 				zoom: options.zoom,
 				center: new google.maps.LatLng(options.startLat, options.startLong),
 				mapTypeId: google.maps.MapTypeId.ROADMAP

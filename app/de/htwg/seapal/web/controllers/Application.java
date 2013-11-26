@@ -51,8 +51,8 @@ public class Application extends Controller {
 		return ok(user_guide.render());
 	}
 	
-	public static Result seamap(){
-		return ok(seamap.render());
+	public static Result app(){
+		return ok(app.render());
 	}
 	
 	public static Result boat_info() {
@@ -103,7 +103,7 @@ public class Application extends Controller {
     		de.htwg.seapal.web.controllers.routes.javascript.Application.trip_list(),
   	        de.htwg.seapal.web.controllers.routes.javascript.Application.trip_edit(),
   	        de.htwg.seapal.web.controllers.routes.javascript.Application.waypoint_show(),
-  	     	de.htwg.seapal.web.controllers.routes.javascript.Application.seamap(),
+  	     	de.htwg.seapal.web.controllers.routes.javascript.Application.app(),
   	        de.htwg.seapal.web.controllers.routes.javascript.Application.race_list(),
   	        //de.htwg.seapal.web.controllers.routes.javascript.Application.race_edit(),
   	        de.htwg.seapal.web.controllers.routes.javascript.Application.race_add(),
