@@ -35,16 +35,16 @@
                     <nav class="menubar-menu-wrapper">
                         <div class="scroller">
                             <ul class="menubar-menu">
-                                <li><a class="menubar-icon icon-logbook">Logbook</a></li>
-                                <li><a class="menubar-icon icon-dashboard">Dashboard</a></li>
-                                <li><a class="menubar-icon icon-routes">Marks, Routes, Tracks</a></li>
-                                <li><a class="menubar-icon icon-charts">Navigation Charts</a></li>
-                                <li><a class="menubar-icon icon-addOns">Add-ons</a></li>
-                                <li><a class="menubar-icon icon-poi">Points of Interest</a></li>
-                                <li><a class="menubar-icon icon-weather">Weather</a></li>
-                                <li><a class="menubar-icon icon-alarms">Alarms</a></li>
-                                <li><a class="menubar-icon icon-info">Info</a></li>
-                                <li><a class="menubar-icon icon-settings">Settings</a></li>
+                                <li><a class="icon-logbook">Logbook</a></li>
+                                <li><a class="icon-logbook">Dashboard</a></li>
+                                <li><a class="icon-logbook">Marks, Routes, Tracks</a></li>
+                                <li><a class="icon-logbook">Navigation Charts</a></li>
+                                <li><a class="icon-logbook">Add-ons</a></li>
+                                <li><a class="icon-logbook">Points of Interest</a></li>
+                                <li><a class="icon-logbook">Weather</a></li>
+                                <li><a class="icon-logbook">Alarms</a></li>
+                                <li><a class="icon-logbook">Info</a></li>
+                                <li><a class="icon-logbook">Settings</a></li>
                             </ul>
                         </div><!-- /menubar-scroller -->
                     </nav>
@@ -109,6 +109,19 @@
                 
         <div id="map_canvas" style="background-image: url(images/map.png); height: 100%; position: absolute; top: 0; bottom: -200px; left: 0; right: 0; z-index: 0;"></div>
 
+        
+        <script>
+        $(".menubar-icon").click(function() {
+            if (classie.hasClass( this, 'icon-searchPosition' )) {
+                classie.remove( this, 'icon-searchPosition' );
+                classie.add( this, 'icon-dashboard' );
+            } else {
+                classie.remove( this,  'icon-dashboard');
+                classie.add( this, 'icon-searchPosition' );
+            }
+            console.log(this);
+        });
+        </script>
         
         <script>
             new menubar( document.getElementById( 'menubar-menu' ), 'menu' );
