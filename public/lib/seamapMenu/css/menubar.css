@@ -176,10 +176,23 @@
 		color: #c1c9d1
 }
 
-input.menubar-search {
-		position: relative;
+
+input.menubar-menu-search {
+		position: absolute;
 		z-index: 10;
-		padding-left: 60px;
+        padding-top: 20px;
+		padding-left: 0px;
+		outline: none;
+		border: none;
+		background: transparent;
+		color: #5f6f81;
+		font-weight: 300;
+		font-family: 'Lato', Arial, sans-serif;
+		cursor: pointer;
+}
+
+input.menubar-tools-search {
+		z-index: 10;
 		outline: none;
 		border: none;
 		background: transparent;
@@ -263,17 +276,13 @@ input.menubar-search:focus {
 
 /* specification of the icons from the menu */
 
-.icon-search::before {
-		content: "\e005"
-}
-
-.icon-logbook::before{
+.menu-icon::before {
+        content:"";
         margin-right:20px;
-        content : "";
+        margin:0px 0px 0px 20px;
 }
 
-.icon-logbook::after {
-		content: "\e005";
+.menu-icon::after {
 		vertical-align:middle;
 		width: 60px;
 		text-align: center;
@@ -282,46 +291,75 @@ input.menubar-search:focus {
 		font-style: normal;
 		font-variant: normal;
 		font-family: 'ecoicons';
-
 		speak: none;
 		-webkit-font-smoothing: antialiased;
         float:right;
         margin-right:15px;
 }
 
-.icon-dashboard::before {
+.tools-icon::before {
+		vertical-align:middle;
+		width: 60px;
+		text-align: center;
+		text-transform: none;
+		font-weight: normal;
+		font-style: normal;
+		font-variant: normal;
+		font-family: 'ecoicons';
+		speak: none;
+		-webkit-font-smoothing: antialiased;
+        float:left;
+}
+
+.icon-search::after {
+		content: "\e001";
+}
+
+.icon-map::after{
+		content: "\e001";
+}
+
+.icon-logbook::after {
+		content: "\e005";
+}
+
+.icon-dashboard::after {
 		content: "\e000"
 }
 
-.icon-routes::before {
+.icon-routes::after {
 		content: "\e005"
 }
 
-.icon-charts::before {
+.icon-routes::after {
 		content: "\e005"
 }
 
-.icon-addOns::before {
+.icon-charts::after {
 		content: "\e005"
 }
 
-.icon-poi::before {
+.icon-addOns::after {
 		content: "\e005"
 }
 
-.icon-weather::before {
+.icon-poi::after {
 		content: "\e005"
 }
 
-.icon-alarms::before {
+.icon-weather::after {
 		content: "\e005"
 }
 
-.icon-info::before {
+.icon-alarms::after {
 		content: "\e005"
 }
 
-.icon-settings::before {
+.icon-info::after {
+		content: "\e005"
+}
+
+.icon-settings::after {
 		content: "\e005"
 }
 
@@ -372,7 +410,14 @@ input.menubar-search:focus {
 
 /* if an icon anchor has a span, hide the span */
 
-.menubar-icon span {
+.menu-icon span {
+		width: 0;
+		height: 0;
+		display: block;
+		overflow: hidden;
+}
+
+.tools-icon span {
 		width: 0;
 		height: 0;
 		display: block;
@@ -433,7 +478,7 @@ input.menubar-search:focus {
 }
 /*****************************************************************************/
 
-/* styles for opening menu */
+/* styles on open menu */
 /******************************************************/
 .menubar-menu-wrapper.menubar-open-all,
 .menubar-menu-wrapper.menubar-open-part {
@@ -453,7 +498,7 @@ input.menubar-search:focus {
 }
 /******************************************************/
 
-/* styles for opening tools */
+/* styles on open tools */
 /******************************************************/
 .menubar-tools-wrapper.menubar-open-all,
 .menubar-tools-wrapper.menubar-open-part {
@@ -473,6 +518,8 @@ input.menubar-search:focus {
 }
 /******************************************************/
 
+/* styles on  menu */
+/******************************************************/
 @media screen and (max-width: 422px) { 
     /******************************************************/
 	.menubar-menu-wrapper.menubar-open-all {
@@ -482,7 +529,8 @@ input.menubar-search:focus {
 			width: 100%;
 	}
 	.menubar-menu-wrapper.menubar-open-all .scroller {
-			width: 130%
+			width: 100%
+            overflow-y:hidden;
 	}
     /******************************************************/
     
