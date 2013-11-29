@@ -120,4 +120,16 @@ public final class AccountController
 
         return null;
     }
+    @Override
+    public void addBoat(final UUID account, final UUID boat) {
+        IAccount account1 = getAccount(account);
+        account1.getBoats().add(boat);
+        saveAccount(account1);
+    }
+    @Override
+    public void deleteBoat(final UUID account, final UUID boat) {
+        IAccount account1 = getAccount(account);
+        account1.getBoats().remove(boat);
+        saveAccount(account1);
+    }
 }

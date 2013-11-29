@@ -35,5 +35,9 @@ public interface IAccountController
     boolean saveAccount(IAccount Account);
 
     IAccount authenticate(Form<Account> form);
+
+    void addBoat(UUID account, UUID boat);
+
+    void deleteBoat(UUID account, UUID boat);
 }
 
