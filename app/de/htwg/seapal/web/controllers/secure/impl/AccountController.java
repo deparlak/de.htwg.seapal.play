@@ -6,6 +6,7 @@ import de.htwg.seapal.utils.observer.Observable;
 import de.htwg.seapal.web.controllers.secure.IAccount;
 import de.htwg.seapal.web.controllers.secure.IAccountController;
 import de.htwg.seapal.web.controllers.secure.IAccountDatabase;
+import play.data.Form;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -108,22 +109,11 @@ public final class AccountController
         return db.save(account);
     }
 
-    public IAccount authenticate(final String email, final String password) {
+    public IAccount authenticate(final Form<Account> form) {
         List<IAccount> list = getAllAccounts();
         for (IAccount account : list) {
-            System.out.println(account);
-            if (account.getAccountName().equals(email) && account.getAccountPassword().equals(password)) {
-                return account;
-            }
-        }
-
-        return null;
-    }
-
-    public IAccount findById(final String email) {
-        List<IAccount> list = getAllAccounts();
-        for (IAccount account : list) {
-            if (account.getAccountName().equals(email)) {
+            if (account.getAccountName().equals(form.get().accountName) && account.getAccountPassword().equals(form.get().accountPassword)) {
+                System.out.println(account.getAccountName() + "-" + account.getAccountPassword() + ":::" + account.getUUID());
                 return account;
             }
         }

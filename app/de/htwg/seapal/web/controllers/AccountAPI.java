@@ -23,12 +23,14 @@ public class AccountAPI
 
     static Form<Account> form = Form.form(Account.class);
 
+    public static final String AUTHN_COOKIE_KEY = "id";
+
     public static class Secured
             extends Security.Authenticator {
 
         @Override
         public String getUsername(Context ctx) {
-            return ctx.session().get("accountName");
+            return ctx.session().get(AUTHN_COOKIE_KEY);
         }
 
         @Override
@@ -57,25 +59,26 @@ public class AccountAPI
         } else {
             controller.saveAccount(filledForm.get());
             session().clear();
-            session("accountName", filledForm.get().getAccountName());
+            session(AUTHN_COOKIE_KEY, filledForm.get().getUUID().toString());
             return redirect(routes.Application.index());
         }
     }
 
     public Result authenticate() {
-        Form<Account> loginForm = DynamicForm.form(Account.class).bindFromRequest();
-        IAccount account = controller.findById(loginForm.get().getAccountName());
+        Form<Account> filledForm = DynamicForm.form(Account.class).bindFromRequest();
+
+        IAccount account = controller.authenticate(filledForm);
 
         ObjectNode response = Json.newObject();
 
-        if (loginForm.hasErrors() || account == null || !account.getAccountPassword().equals(loginForm.get().getAccountPassword())) {
+        if (filledForm.hasErrors() || account == null || !account.getAccountPassword().equals(filledForm.get().getAccountPassword())) {
             response.put("success", false);
-            response.put("errors", loginForm.errorsAsJson());
+            response.put("errors", filledForm.errorsAsJson());
 
-            return badRequest(login.render(loginForm));
+            return badRequest(login.render(filledForm));
         } else {
             session().clear();
-            session("accountName", loginForm.get().getAccountName());
+            session(AUTHN_COOKIE_KEY, account.getUUID().toString());
             return redirect(routes.Application.index());
         }
     }

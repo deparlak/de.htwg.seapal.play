@@ -22,7 +22,7 @@
 					@for(menuItem <- Menus.mainNavigation()) {
 				    	@display(menuItem)
 				    }
-                    @if(session.contains("accountName")) {
+                    @if(session.contains(de.htwg.seapal.web.controllers.AccountAPI.AUTHN_COOKIE_KEY)) {
                         <li class>
                             <a href="@de.htwg.seapal.web.controllers.routes.AccountAPI.logout()">Logout</a>
                         </li>

@@ -1,6 +1,8 @@
 package de.htwg.seapal.web.controllers.secure;
 
 import de.htwg.seapal.utils.observer.IObservable;
+import de.htwg.seapal.web.controllers.secure.impl.Account;
+import play.data.Form;
 
 import java.util.List;
 import java.util.UUID;
@@ -32,6 +34,6 @@ public interface IAccountController
 
     boolean saveAccount(IAccount Account);
 
-    IAccount findById(String username);
+    IAccount authenticate(Form<Account> form);
 }
 

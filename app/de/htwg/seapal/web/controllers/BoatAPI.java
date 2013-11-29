@@ -34,7 +34,7 @@ public class BoatAPI extends Controller {
 
     @Security.Authenticated(AccountAPI.Secured.class)
     public Result boatsAsJson() {
-        IAccount account = aController.findById(request().username());
+        IAccount account = aController.getAccount(UUID.fromString(session().get(AccountAPI.AUTHN_COOKIE_KEY)));
         List<IBoat> target = new LinkedList<>();
 
         if (account != null) {
@@ -52,7 +52,7 @@ public class BoatAPI extends Controller {
     @Security.Authenticated(AccountAPI.Secured.class)
     public Result boatAsJson(UUID id) {
 		IBoat boat = controller.getBoat(id);
-        IAccount account = aController.findById(request().username());
+        IAccount account = aController.getAccount(UUID.fromString(session().get(AccountAPI.AUTHN_COOKIE_KEY)));
         if(boat != null && account.hasBoat(id)){
 			return ok(Json.toJson(boat));
 		} else {
