@@ -2,7 +2,7 @@ package de.htwg.seapal;
 
 import com.google.inject.Guice;
 import com.google.inject.Injector;
-import de.htwg.seapal.module.SeapalImplModule;
+import de.htwg.seapal.module.SeapalTestModule;
 import de.htwg.seapal.utils.logging.ILogger;
 import play.Application;
 import play.GlobalSettings;
@@ -23,7 +23,7 @@ public class SeapalGlobal
      * @return The Google Guice injector.
      */
     public static Injector createInjector() {
-        return Guice.createInjector(new SeapalImplModule());
+        return Guice.createInjector(new SeapalTestModule());
     }
 
     @Override

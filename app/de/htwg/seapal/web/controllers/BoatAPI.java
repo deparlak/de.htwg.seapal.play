@@ -1,41 +1,61 @@
 package de.htwg.seapal.web.controllers;
 
-import java.util.Map;
-import java.util.UUID;
-
-import org.codehaus.jackson.node.ObjectNode;
-
 import com.google.inject.Inject;
-
 import de.htwg.seapal.controller.IBoatController;
 import de.htwg.seapal.model.IBoat;
 import de.htwg.seapal.model.impl.Boat;
 import de.htwg.seapal.utils.logging.ILogger;
-
+import de.htwg.seapal.web.controllers.secure.IAccount;
+import de.htwg.seapal.web.controllers.secure.IAccountController;
+import org.codehaus.jackson.node.ObjectNode;
 import play.data.Form;
 import play.libs.Json;
 import play.mvc.Controller;
 import play.mvc.Result;
+import play.mvc.Security;
+
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
 public class BoatAPI extends Controller {
 
 	static Form<Boat> form = Form.form(Boat.class);
-	
-	@Inject
-	private IBoatController controller;
-	
-	@Inject
+
+    @Inject
+    private IBoatController controller;
+
+    @Inject
+    private IAccountController aController;
+
+    @Inject
 	private ILogger logger;
 
-	public Result boatsAsJson() {
-		return ok(Json.toJson(controller.getAllBoats()));
+    @Security.Authenticated(AccountAPI.Secured.class)
+    public Result boatsAsJson() {
+        IAccount account = aController.findById(request().username());
+        List<IBoat> target = new LinkedList<>();
+
+        if (account != null) {
+            List<IBoat> list = controller.getAllBoats();
+            for (IBoat boat : list) {
+                if (account.hasBoat(boat.getUUID())) {
+                    target.add(boat);
+                }
+            }
+        }
+
+        return ok(Json.toJson(target));
 	}
-	
-	public Result boatAsJson(UUID id) {
+
+    @Security.Authenticated(AccountAPI.Secured.class)
+    public Result boatAsJson(UUID id) {
 		IBoat boat = controller.getBoat(id);
-		if(boat != null){
+        IAccount account = aController.findById(request().username());
+        if(boat != null && account.hasBoat(id)){
 			return ok(Json.toJson(boat));
-		}else{
+		} else {
 			return notFound();
 		}
 	}
@@ -45,14 +65,14 @@ public class BoatAPI extends Controller {
 		Form<Boat> filledForm = form.bindFromRequest();
 		Map<String, String> data = form.data();
 		logger.info("Filled Form Data" , filledForm.toString());
-		
+
 		ObjectNode response = Json.newObject();
-		
+
 		if (filledForm.hasErrors()) {
 			logger.warn("BoatAPI", "FilledForm has errors: " + filledForm.errorsAsJson().toString());
 			response.put("success", false);
 			response.put("errors", filledForm.errorsAsJson());
-			
+
 			return badRequest(response);
 		} else {
 			response.put("success", true);
@@ -71,7 +91,7 @@ public class BoatAPI extends Controller {
 		controller.deleteBoat(id);
 		ObjectNode response = Json.newObject();
 		response.put("success", true);
-		
+
 		return ok(response);
 	}
 

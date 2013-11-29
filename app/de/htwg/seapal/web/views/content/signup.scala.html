@@ -1,0 +1,17 @@
+@(form: Form[de.htwg.seapal.web.controllers.secure.impl.Account])
+
+<html><head><title>
+    Zentasks</title><link rel="shortcut icon" href="/assets/images/favicon.jpg" type="image/jpg"><link type="text/css" rel="stylesheet" href="@routes.Assets.at("css/style.css")" /></head><body><header><a href="@de.htwg.seapal.web.controllers.routes.Application.index" id="logo"><span>
+    Zen</span>tasks</a></header>@helper.form(de.htwg.seapal.web.controllers.routes.AccountAPI.signup()) {
+    <h1>Sign in</h1>
+    @if(flash.contains("success")) {
+        <p class="success">@flash.get("success")</p>
+    }
+    @if(form.hasGlobalErrors) {
+        <p class="error">@form.globalError.message</p>
+    }
+
+    <p><input type="email" name="accountName" placeholder="Email" value="@form("accountName").value"></p>
+    <p><input type="password" name="accountPassword" placeholder="Password"></p>
+    <p><button type="submit">Login</button></p>
+}</body></html>

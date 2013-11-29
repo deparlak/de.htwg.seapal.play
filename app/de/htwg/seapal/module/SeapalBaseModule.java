@@ -13,6 +13,8 @@ import de.htwg.seapal.controller.impl.BoatController;
 import de.htwg.seapal.controller.impl.RaceController;
 import de.htwg.seapal.controller.impl.TripController;
 import de.htwg.seapal.controller.impl.WaypointController;
+import de.htwg.seapal.web.controllers.secure.IAccountController;
+import de.htwg.seapal.web.controllers.secure.impl.AccountController;
 import org.ektorp.CouchDbInstance;
 import org.ektorp.http.HttpClient;
 import org.ektorp.http.StdHttpClient;
@@ -33,6 +35,7 @@ public abstract class SeapalBaseModule
 
     private void configureControllers() {
         bind(IBoatController.class).to(BoatController.class).in(Singleton.class);
+        bind(IAccountController.class).to(AccountController.class).in(Singleton.class);
         bind(ITripController.class).to(TripController.class).in(Singleton.class);
         bind(IWaypointController.class).to(WaypointController.class).in(Singleton.class);
         bind(IRaceController.class).to(RaceController.class).in(Singleton.class);
