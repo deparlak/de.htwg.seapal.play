@@ -21,6 +21,7 @@
 	}
 
 	function menubar( el, prefix, options ) {	
+        this.callbacks = {};
 		this.el = el;
         this.prefix = prefix;
 		this._init();
@@ -28,6 +29,17 @@
 	}
 
 	menubar.prototype = {
+        /* method will be added to callbacks list.
+           All methods which are stored in a callback list, will be
+           called if an hmtl object will be triggered which owns the
+           class "action" and "<onClass>". 
+        */
+        addCallback : function (onClass, method) {
+            if (!this.callbacks[onClass]) {
+                this.callbacks[onClass] = $.Callbacks();
+            }
+            this.callbacks[onClass].add(method);
+        },        
 		_init : function() {
 			this.trigger = this.el.querySelector( 'a.menubar-icon-'+this.prefix );
 			this.menu = this.el.querySelector( 'nav.menubar-'+this.prefix+'-wrapper' );
@@ -43,7 +55,26 @@
 		},
 		_initEvents : function() {
 			var self = this;
-
+            
+            /* action was called */
+            $(".action").click(function() {                
+                var classList = $(this).attr('class').split(/\s+/);
+                for (var i in classList) {
+                    if (self.callbacks[classList[i]]) {
+                        self.callbacks[classList[i]].fire($(this));
+                    }
+                }
+            });
+            
+            /* in menu link was called */
+            $(".link").click(function() {  
+                elem = $(this);
+                $(".menubar-menu").each(function( index ) {
+                    $(this).removeClass("active-"+self.prefix+"-list").addClass("inactive-"+self.prefix+"-list");
+                });
+                $("#"+elem.data("link")).removeClass("inactive-"+self.prefix+"-list").addClass("active-"+self.prefix+"-list");
+            });
+            
 			if( !mobilecheck() ) {
 				this.trigger.addEventListener( 'mouseover', function(ev) { self._openIconMenu(); } );
 				this.trigger.addEventListener( 'mouseout', function(ev) { self._closeIconMenu(); } );

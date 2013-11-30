@@ -262,8 +262,11 @@
 			});
 			// right-click
 			google.maps.event.addListener(map, 'rightclick', function(event) {
+
 				switch(state) {
 					case States.NORMAL: 
+                        console.log("TODO");
+                       // return;
 						hideContextMenu();
 						hideCrosshairMarker(crosshairMarker);
 						showCrosshairMarker(event.latLng);

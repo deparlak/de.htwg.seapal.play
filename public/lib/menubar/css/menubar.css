@@ -319,6 +319,10 @@ input.menubar-search:focus {
 		content: "\e001";
 }
 
+.icon-satellite::after{
+		content: "\e005";
+}
+
 .icon-logbook::after {
 		content: "\e005";
 }
@@ -529,8 +533,7 @@ input.menubar-search:focus {
 			width: 100%;
 	}
 	.menubar-menu-wrapper.menubar-open-all .scroller {
-			width: 100%
-            overflow-y:hidden;
+			width: 100%         /* set to 130 to hide the scrollbar */
 	}
     /******************************************************/
     
@@ -542,9 +545,27 @@ input.menubar-search:focus {
 			width: 100%;
 	}
 	.menubar-tools-wrapper.menubar-open-all .scroller {
-			width: 130%
+			width: 100%          /* set to 130 to hide the scrollbar */
 	}
     /******************************************************/
 }
 
+.active-menu-list {
+    display:block;
+}
 
+.inactive-menu-list {
+    display:none;
+}
+
+.active-tools-list {
+    display:block;
+}
+
+.inactive-tools-list {
+    display:none;
+}
+
+.menubar-optionsSelector {
+    width:96.3%;"
+}
