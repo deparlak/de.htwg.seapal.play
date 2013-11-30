@@ -52,6 +52,7 @@
 				self._closeMenu();
 				this.removeEventListener( self.eventtype, self.bodyClickFn );
 			};
+            /* add the built in calback for a 'link' marked element. Links can be used for multiple menu's */
             this.addCallback('link', function (elem) {
                 $(".active-"+self.prefix+"-list").each(function( index ) {
                     $(this).removeClass("active-"+self.prefix+"-list").addClass("inactive-"+self.prefix+"-list");
@@ -62,11 +63,7 @@
 		_initEvents : function() {
 			var self = this;
             
-            /* action was called */
-            $(".action").click(function() {                
-
-            });
-            
+            /* a element of the menu was clicked. Check if any callback has to be fired */
             $("#"+self.prefix+" > nav > div > ul > li > a").click(function(){
                 var classList = $(this).attr('class').split(/\s+/);
                 for (var i in classList) {
@@ -100,7 +97,7 @@
 			this.menu.addEventListener( this.eventtype, function(ev) { ev.stopPropagation(); } );
 		},
 		_openIconMenu : function() {
-            console.log("openCheck");
+            /* call the close method of each menu to be sure that only one menu is open */
             for (i=0; i< menus.length; i++) {
                 menus[i]._closeMenu();
             }
