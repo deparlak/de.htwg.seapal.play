@@ -1,4 +1,5 @@
 $(document).ready(function() {	
+    return;
 	// lets initialize our fancy seamap on the #map_canvas container.
 	
 	// interactive:

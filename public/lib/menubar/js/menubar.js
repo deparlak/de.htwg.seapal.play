@@ -52,27 +52,28 @@
 				self._closeMenu();
 				this.removeEventListener( self.eventtype, self.bodyClickFn );
 			};
+            this.addCallback('link', function (elem) {
+                $(".active-"+self.prefix+"-list").each(function( index ) {
+                    $(this).removeClass("active-"+self.prefix+"-list").addClass("inactive-"+self.prefix+"-list");
+                });
+                $("#"+elem.data("link")).removeClass("inactive-"+self.prefix+"-list").addClass("active-"+self.prefix+"-list");
+            });
 		},
 		_initEvents : function() {
 			var self = this;
             
             /* action was called */
             $(".action").click(function() {                
+
+            });
+            
+            $("#"+self.prefix+" > nav > div > ul > li > a").click(function(){
                 var classList = $(this).attr('class').split(/\s+/);
                 for (var i in classList) {
                     if (self.callbacks[classList[i]]) {
                         self.callbacks[classList[i]].fire($(this));
                     }
                 }
-            });
-            
-            /* in menu link was called */
-            $(".link").click(function() {  
-                elem = $(this);
-                $(".menubar-menu").each(function( index ) {
-                    $(this).removeClass("active-"+self.prefix+"-list").addClass("inactive-"+self.prefix+"-list");
-                });
-                $("#"+elem.data("link")).removeClass("inactive-"+self.prefix+"-list").addClass("active-"+self.prefix+"-list");
             });
             
 			if( !mobilecheck() ) {

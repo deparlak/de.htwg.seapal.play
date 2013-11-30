@@ -5,17 +5,29 @@
 	</head>
 	<body>      
         <div class="container" style="z-index: 2;  position: relative;"> 
-            <ul id="menubar-menu" class="menubar-menu-main">
-                <li class="menu-trigger">
+            <ul class="menubar-menu-main">
+                <li id="menu" class="menu-trigger">
                     <a class="menubar-icon menubar-icon-menu"><span></span></a>
                     <nav class="menubar-menu-wrapper">
                         <div class="scroller">
-                            <ul id="menu-routes" class="menubar-menu inactive-menu-list">
-                                <li><a class="menu-icon icon-info link" data-link="menu-main">back</a></li>
+                        
+                            <ul id="menu-main" class="menubar-menu active-menu-list">
+                                <li><a class="menu-icon icon-map action">Map + Charts</a></li>
+                                <li><a class="menu-icon icon-logbook">Logbook</a></li>
+                                <li><a class="menu-icon icon-dashboard">Dashboard</a></li>
+                                <li><a class="menu-icon icon-routes">Marks, Routes, Tracks</a></li>
+                                <li><a class="menu-icon icon-charts">Navigation Charts</a></li>
+                                <li><a class="menu-icon icon-addOns">Add-ons</a></li>
+                                <li><a class="menu-icon icon-poi action">Points of Interest</a></li>
+                                <li><a class="menu-icon icon-weather">Weather</a></li>
+                                <li><a class="menu-icon icon-alarms">Alarms</a></li>
+                                <li><a class="menu-icon icon-info action">Info</a></li>
                                 <li><a class="menu-icon icon-settings">Settings</a></li>
                             </ul>
                         
-                            <ul id="menu-main" class="menubar-menu active-menu-list">
+                        
+                            <ul id="menu-routes" class="menubar-menu inactive-menu-list">
+                                <li><a class="menu-icon icon-info link" data-link="menu-main">back</a></li>
                                 <li>
                                     <div class="btn-group-justified menubar-optionsSelector" data-toggle="buttons">
                                         <label class="btn btn-default active">
@@ -32,26 +44,17 @@
                                         </label>
                                     </div>
                                 </li>
-                                <li><a class="menu-icon icon-map action">Map + Charts</a></li>
-                                <li><a class="menu-icon icon-logbook">Logbook</a></li>
-                                <li><a class="menu-icon icon-dashboard">Dashboard</a></li>
-                                <li><a class="menu-icon icon-routes">Marks, Routes, Tracks</a></li>
-                                <li><a class="menu-icon icon-charts">Navigation Charts</a></li>
-                                <li><a class="menu-icon icon-addOns">Add-ons</a></li>
-                                <li><a class="menu-icon icon-poi action">Points of Interest</a></li>
-                                <li><a class="menu-icon icon-weather">Weather</a></li>
-                                <li><a class="menu-icon icon-alarms">Alarms</a></li>
-                                <li><a class="menu-icon icon-info action">Info</a></li>
-                                <li><a class="menu-icon icon-settings">Settings</a></li>
                             </ul>
+                        
                         </div><!-- /menubar-scroller -->
                     </nav>
                 </li>
                 
-                <li class="tools-trigger">
+                <li id="tools" class="tools-trigger">
                     <a class="menubar-icon menubar-icon-tools"><span></span></a>
                     <nav class="menubar-tools-wrapper">
                         <div class="scroller">
+                        
                             <ul id="tools-main" class="menubar-menu active-tools-list">
                                 <li><a class="tools-icon icon-searchPosition link" data-link="tools-searchPosition">Search for Position</a></li>
                                 <li><a class="tools-icon icon-startLogging action">Start Logging</a></li>
