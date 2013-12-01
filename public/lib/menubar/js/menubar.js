@@ -108,6 +108,10 @@
 		},
 		_openMenu : function() {
 			if( this.isMenuOpen ) return;
+            /* call the close method of each menu to be sure that only one menu is open */
+            for (i=0; i< menus.length; i++) {
+                menus[i]._closeMenu();
+            }
 			classie.add( this.trigger, 'menubar-selected' );
 			this.isMenuOpen = true;
 			classie.add( this.menu, 'menubar-open-all' );
