@@ -118,7 +118,6 @@ public final class AccountController
             throws InvalidKeySpecException, NoSuchAlgorithmException {
         List<IAccount> list = getAllAccounts();
         for (IAccount account : list) {
-            System.out.println(form.get().accountPassword + "--" + account.getAccountPassword());
             if (account.getAccountName().equals(form.get().accountName) && PasswordHash.validatePassword(form.get().accountPassword, account.getAccountPassword())) {
                 return account;
             }
