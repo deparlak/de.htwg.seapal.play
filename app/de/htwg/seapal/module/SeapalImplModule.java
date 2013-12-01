@@ -1,8 +1,8 @@
 package de.htwg.seapal.module;
 
 import de.htwg.seapal.database.impl.*;
-import de.htwg.seapal.web.controllers.secure.impl.AccountDatabase;
-import de.htwg.seapal.web.controllers.secure.IAccountDatabase;
+import de.htwg.seapal.database.impl.AccountDatabase;
+import de.htwg.seapal.database.IAccountDatabase;
 import org.ektorp.CouchDbConnector;
 import org.ektorp.CouchDbInstance;
 import org.ektorp.impl.StdCouchDbConnector;

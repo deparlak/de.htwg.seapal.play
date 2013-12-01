@@ -1,10 +1,11 @@
-package de.htwg.seapal.web.controllers.secure.impl;
+package de.htwg.seapal.database.impl;
 
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
 import de.htwg.seapal.utils.logging.ILogger;
 import de.htwg.seapal.web.controllers.secure.IAccount;
-import de.htwg.seapal.web.controllers.secure.IAccountDatabase;
+import de.htwg.seapal.database.IAccountDatabase;
+import de.htwg.seapal.web.controllers.secure.impl.Account;
 import org.ektorp.CouchDbConnector;
 import org.ektorp.support.CouchDbRepositorySupport;
 

@@ -5,7 +5,7 @@ import de.htwg.seapal.utils.logging.ILogger;
 import de.htwg.seapal.web.controllers.secure.IAccount;
 import de.htwg.seapal.web.controllers.secure.IAccountController;
 import de.htwg.seapal.web.controllers.secure.impl.Account;
-import de.htwg.seapal.web.controllers.secure.impl.PasswordHash;
+import de.htwg.seapal.web.controllers.helpers.PasswordHash;
 import de.htwg.seapal.web.views.html.content.login;
 import de.htwg.seapal.web.views.html.content.signup;
 import org.codehaus.jackson.node.ObjectNode;

@@ -1,4 +1,4 @@
-package de.htwg.seapal.web.controllers.secure.impl;
+package de.htwg.seapal.web.controllers.helpers;
 
 /*
  * Password Hashing With PBKDF2 (http://crackstation.net/hashing-security.htm).
