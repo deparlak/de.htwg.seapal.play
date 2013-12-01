@@ -48,6 +48,14 @@ public class Application
         return ok(about.render());
     }
 
+    public static Result login() {
+        return ok(login.render(DynamicForm.form(Account.class), routes.AccountAPI.login(), false, "Login"));
+    }
+
+    public static Result signup() {
+        return ok(login.render(DynamicForm.form(Account.class), routes.AccountAPI.signup(), true, "Create Account"));
+    }
+
     public static Result contact() {
         return ok(contact.render());
     }

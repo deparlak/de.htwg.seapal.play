@@ -18,10 +18,10 @@ GET           /races                                            de.htwg.seapal.w
 GET           /race/add                                         de.htwg.seapal.web.controllers.Application.race_add()
 
 # authentication
-GET           /login                                            de.htwg.seapal.web.controllers.AccountAPI.login()
-POST          /login                                            @de.htwg.seapal.web.controllers.AccountAPI.authenticate()
+GET           /login                                            de.htwg.seapal.web.controllers.Application.login()
+POST          /login                                            @de.htwg.seapal.web.controllers.AccountAPI.login()
 GET        /logout        de.htwg.seapal.web.controllers.AccountAPI.logout()
-GET        /signup        de.htwg.seapal.web.controllers.AccountAPI.signupForm()
+GET        /signup        de.htwg.seapal.web.controllers.Application.signup()
 POST        /signup        @de.htwg.seapal.web.controllers.AccountAPI.signup()
 
 # GET	      /race/$raceId<[0-9a-fA-F\-]+>				        de.htwg.seapal.web.controllers.Application.race_edit(raceId: UUID)

@@ -7,7 +7,6 @@ import de.htwg.seapal.web.controllers.secure.IAccount;
 import de.htwg.seapal.web.controllers.secure.IAccountController;
 import de.htwg.seapal.web.controllers.secure.impl.Account;
 import de.htwg.seapal.web.views.html.content.login;
-import de.htwg.seapal.web.views.html.content.signup;
 import org.codehaus.jackson.node.ObjectNode;
 import play.data.DynamicForm;
 import play.data.Form;
@@ -59,7 +58,7 @@ public class AccountAPI
         }
     }
 
-    public Result authenticate() {
+    public Result login() {
         Form<Account> filledForm = DynamicForm.form(Account.class).bindFromRequest();
 
 
@@ -71,6 +70,7 @@ public class AccountAPI
             if (!filledForm.hasErrors() && account != null) {
                 session().clear();
                 session(IAccountController.AUTHN_COOKIE_KEY, account.getUUID().toString());
+                flash("success", "You've been logged in");
                 return redirect(routes.Application.index());
             }
         } catch (NoSuchAlgorithmException e) {
@@ -82,15 +82,7 @@ public class AccountAPI
         response.put("success", false);
         response.put("errors", filledForm.errorsAsJson());
 
-        return badRequest(login.render(filledForm));
-    }
-
-    public static Result login() {
-        return ok(login.render(DynamicForm.form(Account.class)));
-    }
-
-    public static Result signupForm() {
-        return ok(signup.render(DynamicForm.form(Account.class)));
+        return badRequest(login.render(filledForm, routes.AccountAPI.login(), false, "Login"));
     }
 
     public static Result logout() {
@@ -108,7 +100,7 @@ public class AccountAPI
 
         @Override
         public Result onUnauthorized(Context ctx) {
-            return redirect(routes.AccountAPI.login());
+            return redirect(routes.Application.login());
         }
 
     }
