@@ -1,3 +1,5 @@
+@import de.htwg.seapal.web.controllers.secure.IAccountController.AUTHN_COOKIE_KEY
+
 @import de.htwg.seapal.web.controllers.helpers.Menus
 
 
@@ -22,7 +24,7 @@
 					@for(menuItem <- Menus.mainNavigation()) {
 				    	@display(menuItem)
 				    }
-                    @if(session.contains(de.htwg.seapal.web.controllers.AccountAPI.AUTHN_COOKIE_KEY)) {
+                    @if(session.contains(de.htwg.seapal.web.controllers.secure.IAccountController.AUTHN_COOKIE_KEY)) {
                         <li class>
                             <a href="@de.htwg.seapal.web.controllers.routes.AccountAPI.logout()">Logout</a>
                         </li>

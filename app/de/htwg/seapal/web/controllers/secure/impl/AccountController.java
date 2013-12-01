@@ -1,12 +1,14 @@
 package de.htwg.seapal.web.controllers.secure.impl;
 
 import com.google.inject.Inject;
+import de.htwg.seapal.database.IAccountDatabase;
+import de.htwg.seapal.model.IBoat;
 import de.htwg.seapal.utils.logging.ILogger;
 import de.htwg.seapal.utils.observer.Observable;
+import de.htwg.seapal.web.controllers.helpers.Intersection;
 import de.htwg.seapal.web.controllers.helpers.PasswordHash;
 import de.htwg.seapal.web.controllers.secure.IAccount;
 import de.htwg.seapal.web.controllers.secure.IAccountController;
-import de.htwg.seapal.database.IAccountDatabase;
 import play.data.Form;
 
 import java.security.NoSuchAlgorithmException;
@@ -14,6 +16,8 @@ import java.security.spec.InvalidKeySpecException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+
+import static play.mvc.Controller.session;
 
 public final class AccountController
         extends Observable
@@ -137,5 +141,35 @@ public final class AccountController
         IAccount account1 = getAccount(account);
         account1.getBoats().remove(boat);
         saveAccount(account1);
+    }
+
+    private IAccount getAccount() {
+        String id = session().get(AUTHN_COOKIE_KEY);
+        UUID uuid = UUID.fromString(id);
+        return getAccount(uuid);
+    }
+
+    @Override
+    public void deleteBoat(final UUID boatID) {
+        IAccount account = getAccount();
+        account.deleteBoat(boatID);
+        saveAccount(account);
+    }
+
+    @Override
+    public List<IBoat> getAllBoats(final List<IBoat> allBoats) {
+        return new Intersection<>(allBoats).select(getAccount().getBoats());
+    }
+
+    @Override
+    public boolean hasBoat(final UUID boatID) {
+        return getAccount().hasBoat(boatID);
+    }
+
+    @Override
+    public void addBoat(final UUID boatID) {
+        IAccount account = getAccount();
+        account.addBoat(boatID);
+        saveAccount(account);
     }
 }

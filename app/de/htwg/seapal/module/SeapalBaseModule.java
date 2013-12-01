@@ -34,8 +34,8 @@ public abstract class SeapalBaseModule
     }
 
     private void configureControllers() {
-        bind(IBoatController.class).to(BoatController.class).in(Singleton.class);
         bind(IAccountController.class).to(AccountController.class).in(Singleton.class);
+        bind(IBoatController.class).to(BoatController.class).in(Singleton.class);
         bind(ITripController.class).to(TripController.class).in(Singleton.class);
         bind(IWaypointController.class).to(WaypointController.class).in(Singleton.class);
         bind(IRaceController.class).to(RaceController.class).in(Singleton.class);

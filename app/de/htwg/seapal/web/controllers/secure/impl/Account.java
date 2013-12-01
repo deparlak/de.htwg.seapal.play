@@ -56,7 +56,17 @@ public final class Account
         this.boats = boats;
     }
 
+    @Override
     public boolean hasBoat(final UUID id) {
         return boats.contains(id);
+    }
+
+    @Override
+    public void addBoat(final UUID uuid) {
+        boats.add(uuid);
+    }
+    @Override
+    public void deleteBoat(final UUID id) {
+        boats.remove(id);
     }
 }
