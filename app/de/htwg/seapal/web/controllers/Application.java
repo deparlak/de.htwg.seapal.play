@@ -64,6 +64,7 @@ public class Application
         return ok(user_guide.render());
     }
 
+    @Security.Authenticated(AccountAPI.Secured.class)
     public static Result seamap() {
         return ok(seamap.render());
     }
@@ -73,36 +74,46 @@ public class Application
         return ok(boat_info.render());
     }
 
+    @Security.Authenticated(AccountAPI.Secured.class)
     public static Result trip_list(UUID boatId) {
         return ok(trip_list.render(boatId));
     }
 
+    @Security.Authenticated(AccountAPI.Secured.class)
     public static Result trip_add(UUID boatId) {
         return ok(trip_info.render(boatId, null));
     }
 
+    @Security.Authenticated(AccountAPI.Secured.class)
     public static Result trip_edit(UUID tripId) {
         return ok(trip_info.render(null, tripId));
     }
 
+    @Security.Authenticated(AccountAPI.Secured.class)
     public static Result waypoint_add(UUID tripId) {
         Form<Waypoint> form = Form.form(Waypoint.class);
         return ok(log_entry.render(tripId, null, form));
     }
 
+    @Security.Authenticated(AccountAPI.Secured.class)
     public Result waypoint_show(UUID waypointId) {
         Form<Waypoint> form = Form.form(Waypoint.class);
         return ok(log_entry.render(null, waypointId, form.fill((Waypoint) waypointController.getWaypoint(waypointId))));
     }
 
+    @Security.Authenticated(AccountAPI.Secured.class)
     public static Result race_list() {
         return ok(race_list.render());
     }
 
-	/*public static Result race_edit(UUID raceId) {
+    /*
+    @Security.Authenticated(AccountAPI.Secured.class)
+	public static Result race_edit(UUID raceId) {
         return ok(race_info.render(raceId));
-	}*/
+	}
+	*/
 
+    @Security.Authenticated(AccountAPI.Secured.class)
     public static Result race_add() {
         return ok(race_info.render());
     }

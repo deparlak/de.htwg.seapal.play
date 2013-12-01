@@ -20,9 +20,17 @@ public interface IAccount
 
     void setBoats(List<UUID> boats);
 
+    List<UUID> getTrips();
+
+    void setTrips(List<UUID> trips);
+
     boolean hasBoat(UUID uuid);
 
     void addBoat(final UUID uuid);
 
     void deleteBoat(UUID id);
+
+    boolean hasTrip(UUID uuid);
+
+    void deleteTrip(UUID tripID);
 }

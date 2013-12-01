@@ -3,6 +3,7 @@ package de.htwg.seapal.web.controllers.secure.impl;
 import com.google.inject.Inject;
 import de.htwg.seapal.database.IAccountDatabase;
 import de.htwg.seapal.model.IBoat;
+import de.htwg.seapal.model.ITrip;
 import de.htwg.seapal.utils.logging.ILogger;
 import de.htwg.seapal.utils.observer.Observable;
 import de.htwg.seapal.web.controllers.helpers.Intersection;
@@ -170,6 +171,23 @@ public final class AccountController
     public void addBoat(final UUID boatID) {
         IAccount account = getAccount();
         account.addBoat(boatID);
+        saveAccount(account);
+    }
+
+    @Override
+    public boolean hasTrip(final UUID tripID) {
+        return getAccount().hasTrip(tripID);
+    }
+
+    @Override
+    public List<ITrip> getAllTrips(final List<ITrip> allTrips) {
+        return new Intersection<>(allTrips).select(getAccount().getTrips());
+    }
+
+    @Override
+    public void deleteTrip(final UUID tripID) {
+        IAccount account = getAccount();
+        account.deleteTrip(tripID);
         saveAccount(account);
     }
 }

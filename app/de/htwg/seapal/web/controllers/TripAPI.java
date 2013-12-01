@@ -1,67 +1,84 @@
 package de.htwg.seapal.web.controllers;
 
-import java.util.List;
-import java.util.UUID;
-
-import org.codehaus.jackson.node.ObjectNode;
-
-import play.data.Form;
-import play.libs.Json;
-import play.mvc.Controller;
-import play.mvc.Result;
-
 import com.google.inject.Inject;
-
+import de.htwg.seapal.controller.IBoatController;
 import de.htwg.seapal.controller.ITripController;
 import de.htwg.seapal.model.ITrip;
 import de.htwg.seapal.model.impl.Trip;
 import de.htwg.seapal.utils.logging.ILogger;
+import de.htwg.seapal.web.controllers.secure.IAccountController;
+import org.codehaus.jackson.node.ObjectNode;
+import play.data.Form;
+import play.libs.Json;
+import play.mvc.Controller;
+import play.mvc.Result;
+import play.mvc.Security;
+
+import java.util.List;
+import java.util.UUID;
 
 public class TripAPI extends Controller {
 
 	static Form<Trip> form = Form.form(Trip.class);
-	
+
 	@Inject
 	private ITripController controller;
-	
-	@Inject
+
+    @Inject
+    private IAccountController accountController;
+
+    @Inject
+    private IBoatController boatController;
+
+    @Inject
 	private ILogger logger;
-	
-	public Result tripsAsJson(UUID boatId) {
+
+    @Security.Authenticated(AccountAPI.Secured.class)
+    public Result tripsAsJson(UUID boatId) {
 		List<ITrip> tripsOfBoat = controller.getAllTrips(boatId);
-		return ok(Json.toJson(tripsOfBoat));
+        if (tripsOfBoat != null && accountController.hasBoat(boatId)) {
+            return ok(Json.toJson(tripsOfBoat));
+        } else {
+            return notFound();
+        }
 	}
-	
-	public Result tripAsJson(UUID id) {
-		ITrip boat = controller.getTrip(id);
-		if(boat != null){
-			return ok(Json.toJson(boat));
+
+    @Security.Authenticated(AccountAPI.Secured.class)
+    public Result tripAsJson(UUID id) {
+		ITrip trip = controller.getTrip(id);
+
+		if (trip != null && accountController.hasTrip(id)) {
+			return ok(Json.toJson(trip));
 		}else{
 			return notFound();
 		}
 	}
-	
-	public Result allTripsAsJson() {
-		return ok(Json.toJson(controller.getAllTrips()));
+
+    @Security.Authenticated(AccountAPI.Secured.class)
+    public Result allTripsAsJson() {
+		return ok(Json.toJson(accountController.getAllTrips(controller.getAllTrips())));
 	}
 
-	public Result addTrip() {
+    @Security.Authenticated(AccountAPI.Secured.class)
+    public Result addTrip() {
 		logger.info("TripAPI", "--> addTrip");
 		Form<Trip> filledForm = form.bindFromRequest();
-		
+
 		ObjectNode response = Json.newObject();
-		
+
 		if (filledForm.hasErrors()) {
 			logger.warn("TripAPI", "FilledForm has errors: " + filledForm.errorsAsJson().toString());
 			response.put("success", false);
 			response.put("errors", filledForm.errorsAsJson());
-			
+
 			return badRequest(response);
 		} else {
 			response.put("success", true);
-			boolean created = controller.saveTrip(filledForm.get());
+            ITrip trip = filledForm.get();
+            boolean created = controller.saveTrip(trip);
 			if(created) {
-				logger.info("TripAPI", "Trip created");
+                accountController.addBoat(trip.getUUID());
+                logger.info("TripAPI", "Trip created");
 				return created(response);
 			}else{
 				logger.info("TripAPI", "Trip updated");
@@ -69,12 +86,14 @@ public class TripAPI extends Controller {
 			}
 		}
 	}
-	
-	public Result deleteTrip(UUID id) {
+
+    @Security.Authenticated(AccountAPI.Secured.class)
+    public Result deleteTrip(UUID id) {
 		controller.deleteTrip(id);
-		ObjectNode response = Json.newObject();
+        accountController.deleteTrip(id);
+        ObjectNode response = Json.newObject();
 		response.put("success", true);
-		
+
 		return ok(response);
 	}
 

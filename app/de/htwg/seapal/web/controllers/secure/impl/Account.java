@@ -13,6 +13,7 @@ public final class Account
     public String accountName;
     public String accountPassword;
     private List<UUID> boats = new ArrayList<>();
+    private List<UUID> trips = new ArrayList<>();
 
     public Account() {
         setId(UUID.randomUUID().toString());
@@ -55,6 +56,14 @@ public final class Account
     public void setBoats(final List<UUID> boats) {
         this.boats = boats;
     }
+    @Override
+    public List<UUID> getTrips() {
+        return trips;
+    }
+    @Override
+    public void setTrips(final List<UUID> trips) {
+        this.trips = trips;
+    }
 
     @Override
     public boolean hasBoat(final UUID id) {
@@ -68,5 +77,13 @@ public final class Account
     @Override
     public void deleteBoat(final UUID id) {
         boats.remove(id);
+    }
+    @Override
+    public boolean hasTrip(final UUID id) {
+        return trips.contains(id);
+    }
+    @Override
+    public void deleteTrip(final UUID tripID) {
+       trips.remove(tripID);
     }
 }
