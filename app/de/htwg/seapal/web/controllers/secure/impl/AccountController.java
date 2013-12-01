@@ -8,6 +8,8 @@ import de.htwg.seapal.web.controllers.secure.IAccountController;
 import de.htwg.seapal.web.controllers.secure.IAccountDatabase;
 import play.data.Form;
 
+import java.security.NoSuchAlgorithmException;
+import java.security.spec.InvalidKeySpecException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -52,10 +54,13 @@ public final class AccountController
     }
 
     @Override
-    public void setAccountPassword(final UUID id, final String password) {
+    public void setAccountPassword(final UUID id, final String password)
+            throws InvalidKeySpecException, NoSuchAlgorithmException {
         IAccount account = db.get(id);
-        if (account == null)
+        if (account == null) {
             return;
+        }
+
         account.setAccountPassword(password);
         db.save(account);
         notifyObservers();
@@ -105,15 +110,16 @@ public final class AccountController
     }
 
     @Override
-    public boolean saveAccount(final IAccount account) {
+    public boolean saveAccount(final IAccount account)  {
         return db.save(account);
     }
 
-    public IAccount authenticate(final Form<Account> form) {
+    public IAccount authenticate(final Form<Account> form)
+            throws InvalidKeySpecException, NoSuchAlgorithmException {
         List<IAccount> list = getAllAccounts();
         for (IAccount account : list) {
-            if (account.getAccountName().equals(form.get().accountName) && account.getAccountPassword().equals(form.get().accountPassword)) {
-                System.out.println(account.getAccountName() + "-" + account.getAccountPassword() + ":::" + account.getUUID());
+            System.out.println(form.get().accountPassword + "--" + account.getAccountPassword());
+            if (account.getAccountName().equals(form.get().accountName) && PasswordHash.validatePassword(form.get().accountPassword, account.getAccountPassword())) {
                 return account;
             }
         }

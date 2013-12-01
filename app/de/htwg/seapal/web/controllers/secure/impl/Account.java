@@ -2,6 +2,7 @@ package de.htwg.seapal.web.controllers.secure.impl;
 
 import de.htwg.seapal.web.controllers.secure.IAccount;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -11,7 +12,7 @@ public final class Account
 
     public String accountName;
     public String accountPassword;
-    private List<UUID> boats;
+    private List<UUID> boats = new ArrayList<>();
 
     public Account() {
         setId(UUID.randomUUID().toString());

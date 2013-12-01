@@ -4,6 +4,8 @@ import de.htwg.seapal.utils.observer.IObservable;
 import de.htwg.seapal.web.controllers.secure.impl.Account;
 import play.data.Form;
 
+import java.security.NoSuchAlgorithmException;
+import java.security.spec.InvalidKeySpecException;
 import java.util.List;
 import java.util.UUID;
 
@@ -16,7 +18,8 @@ public interface IAccountController
 
     String getAccountPassword(UUID id);
 
-    void setAccountPassword(UUID id, String Password);
+    void setAccountPassword(UUID id, String Password)
+            throws InvalidKeySpecException, NoSuchAlgorithmException;
 
     String getString(UUID id);
 
@@ -34,7 +37,8 @@ public interface IAccountController
 
     boolean saveAccount(IAccount Account);
 
-    IAccount authenticate(Form<Account> form);
+    IAccount authenticate(Form<Account> form)
+            throws InvalidKeySpecException, NoSuchAlgorithmException;
 
     void addBoat(UUID account, UUID boat);
 
