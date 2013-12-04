@@ -1,18 +1,17 @@
+/**
+ * map.js
+ *
+ * Define the actions for the map interaction.
+ * 
+ */
+
 $(document).ready(function() {	
-    return;
-	// lets initialize our fancy seamap on the #map_canvas container.
-	
-	// interactive:
-	$("#map_canvas").seamap({
-		height: $(window).height() - $(".header-wrapper .navbar-fixed-top").height() + 21
-	});
-	
-	/*$("#map_canvas").seamap({
-		defaultRoute : [
-			{ lat : 47.665647, lng : 9.184606},
-			{ lat : 47.65564, lng : 9.194606},
-			{ lat : 47.67564, lng : 9.194606},
-		],
-		mode : "NOTINTERACTIVE" 
-	});*/
+	$("#map_canvas").seamap();
+    map = $('#map_canvas').data('seamap');
+    
+    events = map.getEvents();
+    
+    map.addCallback(events.SELECT_ROUTE, function (self) {
+        console.log("route selected");
+    });
 });

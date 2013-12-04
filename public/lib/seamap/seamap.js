@@ -107,13 +107,60 @@
 	* *************************************************************************************
 	*/
 	$.seamap = function(element){	
-		var options = $.seamap.options;
-	
+        /* add a callback function to get notified about actions */
+        this.addCallback = function (event, method) {
+            for(var actual in events) {
+                if(events[actual] === event) {
+                    if (!callbacks[event]) {
+                        callbacks[event] = $.Callbacks();
+                    }
+                    callbacks[event].add(method);
+                    return;
+                }
+            }
+            throw("Cannot add Callback for the event '"+event+"', because this event does not exist.");
+        };
+        /* get the events list */
+        this.getEvents = function () {
+            return jQuery.extend(true, {}, events);
+        };
+        /* set new route */
+        this.setRoute = function () {
+            handleAddNewRoute();
+        };
+        /* set new mark */
+        this.setMark = function () {
+            handleAddMarker();
+        };
+        /* set map type to satellite */
+        this.satellite = function () {
+            map.overlayMapTypes.clear();
+            map.setMapTypeId(google.maps.MapTypeId.SATELLITE);
+        };
+        /* set map type to roamap + charts */
+        this.roadmap = function () {
+            map.setMapTypeId(google.maps.MapTypeId.ROADMAP);
+            initOpenSeaMaps();
+        };
+        
+        
+        /* The callbacks list can be used to get notified about events. */
+        var callbacks = {};
+		/* All available events where a callback will be fired. */
+        var events = 
+        {
+            SELECT_ROUTE  :  "SelectRoute",
+            FINISH_ROUTE  :  "FinishRouteRecording",
+        };
+        
+        var options = $.seamap.options;
+    
 		// The states of the plugin
 		var States = {
-			"NORMAL" : 0, 
-			"ROUTE" : 1, 
-			"DISTANCE" : 2
+			"NORMAL"   : 0, 
+			"ROUTE"    : 1, 
+			"DISTANCE" : 2,
+            "MARKER"   : 3
 		},
 		// The context menu types
 		ContextMenuTypes = {
@@ -208,7 +255,6 @@
                 OverviewMapControlOptions: false,
 				zoom: options.zoom,
 				center: new google.maps.LatLng(options.startLat, options.startLong),
-				mapTypeId: google.maps.MapTypeId.ROADMAP
 			});
 			
 			$this.append("<div class='seamapsidebar' style='float:left;width:0%;height:100%;'><div class='seamapsidebar_inner'></div></div>");
@@ -265,8 +311,6 @@
 
 				switch(state) {
 					case States.NORMAL: 
-                        console.log("TODO");
-                       // return;
 						hideContextMenu();
 						hideCrosshairMarker(crosshairMarker);
 						showCrosshairMarker(event.latLng);
@@ -300,6 +344,11 @@
 					case States.DISTANCE:
 						addRouteMarker(event.latLng);
 						break;
+                        
+                    case States.MARKER:
+                        addDefaultMarker(event.latLng);
+                        state = States.NORMAL;
+                        break;
 				}
 			});
 		}
@@ -688,8 +737,13 @@
 			activeRoute.addEventListener("drag", activate);	
 			activeRoute.addEventListener("click", activate);
 		
-			addRouteMarker(crosshairMarker.getPosition());
 			activateRoute(activeRoute);
+            position = crosshairMarker.getPosition();
+            /* just add a route marker if a position was selected */
+            if (null != position) {
+                addRouteMarker(position);
+            }
+            callbacks[events.SELECT_ROUTE].fire();
 		}
 				
 		/**
@@ -747,7 +801,14 @@
 		function handleAddMarker() {
 			hideContextMenu();
 			hideCrosshairMarker();
-			addDefaultMarker(crosshairMarker.getPosition());
+            position = crosshairMarker.getPosition();
+            /* just add a marker if a position was selected */
+            if (null != position) {
+                addDefaultMarker(position);
+            } else {
+                /* set state to marker to set the marker on the next map action */
+                state = States.MARKER;
+            }
 		}
 
 		/**

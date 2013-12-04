@@ -8,7 +8,7 @@
  * Copyright 2013, Codrops
  * http://www.codrops.com
  */
-;( function( window ) {
+!( function( window ) {
     menus = [];
 	
 	'use strict';
@@ -49,7 +49,7 @@
 
 			var self = this;
 			this.bodyClickFn = function() {
-				self._closeMenu();
+				self.closeMenu();
 				this.removeEventListener( self.eventtype, self.bodyClickFn );
 			};
             /* add the built in calback for a 'link' marked element. Links can be used for multiple menu's */
@@ -74,11 +74,11 @@
             });
             
 			if( !mobilecheck() ) {
-				this.trigger.addEventListener( 'mouseover', function(ev) { self._openIconMenu(); } );
-				this.trigger.addEventListener( 'mouseout', function(ev) { self._closeIconMenu(); } );
+				this.trigger.addEventListener( 'mouseover', function(ev) { self.openIconMenu(); } );
+				this.trigger.addEventListener( 'mouseout', function(ev) { self.closeIconMenu(); } );
 			
 				this.menu.addEventListener( 'mouseover', function(ev) {
-					self._openMenu(); 
+					self.openMenu(); 
 					document.addEventListener( self.eventtype, self.bodyClickFn ); 
 				} );
 			}
@@ -86,43 +86,43 @@
 				ev.stopPropagation();
 				ev.preventDefault();
 				if( self.isMenuOpen ) {
-					self._closeMenu();
+					self.closeMenu();
 					document.removeEventListener( self.eventtype, self.bodyClickFn );
 				}
 				else {
-					self._openMenu();
+					self.openMenu();
 					document.addEventListener( self.eventtype, self.bodyClickFn );
 				}
 			} );
 			this.menu.addEventListener( this.eventtype, function(ev) { ev.stopPropagation(); } );
 		},
-		_openIconMenu : function() {
+		openIconMenu : function() {
             /* call the close method of each menu to be sure that only one menu is open */
             for (i=0; i< menus.length; i++) {
-                menus[i]._closeMenu();
+                menus[i].closeMenu();
             }
 			classie.add( this.menu, 'menubar-open-part' );
 		},
-		_closeIconMenu : function() {
+		closeIconMenu : function() {
 			classie.remove( this.menu, 'menubar-open-part' );
 		},
-		_openMenu : function() {
+		openMenu : function() {
 			if( this.isMenuOpen ) return;
             /* call the close method of each menu to be sure that only one menu is open */
             for (i=0; i< menus.length; i++) {
-                menus[i]._closeMenu();
+                menus[i].closeMenu();
             }
 			classie.add( this.trigger, 'menubar-selected' );
 			this.isMenuOpen = true;
 			classie.add( this.menu, 'menubar-open-all' );
-			this._closeIconMenu();
+			this.closeIconMenu();
 		},
-		_closeMenu : function() {
+		closeMenu : function() {
 			if( !this.isMenuOpen ) return;
 			classie.remove( this.trigger, 'menubar-selected' );
 			this.isMenuOpen = false;
 			classie.remove( this.menu, 'menubar-open-all' );
-			this._closeIconMenu();
+			this.closeIconMenu();
 		}
 	}
 

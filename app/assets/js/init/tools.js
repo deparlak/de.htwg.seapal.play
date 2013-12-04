@@ -24,13 +24,13 @@ $(document).ready(function() {
     });
     
     tools.addCallback('icon-setMark', function (self) {
-        
-        console.log('icon-setMark');
+        map.setMark();
+        tools.closeMenu();
     });  
     
     tools.addCallback('icon-setRoute', function (self) {
-        
-        console.log('icon-setRoute');
+        map.setRoute();
+        tools.closeMenu();
     });  
     
     tools.addCallback('icon-GetDistance', function (self) {
