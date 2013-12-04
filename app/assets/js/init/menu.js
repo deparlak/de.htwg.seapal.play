@@ -6,7 +6,7 @@
  */
 
 $(document).ready(function() {    
-    menu = new menubar( document.getElementById( 'menu' ), 'menu' );
+    menu = new menubar( 'menu' );
     
     menu.addCallback('icon-map', function (self) {
         menu.closeMenu();

@@ -20,10 +20,10 @@
         return check;
     }
 
-    function menubar( el, prefix, options ) {    
+    function menubar( id, options ) {    
         this.callbacks = {};
-        this.el = el;
-        this.prefix = prefix;
+        this.el = document.getElementById( id );
+        this.prefix = id;
         this._init();
         menus.push(this);
     }
@@ -96,11 +96,18 @@
             } );
             this.menu.addEventListener( this.eventtype, function(ev) { ev.stopPropagation(); } );
         },
-        openIconMenu : function() {
+        _closeOthers : function () {
             /* call the close method of each menu to be sure that only one menu is open */
             for (i=0; i< menus.length; i++) {
+                /* close only other menus */
+                if (menus[i] == this) {
+                    continue;
+                }
                 menus[i].closeMenu();
             }
+        },
+        openIconMenu : function() {
+            this._closeOthers();
             classie.add( this.menu, 'menubar-open-part' );
         },
         closeIconMenu : function() {
@@ -108,10 +115,7 @@
         },
         openMenu : function() {
             if( this.isMenuOpen ) return;
-            /* call the close method of each menu to be sure that only one menu is open */
-            for (i=0; i< menus.length; i++) {
-                menus[i].closeMenu();
-            }
+            this._closeOthers();
             classie.add( this.trigger, 'menubar-selected' );
             this.isMenuOpen = true;
             classie.add( this.menu, 'menubar-open-all' );

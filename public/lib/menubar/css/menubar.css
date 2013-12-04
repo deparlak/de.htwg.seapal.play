@@ -27,10 +27,10 @@
         line-height: 60px;
         
         /* definition of the transparent effect */
-        opacity: 0.9;                                                           /* modern browser */  
-        -moz-opacity: 0.9;                                                      /* older Mozilla browser */  
-        -ms-filter:"progid:DXImageTransform.Microsoft.Alpha(Opacity=90)";       /* IE8 in Standard Compliant Mode */  
-        filter:alpha(opacity=90);                                               /* IE5.x -7.0 */  
+  /*      opacity: 0.9;                                                           /* modern browser */  
+ /*       -moz-opacity: 0.9;                                                      /* older Mozilla browser */  
+ /*       -ms-filter:"progid:DXImageTransform.Microsoft.Alpha(Opacity=90)";       /* IE8 in Standard Compliant Mode */  
+/*        filter:alpha(opacity=90);                                               /* IE5.x -7.0 */  
 }
 
 .menubar-menu-main {
