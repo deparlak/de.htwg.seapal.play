@@ -5,7 +5,7 @@
  * 
  */
  
-$(document).ready(function() {	
+$(document).ready(function() {    
     tools = new menubar( document.getElementById( 'tools' ), 'tools' );
 
     tools.addCallback('icon-startLogging', function (self) {

@@ -1,30 +1,30 @@
 *,
 *:after,
 *::before {
-		-webkit-box-sizing: border-box;
-		-moz-box-sizing: border-box;
-		box-sizing: border-box;
+        -webkit-box-sizing: border-box;
+        -moz-box-sizing: border-box;
+        box-sizing: border-box;
 }
 
 @font-face {
-		font-weight: normal;
-		font-style: normal;
-		font-family: 'ecoicons';
-		src: url("../fonts/ecoicons/ecoicons.eot");
-		src: url("../fonts/ecoicons/ecoicons.eot?#iefix") format("embedded-opentype"), url("../fonts/ecoicons/ecoicons.woff") format("woff"), url("../fonts/ecoicons/ecoicons.ttf") format("truetype"), url("../fonts/ecoicons/ecoicons.svg#ecoicons") format("svg");
+        font-weight: normal;
+        font-style: normal;
+        font-family: 'ecoicons';
+        src: url("../fonts/ecoicons/ecoicons.eot");
+        src: url("../fonts/ecoicons/ecoicons.eot?#iefix") format("embedded-opentype"), url("../fonts/ecoicons/ecoicons.woff") format("woff"), url("../fonts/ecoicons/ecoicons.ttf") format("truetype"), url("../fonts/ecoicons/ecoicons.svg#ecoicons") format("svg");
 }
 
 .menubar-menu-main,
 .menubar-menu-main ul {
-		margin: 0;
-		padding: 0;
-		background: white;
-		color: #5f6f81;
-		list-style: none;
-		text-transform: none;
-		font-weight: 300;
-		font-family: 'Lato', Arial, sans-serif;
-		line-height: 60px;
+        margin: 0;
+        padding: 0;
+        background: white;
+        color: #5f6f81;
+        list-style: none;
+        text-transform: none;
+        font-weight: 300;
+        font-family: 'Lato', Arial, sans-serif;
+        line-height: 60px;
         
         /* definition of the transparent effect */
         opacity: 0.9;                                                           /* modern browser */  
@@ -34,41 +34,41 @@
 }
 
 .menubar-menu-main {
-		position: fixed;
-		top: 0;
-		left: 0;
-		width: 100%;
-		height: 60px;
-		font-size: 13px;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 60px;
+        font-size: 13px;
 }
 
 .menubar-menu-main a {
-		display: block;
-		height: 100%;
-		color: #5f6f81;
-		text-decoration: none;
-		cursor: pointer;
+        display: block;
+        height: 100%;
+        color: #5f6f81;
+        text-decoration: none;
+        cursor: pointer;
 }
 
 .no-touch .menubar-menu-main a:hover,
 .no-touch .menubar-menu li.menubar-search-item:hover,
 .no-touch .menubar-menu li.menubar-search-item:hover a {
-		background: #5f6f81;
-		color: white;
+        background: #5f6f81;
+        color: white;
 }
 
 .menubar-menu-main > li {
-		display: block;
-		float: left;
-		height: 100%;
-		border-right: 1px solid #c6d0da;
-		text-align: center;
+        display: block;
+        float: left;
+        height: 100%;
+        border-right: 1px solid #c6d0da;
+        text-align: center;
 }
 
 /* TODO the trigger of the menu */
 .menubar-menu-main li.menu-trigger {
     position: absolute;
-    left : 0px;			/* the position of the menu trigger */
+    left : 0px;            /* the position of the menu trigger */
     width: 60px;
     -webkit-touch-callout: none;
     -webkit-user-select: none;
@@ -81,7 +81,7 @@
 /* TODO the trigger of the tools */
 .menubar-menu-main li.tools-trigger {
     position: absolute;
-    right : 0px;			/* the position of the toolbar trigger */
+    right : 0px;            /* the position of the toolbar trigger */
     width: 60px;
     -webkit-touch-callout: none;
     -webkit-user-select: none;
@@ -92,186 +92,186 @@
 }
 
 .menubar-menu-main > li:last-child {
-		float: right;
-		border-right: none;
-		border-left: 1px solid #c6d0da;
+        float: right;
+        border-right: none;
+        border-left: 1px solid #c6d0da;
 }
 
 .menubar-menu-main > li > a {
-		padding: 0 30px;
-		text-transform: uppercase;
-		letter-spacing: 1px;
-		font-weight: bold;
+        padding: 0 30px;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        font-weight: bold;
 }
 
 .menubar-menu-main:after {
-		display: table;
-		clear: both;
-		content: "";
+        display: table;
+        clear: both;
+        content: "";
 }
 
 /* TODO */
 .menubar-menu-wrapper {
-		position: fixed;
-		top: 60px;
-		bottom: 0;
-		left: 0px;								/* menu on the right*/
-		overflow: hidden;
-		width: 340px;
-		border-top: 1px solid #c6d0da;
-		background: white;
-		-webkit-transform: translateX(-340px);	/* 60 if menu on the right. -60 if on left */
-		-moz-transform: translateX(-340px);		/* 60 if menu on the right. -60 if on left */
-		transform: translateX(-340px);			/* 60 if menu on the right. -60 if on left */
-		-webkit-transition: -webkit-transform 0.3s, width 0.3s;
-		-moz-transition: -moz-transform 0.3s, width 0.3s;
-		transition: transform 0.3s, width 0.3s;
+        position: fixed;
+        top: 60px;
+        bottom: 0;
+        left: 0px;                                /* menu on the right*/
+        overflow: hidden;
+        width: 340px;
+        border-top: 1px solid #c6d0da;
+        background: white;
+        -webkit-transform: translateX(-340px);    /* 60 if menu on the right. -60 if on left */
+        -moz-transform: translateX(-340px);        /* 60 if menu on the right. -60 if on left */
+        transform: translateX(-340px);            /* 60 if menu on the right. -60 if on left */
+        -webkit-transition: -webkit-transform 0.3s, width 0.3s;
+        -moz-transition: -moz-transform 0.3s, width 0.3s;
+        transition: transform 0.3s, width 0.3s;
 }
 
 /* TODO */
 .menubar-tools-wrapper {
-		position: fixed;
-		top: 60px;
-		bottom: 0;
-		right: 0px;								/* menu on the right*/
-		overflow: hidden;
-		width: 340px;
-		border-top: 1px solid #c6d0da;
-		background: white;
-		-webkit-transform: translateX(340px);	/* 60 if menu on the right. -60 if on left */
-		-moz-transform: translateX(340px);		/* 60 if menu on the right. -60 if on left */
-		transform: translateX(340px);			/* 60 if menu on the right. -60 if on left */
-		-webkit-transition: -webkit-transform 0.3s, width 0.3s;
-		-moz-transition: -moz-transform 0.3s, width 0.3s;
-		transition: transform 0.3s, width 0.3s;
+        position: fixed;
+        top: 60px;
+        bottom: 0;
+        right: 0px;                                /* menu on the right*/
+        overflow: hidden;
+        width: 340px;
+        border-top: 1px solid #c6d0da;
+        background: white;
+        -webkit-transform: translateX(340px);    /* 60 if menu on the right. -60 if on left */
+        -moz-transform: translateX(340px);        /* 60 if menu on the right. -60 if on left */
+        transform: translateX(340px);            /* 60 if menu on the right. -60 if on left */
+        -webkit-transition: -webkit-transform 0.3s, width 0.3s;
+        -moz-transition: -moz-transform 0.3s, width 0.3s;
+        transition: transform 0.3s, width 0.3s;
 }
 
 .scroller {
-		position: absolute;
-		overflow-y: scroll;
-		width: 370px;
-		height: 100%;
+        position: absolute;
+        overflow-y: scroll;
+        width: 370px;
+        height: 100%;
 }
 
 .menubar-menu {
-		border-bottom: 1px solid #c6d0da;
-		text-align: left;
-		font-size: 18px;
+        border-bottom: 1px solid #c6d0da;
+        text-align: left;
+        font-size: 18px;
 }
 
 .menubar-menu li:not(:first-child),
 .menubar-menu li li {
-		box-shadow: inset 0 1px #c6d0da
+        box-shadow: inset 0 1px #c6d0da
 }
 
 .menubar-submenu li {
-		overflow: hidden;
-		height: 0;
-		-webkit-transition: height 0.3s;
-		-moz-transition: height 0.3s;
-		transition: height 0.3s;
+        overflow: hidden;
+        height: 0;
+        -webkit-transition: height 0.3s;
+        -moz-transition: height 0.3s;
+        transition: height 0.3s;
 }
 
 .menubar-submenu li a {
-		color: #c1c9d1
+        color: #c1c9d1
 }
 
 
 input.menubar-menu-search {
-		position: absolute;
-		z-index: 10;
+        position: absolute;
+        z-index: 10;
         padding-top: 20px;
-		padding-left: 0px;
-		outline: none;
-		border: none;
-		background: transparent;
-		color: #5f6f81;
-		font-weight: 300;
-		font-family: 'Lato', Arial, sans-serif;
-		cursor: pointer;
+        padding-left: 0px;
+        outline: none;
+        border: none;
+        background: transparent;
+        color: #5f6f81;
+        font-weight: 300;
+        font-family: 'Lato', Arial, sans-serif;
+        cursor: pointer;
 }
 
 input.menubar-tools-search {
-		z-index: 10;
-		outline: none;
-		border: none;
-		background: transparent;
-		color: #5f6f81;
-		font-weight: 300;
-		font-family: 'Lato', Arial, sans-serif;
-		cursor: pointer;
+        z-index: 10;
+        outline: none;
+        border: none;
+        background: transparent;
+        color: #5f6f81;
+        font-weight: 300;
+        font-family: 'Lato', Arial, sans-serif;
+        cursor: pointer;
 }
 
 /* placeholder */
 .menubar-search::-webkit-input-placeholder {
-		color: #5f6f81
+        color: #5f6f81
 }
 
 .menubar-search:-moz-placeholder {
-		color: #5f6f81
+        color: #5f6f81
 }
 
 .menubar-search::-moz-placeholder {
-		color: #5f6f81
+        color: #5f6f81
 }
 
 .menubar-search:-ms-input-placeholder {
-		color: #5f6f81
+        color: #5f6f81
 }
 
 /* hide placeholder when active in Chrome */
 
 .menubar-search:focus::-webkit-input-placeholder,
 .no-touch .menubar-menu li.menubar-search-item:hover .menubar-search:focus::-webkit-input-placeholder {
-		color: transparent
+        color: transparent
 }
 
 input.menubar-search:focus {
-		cursor: text
+        cursor: text
 }
 
 .no-touch .menubar-menu li.menubar-search-item:hover input.menubar-search {
-		color: white
+        color: white
 }
 
 /* placeholder */
 
 .no-touch .menubar-menu li.menubar-search-item:hover .menubar-search::-webkit-input-placeholder {
-		color: white
+        color: white
 }
 
 .no-touch .menubar-menu li.menubar-search-item:hover .menubar-search:-moz-placeholder {
-		color: white
+        color: white
 }
 
 .no-touch .menubar-menu li.menubar-search-item:hover .menubar-search::-moz-placeholder {
-		color: white
+        color: white
 }
 
 .no-touch .menubar-menu li.menubar-search-item:hover .menubar-search:-ms-input-placeholder {
-		color: white
+        color: white
 }
 
 .menubar-menu-main a.menubar-icon-search {
-		position: absolute;
-		top: 0;
-		left: 0;
-		height: 60px;
+        position: absolute;
+        top: 0;
+        left: 0;
+        height: 60px;
 }
 
 /* spezify what comes before the icons of the menu */
 .menubar-icon::before {
-		display: inline-block;
-		width: 60px;
-		text-align: center;
-		text-transform: none;
-		font-weight: normal;
-		font-style: normal;
-		font-variant: normal;
-		font-family: 'ecoicons';
-		line-height: 1;
-		speak: none;
-		-webkit-font-smoothing: antialiased;
+        display: inline-block;
+        width: 60px;
+        text-align: center;
+        text-transform: none;
+        font-weight: normal;
+        font-style: normal;
+        font-variant: normal;
+        font-family: 'ecoicons';
+        line-height: 1;
+        speak: none;
+        -webkit-font-smoothing: antialiased;
 }
 
 /* specification of the icons from the menu */
@@ -283,175 +283,175 @@ input.menubar-search:focus {
 }
 
 .menu-icon::after {
-		vertical-align:middle;
-		width: 60px;
-		text-align: center;
-		text-transform: none;
-		font-weight: normal;
-		font-style: normal;
-		font-variant: normal;
-		font-family: 'ecoicons';
-		speak: none;
-		-webkit-font-smoothing: antialiased;
+        vertical-align:middle;
+        width: 60px;
+        text-align: center;
+        text-transform: none;
+        font-weight: normal;
+        font-style: normal;
+        font-variant: normal;
+        font-family: 'ecoicons';
+        speak: none;
+        -webkit-font-smoothing: antialiased;
         float:right;
         margin-right:15px;
 }
 
 .tools-icon::before {
-		vertical-align:middle;
-		width: 60px;
-		text-align: center;
-		text-transform: none;
-		font-weight: normal;
-		font-style: normal;
-		font-variant: normal;
-		font-family: 'ecoicons';
-		speak: none;
-		-webkit-font-smoothing: antialiased;
+        vertical-align:middle;
+        width: 60px;
+        text-align: center;
+        text-transform: none;
+        font-weight: normal;
+        font-style: normal;
+        font-variant: normal;
+        font-family: 'ecoicons';
+        speak: none;
+        -webkit-font-smoothing: antialiased;
         float:left;
 }
 
 .icon-search::after {
-		content: "\e001";
+        content: "\e001";
 }
 
 .icon-map::after{
-		content: "\e001";
+        content: "\e001";
 }
 
 .icon-satellite::after{
-		content: "\e005";
+        content: "\e005";
 }
 
 .icon-logbook::after {
-		content: "\e005";
+        content: "\e005";
 }
 
 .icon-dashboard::after {
-		content: "\e000"
+        content: "\e000"
 }
 
 .icon-routes::after {
-		content: "\e005"
+        content: "\e005"
 }
 
 .icon-routes::after {
-		content: "\e005"
+        content: "\e005"
 }
 
 .icon-charts::after {
-		content: "\e005"
+        content: "\e005"
 }
 
 .icon-addOns::after {
-		content: "\e005"
+        content: "\e005"
 }
 
 .icon-poi::after {
-		content: "\e005"
+        content: "\e005"
 }
 
 .icon-weather::after {
-		content: "\e005"
+        content: "\e005"
 }
 
 .icon-alarms::after {
-		content: "\e005"
+        content: "\e005"
 }
 
 .icon-info::after {
-		content: "\e005"
+        content: "\e005"
 }
 
 .icon-settings::after {
-		content: "\e005"
+        content: "\e005"
 }
 
 /* specification of the icons from the tools */
 .icon-searchPosition::before {
-		content: "\e005"
+        content: "\e005"
 }
 
 .icon-startLogging::before {
-		content: "\e005"
+        content: "\e005"
 }
 
 .icon-takePhoto::before {
-		content: "\e005"
+        content: "\e005"
 }
 
 .icon-setMark::before {
-		content: "\e005"
+        content: "\e005"
 }
 
 .icon-setRoute::before {
-		content: "\e005"
+        content: "\e005"
 }
 
 .icon-GetDistance::before {
-		content: "\e005"
+        content: "\e005"
 }
 
 .icon-PersonOverBoard::before {
-		content: "\e005"
+        content: "\e005"
 }
 
 .icon-SecurityCircle::before {
-		content: "\e005"
+        content: "\e005"
 }
 
 .icon-NorthUp::before {
-		content: "\e005"
+        content: "\e005"
 }
 
 .icon-disableSleepMode::before {
-		content: "\e005"
+        content: "\e005"
 }
 
 .icon-discardTarget::before {
-		content: "\e005"
+        content: "\e005"
 }
 
 /* if an icon anchor has a span, hide the span */
 
 .menu-icon span {
-		width: 0;
-		height: 0;
-		display: block;
-		overflow: hidden;
+        width: 0;
+        height: 0;
+        display: block;
+        overflow: hidden;
 }
 
 .tools-icon span {
-		width: 0;
-		height: 0;
-		display: block;
-		overflow: hidden;
+        width: 0;
+        height: 0;
+        display: block;
+        overflow: hidden;
 }
 
 
 /*****************************************************************************/
 /* the menu initial style */
 .menubar-icon-menu::before {
-		margin-left: -15px;
-		vertical-align: -2px;
-		width: 30px;
-		height: 3px;
-		background: #5f6f81;
-		box-shadow: 0 3px white, 0 -6px #5f6f81, 0 -9px white, 0 -12px #5f6f81;
-		content: '';
+        margin-left: -15px;
+        vertical-align: -2px;
+        width: 30px;
+        height: 3px;
+        background: #5f6f81;
+        box-shadow: 0 3px white, 0 -6px #5f6f81, 0 -9px white, 0 -12px #5f6f81;
+        content: '';
 }
 
 /* the menu is hovered */
 .no-touch .menubar-icon-menu:hover::before,
 .no-touch .menubar-icon-menu.menubar-selected:hover::before {
-		background: white;
-		box-shadow: 0 3px #5f6f81, 0 -6px white, 0 -9px #5f6f81, 0 -12px white;
+        background: white;
+        box-shadow: 0 3px #5f6f81, 0 -6px white, 0 -9px #5f6f81, 0 -12px white;
 }
 
 /* the menu is selected */
 .menubar-icon-menu.menubar-selected::before {
-		background: #5993cd;
-		box-shadow: 0 3px white, 0 -6px #5993cd, 0 -9px white, 0 -12px #5993cd;
+        background: #5993cd;
+        box-shadow: 0 3px white, 0 -6px #5993cd, 0 -9px white, 0 -12px #5993cd;
 }
 /*****************************************************************************/
 
@@ -459,26 +459,26 @@ input.menubar-search:focus {
 /*****************************************************************************/
 /* the tools initial style */
 .menubar-icon-tools::before {
-		margin-left: -15px;
-		vertical-align: -2px;
-		width: 30px;
-		height: 3px;
-		background: #5f6f81;
-		box-shadow: 0 3px white, 0 -6px #5f6f81, 0 -9px white, 0 -12px #5f6f81;
-		content: '';
+        margin-left: -15px;
+        vertical-align: -2px;
+        width: 30px;
+        height: 3px;
+        background: #5f6f81;
+        box-shadow: 0 3px white, 0 -6px #5f6f81, 0 -9px white, 0 -12px #5f6f81;
+        content: '';
 }
 
 /* the tools is hovered */
 .no-touch .menubar-icon-tools:hover::before,
 .no-touch .menubar-icon-tools.menubar-selected:hover::before {
-		background: white;
-		box-shadow: 0 3px #5f6f81, 0 -6px white, 0 -9px #5f6f81, 0 -12px white;
+        background: white;
+        box-shadow: 0 3px #5f6f81, 0 -6px white, 0 -9px #5f6f81, 0 -12px white;
 }
 
 /* the tools is selected */
 .menubar-icon-tools.menubar-selected::before {
-		background: #5993cd;
-		box-shadow: 0 3px white, 0 -6px #5993cd, 0 -9px white, 0 -12px #5993cd;
+        background: #5993cd;
+        box-shadow: 0 3px white, 0 -6px #5993cd, 0 -9px white, 0 -12px #5993cd;
 }
 /*****************************************************************************/
 
@@ -486,19 +486,19 @@ input.menubar-search:focus {
 /******************************************************/
 .menubar-menu-wrapper.menubar-open-all,
 .menubar-menu-wrapper.menubar-open-part {
-		-webkit-transform: translateX(-280px);
-		-moz-transform: translateX(-280px);
-		transform: translateX(-280px);
+        -webkit-transform: translateX(-280px);
+        -moz-transform: translateX(-280px);
+        transform: translateX(-280px);
 }
 
 .menubar-menu-wrapper.menubar-open-all {
-		-webkit-transform: translateX(0px);
-		-moz-transform: translateX(0px);
-		transform: translateX(0px);
+        -webkit-transform: translateX(0px);
+        -moz-transform: translateX(0px);
+        transform: translateX(0px);
 }
 
 .menubar-menu-wrapper.menubar-open-all .menubar-submenu li {
-		height: 60px
+        height: 60px
 }
 /******************************************************/
 
@@ -506,19 +506,19 @@ input.menubar-search:focus {
 /******************************************************/
 .menubar-tools-wrapper.menubar-open-all,
 .menubar-tools-wrapper.menubar-open-part {
-		-webkit-transform: translateX(280px);
-		-moz-transform: translateX(280px);
-		transform: translateX(280px);
+        -webkit-transform: translateX(280px);
+        -moz-transform: translateX(280px);
+        transform: translateX(280px);
 }
 
 .menubar-tools-wrapper.menubar-open-all {
-		-webkit-transform: translateX(0px);
-		-moz-transform: translateX(0px);
-		transform: translateX(0px);
+        -webkit-transform: translateX(0px);
+        -moz-transform: translateX(0px);
+        transform: translateX(0px);
 }
 
 .menubar-tools-wrapper.menubar-open-all .menubar-submenu li {
-		height: 60px
+        height: 60px
 }
 /******************************************************/
 
@@ -526,27 +526,27 @@ input.menubar-search:focus {
 /******************************************************/
 @media screen and (max-width: 422px) { 
     /******************************************************/
-	.menubar-menu-wrapper.menubar-open-all {
-			-webkit-transform: translateX(0px);
-			-moz-transform: translateX(0px);
-			transform: translateX(0px);
-			width: 100%;
-	}
-	.menubar-menu-wrapper.menubar-open-all .scroller {
-			width: 100%         /* set to 130 to hide the scrollbar */
-	}
+    .menubar-menu-wrapper.menubar-open-all {
+            -webkit-transform: translateX(0px);
+            -moz-transform: translateX(0px);
+            transform: translateX(0px);
+            width: 100%;
+    }
+    .menubar-menu-wrapper.menubar-open-all .scroller {
+            width: 100%         /* set to 130 to hide the scrollbar */
+    }
     /******************************************************/
     
     /******************************************************/
-	.menubar-tools-wrapper.menubar-open-all {
-			-webkit-transform: translateX(0px);
-			-moz-transform: translateX(0px);
-			transform: translateX(0px);
-			width: 100%;
-	}
-	.menubar-tools-wrapper.menubar-open-all .scroller {
-			width: 100%          /* set to 130 to hide the scrollbar */
-	}
+    .menubar-tools-wrapper.menubar-open-all {
+            -webkit-transform: translateX(0px);
+            -moz-transform: translateX(0px);
+            transform: translateX(0px);
+            width: 100%;
+    }
+    .menubar-tools-wrapper.menubar-open-all .scroller {
+            width: 100%          /* set to 130 to hide the scrollbar */
+    }
     /******************************************************/
 }
 

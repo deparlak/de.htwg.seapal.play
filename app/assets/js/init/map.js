@@ -5,8 +5,8 @@
  * 
  */
 
-$(document).ready(function() {	
-	$("#map_canvas").seamap();
+$(document).ready(function() {    
+    $("#map_canvas").seamap();
     map = $('#map_canvas').data('seamap');
     
     events = map.getEvents();
