@@ -9,9 +9,8 @@
 @font-face {
         font-weight: normal;
         font-style: normal;
-        font-family: 'ecoicons';
-        src: url("../fonts/ecoicons/ecoicons.eot");
-        src: url("../fonts/ecoicons/ecoicons.eot?#iefix") format("embedded-opentype"), url("../fonts/ecoicons/ecoicons.woff") format("woff"), url("../fonts/ecoicons/ecoicons.ttf") format("truetype"), url("../fonts/ecoicons/ecoicons.svg#ecoicons") format("svg");
+        font-family: FontAwesome;
+        src: url("../../font-awesome/fonts/fontawesome-webfont.eot");
 }
 
 .menubar-menu-main,
@@ -268,7 +267,7 @@ input.menubar-search:focus {
         font-weight: normal;
         font-style: normal;
         font-variant: normal;
-        font-family: 'ecoicons';
+        font-family: FontAwesome;
         line-height: 1;
         speak: none;
         -webkit-font-smoothing: antialiased;
@@ -290,7 +289,7 @@ input.menubar-search:focus {
         font-weight: normal;
         font-style: normal;
         font-variant: normal;
-        font-family: 'ecoicons';
+        font-family: FontAwesome;
         speak: none;
         -webkit-font-smoothing: antialiased;
         float:right;
@@ -305,30 +304,34 @@ input.menubar-search:focus {
         font-weight: normal;
         font-style: normal;
         font-variant: normal;
-        font-family: 'ecoicons';
+        font-family: FontAwesome;
         speak: none;
         -webkit-font-smoothing: antialiased;
         float:left;
 }
 
 .icon-search::after {
-        content: "\e001";
+        content: "\f002";
 }
 
 .icon-map::after{
-        content: "\e001";
+        content: "\f0ac";
 }
 
 .icon-satellite::after{
-        content: "\e005";
+        content: "\f0ac";
+}
+
+.icon-menuBack::after{
+        content: "\e00A";     
 }
 
 .icon-logbook::after {
-        content: "\e005";
+        content: "\f187";
 }
 
 .icon-dashboard::after {
-        content: "\e000"
+        content: "\f0e4"
 }
 
 .icon-routes::after {
@@ -336,15 +339,15 @@ input.menubar-search:focus {
 }
 
 .icon-routes::after {
-        content: "\e005"
+        content: "\f024"
 }
 
 .icon-charts::after {
-        content: "\e005"
+        content: "\f080"
 }
 
 .icon-addOns::after {
-        content: "\e005"
+        content: "\f12e"
 }
 
 .icon-menuNone::after {
@@ -352,73 +355,77 @@ input.menubar-search:focus {
 }
 
 .icon-poi::after {
-        content: "\e005"
+        content: "\f02c"
 }
 
 .icon-weather::after {
-        content: "\e005"
+        content: "\f0e9"
 }
 
 .icon-alarms::after {
-        content: "\e005"
+        content: "\f0a2"
 }
 
 .icon-info::after {
-        content: "\e005"
+        content: "\f129"
 }
 
 .icon-settings::after {
-        content: "\e005"
+        content: "\f013"
 }
 
 /* specification of the icons from the tools */
 .icon-searchMenu::after {
-        content: "\e005"
+        content: "\f002"
 }
 
 /* specification of the icons from the tools */
 .icon-searchPosition::before {
-        content: "\e005"
+        content: "\f002"
 }
 
 .icon-startLogging::before {
-        content: "\e005"
+        content: "\f04b"
+}
+
+.icon-stopLogging::before{
+        content: "\f04d"
 }
 
 .icon-takePhoto::before {
-        content: "\e005"
+        content: "\f030"
 }
 
 .icon-setMark::before {
-        content: "\e005"
+        content: "\f08d"
 }
 
 .icon-setRoute::before {
-        content: "\e005"
+        content: "\f024"
 }
 
 .icon-GetDistance::before {
-        content: "\e005"
+        content: "\f0ec"
 }
 
 .icon-PersonOverBoard::before {
-        content: "\e005"
+        content: "\f183"
 }
 
 .icon-SecurityCircle::before {
-        content: "\e005"
+        content: "\f10c"
 }
 
 .icon-NorthUp::before {
-        content: "\e005"
+        content: "\f093"
 }
 
 .icon-disableSleepMode::before {
-        content: "\e005"
+        content: "\f05e"
 }
 
 .icon-discardTarget::before {
-        content: "\e005"
+        content: "\f014"
 }
 
 /* if an icon anchor has a span, hide the span */
@@ -445,22 +452,18 @@ input.menubar-search:focus {
         vertical-align: -2px;
         width: 30px;
         height: 3px;
-        background: #5f6f81;
-        box-shadow: 0 3px white, 0 -6px #5f6f81, 0 -9px white, 0 -12px #5f6f81;
-        content: '';
+        content: "\f009";
 }
 
 /* the menu is hovered */
 .no-touch .menubar-icon-menu:hover::before,
 .no-touch .menubar-icon-menu.menubar-selected:hover::before {
-        background: white;
-        box-shadow: 0 3px #5f6f81, 0 -6px white, 0 -9px #5f6f81, 0 -12px white;
+        color:blue;
 }
 
 /* the menu is selected */
 .menubar-icon-menu.menubar-selected::before {
-        background: #5993cd;
-        box-shadow: 0 3px white, 0 -6px #5993cd, 0 -9px white, 0 -12px #5993cd;
+        color:blue;
 }
 /*****************************************************************************/
 
@@ -472,22 +475,18 @@ input.menubar-search:focus {
         vertical-align: -2px;
         width: 30px;
         height: 3px;
-        background: #5f6f81;
-        box-shadow: 0 3px white, 0 -6px #5f6f81, 0 -9px white, 0 -12px #5f6f81;
-        content: '';
+        content: "\f0ad";
 }
 
 /* the tools is hovered */
 .no-touch .menubar-icon-tools:hover::before,
 .no-touch .menubar-icon-tools.menubar-selected:hover::before {
-        background: white;
-        box-shadow: 0 3px #5f6f81, 0 -6px white, 0 -9px #5f6f81, 0 -12px white;
+        color:blue;
 }
 
 /* the tools is selected */
 .menubar-icon-tools.menubar-selected::before {
-        background: #5993cd;
-        box-shadow: 0 3px white, 0 -6px #5993cd, 0 -9px white, 0 -12px #5993cd;
+        color:blue;
 }
 /*****************************************************************************/
 

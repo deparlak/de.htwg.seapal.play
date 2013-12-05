@@ -571,6 +571,7 @@
         * *********************************************************************************
         */    
         function showSidebar(heading) {
+            console.log("show sidebar");
             var sidebarWidth = 275;
             $(".seamapsidebar").siblings("div:not(#tooltip_helper,.popover)").animate({'margin-left':sidebarWidth,width:$(window).width() - sidebarWidth});
             $(".seamapsidebar", $this).animate({width:sidebarWidth});
@@ -584,6 +585,7 @@
         * *********************************************************************************
         */    
         function showSidebarWithRoute(route) {
+            console.log(route);
             showSidebar('Route <span class="badge" style="background-color:' + route.color + ';">#' + route.id + '</span>');
             appendContentIntoSidebar('<ul class="nav nav-tabs nav-stacked"></ul>');
             appendContentIntoSidebar('<div class="buttons_bottom"><div><a class="closeIt btn btn-block" href="#close"> Finish Route Recording</a></div></div>');
@@ -754,7 +756,7 @@
         function activateRoute(route) {
             hideCrosshairMarker(crosshairMarker);
             hideContextMenu();
-            
+
             state = States.ROUTE;
             showSidebarWithRoute(route);
             activeRoute = route;
