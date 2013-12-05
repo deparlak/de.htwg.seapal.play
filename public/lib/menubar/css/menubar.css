@@ -323,7 +323,7 @@ input.menubar-search:focus {
 }
 
 .icon-menuBack::after{
-        content: "\e00A";     
+        content: "\f122";     
 }
 
 .icon-logbook::after {
@@ -374,12 +374,16 @@ input.menubar-search:focus {
         content: "\f013"
 }
 
-/* specification of the icons from the tools */
 .icon-searchMenu::after {
         content: "\f002"
 }
 
 /* specification of the icons from the tools */
+
+.icon-toolsBack::before{
+        content: "\f122";     
+}
+
 .icon-searchPosition::before {
         content: "\f002"
 }
@@ -530,6 +534,10 @@ input.menubar-search:focus {
 }
 /******************************************************/
 
+
+.navigator{
+    line-height:30px;
+}
 
 .header {
     font-size:15px;
