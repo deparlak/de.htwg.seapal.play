@@ -26,5 +26,13 @@ $(document).ready(function() {
         menu.closeMenu();
         $('#modal-info').modal('show');
     });
+
+    menu.addCallback('marks-routes-tracks', function (self) {
+        self.button('toggle');
+        $('.active-mrt').removeClass('active-mrt').addClass('inactive-mrt');
+        $(self.data('name')).removeClass('inactive-mrt').addClass('active-mrt');
+    });
+    
+    menu.openMenu();
     
 });

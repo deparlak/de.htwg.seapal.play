@@ -39,7 +39,13 @@
                 this.callbacks[onClass] = $.Callbacks();
             }
             this.callbacks[onClass].add(method);
-        },        
+        },  
+        _closeSubmenus : function() {
+            var self = this;
+            $(".active-"+self.prefix+"-list").each(function( index ) {
+                $(this).removeClass("active-"+self.prefix+"-list").addClass("inactive-"+self.prefix+"-list");
+            });
+        },
         _init : function() {
             this.trigger = this.el.querySelector( 'a.menubar-icon-'+this.prefix );
             this.menu = this.el.querySelector( 'nav.menubar-'+this.prefix+'-wrapper' );
@@ -54,24 +60,25 @@
             };
             /* add the built in calback for a 'link' marked element. Links can be used for multiple menu's */
             this.addCallback('link', function (elem) {
-                $(".active-"+self.prefix+"-list").each(function( index ) {
-                    $(this).removeClass("active-"+self.prefix+"-list").addClass("inactive-"+self.prefix+"-list");
-                });
+                self._closeSubmenus();
                 $("#"+elem.data("link")).removeClass("inactive-"+self.prefix+"-list").addClass("active-"+self.prefix+"-list");
             });
         },
         _initEvents : function() {
             var self = this;
             
-            /* a element of the menu was clicked. Check if any callback has to be fired */
-            $("#"+self.prefix+" > nav > div > ul > li > a").click(function(){
+            var action = function(){
                 var classList = $(this).attr('class').split(/\s+/);
                 for (var i in classList) {
                     if (self.callbacks[classList[i]]) {
                         self.callbacks[classList[i]].fire($(this));
                     }
                 }
-            });
+            };
+            
+            /* a element of the menu was clicked. Check if any callback has to be fired */
+            $("#"+self.prefix+" > nav > div > ul > li > a").click(action);
+            $("#"+self.prefix+" > nav > div > ul > li > div > label").click(action);
             
             if( !mobilecheck() ) {
                 this.trigger.addEventListener( 'mouseover', function(ev) { self.openIconMenu(); } );
@@ -123,6 +130,8 @@
         },
         closeMenu : function() {
             if( !this.isMenuOpen ) return;
+            this._closeSubmenus();
+            $("#"+this.prefix+"-main").removeClass("inactive-"+this.prefix+"-list").addClass("active-"+this.prefix+"-list");
             classie.remove( this.trigger, 'menubar-selected' );
             this.isMenuOpen = false;
             classie.remove( this.menu, 'menubar-open-all' );

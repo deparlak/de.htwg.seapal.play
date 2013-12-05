@@ -11,7 +11,8 @@
                     <nav class="menubar-menu-wrapper">
                         <div class="scroller">
                         
-                            <ul id="menu-main" class="menubar-menu active-menu-list">
+                            <ul id="menu-main" class="menubar-menu active-menu-list"> 
+                                <li><a class="menu-icon icon-menuNone"></a></li>
                                 <li><a class="menu-icon icon-map action">Map + Charts</a></li>
                                 <li><a class="menu-icon icon-logbook">Logbook</a></li>
                                 <li><a class="menu-icon icon-dashboard">Dashboard</a></li>
@@ -27,23 +28,32 @@
                         
                         
                             <ul id="menu-routes" class="menubar-menu inactive-menu-list">
-                                <li><a class="menu-icon icon-backMenu link" data-link="menu-main">back</a></li>
+                                <li class="menubar-search-item menu-icon icon-searchMenu">
+                                    <input placeholder="Search" type="search" class="menubar-menu-search menubar-search">
+                                </li>
                                 <li>
                                     <div class="btn-group-justified menubar-optionsSelector" data-toggle="buttons">
-                                        <label class="btn btn-default active">
-                                            <input type="radio" name="options" id="option1">Places
+                                        <label class="btn btn-primary action marks-routes-tracks active" data-name="#marks">
+                                            <input type="radio">Marks
                                         </label>
-                                        <label class="btn btn-default active">
-                                            <input type="radio" name="options" id="option2">Marks
+                                        <label class="btn btn-primary action marks-routes-tracks" data-name="#routes">
+                                            <input type="radio">Routes
                                         </label>
-                                        <label class="btn btn-default data-toggle="modal" data-target="#myModal">
-                                            <input type="radio" name="options" id="option3">Coords
-                                        </label>
-                                        <label class="btn btn-default">
-                                            <input type="radio" name="options" id="option3">POI's
+                                        <label class="btn btn-primary action marks-routes-tracks" data-name="#tracks">
+                                            <input type="radio">Tracks
                                         </label>
                                     </div>
                                 </li>
+
+                                <div id="marks" class="active-mrt">
+                                    <li><a class="menu-icon icon-menuNone action header">Marks</a></li>    
+                                </div>
+                                <div id="routes" class="inactive-mrt">
+                                    <li><a class="menu-icon icon-menuNone action header">Routes</a></li>    
+                                </div>
+                                <div id="tracks" class="inactive-mrt">
+                                    <li><a class="menu-icon icon-menuNone action header">Tracks</a></li>    
+                                </div>
                             </ul>
                         
                         </div><!-- /menubar-scroller -->

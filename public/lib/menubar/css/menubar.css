@@ -347,6 +347,10 @@ input.menubar-search:focus {
         content: "\e005"
 }
 
+.icon-menuNone::after {
+        content: ""
+}
+
 .icon-poi::after {
         content: "\e005"
 }
@@ -364,6 +368,11 @@ input.menubar-search:focus {
 }
 
 .icon-settings::after {
+        content: "\e005"
+}
+
+/* specification of the icons from the tools */
+.icon-searchMenu::after {
         content: "\e005"
 }
 
@@ -522,7 +531,48 @@ input.menubar-search:focus {
 }
 /******************************************************/
 
-/* styles on  menu */
+
+.header {
+    font-size:15px;
+    line-height:30px;
+    background: grey;
+    color:green;
+}
+
+.active-menu-list {
+    display:block;
+}
+
+.inactive-menu-list {
+    display:none;
+}
+
+.active-tools-list {
+    display:block;
+}
+
+.inactive-tools-list {
+    display:none;
+}
+
+.menubar-optionsSelector {
+    width:96.4%;
+}
+
+.active-mrt {
+    display:block;
+}
+
+.inactive-mrt {
+    display:none;
+}
+
+.marks-routes-tracks {
+    border:0px;
+    border-radius:0px;
+}
+
+/* styles on minimized size */
 /******************************************************/
 @media screen and (max-width: 422px) { 
     /******************************************************/
@@ -548,24 +598,7 @@ input.menubar-search:focus {
             width: 100%          /* set to 130 to hide the scrollbar */
     }
     /******************************************************/
-}
-
-.active-menu-list {
-    display:block;
-}
-
-.inactive-menu-list {
-    display:none;
-}
-
-.active-tools-list {
-    display:block;
-}
-
-.inactive-tools-list {
-    display:none;
-}
-
-.menubar-optionsSelector {
-    width:96.3%;"
+    .menubar-optionsSelector {
+        width:100%;
+    }
 }
