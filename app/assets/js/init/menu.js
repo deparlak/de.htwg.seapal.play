@@ -35,12 +35,12 @@ $(document).ready(function() {
     
     menu.addCallback('icon-selectedMark', function (self) {
         self.removeClass('icon-selectedMark').addClass('icon-notSelectedMark');
-        console.log(self.data('id'));
+        map.hideMark(self.data('id'));
     });
     
     menu.addCallback('icon-notSelectedMark', function (self) {
         self.removeClass('icon-notSelectedMark').addClass('icon-selectedMark');
-        console.log(self.data('id'));
+        map.visibleMark(self.data('id'));
     });
     
     menu.addCallback('icon-selectedRoute', function (self) {

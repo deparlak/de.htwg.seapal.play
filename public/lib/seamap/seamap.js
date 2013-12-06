@@ -137,6 +137,14 @@
         this.deleteMark = function (id) {
         
         };
+        /* hide the mark by id */
+        this.hideMark = function (id) {
+            marks[id].onMap.setVisible(false);
+        };
+        /* visible the mark by id */
+        this.visibleMark = function (id) {
+            marks[id].onMap.setVisible(true);
+        };
         /* get distance */
         this.getDistance = function () {
             handleAddNewDistanceRoute();
@@ -874,7 +882,7 @@
             google.maps.event.addListener(mark.onMap, 'rightclick', function(event) {
                 showContextMenu(event.latLng, ContextMenuTypes.DELETE_MARKER, mark);
             });
-            console.log(marks);
+            
             marks[marksCount.toString()] = mark;
             marksCount++;
             callbacks[events.ADDED_MARK].fire(mark);
