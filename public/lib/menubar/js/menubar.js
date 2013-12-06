@@ -55,7 +55,9 @@
 
             var self = this;
             this.bodyClickFn = function() {
-                self.closeMenu();
+                //TODO check if the open menu should be closed if it is open or
+                //is it better to to close the menu directly
+                //self.closeMenu();
                 this.removeEventListener( self.eventtype, self.bodyClickFn );
             };
             /* add the built in calback for a 'link' marked element. Links can be used for multiple menu's */
@@ -79,6 +81,7 @@
             /* a element of the menu was clicked. Check if any callback has to be fired */
             $("#"+self.prefix+" > nav > div > ul > li > a").click(action);
             $("#"+self.prefix+" > nav > div > ul > li > div > label").click(action);
+            $("#"+self.prefix+" > nav > div > ul > div > li > a").click(action);
             
             if( !mobilecheck() ) {
                 this.trigger.addEventListener( 'mouseover', function(ev) { self.openIconMenu(); } );

@@ -34,8 +34,8 @@ $(document).ready(function() {
     });  
     
     tools.addCallback('icon-GetDistance', function (self) {
-        
-        console.log('icon-GetDistance');
+        map.getDistance();
+        tools.closeMenu();
     });  
     
     tools.addCallback('icon-PersonOverBoard', function (self) {

@@ -327,7 +327,7 @@ input.menubar-search:focus {
 }
 
 .icon-logbook::after {
-        content: "\f187";
+        content: "\f02d";
 }
 
 .icon-dashboard::after {
@@ -378,6 +378,31 @@ input.menubar-search:focus {
         content: "\f002"
 }
 
+.icon-selectedMark::after{
+        content: "\f00c"
+}
+
+.icon-selectedRoute::after{
+        content: "\f00c"
+}
+
+.icon-selectedTrack::after{
+        content: "\f00c"
+}
+
+.icon-notSelectedMark::after{
+        content: ""
+}
+
+.icon-notSelectedRoute::after{
+        content: ""
+}
+
+.icon-notSelectedTrack::after{
+        content: ""
+}
+
+
 /* specification of the icons from the tools */
 
 .icon-toolsBack::before{
@@ -409,7 +434,7 @@ input.menubar-search:focus {
 }
 
 .icon-GetDistance::before {
-        content: "\f0ec"
+        content: "\f07e"
 }
 
 .icon-PersonOverBoard::before {

@@ -130,7 +130,16 @@
         };
         /* set new mark */
         this.setMark = function () {
-            handleAddMarker();
+            /* set state to marker to set the marker on the next map action */
+            state = States.MARKER;
+        };
+        /* delete a mark with a specified id */
+        this.deleteMark = function (id) {
+        
+        };
+        /* get distance */
+        this.getDistance = function () {
+            handleAddNewDistanceRoute();
         };
         /* set map type to satellite */
         this.satellite = function () {
@@ -149,8 +158,11 @@
         /* All available events where a callback will be fired. */
         var events = 
         {
-            SELECT_ROUTE  :  "SelectRoute",
-            FINISH_ROUTE  :  "FinishRouteRecording",
+            //TODO
+            SELECTED_ROUTE  :  "SelectRoute",
+            FINISH_ROUTE    :  "FinishRouteRecording",
+            ADDED_MARK      :  "AddedMark",
+            DELETED_MARK    :  "DeletedMark",
         };
         
         var options = $.seamap.options;
@@ -685,8 +697,12 @@
             hideCrosshairMarker();
             
             activeRoute = distanceroute = new $.seamap.route(-1, map, "DISTANCE");            
-            activeRoute.addMarker(crosshairMarker.getPosition());
-
+            position = crosshairMarker.getPosition();
+            /* just add a route marker if a position was selected */
+            if (null != position) {
+                activeRoute.addMarker(position);
+            }
+            
             state = States.DISTANCE;
         }
         
@@ -745,7 +761,7 @@
             if (null != position) {
                 addRouteMarker(position);
             }
-            callbacks[events.SELECT_ROUTE].fire();
+            callbacks[events.SELECTED_ROUTE].fire();
         }
                 
         /**
@@ -803,14 +819,7 @@
         function handleAddMarker() {
             hideContextMenu();
             hideCrosshairMarker();
-            position = crosshairMarker.getPosition();
-            /* just add a marker if a position was selected */
-            if (null != position) {
-                addDefaultMarker(position);
-            } else {
-                /* set state to marker to set the marker on the next map action */
-                state = States.MARKER;
-            }
+            addDefaultMarker(crosshairMarker.getPosition());
         }
 
         /**
@@ -856,6 +865,7 @@
             });
             
             markers[markers.length] = newMarker;
+            callbacks[events.ADDED_MARK].fire({id : markers.length-1, label : "label", detailed : "detailed"});
         }
 
         /**

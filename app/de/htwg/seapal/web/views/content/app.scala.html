@@ -29,7 +29,7 @@
                             <ul id="menu-routes" class="menubar-menu inactive-menu-list">
                                 <li><a class="menu-icon icon-menuBack link" data-link="menu-main">Back</a></li>
                                 <li class="menubar-search-item menu-icon icon-searchMenu">
-                                    <input placeholder="Search" type="search" class="menubar-menu-search menubar-search">
+                                    <input placeholder="Search" type="search" class="menubar-menu-search menubar-search" id="search-mrt">
                                 </li>
                                 <li>
                                     <div class="btn-group-justified menubar-optionsSelector" data-toggle="buttons">
@@ -44,7 +44,18 @@
                                         </label>
                                     </div>
                                 </li>
-
+                                
+                                <div id="marks" class="active-mrt">
+                                    <li><a class="menu-icon icon-selectedMark action" data-id=1>Mark1</a></li>
+                                </div>
+                                
+                                <div id="routes" class="inactive-mrt">
+                                    <li><a class="menu-icon icon-notSelectedRoute action" data-id=2>Route1</a></li>
+                                </div>
+                                
+                                <div id="tracks" class="inactive-mrt">
+                                    <li><a class="menu-icon icon-selectedTrack action" data-id=3>Track1</a></li>
+                                </div>
                             </ul>
                         
                         </div><!-- /menubar-scroller -->
