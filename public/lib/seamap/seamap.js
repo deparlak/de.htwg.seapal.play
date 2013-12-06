@@ -197,15 +197,17 @@
         // distance
         var distanceroute = null;
         
-        // marker
-        var markers = [];
-
+        // marks
+        var marks = {};
+        var marksCount = 1;
+        var selectedMark = null;
+        
         // editing states
         var state = States.NORMAL;
 
         // context-menu/selection
         var contextMenuType = ContextMenuTypes.DEFAULT,
-            selectedMarker = null,
+            
             contextMenuVisible = false;
     
         // bind our jquery element
@@ -296,8 +298,8 @@
         function initContextMenu() {
             $this.append('<div id="tooltip_helper"></div>');
 
-            $this.on("click", "#addMarker", handleAddMarker);
-            $this.on("click", "#deleteMarker", handleDeleteMarker);
+            $this.on("click", "#addMark", handleAddMark);
+            $this.on("click", "#deleteMark", handleDeleteMark);
             $this.on("click", "#addNewRoute", handleAddNewRoute);
             $this.on("click", "#exitRouteCreation", handleExitRouteCreation);
             $this.on("click", "#setAsDestination", handleSetAsDestination);
@@ -358,7 +360,7 @@
                         break;
                         
                     case States.MARKER:
-                        addDefaultMarker(event.latLng);
+                        addDefaultMark(event.latLng);
                         state = States.NORMAL;
                         break;
                 }
@@ -477,7 +479,7 @@
         */
         function showContextMenu(latLng, type, marker) {
             contextMenuVisible = true;
-            selectedMarker = marker;
+            selectedMark = marker;
             showContextMenuInternal(latLng, type, marker);
         }
         
@@ -503,8 +505,13 @@
 
             marker = markerToShowOn;
             $('#tooltip_helper').popover({title: function() {
-                    var lat = marker.getPosition().lat();
-                    var lng = marker.getPosition().lng();
+                    if (contextMenuType == ContextMenuTypes.DELETE_MARKER) {
+                        var lat = marker.onMap.getPosition().lat();
+                        var lng = marker.onMap.getPosition().lng();
+                    } else {
+                        var lat = marker.getPosition().lat();
+                        var lng = marker.getPosition().lng();
+                    }
 
                     return '<span><b>Lat</b> ' + toGeoString(lat, "N", "S", 2) + ' <b>Lon</b> ' + toGeoString(lng, "E", "W", 3) + '</span>';
                 },
@@ -559,7 +566,7 @@
             var ctx = '<div id="contextmenu">'
             switch(contextMenuType) {
                 case ContextMenuTypes.DEFAULT:
-                    ctx += '<button id="addMarker" type="button" class="btn"><i class="icon-map-marker"></i> Set Mark</button>';
+                    ctx += '<button id="addMark" type="button" class="btn"><i class="icon-map-marker"></i> Set Mark</button>';
                     if (state != States.ROUTE) {
                         ctx += '<button id="addNewRoute" type="button" class="btn"><i class="icon-flag"></i> Start new Route</button>';
                     } else {
@@ -570,7 +577,7 @@
                         + '<button id="hideContextMenu" type="button" class="btn"><i class="icon-remove"></i> Close</button>'; 
                     break;
                 case ContextMenuTypes.DELETE_MARKER:
-                    ctx += '<button id="deleteMarker" type="button" class="btn"><i class="icon-map-marker"></i> Delete Mark</button>';
+                    ctx += '<button id="deleteMark" type="button" class="btn"><i class="icon-map-marker"></i> Delete Mark</button>';
                     break;
             }
             ctx += '</div>'
@@ -812,23 +819,23 @@
         
         /**
         * *********************************************************************************
-        * Handler function for adding a new marker to the map.
+        * Handler function for adding a new mark to the map.
         * Also hides the context menu and the crosshair.
         * *********************************************************************************
         */
-        function handleAddMarker() {
+        function handleAddMark() {
             hideContextMenu();
             hideCrosshairMarker();
-            addDefaultMarker(crosshairMarker.getPosition());
+            addDefaultMark(crosshairMarker.getPosition());
         }
 
         /**
         * *********************************************************************************
-        * Handler function for deleting a marker. Also hides the context menu.
+        * Handler function for deleting a mark. Also hides the context menu.
         * *********************************************************************************
         */
-        function handleDeleteMarker() {
-            deleteSelectedMarker();
+        function handleDeleteMark() {
+            deleteSelectedMark();
             hideContextMenu();
         }
         
@@ -852,30 +859,38 @@
         * bind the click-events to open its context menu.
         * *********************************************************************************
         */
-        function addDefaultMarker(position) {
-            var newMarker = new google.maps.Marker({
+        function addDefaultMark(position) {
+            var mark = {}
+            mark.id = marksCount.toString();
+            mark.label = "Mark "+marksCount;
+            mark.detailed = "created on blabla..";
+            mark.onMap = new google.maps.Marker({
                 map: map,
                 position: position,
                 icon: options.defaultOptions.markerOptions.image,
                 draggable: true
             });
 
-            google.maps.event.addListener(newMarker, 'rightclick', function(event) {
-                showContextMenu(event.latLng, ContextMenuTypes.DELETE_MARKER, newMarker);
+            google.maps.event.addListener(mark.onMap, 'rightclick', function(event) {
+                showContextMenu(event.latLng, ContextMenuTypes.DELETE_MARKER, mark);
             });
-            
-            markers[markers.length] = newMarker;
-            callbacks[events.ADDED_MARK].fire({id : markers.length-1, label : "label", detailed : "detailed"});
+            console.log(marks);
+            marks[marksCount.toString()] = mark;
+            marksCount++;
+            callbacks[events.ADDED_MARK].fire(mark);
         }
 
         /**
         * *********************************************************************************
-        * Deletes the selected marker.
+        * Deletes the selected mark.
         * *********************************************************************************
         */
-        function deleteSelectedMarker() {
-            if(selectedMarker != null) {
-                selectedMarker.setMap(null);
+        function deleteSelectedMark() {
+            if(selectedMark != null) {
+                selectedMark.onMap.setMap(null);
+                delete marks[selectedMark.id];
+                callbacks[events.DELETED_MARK].fire(selectedMark);
+                console.log(marks);
             }
         }
 

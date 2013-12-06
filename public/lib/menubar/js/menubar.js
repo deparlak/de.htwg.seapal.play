@@ -55,9 +55,7 @@
 
             var self = this;
             this.bodyClickFn = function() {
-                //TODO check if the open menu should be closed if it is open or
-                //is it better to to close the menu directly
-                //self.closeMenu();
+                self.closeMenu();
                 this.removeEventListener( self.eventtype, self.bodyClickFn );
             };
             /* add the built in calback for a 'link' marked element. Links can be used for multiple menu's */
