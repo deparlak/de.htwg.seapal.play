@@ -69,6 +69,6 @@ $(document).ready(function() {
         console.log("inpurt");
     });    
   
-
+    menu.openMenu();
     
 });

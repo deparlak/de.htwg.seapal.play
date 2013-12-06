@@ -79,10 +79,10 @@
             };
             
             /* a element of the menu was clicked. Check if any callback has to be fired */
-            $("#"+self.prefix+" > nav > div > ul > li > a").click(action);
-            $("#"+self.prefix+" > nav > div > ul > li > div > label").click(action);
-            $("#"+self.prefix+" > nav > div > ul > div > li > a").click(action);
-            
+            $("#"+self.prefix+" > nav > div > ul > li").on( 'click', 'a',  action);
+            $("#"+self.prefix+" > nav > div > ul > li > div").on( 'click', 'label',  action);
+            $("#"+self.prefix+" > nav > div > ul > div").on( 'click', 'li > a',  action);
+
             if( !mobilecheck() ) {
                 this.trigger.addEventListener( 'mouseover', function(ev) { self.openIconMenu(); } );
                 this.trigger.addEventListener( 'mouseout', function(ev) { self.closeIconMenu(); } );
