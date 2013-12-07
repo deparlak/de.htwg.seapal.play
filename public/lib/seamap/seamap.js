@@ -176,7 +176,7 @@
         {
             //TODO
             CREATED_ROUTE   :  "CreatedRoute",
-            SELECTED_ROUTE  :  "SelectRoute",
+            DELETED_ROUTE   :  "DeletedRoute",
             FINISH_ROUTE    :  "FinishRouteRecording",
             ADDED_MARK      :  "AddedMark",
             DELETED_MARK    :  "DeletedMark",
@@ -718,10 +718,20 @@
             activateRoute(route); 
             
             activate = function() {
-                removeDistanceRoute();
-                activateRoute(route);
+                //FIXME : This code seems not to be required at all.
+              //  removeDistanceRoute();
+              //  activateRoute(route);
             }
-            activeRoute.onMap.addEventListener("remove", activate);    
+            
+            /* remove method will check if we remove all markers, which cause a deletion of the route */
+            remove = function() {
+                if (0 == activeRoute.onMap.markers.length) {
+                    callbacks[events.DELETED_ROUTE].fire(activeRoute);
+                    deleteActiveRoute();
+                }
+            }
+            
+            activeRoute.onMap.addEventListener("remove", remove);    
             activeRoute.onMap.addEventListener("drag", activate);    
             activeRoute.onMap.addEventListener("click", activate);
         
@@ -758,6 +768,19 @@
             if (activeRoute != null) {
                 state = States.NORMAL;
                 activeRoute.onMap.hide();
+                activeRoute = null;
+            }
+        }
+        /**
+        * *********************************************************************************
+        * Delete the active route
+        * *********************************************************************************
+        */ 
+        function deleteActiveRoute(){
+            if (activeRoute != null) {
+                state = States.NORMAL;
+                activeRoute.onMap.hide();
+                delete routes[activeRoute.id];
                 activeRoute = null;
             }
         }
@@ -1029,13 +1052,11 @@
     
                 google.maps.event.addListener(marker, 'rightclick', function(event) {
                     $this.removeMarker(marker);
-                    $this.notify("remove");
                 });
                 
                 new LongPress(marker, 500);
                 google.maps.event.addListener(marker, 'longpress', function(event) {
                     $this.removeMarker(marker);
-                    $this.notify("remove");
                 });
 
                 google.maps.event.addListener(marker, 'click', function(event) {
