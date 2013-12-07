@@ -310,6 +310,10 @@ input.menubar-search:focus {
         float:left;
 }
 
+.icon-fullscreen::after {
+    content: "\f03e";
+}
+
 .icon-search::after {
         content: "\f002";
 }

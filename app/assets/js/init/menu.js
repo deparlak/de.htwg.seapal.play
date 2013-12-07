@@ -7,6 +7,22 @@
 
 $(document).ready(function() {    
     menu = new menubar( 'menu' );
+
+    menu.addCallback('icon-fullscreen', function (self) {
+        menu.closeMenu();
+
+        if (window.fullScreenApi.supportsFullScreen) {
+            if (!window.fullScreenApi.isFullScreen()) {
+                window.fullScreenApi.requestFullScreen(document.body);
+                self.text("Normal");
+            } else {
+                window.fullScreenApi.cancelFullScreen(document.body);
+                self.text("Fullscreen");
+            }
+        } else {
+            window.alert("Your Browser does not support fullscreen mode! Sorry.");
+        }
+    });
     
     menu.addCallback('icon-map', function (self) {
         menu.closeMenu();
