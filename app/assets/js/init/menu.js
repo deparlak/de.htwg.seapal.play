@@ -10,14 +10,14 @@ $(document).ready(function() {
     
     menu.addCallback('icon-map', function (self) {
         menu.closeMenu();
-        self.text("Satellite");
+        self.text("Map + Charts");
         self.removeClass('icon-map').addClass('icon-satellite');
         map.satellite();
     });
     
     menu.addCallback('icon-satellite', function (self) {
         menu.closeMenu();
-        self.text("Map + Charts");
+        self.text("Satellite");
         self.removeClass('icon-satellite').addClass('icon-map');
         map.roadmap();
     });
@@ -45,12 +45,13 @@ $(document).ready(function() {
     
     menu.addCallback('icon-selectedRoute', function (self) {
         self.removeClass('icon-selectedRoute').addClass('icon-notSelectedRoute');
-        console.log(self.data('id'));
+        map.hideRoute(self.data('id'));
     });
     
     menu.addCallback('icon-notSelectedRoute', function (self) {
+        $('.icon-selectedRoute').removeClass('icon-selectedRoute').addClass('icon-notSelectedRoute');
         self.removeClass('icon-notSelectedRoute').addClass('icon-selectedRoute');
-        console.log(self.data('id'));
+        map.visibleRoute(self.data('id'));
     });
     
     menu.addCallback('icon-selectedTrack', function (self) {
@@ -59,6 +60,7 @@ $(document).ready(function() {
     });
     
     menu.addCallback('icon-notSelectedTrack', function (self) {
+        $('.icon-selectedTrack').removeClass('icon-selectedTrack').addClass('icon-notSelectedTrack');
         self.removeClass('icon-notSelectedTrack').addClass('icon-selectedTrack');
         console.log(self.data('id'));
     });

@@ -3,7 +3,7 @@
     <head>
         @appContent.header()
     </head>
-    <body>      
+    <body>  
         <div class="container" style="z-index: 2;  position: relative;"> 
             <ul class="menubar-menu-main">
                 <li id="menu" class="menu-trigger">
@@ -12,7 +12,7 @@
                         <div class="scroller">
                         
                             <ul id="menu-main" class="menubar-menu active-menu-list"> 
-                                <li><a class="menu-icon icon-map action">Map + Charts</a></li>
+                                <li><a class="menu-icon icon-map action">Satellite</a></li>
                                 <li><a class="menu-icon icon-logbook">Logbook</a></li>
                                 <li><a class="menu-icon icon-dashboard">Dashboard</a></li>
                                 <li><a class="menu-icon icon-routes link" data-link="menu-routes">Marks, Routes, Tracks</a></li>
@@ -28,9 +28,11 @@
                         
                             <ul id="menu-routes" class="menubar-menu inactive-menu-list">
                                 <li><a class="menu-icon icon-menuBack link" data-link="menu-main">Back</a></li>
+                                <!-- Search for marks/routes/tracks -->
                                 <li class="menubar-search-item menu-icon icon-searchMenu">
                                     <input placeholder="Search" type="search" class="menubar-menu-search menubar-search" id="search-mrt">
                                 </li>
+                                <!-- selector to switch between marks/routes/tracks -->
                                 <li>
                                     <div class="btn-group-justified menubar-optionsSelector" data-toggle="buttons">
                                         <label class="btn btn-primary action marks-routes-tracks active" data-name="#marks">
@@ -44,18 +46,12 @@
                                         </label>
                                     </div>
                                 </li>
-                                
-                                <div id="marks" class="active-mrt">
-
-                                </div>
-                                
-                                <div id="routes" class="inactive-mrt">
-                                    <li><a class="menu-icon icon-notSelectedRoute action" data-id=2>Route1</a></li>
-                                </div>
-                                
-                                <div id="tracks" class="inactive-mrt">
-                                    <li><a class="menu-icon icon-selectedTrack action" data-id=3>Track1</a></li>
-                                </div>
+                                <!-- all marks -->
+                                <div id="marks" class="active-mrt"></div>
+                                <!-- all routes -->
+                                <div id="routes" class="inactive-mrt"></div>
+                                <!-- all tracks -->
+                                <div id="tracks" class="inactive-mrt"></div>
                             </ul>
                         
                         </div><!-- /menubar-scroller -->
