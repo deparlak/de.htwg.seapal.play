@@ -137,6 +137,14 @@
         this.deleteMark = function (id) {
         
         };
+        /* hide the route by id */
+        this.hideRoute = function (id) {
+            hideActiveRoute();
+        };
+        /* visible the route by id */
+        this.visibleRoute = function (id) {
+            activateRoute(routes[id]);
+        };
         /* hide the mark by id */
         this.hideMark = function (id) {
             marks[id].onMap.setVisible(false);
@@ -167,6 +175,7 @@
         var events = 
         {
             //TODO
+            CREATED_ROUTE   :  "CreatedRoute",
             SELECTED_ROUTE  :  "SelectRoute",
             FINISH_ROUTE    :  "FinishRouteRecording",
             ADDED_MARK      :  "AddedMark",
@@ -198,9 +207,9 @@
         var boatMarker = null;
         
         // routes
-        var routeCounter = 1,
-            routes = [],
-            activeRoute = null;
+        var routes = {};
+        var routeCounter = 1;
+        var activeRoute = null;
 
         // distance
         var distanceroute = null;
@@ -240,10 +249,7 @@
                 initContextMenu();    
                 initGoogleMapsListeners();    
                 startBoatAnimation();
-            } 
-            
-            initDefaultRoute();
-            
+            }
             initCrosshairMarker();
         }
 
@@ -278,8 +284,6 @@
                 zoom: options.zoom,
                 center: new google.maps.LatLng(options.startLat, options.startLong),
             });
-            
-            $this.append("<div class='seamapsidebar' style='float:left;width:0%;height:100%;'><div class='seamapsidebar_inner'></div></div>");
         }
 
         /**
@@ -290,6 +294,7 @@
         function initOpenSeaMaps() {
             map.overlayMapTypes.push(new google.maps.ImageMapType({
                 getTileUrl: function(coord, zoom) {
+                    console.log("http://tiles.openseamap.org/seamark/" + zoom + "/" + coord.x + "/" + coord.y + ".png");
                     return "http://tiles.openseamap.org/seamark/" + zoom + "/" + coord.x + "/" + coord.y + ".png";
                 },
                 tileSize: new google.maps.Size(256, 256),
@@ -436,24 +441,6 @@
         
         /**
         * *********************************************************************************
-        * Initializes the default route of the map, if options.defaultRoute was set.
-        * *********************************************************************************
-        */
-        function initDefaultRoute() {
-            if(options.defaultRoute == null) return;
-            
-            routeId = routeCounter++;
-            
-            activeRoute = routes[routeId] = new $.seamap.route(routeId, map, "ROUTE");    
-            activeRoute.setNotInteractive();
-            
-            $.each(options.defaultRoute, function() {    
-                addRouteMarker(new google.maps.LatLng(this.lat, this.lng));    
-            });
-        }
-        
-        /**
-        * *********************************************************************************
         * Inits the crosshair marker (as invisible)
         * Note: Only one crosshair can be displayed at the same time.
         * *********************************************************************************
@@ -586,7 +573,7 @@
                 content: getContextMenuContent,
                 placement: function(){
                     var leftDist = $('#tooltip_helper').position().left;
-                    var width = $this.width() - $(".seamapsidebar",$this).width();
+                    var width = $this.width();
         
                     return (leftDist > width / 2 ? "left" : "right");
                 }
@@ -609,10 +596,10 @@
 
             var xPos = pos.x;
             var yPos = pos.y + 10;
-            var width = $this.width() - $(".seamapsidebar",$this).width();
+            var width = $this.width();
             var height = $this.height();
 
-            $('#tooltip_helper').css({top: yPos, left: xPos + $(".seamapsidebar",$this).width()});
+            $('#tooltip_helper').css({top: yPos, left: xPos});
 
             // check whether the popup is displayed outside of the maps container
             if (xPos > 5 && xPos < width - 5 && yPos > 5 && yPos < height - 5) {
@@ -650,107 +637,7 @@
             ctx += '</div>'
             return ctx;
         }
-                
-        /**
-        * *********************************************************************************
-        * Display the sidebar with the given heading.
-        * *********************************************************************************
-        */    
-        function showSidebar(heading) {
-            console.log("show sidebar");
-            var sidebarWidth = 275;
-            $(".seamapsidebar").siblings("div:not(#tooltip_helper,.popover)").animate({'margin-left':sidebarWidth,width:$(window).width() - sidebarWidth});
-            $(".seamapsidebar", $this).animate({width:sidebarWidth});
-            
-            $(".seamapsidebar .seamapsidebar_inner", $this).html('<h4>' + heading + '</h4><div class="seamapalerts"></div>');
-        }
         
-        /**
-        * *********************************************************************************
-        * Shows the sidevar of the given route.
-        * *********************************************************************************
-        */    
-        function showSidebarWithRoute(route) {
-            console.log(route);
-            showSidebar('Route <span class="badge" style="background-color:' + route.color + ';">#' + route.id + '</span>');
-            appendContentIntoSidebar('<ul class="nav nav-tabs nav-stacked"></ul>');
-            appendContentIntoSidebar('<div class="buttons_bottom"><div><a class="closeIt btn btn-block" href="#close"> Finish Route Recording</a></div></div>');
-
-            $.each(route.markers, function() {
-                appendMarkerIntoSidebar(this);
-            });
-            
-            $this.unbind('click.sidebar');
-            $this.on("click.sidebar", ".seamapsidebar a.delete", function(){
-                route.removeMarker(route.markers[getParmFromHash($(this).attr("href"), "deleteId")])
-            });
-            
-            $this.on("click.sidebar", ".seamapsidebar a.closeIt", function(){
-                handleExitRouteCreation();
-            });
-        }
-        
-        /**
-        * *********************************************************************************
-        * Hides the sidebar.
-        * *********************************************************************************
-        */    
-        function hideSidebar() {
-            $(".seamapsidebar").siblings("div:not(#tooltip_helper,.popover)").animate({'margin-left':'0%',width:'100%'});
-            $(".seamapsidebar", $this).animate({width:'0%'});
-            $(".seamapsidebar .seamapsidebar_inner", $this).html("");
-        }
-        
-        /**
-        * *********************************************************************************
-        * Appends content into the sidebar.
-        * *********************************************************************************
-        */    
-        function appendContentIntoSidebar(content) {            
-            $(".seamapsidebar .seamapsidebar_inner", $this).append(content);
-        }
-        
-        /**
-        * *********************************************************************************
-        * Appends content into the sidebar element with the given selector.
-        * *********************************************************************************
-        */    
-        function appendContentIntoSidebarElement(content, selector) {    
-            $(".seamapsidebar .seamapsidebar_inner " +  selector, $this).append(content);
-        }
-        
-        /**
-        * *********************************************************************************
-        * Deletes the sidebar element with the given selector.
-        * *********************************************************************************
-        */    
-        function clearSidebarElement(selector) {    
-            $(".seamapsidebar .seamapsidebar_inner " +  selector, $this).html("");
-        }
-        
-        /**
-        * *********************************************************************************
-        * Appends a info notificaion into the sidebar.
-        * *********************************************************************************
-        */    
-        function appendInfoIntoSidebar(content, type) {    
-            $(".seamapsidebar .seamapsidebar_inner .seamapalerts", $this)
-                .append('<div class="alert alert-' + type + '"><button type="button" class="close" data-dismiss="alert">&times;</button>' + content + '</div>');
-        }
-        
-        /**
-        * *********************************************************************************
-        * Appends a marker into the sidebar.
-        * *********************************************************************************
-        */    
-        function appendMarkerIntoSidebar(marker) {    
-            var content = $('<li class="well well-small"><div class="btn-toolbar pull-right" style="margin:0"> \
-                    <div class="btn-group"><a class="delete btn" href="#page?deleteId='+marker.id+'"><i class="icon-remove"></i></a></div></div> \
-                    <b>#' + marker.id + '</b> <small>- Lat ' + toGeoString(marker.getPosition().lat(), "N", "S", 2) + ' Lon ' + 
-                    toGeoString(marker.getPosition().lng(), "E", "W", 3) + '</small></li>');
-            appendContentIntoSidebarElement(content, '.nav');
-        }
-
         /**
         * *********************************************************************************
         * Hides the context menu and the crosshair.
@@ -770,11 +657,15 @@
             hideContextMenu();
             hideCrosshairMarker();
             
-            activeRoute = distanceroute = new $.seamap.route(-1, map, "DISTANCE");            
+            var distance = {}
+            distance.id = "-1";
+            distance.onMap = new $.seamap.route("-1", map, "DISTANCE");
+            activeRoute = distance;  
+            distanceroute = distance;            
             position = crosshairMarker.getPosition();
             /* just add a route marker if a position was selected */
             if (null != position) {
-                activeRoute.addMarker(position);
+                activeRoute.onMap.addMarker(position);
             }
             
             state = States.DISTANCE;
@@ -801,7 +692,7 @@
         */
         function removeDistanceRoute() {
             if (distanceroute != null) {
-                distanceroute.removeFromMap();
+                distanceroute.onMap.removeFromMap();
                 distanceroute = null;
             }
         }
@@ -815,27 +706,33 @@
         function handleAddNewRoute() {
             hideContextMenu();
             hideCrosshairMarker();
-            
-            routeId = routeCounter++;
 
-            activeRoute = routes[routeId] = new $.seamap.route(routeId, map, "ROUTE");        
+            var route = {}
+            route.id = routeCounter.toString();
+            route.label = "Route "+routeCounter;
+            route.detailed = "created on blabla..";
+            route.onMap = new $.seamap.route(route.id, map, "ROUTE");
+
+            routes[route.id] = route;        
+  
+            activateRoute(route); 
             
             activate = function() {
                 removeDistanceRoute();
-                activateRoute(this);
+                activateRoute(route);
             }
-            
-            activeRoute.addEventListener("remove", activate);    
-            activeRoute.addEventListener("drag", activate);    
-            activeRoute.addEventListener("click", activate);
+            activeRoute.onMap.addEventListener("remove", activate);    
+            activeRoute.onMap.addEventListener("drag", activate);    
+            activeRoute.onMap.addEventListener("click", activate);
         
-            activateRoute(activeRoute);
+
             position = crosshairMarker.getPosition();
             /* just add a route marker if a position was selected */
             if (null != position) {
                 addRouteMarker(position);
             }
-            callbacks[events.SELECTED_ROUTE].fire();
+            routeCounter++;
+            callbacks[events.CREATED_ROUTE].fire(route);
         }
                 
         /**
@@ -846,11 +743,23 @@
         function activateRoute(route) {
             hideCrosshairMarker(crosshairMarker);
             hideContextMenu();
-
+            hideActiveRoute();
+            /* important that state will be set here, because hideActiveRoute() will set the state to NORMAL */
             state = States.ROUTE;
-            showSidebarWithRoute(route);
             activeRoute = route;
-                
+            activeRoute.onMap.visible();
+        }
+        /**
+        * *********************************************************************************
+        * Hide the active route
+        * *********************************************************************************
+        */ 
+        function hideActiveRoute(){
+            if (activeRoute != null) {
+                state = States.NORMAL;
+                activeRoute.onMap.hide();
+                activeRoute = null;
+            }
         }
         
         /**
@@ -862,8 +771,6 @@
         function handleExitRouteCreation() {
             hideContextMenu();
             hideCrosshairMarker();
-            hideSidebar();
-            
             state = States.NORMAL;
         }        
         
@@ -876,12 +783,8 @@
             hideContextMenu();
             hideCrosshairMarker();
             
-            var newmarker = activeRoute.addMarker(latLng);
-            activeRoute.drawPath();
-            
-            if(state == States.ROUTE) {
-                appendMarkerIntoSidebar(newmarker);
-            }
+            var newmarker = activeRoute.onMap.addMarker(latLng);
+            activeRoute.onMap.drawPath();
         }
         
         /**
@@ -1017,17 +920,6 @@
           );
           return currentLatLngOffset;
         }
-        
-        /**
-        * *********************************************************************************
-        * Gets the hash-parameters. If there is no param, an empty string will be returned.
-        * *********************************************************************************
-        */
-        function getParmFromHash(url, parm) {
-            var re = new RegExp("#.*[?&]" + parm + "=([^&]+)(&|$)");
-            var match = url.match(re);
-            return(match ? match[1] : "");
-        }
     };
     
     /**
@@ -1072,6 +964,30 @@
         */        
         this.setNotInteractive = function() {
             this.notinteractive = true;
+        }
+        /**
+        * *********************************************************************************
+        * hide the route
+        * *********************************************************************************
+        */        
+        this.hide = function () {
+            if(this.label != null) this.label.setMap(null);
+            this.path.setVisible(false);
+            $.each(this.markers, function(){
+                this.setVisible(false);
+            });
+        }
+        /**
+        * *********************************************************************************
+        * visible the route
+        * *********************************************************************************
+        */        
+        this.visible = function () {
+            this.updateLabel();
+            this.path.setVisible(true);
+            $.each(this.markers, function(){
+                this.setVisible(true);
+            });
         }
         
         /**

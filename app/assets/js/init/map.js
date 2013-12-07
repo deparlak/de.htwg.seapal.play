@@ -11,6 +11,17 @@ $(document).ready(function() {
     
     events = map.getEvents();
     
+    map.addCallback(events.CREATED_ROUTE, function (self) {
+        $("#routes li a").each(function() {
+            /* delete only the element with the specific id */
+            console.log($(this));
+            if ($(this).hasClass('icon-selectedRoute')) {
+                $(this).removeClass('icon-selectedRoute').addClass('icon-notSelectedRoute');
+            }
+        });
+        $("#routes").append('<li><a class="menu-icon icon-selectedRoute action" data-id='+self.id+'>'+self.label+'</a></li>');
+    });
+    
     map.addCallback(events.SELECTED_ROUTE, function (self) {
         console.log("route selected");
     });
