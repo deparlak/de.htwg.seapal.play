@@ -7,6 +7,7 @@ import de.htwg.seapal.web.controllers.secure.IAccount;
 import de.htwg.seapal.database.IAccountDatabase;
 import de.htwg.seapal.web.controllers.secure.impl.Account;
 import org.ektorp.CouchDbConnector;
+import org.ektorp.ViewQuery;
 import org.ektorp.support.CouchDbRepositorySupport;
 
 import java.util.LinkedList;
@@ -75,5 +76,11 @@ public class AccountDatabase
     @Override
     public boolean close() {
         return true;
+    }
+    @Override
+    public boolean accountExists(final String email) {
+        ViewQuery query = new ViewQuery().designDocId("_design/list").viewName("names").key(email);
+
+        return db.queryView(query, Account.class).size() > 0;
     }
 }

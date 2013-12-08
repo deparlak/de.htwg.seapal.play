@@ -190,4 +190,9 @@ public final class AccountController
         account.deleteTrip(tripID);
         saveAccount(account);
     }
+
+    @Override
+    public boolean accountExists(final String email) {
+        return db.accountExists(email);
+    }
 }

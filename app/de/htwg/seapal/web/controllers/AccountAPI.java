@@ -36,15 +36,15 @@ public class AccountAPI
         Map<String, String> data = form.data();
 
         ObjectNode response = Json.newObject();
+        IAccount account = filledForm.get();
 
-        if (filledForm.hasErrors()) {
+        if (filledForm.hasErrors() || controller.accountExists(account.getAccountName())) {
             response.put("success", false);
             response.put("errors", filledForm.errorsAsJson());
 
             return badRequest(response);
         } else {
             try {
-                IAccount account = filledForm.get();
                 account.setAccountPassword(PasswordHash.createHash(account.getAccountPassword()));
                 controller.saveAccount(account);
             } catch (InvalidKeySpecException e) {

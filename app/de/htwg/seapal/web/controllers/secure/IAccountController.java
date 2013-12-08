@@ -61,5 +61,7 @@ public interface IAccountController
     List<ITrip> getAllTrips(List<ITrip> allTrips);
 
     void deleteTrip(UUID tripID);
+
+    boolean accountExists(String accountName);
 }
 
