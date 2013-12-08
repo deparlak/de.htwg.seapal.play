@@ -14,7 +14,6 @@ import play.mvc.Controller;
 import play.mvc.Result;
 import play.mvc.Security;
 
-import java.util.List;
 import java.util.UUID;
 
 public class TripAPI extends Controller {
@@ -35,29 +34,18 @@ public class TripAPI extends Controller {
 
     @Security.Authenticated(AccountAPI.Secured.class)
     public Result tripsAsJson(UUID boatId) {
-		List<ITrip> tripsOfBoat = controller.getAllTrips(boatId);
-        if (tripsOfBoat != null && accountController.hasBoat(boatId)) {
-            return ok(Json.toJson(tripsOfBoat));
-        } else {
-            return notFound();
-        }
-	}
+        return ok(Json.toJson(controller.getTrips(session(IAccountController.AUTHN_COOKIE_KEY) + "+" + boatId.toString(), "tripsAsJson")));
+    }
 
     @Security.Authenticated(AccountAPI.Secured.class)
     public Result tripAsJson(UUID id) {
-		ITrip trip = controller.getTrip(id);
-
-		if (trip != null && accountController.hasTrip(id)) {
-			return ok(Json.toJson(trip));
-		}else{
-			return notFound();
-		}
-	}
+        return ok(Json.toJson(controller.getTrips(session(IAccountController.AUTHN_COOKIE_KEY) + "+" + id.toString(), "tripAsJson").get(0)));
+    }
 
     @Security.Authenticated(AccountAPI.Secured.class)
     public Result allTripsAsJson() {
-		return ok(Json.toJson(accountController.getAllTrips(controller.getAllTrips())));
-	}
+        return ok(Json.toJson(controller.getTrips(session(IAccountController.AUTHN_COOKIE_KEY), "allTripsAsJson").get(0)));
+    }
 
     @Security.Authenticated(AccountAPI.Secured.class)
     public Result addTrip() {
@@ -75,6 +63,7 @@ public class TripAPI extends Controller {
 		} else {
 			response.put("success", true);
             ITrip trip = filledForm.get();
+            trip.setSkipper(session(IAccountController.AUTHN_COOKIE_KEY));
             boolean created = controller.saveTrip(trip);
 			if(created) {
                 accountController.addBoat(trip.getUUID());

@@ -36,16 +36,14 @@ public final class AccountController
     @Override
     public String getAccountName(final UUID id) {
         IAccount boat = db.get(id);
-        if (boat == null)
-            return null;
+        if (boat == null) { return null; }
         return boat.getAccountName();
     }
 
     @Override
     public void setAccountName(final UUID id, final String accountName) {
         IAccount account = db.get(id);
-        if (account == null)
-            return;
+        if (account == null) { return; }
         account.setAccountName(accountName);
         db.save(account);
         notifyObservers();
@@ -54,8 +52,7 @@ public final class AccountController
     @Override
     public String getAccountPassword(final UUID id) {
         IAccount boat = db.get(id);
-        if (boat == null)
-            return null;
+        if (boat == null) { return null; }
         return boat.getAccountPassword();
     }
 
@@ -116,17 +113,16 @@ public final class AccountController
     }
 
     @Override
-    public boolean saveAccount(final IAccount account)  {
+    public boolean saveAccount(final IAccount account) {
         return db.save(account);
     }
 
     public IAccount authenticate(final Form<Account> form)
-            throws InvalidKeySpecException, NoSuchAlgorithmException {
-        List<IAccount> list = getAllAccounts();
-        for (IAccount account : list) {
-            if (account.getAccountName().equals(form.get().accountName) && PasswordHash.validatePassword(form.get().accountPassword, account.getAccountPassword())) {
-                return account;
-            }
+            throws Exception {
+        IAccount account = db.getAccount(form.get().accountName);
+
+        if (PasswordHash.validatePassword(form.get().accountPassword, account.getAccountPassword())) {
+            return account;
         }
 
         return null;
@@ -152,9 +148,11 @@ public final class AccountController
 
     @Override
     public void deleteBoat(final UUID boatID) {
+        /*
         IAccount account = getAccount();
         account.deleteBoat(boatID);
         saveAccount(account);
+        */
     }
 
     @Override
@@ -169,9 +167,11 @@ public final class AccountController
 
     @Override
     public void addBoat(final UUID boatID) {
+        /*
         IAccount account = getAccount();
         account.addBoat(boatID);
         saveAccount(account);
+        */
     }
 
     @Override
@@ -192,7 +192,8 @@ public final class AccountController
     }
 
     @Override
-    public boolean accountExists(final String email) {
-        return db.accountExists(email);
+    public boolean accountExists(final String email)
+            throws Exception {
+        return db.getAccount(email) != null;
     }
 }

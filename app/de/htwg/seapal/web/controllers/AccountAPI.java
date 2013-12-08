@@ -2,6 +2,7 @@ package de.htwg.seapal.web.controllers;
 
 import com.google.inject.Inject;
 import de.htwg.seapal.utils.logging.ILogger;
+import de.htwg.seapal.web.controllers.helpers.Menus;
 import de.htwg.seapal.web.controllers.helpers.PasswordHash;
 import de.htwg.seapal.web.controllers.secure.IAccount;
 import de.htwg.seapal.web.controllers.secure.IAccountController;
@@ -15,11 +16,13 @@ import play.mvc.Controller;
 import play.mvc.Http.Context;
 import play.mvc.Result;
 import play.mvc.Security;
+import play.mvc.With;
 
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
 import java.util.Map;
 
+@With(Menus.class)
 public class AccountAPI
         extends Controller {
 
@@ -37,12 +40,21 @@ public class AccountAPI
 
         ObjectNode response = Json.newObject();
         IAccount account = filledForm.get();
+        boolean exists = true;
+        try {
+            exists = controller.accountExists(account.getAccountName());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
-        if (filledForm.hasErrors() || controller.accountExists(account.getAccountName())) {
+        if (filledForm.hasErrors() || exists) {
             response.put("success", false);
             response.put("errors", filledForm.errorsAsJson());
+            if (exists) {
+                flash("errors", "Account already exists");
+            }
 
-            return badRequest(response);
+            return badRequest(login.render(filledForm, routes.AccountAPI.signup(), true, "Create Account"));
         } else {
             try {
                 account.setAccountPassword(PasswordHash.createHash(account.getAccountPassword()));
@@ -63,9 +75,10 @@ public class AccountAPI
 
 
         ObjectNode response = Json.newObject();
+        IAccount account = null;
 
         try {
-            IAccount account = controller.authenticate(filledForm);
+            account = controller.authenticate(filledForm);
 
             if (!filledForm.hasErrors() && account != null) {
                 session().clear();
@@ -73,14 +86,15 @@ public class AccountAPI
                 flash("success", "You've been logged in");
                 return redirect(routes.Application.index());
             }
-        } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
-        } catch (InvalidKeySpecException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
 
         response.put("success", false);
         response.put("errors", filledForm.errorsAsJson());
+        if (account == null) {
+            flash("errors", "authentication failed");
+        }
 
         return badRequest(login.render(filledForm, routes.AccountAPI.login(), false, "Login"));
     }

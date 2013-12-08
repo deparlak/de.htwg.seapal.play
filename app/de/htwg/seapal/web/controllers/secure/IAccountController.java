@@ -42,7 +42,7 @@ public interface IAccountController
     boolean saveAccount(IAccount Account);
 
     IAccount authenticate(Form<Account> form)
-            throws InvalidKeySpecException, NoSuchAlgorithmException;
+            throws Exception;
 
     void addBoat(UUID account, UUID boat);
 
@@ -62,6 +62,7 @@ public interface IAccountController
 
     void deleteTrip(UUID tripID);
 
-    boolean accountExists(String accountName);
+    boolean accountExists(String accountName)
+            throws Exception;
 }
 

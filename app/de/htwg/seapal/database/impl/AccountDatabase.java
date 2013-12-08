@@ -77,10 +77,19 @@ public class AccountDatabase
     public boolean close() {
         return true;
     }
+
     @Override
-    public boolean accountExists(final String email) {
+    public Account getAccount(final String email)
+            throws Exception {
         ViewQuery query = new ViewQuery().designDocId("_design/list").viewName("names").key(email);
 
-        return db.queryView(query, Account.class).size() > 0;
+        List<Account> accounts = db.queryView(query, Account.class);
+        if (accounts.size() > 1) {
+            throw new Exception("more than one account exists!");
+        } else if (accounts.size() == 0) {
+            return null;
+        } else {
+            return accounts.get(0);
+        }
     }
 }

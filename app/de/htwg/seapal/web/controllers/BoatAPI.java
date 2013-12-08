@@ -30,7 +30,7 @@ public class BoatAPI extends Controller {
 
     @Security.Authenticated(AccountAPI.Secured.class)
     public Result boatsAsJson() {
-        return ok(Json.toJson(accountController.getAllBoats(controller.getAllBoats())));
+        return ok(Json.toJson(controller.getBoats(session(IAccountController.AUTHN_COOKIE_KEY), "list")));
    	}
 
     @Security.Authenticated(AccountAPI.Secured.class)
@@ -48,7 +48,6 @@ public class BoatAPI extends Controller {
     public Result addBoat() {
 		logger.info("BoatAPI", "--> addBoat");
 		Form<Boat> filledForm = form.bindFromRequest();
-		logger.info("Filled Form Data" , filledForm.toString());
 
 		ObjectNode response = Json.newObject();
 
@@ -61,6 +60,7 @@ public class BoatAPI extends Controller {
 		} else {
 			response.put("success", true);
             IBoat boat = filledForm.get();
+            boat.setOwner(session(IAccountController.AUTHN_COOKIE_KEY));
 			boolean created = controller.saveBoat(boat);
             if(created) {
                 accountController.addBoat(boat.getUUID());
