@@ -24,7 +24,7 @@ public class BoatPositionAPI extends Controller {
 	@Inject
 	private CouchDbInstance dbInstance;
 	
-	public Result current() {
+	/*public Result current() {
 		
 		return async(
 			    future(new Callable<JsonNode>() {
@@ -53,5 +53,5 @@ public class BoatPositionAPI extends Controller {
 			    })
 			  );
 
-	}
+	}*/
 }

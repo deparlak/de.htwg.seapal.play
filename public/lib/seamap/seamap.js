@@ -247,7 +247,7 @@
             
             if ( options.mode !== "NOTINTERACTIVE" ) {
                 initContextMenu();    
-                initGoogleMapsListeners();    
+                initGoogleMapsListeners();
                 startBoatAnimation();
             }
             initCrosshairMarker();
@@ -463,26 +463,31 @@
                 
         /**
         * *********************************************************************************
-        * Starts the AJAX calls using long polling to animate the boat on the maps.
+        * Starts long polling to animate the boat on the maps via Geolocation API in HTML5.
         * *********************************************************************************
         */
-        function startBoatAnimation(){
-            jsRoutes.de.htwg.seapal.web.controllers.BoatPositionAPI.current().ajax({
-                dataType : 'json',
-                success : function(response){
-                    position = new google.maps.LatLng(response.lat, response.lng);
-                    handleBoatPosition(position);
-                    noerror = true;
-                },
-                complete: function(response){
-                    if(!self.noerror){
-                        setTimeout(function(){startBoatAnimation();},5000);
-                    }else{
-                        startBoatAnimation();
-                    }
-                    noerror = false;
-                }
-            });
+        function startBoatAnimation(){            
+            get_location();
+            setTimeout(function(){startBoatAnimation();}, 5000);
+        }
+        /**
+         * Gets the current location of the device (via HTML5)
+         */
+        function get_location() {
+            if (!Modernizr.geolocation) {
+                navigator.geolocation.getCurrentPosition(handleBoatPosition, error_handling);
+            } else {
+                handleFakeBoatPositionUpdate();
+            }
+        }
+        /**
+         * Error handling if user denies access to the geolocation data
+         */
+        function error_handling(errNo) {
+            if(errNo.code == 1) {
+                console.log("Error: " + errNo.code);
+                handleFakeBoatPositionUpdate();   
+            }
         }
 
         /**
@@ -491,6 +496,20 @@
         * *********************************************************************************
         */
         function handleBoatPosition(position){
+            handleBoatPositionUpdate(new google.maps.LatLng(position.coords.latitude, position.coords.longitude));
+        }
+        /**
+         * Handles the boat position with fake/generated geolocation data
+         */
+        function handleFakeBoatPositionUpdate() {
+            //TODO: Get center of current view of map as boat position + a variation
+            var center = map.getCenter();
+            handleBoatPositionUpdate(center);
+        }
+        /**
+         * Updates the boat icon on the map 
+         */
+        function handleBoatPositionUpdate(position) {
             if(boatMarker == null){
                 boatMarker = new google.maps.Marker({
                     position: position,

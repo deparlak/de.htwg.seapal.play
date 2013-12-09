@@ -123,7 +123,7 @@ public class Application extends Controller {
 	        de.htwg.seapal.web.controllers.routes.javascript.WaypointAPI.addWaypoint(),
 	        de.htwg.seapal.web.controllers.routes.javascript.WaypointAPI.waypointAsJson(),
 	        de.htwg.seapal.web.controllers.routes.javascript.WaypointAPI.waypointsAsJson(),
-	        de.htwg.seapal.web.controllers.routes.javascript.BoatPositionAPI.current(),
+	        //de.htwg.seapal.web.controllers.routes.javascript.BoatPositionAPI.current(),
 	        de.htwg.seapal.web.controllers.routes.javascript.RaceAPI.allRacesAsJson(),
 	        de.htwg.seapal.web.controllers.routes.javascript.RaceAPI.deleteRace(),
 	        de.htwg.seapal.web.controllers.routes.javascript.RaceAPI.addRace()
