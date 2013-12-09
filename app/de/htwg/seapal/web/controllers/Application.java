@@ -35,6 +35,10 @@ public class Application extends Controller {
 		return ok(index.render());
 	}
 
+	public static Result impressum() {
+		return ok(impressum.render());
+	}
+
 	public static Result screenshots() {
 		return ok(screenshots.render());
 	}

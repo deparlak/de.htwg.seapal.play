@@ -1,125 +1,282 @@
-@main("SeaPal - Track your searoutes easily", bodyClass = "index") {
-			<div id="head-unit-wrapper">
-				<div id="head-unit" class="hidden-phone">
-					<h2 class="ir">Track your searoutes easily - for free</h2>
-					<h3 class="ir">Available on Apple iPad &amp; iPhone and via your Browser</h3>
-				</div>
-				
-				<a class="apple_app" href="https://itunes.apple.com/us/app/seapal/id561903907?mt=8&amp;ign-mpt=uo%3D4"><span class="visible-phone btn btn-large btn-block btn-primary">Download via AppStore</span></a>
-				<a class="browser_app" href="./boat_info.php"><span class="visible-phone btn btn-large btn-block btn-primary">Use our Browser App</span></a>
-			</div>
-			<div class="container">
+<!doctype html>
+<html>
+<head lang="en">
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+	
+	<title>SeaPal - Manage your searoutes</title> 
+	<meta name="description" content="SeaPal.info - Manage YOUR searoutes" />
+	<meta property="og:title" content="">
+
+	<link rel="stylesheet" type="text/css" href="@routes.Assets.at("css/bootstrap.min.css")">
+	<link rel="stylesheet" href="@routes.Assets.at("fancybox/jquery.fancybox-v=2.1.5.css")" type="text/css" media="screen">
+    <link rel="stylesheet" href="@routes.Assets.at("css/font-awesome.min.css")" rel="stylesheet">
+	
+	<link rel="stylesheet" type="text/css" href="@routes.Assets.at("css/style.css")">	
+	
+	<link href='http://fonts.googleapis.com/css?family=Titillium+Web:400,600,300,200&subset=latin,latin-ext' rel='stylesheet' type='text/css'>	
+	
+	<link rel="prefetch" href="@routes.Assets.at("images/zoom.png")">
+		
+</head>
+
+<body>
+	<div class="navbar navbar-fixed-top" data-activeslide="1">
+		<div class="container">
+		
+			<!-- .navbar-toggle is used as the toggle for collapsed navbar content -->
+			<button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-responsive-collapse">
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+			</button>			
+			
+			<div class="nav-collapse collapse navbar-responsive-collapse">
+				<ul class="nav row">
+					<li data-slide="1" class="col-12 col-sm-2"><a id="menu-link-1" href="#slide-1"><span class="icon icon-home"></span> <span class="text">HOME</span></a></li>
+					<li data-slide="2" class="col-12 col-sm-2"><a id="menu-link-2" href="#slide-2"><span class="icon icon-book"></span> <span class="text">USER GUIDE</span></a></li>
+					<li data-slide="3" class="col-12 col-sm-2"><a id="menu-link-3" href="#slide-3"><span class="icon icon-picture"></span> <span class="text">SCREENSHOTS</span></a></li>
+					<li data-slide="4" class="col-12 col-sm-2"><a id="menu-link-4" href="#slide-4"><span class="icon icon-info-sign"></span> <span class="text">ABOUT</span></a></li>
+					<li data-slide="5" class="col-12 col-sm-2"><a id="menu-link-5" href="#slide-5"><span class="icon icon-envelope"></span> <span class="text">CONTACT</span></a></li>
+					<li class="col-12 col-sm-2"><a class="regular-link" href="@de.htwg.seapal.web.controllers.routes.Application.impressum()"><span class="icon icon-certificate"></span> <span class="text">IMPRESSUM</span></a></li>
+				</ul>
 				<div class="row">
-					<div class="span4">
-						<div class="round feature">
-							<h2 class="seamaps">Seamaps</h2>
-							<ul>
-								<li>Google Maps</li>
-								<li>OpenSeaMaps</li>
-								<li>Satellite view</li>
-								<li>Follow position</li>
-								<li>Position from GPS always visible in the map view</li>
-								<li>Course and speed always visible in the map view</li>
-							</ul>
-						</div>
-					</div>
-					<div class="span4">
-						<div class="round feature">
-							<h2 class="navi">Navigation</h2>
-							<ul>
-								<li>Free navigation on the map with swipe and pinch</li>
-								<li>Fast return to the current position</li>
-								<li>Route planing, waypoints are editable</li>
-								<li>Automatic waypoint switching</li>
-								<li>Bearing and distance to any particular point with long-touch</li>
-								<li>Placing of permanent marks on the map</li>
-							</ul>
-						</div>
-					</div>
-					<div class="span4">
-						<div class="round feature">
-							<h2 class="tools">Tools</h2>
-							<ul>
-								<li>Add marks using bearing or coordinates</li>
-								<li>Select any mark as target</li>
-								<li>Bearing and distance to current target always visible in the map view</li>
-								<li>Distance measurement, even across several waypoints</li>
-								<li>Person over Board functionality</li>
-							</ul>
-						</div>
-					</div>
+					<div class="col-sm-2 active-menu"></div>
 				</div>
-				<div class="row">
-					<div class="span6 offset3">
-						<div class="round feature">
-							<h2 class="regatta">Sailing Regatta</h2>
-							<ul>
-								<li>The first regatta application for private usage</li>
-								<li>Challenge your friends on deep sea</li>
-								<li>Track your trips and analyze your sailing regatta using the outstanding SAP Sailing Analytics</li>
-								<li>Visualize your regattas in 2D and 3D</li>
-								<li>Matches perfect with Seapal for Android, iPhone and iPad</li>
-								<li>Manage your races and regatta courses using Google Maps</li>
-							</ul>
-						</div>
-					</div>
+			</div><!-- /.nav-collapse -->
+		</div><!-- /.container -->
+	</div><!-- /.navbar -->
+	
+	
+	<!-- === Arrows === -->
+	<div id="arrows">
+		<div id="arrow-up" class="disabled"></div>
+		<div id="arrow-down"></div>
+		<div id="arrow-left" class="disabled visible-lg"></div>
+		<div id="arrow-right" class="disabled visible-lg"></div>
+	</div><!-- /.arrows -->
+	
+	
+	<!-- === MAIN Background === -->
+	<div class="slide story" id="slide-1" data-slide="1">
+		<div class="container">
+			<div id="home-row-1" class="row clearfix">
+				<div class="col-12">
+					<h1 class="font-semibold">SeaPal</h1>
+					<br>
+					<h4 class="font-thin">Manage <span class="font-semibold">YOUR</span> searoutes</h4>
+					<br style="dislay:block; margin: 50px 0;">
+				</div><!-- /col-12 -->
+				<div id="contact-row-links" class="row">
+					<div class="col-sm-5 hidden-sm">&nbsp;</div>
+					<div class="col-12 col-sm-2 with-hover-text">
+						<p><a href="@de.htwg.seapal.web.controllers.routes.Application.app()"><i class="icon icon-play"></i></a></p>
+						<span class="hover-text font-light ">Try it <span class="hover-text font-semibold">now!</span></span></a>
+					</div><!-- /col12 -->
+					<div class="col-sm-5 hidden-sm">&nbsp;</div>
 				</div>
-				<div class="row">
-					<div class="span6">
-						<div class="round widebox">
-							<h2 class="extensions">Extensions</h2>
-							<p>
-								With extensions <strong>SeaPal</strong> offers the following functionality:
-							</p>
-							<ul>
-								<li>Logbook function for one or several boats</li>
-								<li>Automatic tracking</li>
-								<li>Automatic or manual logbook entries</li>
-								<li>Fotos for logbook entries</li>
-								<li>Collection of regional Points of Interest</li>
-							</ul>
-						</div>
-					</div>
-					<div class="span6">
-						<div class="round widebox">
-							<h2 class="warning">Warning</h2>
-							<p>
-								<strong>SeaPal</strong> is a valuable addition to your navigational equipment, but no replacement. Always use official sea maps in conjunction. All positions are provided so that a transition to paper sea maps is simple. The responsibility for the proper use lies with the skipper. The manufacturer of <strong>SeaPal</strong> assume no liability.
-							</p>
-						</div>
-					</div>
-				</div>
-				<div class="row">
-					<div class="span12">
-						<div class="round">
-							<div class="entry">
-								<div class="page-header">
-    								<h1>Track your searoutes easily - for free <br /><small>Available on Apple iPad & iPhone and via your Browser</small></h1>
-    							</div>
-    							<div class="right hidden-phone" style="padding-left: 20px;" >
-									<a href="https://itunes.apple.com/us/app/seapal/id561903907?mt=8&amp;ign-mpt=uo%3D4"><img src="assets/images/qr_code.png" alt="" /></a>
-								</div>
-								<p>
-									<b>SeaPal</b> is an App for sailors and other water sport fanatics that support the skipper in his tasks for navigation, route planing and logbook keeping. The central view shows a map with the current position and forward line. Waypoint and routes can easily be created, distances and courses can quickly be determined and documented in the logbook. The touch interface allows for fast and intuitive interaction.
-								</p>
-								<p>
-									Online maps are available from Google and OpenSeaMap, allong with satellite view. With these a trip can easily be planed and documented. In navigation the offline operation and the precision and depth of detail is of special importance. Thats why digital sea maps for selected areas can be downloaded and used offline.
-								</p>
-								<p>
-									For the area of the Lake Constance excellent sea maps and local information (harbours, shipyards, shops, restaurants) provided by the IBN publishing house are available as extensions. Further areas are in preparation.
-								</p>
-								<p>
-									The application was developed particularly for the iPad in a cooperation between the IBN publishing house and the HTWG Constance University. The specific advantages of a mobile device and the touch interface were taken into account just as well as the special requirements of sailors and skippers. As a result of this cooperation, <b>SeaPal</b> is made available for free. Extensions and sea maps can be purchased and loaded according to your area and needs.
-								</p>
-								<p>
-									This cooperation is open to further extension. Should you be interested to develop or provide further extensions, please contact us.
-								</p>
-								<p>
-									The application runs on the iPad and with reduced functionality on the iPhone. An iPad with 3G or 4G and GPS is recommended. For longer use an external power source (like a USP port of a radio) is required.
-								</p>
-							</div>
-						</div>
-					</div>
+				<div class="hr">&nbsp;</div>
+			</div><!-- /row -->
+		</div><!-- /container -->
+	</div><!-- /slide1 -->
+	
+	<!-- === Slide 2 - User guide === -->
+	<div class="slide story" id="slide-2" data-slide="2">
+		<div class="container">
+			<div class="row title-row">
+				<div class="col-12 font-thin">User guide</div>
+			</div><!-- /row -->
+			<div class="row line-row">
+				<div class="hr">&nbsp;</div>
+			</div><!-- /row -->
+			<!-- Installing SeaPal-->
+			<div class="col-12 col-sm-12 font-light">
+				<h2 class="font-thin">Installing <span class="font-semibold">SeaPal</span></h2>
+				<h4 class="font-thin">Installing SeaPal on the iPad or iPhone is simple and straight forward. Just search for SeaPal in the App Store, select it and install it. SeaPal comes free of charge, so it is very easy to give it a test drive. During the installation you will see the icon of the SeaPal application show up on your screen. Now you are ready to role.</h4>
+				<div id="contact-row-links" class="row">
+					<div class="col-sm-2 hidden-sm">&nbsp;</div>
+					<div class="col-12 col-sm-3 with-hover-text">
+						<p><a target="_blank" href="http://itunes.apple.com/us/app/seapal/id561903907?mt=8&uo=4"><i class="icon icon-apple"></i></a></p>
+						<span class="hover-text font-light ">Apple App Store</span></a>
+					</div><!-- /col12 -->
+					<div class="col-sm-2 hidden-sm">&nbsp;</div>
+					<div class="col-12 col-sm-3 with-hover-text">
+						<p><a target="_blank" href="https://play.google.com/store"><i class="icon icon-android"></i></a></p>
+						<span class="hover-text font-light ">Google Play</span></a>
+					</div><!-- /col12 -->				
+					<div class="col-sm-1 hidden-sm">&nbsp;</div>
 				</div>
 			</div>
-}
+			<!-- Starting SeaPal -->
+			<div class="col-12 col-sm-12 font-light">
+				<h2 class="font-thin">Starting <span class="font-semibold">SeaPal</span></h2>
+				<h4 class="font-thin">Tap on the SeaPal application icon to start SeaPal. If you have GPS on your mobile device, the app will ask you if it is ok to access your current position. This of course makes a lot of sense in a navigational app, so please do approve that.</h4>
+				<h4 class="font-thin">The application will then open with the map view. If no maps are loaded, you most likely have no internet connection. For initial setup an internet connection is important. You can set it up for offline operation later. If the displayed location is somewhere in the Pacific close to Ghana, you have not turned your GPS on. You can do so in your settings.</h4>
+				<h4 class="font-thin">The map is centered at your current location. You can now pan and zoom by swiping with your finger or pinching with two fingers.</h4>
+				<img class="thumb" src="@routes.Assets.at("images/screenshots/08-big.jpg")" alt="">
+				<!-- Map selection -->
+				<h2 class="font-thin">Map selection</span></h2>
+				<h4 class="font-thin">The map view initially shows maps from Google Maps. This is convenient because it downloads fast and is familiar to most. It is excellent for overview and orientation, but it is not very good for navigational purposes. These maps were created primarily for navigation with cars and not with sailors in mind. The shore line and especially harbors can be very imprecise. So you should know how to switch to different map views. For this, tap on the menu button at the top left.</h4>
+				<img class="thumb" src="@routes.Assets.at("images/screenshots/03-big.jpg")" alt="">
+				<div class="hr">&nbsp;</div>
+				<h4 class="font-thin">From this menu, you can select several map views</h4>
+				<ul>
+					<li>Google Maps</li>
+					<li>Google Satellite view</li>
+					<li>Open Sea Maps</li>
+					<li>Offline Maps</li>
+				</ul>
+				<h4 class="font-thin">The Google Satellite view is excellent for near shore or in-harbor manovering. Mind you though, this view shows excellent physical detail of the shore and can also give you some indication on the underwater surface from shades of blue. But you do not have sea signals or depth information.</h4>
+				<img class="thumb" src="@routes.Assets.at("images/screenshots/23-big.jpg")" alt="">
+				<div class="hr">&nbsp;</div>
+				<h4 class="font-thin">The OpenSeaMap view is very good for navigation. It is also provided free of charge from the Open Street Map project, but was created for sailing and navigation. It contains sea signals and has more details on shore line. However, it does not have depth information, which can be very vital if you are not familiar with the area. Also, this map view loads slower and uses more calculation power on the mobile device. So you might find you iPad a little slower with this view on. The accuracy is not guaranteed, information is collected by an open community and can be incorrect. Also keep in mind that this is a vector map, the level of detail increases when zooming in. This means some details will not be visible when zoomed out.</h4>
+				<img class="thumb" src="@routes.Assets.at("images/screenshots/26-big.jpg")" alt="">
+				<div class="hr">&nbsp;</div>
+				<h4 class="font-thin">The biggest problem with all of the above is that they are only available online. That is you need to have an internet connection to view them. If you have a cellular built into your device with 3G or 4G connection, this might be good enough for you if you only sail close to shore or in-shore. However, we recommend to download offline maps prior to departure.</h4>
+				<div class="hr">&nbsp;</div>
+				<h4 class="font-thin">Offline maps are excellent for navigation. They are always available (as long as your battery does not run out), have excellent sea signal information and show water depth. You can purchase offline maps for selected areas from the AddOn view. The first supported area is the Lake Constance for which maps are provided by IBN. Other areas should follow soon.</h4>
+				<img class="thumb" src="@routes.Assets.at("images/screenshots/14-big.jpg")" alt="">
+			</div>
+		</div><!-- /container -->
+	</div><!-- /slide2 -->
+	
+	<!-- === SLide 3 - Screenshots -->
+	<div class="slide story" id="slide-3" data-slide="3">
+		<div class="row">
+			<div class="col-12 col-sm-6 col-lg-2"><a data-fancybox-group="screenshots" class="fancybox" href="@routes.Assets.at("images/screenshots/01-big.jpg")"><img class="thumb" src="@routes.Assets.at("images/screenshots/small/01-small.jpg")" alt=""></a></div>
+			<div class="col-12 col-sm-6 col-lg-2"><a data-fancybox-group="screenshots" class="fancybox" href="@routes.Assets.at("images/screenshots/02-big.jpg")"><img class="thumb" src="@routes.Assets.at("images/screenshots/small/02-small.jpg")" alt=""></a></div>
+			<div class="col-12 col-sm-6 col-lg-2"><a data-fancybox-group="screenshots" class="fancybox" href="@routes.Assets.at("images/screenshots/03-big.jpg")"><img class="thumb" src="@routes.Assets.at("images/screenshots/small/03-small.jpg")" alt=""></a></div>
+			<div class="col-12 col-sm-6 col-lg-2"><a data-fancybox-group="screenshots" class="fancybox" href="@routes.Assets.at("images/screenshots/04-big.jpg")"><img class="thumb" src="@routes.Assets.at("images/screenshots/small/04-small.jpg")" alt=""></a></div>
+			<div class="col-12 col-sm-6 col-lg-2"><a data-fancybox-group="screenshots" class="fancybox" href="@routes.Assets.at("images/screenshots/05-big.jpg")"><img class="thumb" src="@routes.Assets.at("images/screenshots/small/05-small.jpg")" alt=""></a></div>
+			<div class="col-12 col-sm-6 col-lg-2"><a data-fancybox-group="screenshots" class="fancybox" href="@routes.Assets.at("images/screenshots/06-big.jpg")"><img class="thumb" src="@routes.Assets.at("images/screenshots/small/06-small.jpg")" alt=""></a></div>
+			<div class="col-12 col-sm-6 col-lg-2"><a data-fancybox-group="screenshots" class="fancybox" href="@routes.Assets.at("images/screenshots/07-big.jpg")"><img class="thumb" src="@routes.Assets.at("images/screenshots/small/07-small.jpg")" alt=""></a></div>
+			<div class="col-12 col-sm-6 col-lg-2"><a data-fancybox-group="screenshots" class="fancybox" href="@routes.Assets.at("images/screenshots/08-big.jpg")"><img class="thumb" src="@routes.Assets.at("images/screenshots/small/08-small.jpg")" alt=""></a></div>
+			<div class="col-12 col-sm-6 col-lg-2"><a data-fancybox-group="screenshots" class="fancybox" href="@routes.Assets.at("images/screenshots/09-big.jpg")"><img class="thumb" src="@routes.Assets.at("images/screenshots/small/09-small.jpg")" alt=""></a></div>
+			<div class="col-12 col-sm-6 col-lg-2"><a data-fancybox-group="screenshots" class="fancybox" href="@routes.Assets.at("images/screenshots/10-big.jpg")"><img class="thumb" src="@routes.Assets.at("images/screenshots/small/10-small.jpg")" alt=""></a></div>
+			<div class="col-12 col-sm-6 col-lg-2"><a data-fancybox-group="screenshots" class="fancybox" href="@routes.Assets.at("images/screenshots/11-big.jpg")"><img class="thumb" src="@routes.Assets.at("images/screenshots/small/11-small.jpg")" alt=""></a></div>
+			<div class="col-12 col-sm-6 col-lg-2"><a data-fancybox-group="screenshots" class="fancybox" href="@routes.Assets.at("images/screenshots/12-big.jpg")"><img class="thumb" src="@routes.Assets.at("images/screenshots/small/12-small.jpg")" alt=""></a></div>
+			<div class="col-12 col-sm-6 col-lg-2"><a data-fancybox-group="screenshots" class="fancybox" href="@routes.Assets.at("images/screenshots/13-big.jpg")"><img class="thumb" src="@routes.Assets.at("images/screenshots/small/13-small.jpg")" alt=""></a></div>
+			<div class="col-12 col-sm-6 col-lg-2"><a data-fancybox-group="screenshots" class="fancybox" href="@routes.Assets.at("images/screenshots/14-big.jpg")"><img class="thumb" src="@routes.Assets.at("images/screenshots/small/14-small.jpg")" alt=""></a></div>
+			<div class="col-12 col-sm-6 col-lg-2"><a data-fancybox-group="screenshots" class="fancybox" href="@routes.Assets.at("images/screenshots/15-big.jpg")"><img class="thumb" src="@routes.Assets.at("images/screenshots/small/15-small.jpg")" alt=""></a></div>
+			<div class="col-12 col-sm-6 col-lg-2"><a data-fancybox-group="screenshots" class="fancybox" href="@routes.Assets.at("images/screenshots/16-big.jpg")"><img class="thumb" src="@routes.Assets.at("images/screenshots/small/16-small.jpg")" alt=""></a></div>
+			<div class="col-12 col-sm-6 col-lg-2"><a data-fancybox-group="screenshots" class="fancybox" href="@routes.Assets.at("images/screenshots/17-big.jpg")"><img class="thumb" src="@routes.Assets.at("images/screenshots/small/17-small.jpg")" alt=""></a></div>
+			<div class="col-12 col-sm-6 col-lg-2"><a data-fancybox-group="screenshots" class="fancybox" href="@routes.Assets.at("images/screenshots/18-big.jpg")"><img class="thumb" src="@routes.Assets.at("images/screenshots/small/18-small.jpg")" alt=""></a></div>
+			<div class="col-12 col-sm-6 col-lg-2"><a data-fancybox-group="screenshots" class="fancybox" href="@routes.Assets.at("images/screenshots/19-big.jpg")"><img class="thumb" src="@routes.Assets.at("images/screenshots/small/19-small.jpg")" alt=""></a></div>
+			<div class="col-12 col-sm-6 col-lg-2"><a data-fancybox-group="screenshots" class="fancybox" href="@routes.Assets.at("images/screenshots/20-big.jpg")"><img class="thumb" src="@routes.Assets.at("images/screenshots/small/20-small.jpg")" alt=""></a></div>
+			<div class="col-12 col-sm-6 col-lg-2"><a data-fancybox-group="screenshots" class="fancybox" href="@routes.Assets.at("images/screenshots/21-big.jpg")"><img class="thumb" src="@routes.Assets.at("images/screenshots/small/21-small.jpg")" alt=""></a></div>
+			<div class="col-12 col-sm-6 col-lg-2"><a data-fancybox-group="screenshots" class="fancybox" href="@routes.Assets.at("images/screenshots/22-big.jpg")"><img class="thumb" src="@routes.Assets.at("images/screenshots/small/22-small.jpg")" alt=""></a></div>
+			<div class="col-12 col-sm-6 col-lg-2"><a data-fancybox-group="screenshots" class="fancybox" href="@routes.Assets.at("images/screenshots/23-big.jpg")"><img class="thumb" src="@routes.Assets.at("images/screenshots/small/23-small.jpg")" alt=""></a></div>
+			<div class="col-12 col-sm-6 col-lg-2"><a data-fancybox-group="screenshots" class="fancybox" href="@routes.Assets.at("images/screenshots/24-big.jpg")"><img class="thumb" src="@routes.Assets.at("images/screenshots/small/24-small.jpg")" alt=""></a></div>
+		</div><!-- /row -->
+	</div><!-- /slide3 -->
+	
+	<!-- === Slide 4 - About === -->
+	<div class="slide story" id="slide-4" data-slide="4">
+		<div class="container">
+			<div class="row title-row">
+				<div class="col-12 font-thin">About <span class="font-semibold">SeaPal</span></div>
+			</div><!-- /row -->
+			<div class="row line-row">
+				<div class="hr">&nbsp;</div>
+			</div><!-- /row -->
+			<div class="row subtitle-row">
+				<div class="col-12 col-sm-12 font-light">
+					<h4 class="font-thin">The <span class="font-semibold">SeaPal</span> application was developed in a cooperation between the IBN publishing house and the HTWG Constance University.</h4>
+					<h4 class="font-thin">IBN is a publishing house specialized in sailing and boating in the southern part of Germany. IBN has a long tradition of providing high quality maps, harbor guides and news for sailors for the lake Constance and the south of Germany. IBN initiated this project to bring their content to new mobile platforms like the iPad and the iPhone.</h4>
+					<h4 class="font-thin">The University HTWG Constance is a University of Applied Sciences located in Constance right on the shores of the lake. Prof. Dr. Marko Boger leads the project and did the original concept. He works in the computer science department as professor for Software Architecture and Software Engineering. Software development for mobile platforms as well as for the web are included in this research and teaching. He is also an active sailor with more than 5,000 nm of experience in all waters of Europe.</h4>
+					<h4 class="font-thin">These two partners initiated this project as an open cooperation to provide a modern, simple, yet powerful application for mobile devices. It is our goal to provide a base version of SeaPal free of charge with free online maps to sailors around the world. We also provide extensions to finance this project. Please view purchases as sponsoring to help advance our ambitious project. It will be used to further advance and develop this app.</h4>
+					<h4 class="font-thin">The development is partly done by a team of experienced software developers and partly in research and study groups at the University.</h4>
+					<h4 class="font-thin">Our cooperation is also open for other partners. If you are interested to join our partnership, to provide further content or develop extension, please contact us. You can also sponsor the development of specific functionalities or extensions.</h4>
+				</div>
+				<div class="col-sm-1 hidden-sm">&nbsp;</div>
+			</div><!-- /row -->
+		</div><!-- /container -->
+	</div><!-- /slide4 -->
+	
+	<!-- === Slide 5 - Contact === -->
+	<div class="slide story" id="slide-5" data-slide="5">
+		<div class="container">
+			<div class="row title-row">
+				<div class="col-12 font-light">Contact us</div>
+			</div><!-- /row -->
+			<div class="row line-row">
+				<div class="hr">&nbsp;</div>
+			</div><!-- /row -->
+			<div class="row content-row">
+				<div class="col-sm-2 hidden-sm">&nbsp;</div>
+				<div class="col-12 col-sm-3">
+					<h2 class="font-thin"><span class="font-semibold" >IBN</span></h2>
+					<h4 class="font-thin">IBN Redaktion<br>Hans-Dieter Möhlhenrich<br>Malvine-Schiesser-Weg 3<br>78315 Radolfzell<br>Germany</h4>
+				</div><!-- /col12 -->
+				<div class="col-sm-2 hidden-sm">&nbsp;</div>
+				<div class="col-12 col-sm-3">
+					<h2 class="font-thin"><span class="font-semibold">HTWG</span></h2>
+					<h4 class="font-thin">HTWG Konstanz<br>Informatik<br>Prof. Dr. Marko Boger<br>Brauneggerstr. 55<br>78462 Konstanz<br>Germany</h4>
+				</div><!-- /col12 -->
+				<div class="col-sm-1 hidden-sm">&nbsp;</div>
+			</div><!-- /row -->
+			<div id="contact-row-links" class="row">
+				<div class="col-sm-2 hidden-sm">&nbsp;</div>
+				<div class="col-12 col-sm-3 with-hover-text">
+					<p><a target="_blank" href="http://www.ibn-online.de"><i class="icon icon-home"></i></a></p>
+					<span class="hover-text font-light ">IBN</span></a>
+				</div><!-- /col12 -->
+				<div class="col-12 col-sm-2 with-hover-text">
+					<p><a target="_blank" href="https://twitter.com/intent/tweet?original_referer=http%3A%2F%2Fwww.seapal.info%2F&text=SeaPal&tw_p=tweetbutton&url=http%3A%2F%2Fwww.seapal.info%2F"><i class="icon icon-twitter"></i></a></p>
+					<span class="hover-text font-light ">Share via twitter</span></a>
+				</div><!-- /col12 -->
+				<div class="col-12 col-sm-3 with-hover-text">
+					<p><a target="_blank" href="http://www.htwg-konstanz.de"><i class="icon icon-home"></i></a></p>
+					<span class="hover-text font-light ">HTWG Constance</span></a>
+				</div><!-- /col12 -->				
+				<div class="col-sm-1 hidden-sm">&nbsp;</div>
+			</div>
+			<div id="contact-row-4" class="row">
+				<div class="col-sm-2 hidden-sm">&nbsp;</div>
+				<div class="col-12 col-sm-3 with-hover-text">
+					<p><a target="_blank" href="mailto:ibn&#64;ibn-online.de"><i class="icon icon-envelope-alt"></i></a></p>
+					<span class="hover-text font-light ">IBN</span></a>
+				</div><!-- /col12 -->
+				<div class="col-12 col-sm-2 with-hover-text">
+					<p><a target="_blank" href="https://plus.google.com/100825752167882077539/posts"><i class="icon icon-google-plus"></i></a></p>
+					<span class="hover-text font-light ">SeaPal-Google+</span></a>
+				</div><!-- /col12 -->
+				<div class="col-12 col-sm-3 with-hover-text">
+					<p><a target="_blank" href="mailto:marko.boger&#64;htwg-konstanz.de"><i class="icon icon-envelope-alt"></i></a></p>
+					<span class="hover-text font-light ">HTWG Constance</span></a>
+				</div><!-- /col12 -->				
+				<div class="col-sm-1 hidden-sm">&nbsp;</div>
+			</div><!-- /row -->	
+		</div><!-- /container -->
+	</div><!-- /Slide 5 -->
+	
+</body>
+
+	<!-- SCRIPTS -->
+	<script type="text/javascript" src="@routes.Assets.at("js/homepage/html5shiv.js")"></script>
+	<script type="text/javascript" src="@routes.Assets.at("js/homepage/jquery-1.10.2.min.js")"></script>
+	<script type="text/javascript" src="@routes.Assets.at("js/homepage/jquery-migrate-1.2.1.min.js")"></script>
+	<script type="text/javascript" src="@routes.Assets.at("js/homepage/bootstrap.min.js")"></script>
+	<script type="text/javascript" src="@routes.Assets.at("js/homepage/jquery.easing.1.3.js")"></script>
+	<script type="text/javascript" src="@routes.Assets.at("fancybox/jquery.fancybox.pack-v=2.1.5.js")"></script>
+	<script type="text/javascript" src="@routes.Assets.at("js/homepage/script.js")"></script>
+	
+	<!-- fancybox init -->
+	<script>
+	$(document).ready(function(e) {
+		var lis = $('.nav > li');
+		menu_focus( lis[0], 1 );
+		
+		$(".fancybox").fancybox({
+			padding: 10,
+			helpers: {
+				overlay: {
+					locked: false
+				}
+			}
+		});
+	
+	});
+	</script>
+
+</html>

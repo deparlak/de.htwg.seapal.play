@@ -2,6 +2,7 @@
 
 # Static pages
 GET     /           								de.htwg.seapal.web.controllers.Application.index()
+GET     /impressum     								de.htwg.seapal.web.controllers.Application.impressum()
 GET     /screenshots        						de.htwg.seapal.web.controllers.Application.screenshots()
 GET     /about              						de.htwg.seapal.web.controllers.Application.about()
 GET     /contact            						de.htwg.seapal.web.controllers.Application.contact()
