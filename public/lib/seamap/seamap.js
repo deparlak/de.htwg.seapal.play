@@ -474,7 +474,7 @@
          * Gets the current location of the device (via HTML5)
          */
         function get_location() {
-            if (!Modernizr.geolocation) {
+            if (Modernizr.geolocation) {
                 navigator.geolocation.getCurrentPosition(handleBoatPosition, error_handling);
             } else {
                 handleFakeBoatPositionUpdate();
