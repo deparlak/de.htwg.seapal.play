@@ -785,6 +785,7 @@ pre code {
 .col-11,
 .col-12,
 .col-sm-1,
+.col-sm-1_a,
 .col-sm-2,
 .col-sm-3,
 .col-sm-4,
@@ -882,6 +883,7 @@ pre code {
     max-width: 728px;
   }
   .col-sm-1,
+  .col-sm-1_a,
   .col-sm-2,
   .col-sm-3,
   .col-sm-4,
@@ -897,6 +899,9 @@ pre code {
   }
   .col-sm-1 {
     width: 8.333333333333332%;
+  }
+  .col-sm-1_a {
+    width: 13.333333333333332%;
   }
   .col-sm-2 {
     width: 16.666666666666664%;

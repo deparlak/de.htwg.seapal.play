@@ -18,8 +18,8 @@ object ApplicationBuild extends Build {
 	    javaJdbc,
 	    javaEbean,
 	    "com.google.inject" % "guice" % "3.0",
-	    "org.ektorp" % "org.ektorp" % "1.3.0",
-	    "de.htwg.seapal" % "core" % "1.0-SNAPSHOT"
+	    "org.ektorp" % "org.ektorp" % "1.3.0"
+	    //"de.htwg.seapal" % "core" % "1.0-SNAPSHOT"
 	)
 
     val main = play.Project(appName, appVersion, appDependencies, settings = jacocoSettings).settings(
@@ -48,7 +48,7 @@ object ApplicationBuild extends Build {
 		crossPaths := false,
 		
 		// add additional resovers
-	    resolvers += "HTWG Resolver" at "http://lenny2.in.htwg-konstanz.de:8081/artifactory/libs-snapshot-local",
+	    //resolvers += "HTWG Resolver" at "http://lenny2.in.htwg-konstanz.de:8081/artifactory/libs-snapshot-local",
 
 		// add publishing target
 	    publishTo := Some("HTWG Publish To" at "http://lenny2.in.htwg-konstanz.de:8081/artifactory/libs-snapshot-local;build.timestamp=" + new java.util.Date().getTime()), 
