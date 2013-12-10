@@ -34,6 +34,11 @@ $(document).ready(function() {
         $("#marks").append('<li><a class="menu-icon icon-selectedMark action" data-id='+self.id+'>'+self.label+'</a></li>');
     });
 
+    map.addCallback(events.NO_GEO_SUPPORT, function (self) {
+        alert(self);
+        console.log(self);
+    });
+
     map.addCallback(events.DELETED_MARK, function (self) {
         $("#marks li a").each(function() {
             /* delete only the element with the specific id */
@@ -42,4 +47,6 @@ $(document).ready(function() {
             }
         });
     });
+
+    map.startBoatAnimation();
 });
