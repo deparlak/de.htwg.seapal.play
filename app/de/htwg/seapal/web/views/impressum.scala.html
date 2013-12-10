@@ -1,19 +1,9 @@
 <!doctype html>
 <html>
-<head lang="en">
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-  
+<head lang="en">  
   <title>SeaPal - Impressum and Legal notice</title> 
   <meta name="description" content="SeaPal.info - Impressum and legal notice" />
-  <meta property="og:title" content="">
-
-  <link rel="stylesheet" type="text/css" href="@routes.Assets.at("css/bootstrap.min.css")">
-  <link rel="stylesheet" href="@routes.Assets.at("css/font-awesome.min.css")" rel="stylesheet">
-  
-  <link rel="stylesheet" type="text/css" href="@routes.Assets.at("css/style.css")">  
-  
-  <link href='http://fonts.googleapis.com/css?family=Titillium+Web:400,600,300,200&subset=latin,latin-ext' rel='stylesheet' type='text/css'>    
+  @pageContent.header()
 </head>
 
 <body>
@@ -107,35 +97,6 @@
         <div class="col-sm-1 hidden-sm">&nbsp;</div>
       </div><!-- /row -->
     </div><!-- /container -->
-  </div><!-- /slide4 -->
-  
-</body>
-
-  <!-- SCRIPTS -->
-  <script type="text/javascript" src="@routes.Assets.at("js/homepage/html5shiv.js")"></script>
-  <script type="text/javascript" src="@routes.Assets.at("js/homepage/jquery-1.10.2.min.js")"></script>
-  <script type="text/javascript" src="@routes.Assets.at("js/homepage/jquery-migrate-1.2.1.min.js")"></script>
-  <script type="text/javascript" src="@routes.Assets.at("js/homepage/bootstrap.min.js")"></script>
-  <script type="text/javascript" src="@routes.Assets.at("js/homepage/jquery.easing.1.3.js")"></script>
-  <script type="text/javascript" src="@routes.Assets.at("fancybox/jquery.fancybox.pack-v=2.1.5.js")"></script>
-  <script type="text/javascript" src="@routes.Assets.at("js/homepage/script.js")"></script>
-  
-  <!-- fancybox init -->
-  <script>
-  $(document).ready(function(e) {
-    var lis = $('.nav > li');
-    menu_focus( lis[0], 1 );
-    
-    $(".fancybox").fancybox({
-      padding: 10,
-      helpers: {
-        overlay: {
-          locked: false
-        }
-      }
-    });
-  
-  });
-  </script>
-
+  </div><!-- /slide4 -->  
+  </body>
 </html>
