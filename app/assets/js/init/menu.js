@@ -14,7 +14,7 @@ $(document).ready(function() {
         if (window.fullScreenApi.supportsFullScreen) {
             if (!window.fullScreenApi.isFullScreen()) {
                 window.fullScreenApi.requestFullScreen(document.body);
-                self.text("Normal");
+                self.text("Window");
             } else {
                 window.fullScreenApi.cancelFullScreen(document.body);
                 self.text("Fullscreen");
