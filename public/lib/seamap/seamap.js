@@ -139,8 +139,7 @@
             state = States.MARKER;
         };
         this.setImageMark = function(image) {
-
-            addDefaultMark(currentPosition);
+            addImageMark(image);
         }
         /* delete a mark with a specified id */
         this.deleteMark = function (id) {
@@ -309,7 +308,6 @@
         function initOpenSeaMaps() {
             map.overlayMapTypes.push(new google.maps.ImageMapType({
                 getTileUrl: function(coord, zoom) {
-                    console.log("http://tiles.openseamap.org/seamark/" + zoom + "/" + coord.x + "/" + coord.y + ".png");
                     return "http://tiles.openseamap.org/seamark/" + zoom + "/" + coord.x + "/" + coord.y + ".png";
                 },
                 tileSize: new google.maps.Size(256, 256),
@@ -911,7 +909,7 @@
             callbacks[events.ADDED_MARK].fire(mark);
         }
 
-                /**
+        /**
         * *********************************************************************************
         * Adds a image marker to the given position and
         * bind the click-events to open its context menu.
@@ -922,7 +920,7 @@
             mark.id = marksCount.toString();
             mark.label = "Mark "+marksCount;
             mark.detailed = "created on blabla..";
-            var position =
+            var position = currentPosition;
             mark.onMap = new google.maps.Marker({
                 map: map,
                 position: position,
@@ -938,9 +936,6 @@
             marksCount++;
             callbacks[events.ADDED_MARK].fire(mark);
         }
-
-
-
 
         /**
         * *********************************************************************************
