@@ -932,11 +932,30 @@
             google.maps.event.addListener(mark.onMap, 'rightclick', function(event) {
                 showContextMenu(event.latLng, ContextMenuTypes.DELETE_MARKER, mark);
             });
+
+            new LeftClick(mark.onMap);
+            google.maps.event.addListener(mark.onMap, 'leftclick', function(event) {
+                console.log("CLICKED");
+            });
             
             marks[marksCount.toString()] = mark;
             marksCount++;
             callbacks[events.ADDED_MARK].fire(mark);
         }
+
+        function LeftClick(marker) {
+            var me = this;
+            me.marker_ = marker;
+            google.maps.event.addListener(marker, 'mouseup', function(e) {
+                me.onMouseUp_(e);
+            });
+        }
+
+        LeftClick.prototype.onMouseUp_ = function(e) {
+            var marker = this.marker_;
+            var event = e;
+            google.maps.event.trigger(marker, 'leftclick', event);
+        };
 
         /**
         * *********************************************************************************
