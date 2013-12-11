@@ -38,8 +38,7 @@
 
 	cameraApi.captureImage = function() {
 		console.log("CAPTURE");
-		if(video != null) { video.pause(); }
-	    /*var canvas = document.createElement('canvas');
+	    var canvas = document.createElement('canvas');
 	    canvas.id = 'hiddenCanvas';
 	    //add canvas to the body element
 	    document.body.appendChild(canvas);
@@ -51,10 +50,8 @@
 	    ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
 	    //save canvas image as data url
 	    dataURL = canvas.toDataURL();
-	    //set preview image src to dataURL
-	    document.getElementById('preview').src = dataURL;
-	    // place the image value in the text box
-	    document.getElementById('imageToForm').value = dataURL;*/
+	    console.log(dataURL);
+		if(video != null) { video.pause(); }
 	}
 
 	var el = document.getElementById("photo-button");
