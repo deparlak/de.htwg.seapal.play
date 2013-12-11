@@ -916,17 +916,17 @@
         * *********************************************************************************
         */
         function addImageMark(image) {
-            console.log(image);
             var mark = {}
             mark.id = marksCount.toString();
             mark.label = "Mark "+marksCount;
             mark.detailed = "created on blabla..";
             var position = currentPosition;
+            var thnail = image[0];
             mark.onMap = new google.maps.Marker({
                 map: map,
                 position: position,
-                icon: options.defaultOptions.markerOptions.image,
-                draggable: true
+                icon: thnail,
+                draggable: false
             });
 
             google.maps.event.addListener(mark.onMap, 'rightclick', function(event) {

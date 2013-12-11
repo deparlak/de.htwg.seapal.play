@@ -20,11 +20,8 @@ $(document).ready(function() {
     
     tools.addCallback('icon-takePhoto', function (self) {
         menu.closeMenu();        
-        window.cameraApi.setup();
+        window.cameraApi.setup("photo-video", "photo-button");
         $('#modal-photo').modal('show');
-        $('#modal-photo').on('hidden.bs.modal', function() {
-            window.cameraApi.disable_camera();
-        });
     });
     
     tools.addCallback('icon-setMark', function (self) {
@@ -64,6 +61,10 @@ $(document).ready(function() {
     tools.addCallback('icon-discardTarget', function (self) {
         
         console.log('icon-discardTarget');
+    });
+
+    $('#modal-photo').on('hidden.bs.modal', function() {
+        window.cameraApi.disable_camera();
     });
 
     /**
