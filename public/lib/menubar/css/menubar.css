@@ -411,6 +411,11 @@ input.menubar-search:focus {
         content: "\f090"
 }
 
+.icon-registerSeapal::after{
+        content: "\f090"
+}
+
+
 
 /* specification of the icons from the tools */
 
@@ -658,12 +663,35 @@ input.menubar-search:focus {
     }
 }
 
+/* headings in a li*/
 .heading{
+    background: #EBEBEB;
+    color:black;
+}
+
+.heading1{
+    font-weight:bold;
+    margin-left:20px;
+    font-size:15px;
+    line-height:30px !important;
+}
+
+.heading2{
     margin-left:20px;
     font-size:15px;
     line-height:25px !important;
 }
 
-.heading2{
-    line-height:25px !important;
+/* headings in a li*/
+.description{
+    background: #FFFFFF;
+    color:black;
 }
+
+.description1{
+    margin-left:20px;
+    margin-right:20px;
+    font-size:15px;
+    line-height:20px !important;
+}
+
