@@ -43,7 +43,6 @@ $(document).ready(function() {
     });  
     
     tools.addCallback('icon-PersonOverBoard', function (self) {
-        
         console.log('icon-PersonOverBoard');
     });  
     

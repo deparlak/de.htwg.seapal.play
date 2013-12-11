@@ -86,6 +86,14 @@ $(document).ready(function() {
         self.removeClass('icon-notSelectedTrack').addClass('icon-selectedTrack');
         console.log(self.data('id'));
     });
+    
+    menu.addCallback('icon-signInSeapal', function (self) {
+        console.log("signInSeapal");
+    });
+    
+    menu.addCallback('icon-registerSeapal', function (self) {
+        console.log("registerSeapal");
+    });
   
     $("#search-marksRoutesTracks").keyup( function(ev) {
         ev.stopPropagation();

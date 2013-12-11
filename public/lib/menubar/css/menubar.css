@@ -407,12 +407,12 @@ input.menubar-search:focus {
         content: ""
 }
 
-.icon-signIn::after{
+.icon-signInSeapal::after{
         content: "\f090"
 }
 
 .icon-registerSeapal::after{
-        content: "\f090"
+        content: "\f015"
 }
 
 
