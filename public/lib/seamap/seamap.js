@@ -933,7 +933,7 @@
                 showContextMenu(event.latLng, ContextMenuTypes.DELETE_MARKER, mark);
             });
 
-            new LeftClick(mark.onMap);
+            //new LeftClick(mark.onMap);
             google.maps.event.addListener(mark.onMap, 'leftclick', function(event) {
                 console.log("CLICKED");
             });
@@ -942,7 +942,7 @@
             marksCount++;
             callbacks[events.ADDED_MARK].fire(mark);
         }
-
+        /* Handles left click event on image marker */
         function LeftClick(marker) {
             var me = this;
             me.marker_ = marker;
@@ -950,7 +950,6 @@
                 me.onMouseUp_(e);
             });
         }
-
         LeftClick.prototype.onMouseUp_ = function(e) {
             var marker = this.marker_;
             var event = e;
