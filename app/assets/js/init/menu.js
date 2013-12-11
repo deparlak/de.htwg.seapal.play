@@ -88,7 +88,8 @@ $(document).ready(function() {
     });
     
     menu.addCallback('icon-signInSeapal', function (self) {
-        console.log("signInSeapal");
+        menu.closeMenu();
+        $('#modal-signInSeapal').modal('show');
     });
     
     menu.addCallback('icon-registerSeapal', function (self) {
