@@ -933,7 +933,7 @@
                 showContextMenu(event.latLng, ContextMenuTypes.DELETE_MARKER, mark);
             });
 
-            //new LeftClick(mark.onMap);
+            new LeftClick(mark.onMap);
             google.maps.event.addListener(mark.onMap, 'leftclick', function(event) {
                 console.log("CLICKED");
             });
