@@ -18,6 +18,7 @@
 	var video_stream;
 
 	cameraApi.setup = function() {
+		document.getElementById("photo-button").disabled = true;
 	    navigator.myGetMedia = (navigator.getUserMedia ||
 	    navigator.webkitGetUserMedia ||
 	    navigator.mozGetUserMedia ||
@@ -51,6 +52,7 @@
 	    video = document.getElementById("photo-video");
 	    video.src = window.URL ? window.URL.createObjectURL(stream) : stream;
 	    video.play();
+	    document.getElementById("photo-button").disabled = false;
 	}
 
 	function error(e) { 
