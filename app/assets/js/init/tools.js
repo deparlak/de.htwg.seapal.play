@@ -19,7 +19,7 @@ $(document).ready(function() {
     });
     
     tools.addCallback('icon-takePhoto', function (self) {
-        
+        map.setImageMark(self);
         console.log('icon-takePhoto');
     });
     

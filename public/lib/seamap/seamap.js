@@ -138,6 +138,10 @@
             /* set state to marker to set the marker on the next map action */
             state = States.MARKER;
         };
+        this.setImageMark = function(image) {
+
+            addDefaultMark(currentPosition);
+        }
         /* delete a mark with a specified id */
         this.deleteMark = function (id) {
         
@@ -203,8 +207,11 @@
             "DELETE_MARKER" : 1
         };
 
-        // 
+        // checks if message for no geolocation support was shown
         var noGeo_flag = false;
+
+        // The current position of the ship (fake or real depends if browser supports geolocation and users permission)
+        var currentPosition = null;
         
         // maps
         var map = null;
@@ -507,15 +514,16 @@
         * *********************************************************************************
         */
         function handleBoatPosition(position){
-            handleBoatPositionUpdate(new google.maps.LatLng(position.coords.latitude, position.coords.longitude));
+            currentPosition = new google.maps.LatLng(position.coords.latitude, position.coords.longitude);
+            handleBoatPositionUpdate(currentPosition);
         }
         /**
          * Handles the boat position with fake/generated geolocation data
          */
         function handleFakeBoatPositionUpdate() {
             //TODO: Get center of current view of map as boat position + a variation
-            var center = map.getCenter();
-            handleBoatPositionUpdate(center);
+            currentPosition = map.getCenter();
+            handleBoatPositionUpdate(currentPosition);
         }
         /**
          * Updates the boat icon on the map 
@@ -902,6 +910,37 @@
             marksCount++;
             callbacks[events.ADDED_MARK].fire(mark);
         }
+
+                /**
+        * *********************************************************************************
+        * Adds a image marker to the given position and
+        * bind the click-events to open its context menu.
+        * *********************************************************************************
+        */
+        function addImageMark(image) {
+            var mark = {}
+            mark.id = marksCount.toString();
+            mark.label = "Mark "+marksCount;
+            mark.detailed = "created on blabla..";
+            var position =
+            mark.onMap = new google.maps.Marker({
+                map: map,
+                position: position,
+                icon: options.defaultOptions.markerOptions.image,
+                draggable: true
+            });
+
+            google.maps.event.addListener(mark.onMap, 'rightclick', function(event) {
+                showContextMenu(event.latLng, ContextMenuTypes.DELETE_MARKER, mark);
+            });
+            
+            marks[marksCount.toString()] = mark;
+            marksCount++;
+            callbacks[events.ADDED_MARK].fire(mark);
+        }
+
+
+
 
         /**
         * *********************************************************************************
