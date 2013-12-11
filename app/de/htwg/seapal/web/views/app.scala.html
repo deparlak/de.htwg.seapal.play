@@ -13,7 +13,7 @@
                             <ul id="menu-main" class="menubar-menu active-menu-list">
                                 <li><a class="menu-icon icon-fullscreen">Fullscreen</a></li>
                                 <li><a class="menu-icon icon-map action">Satellite</a></li>
-                                <li><a class="menu-icon icon-logbook">Logbook</a></li>
+                                <li><a class="menu-icon icon-logbook link" data-link="menu-logbook">Logbook</a></li>
                                 <li><a class="menu-icon icon-dashboard">Dashboard</a></li>
                                 <li><a class="menu-icon icon-routes link" data-link="menu-routes">Marks, Routes, Tracks</a></li>
                                 <li><a class="menu-icon icon-charts">Navigation Charts</a></li>
@@ -25,32 +25,58 @@
                                 <li><a class="menu-icon icon-settings">Settings</a></li>
                             </ul>                        
                         
+                        
+                            <ul id="menu-logbook" class="menubar-menu inactive-menu-list">
+                                <li><a class="menu-icon icon-menuBack link" data-link="menu-main">Back</a></li>
+                                <!-- selector to switch between marks/routes/tracks -->
+                                <li>
+                                    <div class="btn-group-justified menubar-optionsSelector" data-toggle="buttons">
+                                        <label class="btn btn-primary action logbook active" data-name="#account">
+                                            <input type="radio">Account
+                                        </label>
+                                        <label class="btn btn-primary action logbook" data-name="#crew">
+                                            <input type="radio">Crew
+                                        </label>
+                                        <label class="btn btn-primary action logbook" data-name="#boats">
+                                            <input type="radio">Boats
+                                        </label>
+                                        <label class="btn btn-primary action logbook" data-name="#logbook">
+                                            <input type="radio">Logbook
+                                        </label>
+                                    </div>
+                                </li>
+                                <div id="account" class="active-logbook"></div>
+                                <div id="crew" class="inactive-logbook"></div>
+                                <div id="boats" class="inactive-logbook"></div>
+                                <div id="logbook" class="inactive-logbook"></div>
+                            </ul>
+                        
                             <ul id="menu-routes" class="menubar-menu inactive-menu-list">
                                 <li><a class="menu-icon icon-menuBack link" data-link="menu-main">Back</a></li>
                                 <!-- Search for marks/routes/tracks -->
                                 <li class="menubar-search-item menu-icon icon-searchMenu">
-                                    <input placeholder="Search" type="search" class="menubar-menu-search menubar-search" id="search-mrt">
+                                    <input placeholder="Search" type="search" class="menubar-menu-search menubar-search" id="search-marksRoutesTracks">
                                 </li>
                                 <!-- selector to switch between marks/routes/tracks -->
                                 <li>
                                     <div class="btn-group-justified menubar-optionsSelector" data-toggle="buttons">
-                                        <label class="btn btn-primary action marks-routes-tracks active" data-name="#marks">
+                                        <label class="btn btn-primary action marksRoutesTracks active" data-name="#marks">
                                             <input type="radio">Marks
                                         </label>
-                                        <label class="btn btn-primary action marks-routes-tracks" data-name="#routes">
+                                        <label class="btn btn-primary action marksRoutesTracks" data-name="#routes">
                                             <input type="radio">Routes
                                         </label>
-                                        <label class="btn btn-primary action marks-routes-tracks" data-name="#tracks">
+                                        <label class="btn btn-primary action marksRoutesTracks" data-name="#tracks">
                                             <input type="radio">Tracks
                                         </label>
                                     </div>
                                 </li>
                                 <!-- all marks -->
-                                <div id="marks" class="active-mrt"></div>
+                                <div id="marks" class="active-marksRoutesTracks"></div>
                                 <!-- all routes -->
-                                <div id="routes" class="inactive-mrt"></div>
+                                <div id="routes" class="inactive-marksRoutesTracks"></div>
                                 <!-- all tracks -->
-                                <div id="tracks" class="inactive-mrt"></div>
+                                <div id="tracks" class="inactive-marksRoutesTracks"></div>
                             </ul>
                         
                         </div><!-- /menubar-scroller -->

@@ -596,18 +596,32 @@ input.menubar-search:focus {
     width:96.4%;
 }
 
-.active-mrt {
+.active-marksRoutesTracks {
     display:block;
 }
 
-.inactive-mrt {
+.inactive-marksRoutesTracks {
     display:none;
 }
 
-.marks-routes-tracks {
+.marksRoutesTracks {
     border:0px;
     border-radius:0px;
 }
+
+.active-logbook {
+    display:block;
+}
+
+.inactive-logbook {
+    display:none;
+}
+
+.logbook {
+    border:0px;
+    border-radius:0px;
+}
+
 
 /* styles on minimized size */
 /******************************************************/

@@ -43,10 +43,16 @@ $(document).ready(function() {
         $('#modal-info').modal('show');
     });
 
-    menu.addCallback('marks-routes-tracks', function (self) {
+    menu.addCallback('marksRoutesTracks', function (self) {
         self.button('toggle');
-        $('.active-mrt').removeClass('active-mrt').addClass('inactive-mrt');
-        $(self.data('name')).removeClass('inactive-mrt').addClass('active-mrt');
+        $('.active-marksRoutesTracks').removeClass('active-marksRoutesTracks').addClass('inactive-marksRoutesTracks');
+        $(self.data('name')).removeClass('inactive-marksRoutesTracks').addClass('active-marksRoutesTracks');
+    });
+    
+    menu.addCallback('logbook', function (self) {
+        self.button('toggle');
+        $('.active-logbook').removeClass('active-logbook').addClass('inactive-logbook');
+        $(self.data('name')).removeClass('inactive-logbook').addClass('active-logbook');
     });
     
     menu.addCallback('icon-selectedMark', function (self) {
@@ -81,7 +87,7 @@ $(document).ready(function() {
         console.log(self.data('id'));
     });
   
-    $("#search-mrt").keyup( function(ev) {
+    $("#search-marksRoutesTracks").keyup( function(ev) {
         ev.stopPropagation();
         ev.preventDefault();
         console.log("inpurt");
