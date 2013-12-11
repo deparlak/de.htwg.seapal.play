@@ -407,6 +407,10 @@ input.menubar-search:focus {
         content: ""
 }
 
+.icon-signIn::after{
+        content: "\f090"
+}
+
 
 /* specification of the icons from the tools */
 
