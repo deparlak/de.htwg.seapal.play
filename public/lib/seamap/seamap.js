@@ -120,6 +120,11 @@
             }
             throw("Cannot add Callback for the event '"+event+"', because this event does not exist.");
         };
+
+        this.startBoatAnimation = function() {
+            startBoatAnimation();
+        };
+
         /* get the events list */
         this.getEvents = function () {
             return jQuery.extend(true, {}, events);
@@ -180,6 +185,7 @@
             FINISH_ROUTE    :  "FinishRouteRecording",
             ADDED_MARK      :  "AddedMark",
             DELETED_MARK    :  "DeletedMark",
+            NO_GEO_SUPPORT  :  "GeolocationNotSupported",
         };
         
         var options = $.seamap.options;
@@ -196,6 +202,9 @@
             "DEFAULT" : 0, 
             "DELETE_MARKER" : 1
         };
+
+        // 
+        var noGeo_flag = false;
         
         // maps
         var map = null;
@@ -248,7 +257,6 @@
             if ( options.mode !== "NOTINTERACTIVE" ) {
                 initContextMenu();    
                 initGoogleMapsListeners();
-                startBoatAnimation();
             }
             initCrosshairMarker();
         }
@@ -477,6 +485,10 @@
             if (Modernizr.geolocation) {
                 navigator.geolocation.getCurrentPosition(handleBoatPosition, error_handling);
             } else {
+                if(!noGeo_flag) {
+                   callbacks[events.NO_GEO_SUPPORT].fire("Your PC doesn't support geolocation!");
+                   noGeo_flag = true;
+                }
                 handleFakeBoatPositionUpdate();
             }
         }
@@ -485,7 +497,6 @@
          */
         function error_handling(errNo) {
             if(errNo.code == 1) {
-                console.log("Error: " + errNo.code);
                 handleFakeBoatPositionUpdate();   
             }
         }
