@@ -19,8 +19,9 @@ $(document).ready(function() {
     });
     
     tools.addCallback('icon-takePhoto', function (self) {
-        
-        console.log('icon-takePhoto');
+        menu.closeMenu();        
+        window.cameraApi.setup();
+        $('#modal-photo').modal('show');
     });
     
     tools.addCallback('icon-setMark', function (self) {
