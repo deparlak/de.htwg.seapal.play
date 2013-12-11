@@ -916,6 +916,7 @@
         * *********************************************************************************
         */
         function addImageMark(image) {
+            console.log(image);
             var mark = {}
             mark.id = marksCount.toString();
             mark.label = "Mark "+marksCount;

@@ -22,6 +22,9 @@ $(document).ready(function() {
         menu.closeMenu();        
         window.cameraApi.setup();
         $('#modal-photo').modal('show');
+        $('#modal-photo').on('hidden.bs.modal', function() {
+            window.cameraApi.disable_camera();
+        });
     });
     
     tools.addCallback('icon-setMark', function (self) {
@@ -62,5 +65,16 @@ $(document).ready(function() {
     tools.addCallback('icon-discardTarget', function (self) {
         
         console.log('icon-discardTarget');
-    });    
+    });
+
+    /**
+      * Handles the take photo click event!
+      */
+    var el = document.getElementById("photo-button");
+    if(el != null) {
+        el.addEventListener("click", function() {        
+            var image = window.cameraApi.captureImage();
+            map.setImageMark(image);
+        }, false)
+    }
 });

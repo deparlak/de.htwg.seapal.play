@@ -6,16 +6,19 @@
  */
 
 (function() {
+
 	var cameraApi = {
             setup: function() {},
             captureImage: function() {},
-            dataURL: ''
+            disable_camera: function() {}
         };
 
+    var dataURL;
 	var video;
+	var video_stream;
 
 	cameraApi.setup = function() {
-		console.log("SETUP");
+		document.getElementById("photo-button").disabled = true;
 	    navigator.myGetMedia = (navigator.getUserMedia ||
 	    navigator.webkitGetUserMedia ||
 	    navigator.mozGetUserMedia ||
@@ -23,43 +26,39 @@
 	    navigator.myGetMedia({ video: true }, connect, error);
 	}
 
+	cameraApi.captureImage = function() {
+	    var canvas = document.createElement('canvas');
+	    canvas.id = 'hiddenCanvas';
+	    //add canvas to the body element
+	    var ctx = canvas.getContext('2d');
+	    canvas.width = video.videoWidth;
+	    canvas.height = video.videoHeight;
+	    ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+	    //save canvas image as data url
+	    dataURL = canvas.toDataURL();
+
+		return dataURL;
+	}
+
+	cameraApi.disable_camera = function() {
+		if(video != null) {
+			video.pause();
+			video_stream.stop();
+		}
+	}
+
 	function connect(stream) {
-		console.log("CONNECT");
+		video_stream = stream;
 	    video = document.getElementById("photo-video");
 	    video.src = window.URL ? window.URL.createObjectURL(stream) : stream;
 	    video.play();
+	    document.getElementById("photo-button").disabled = false;
 	}
 
 	function error(e) { 
 		console.log(e);
 		document.getElementById("photo-button").disabled = true;
 		alert(e);
-	}
-
-	cameraApi.captureImage = function() {
-		console.log("CAPTURE");
-	    var canvas = document.createElement('canvas');
-	    canvas.id = 'hiddenCanvas';
-	    //add canvas to the body element
-	    document.body.appendChild(canvas);
-	    //add canvas to #canvasHolder
-	    document.getElementById('canvasHolder').appendChild(canvas);
-	    var ctx = canvas.getContext('2d');
-	    canvas.width = video.videoWidth / 4;
-	    canvas.height = video.videoHeight / 4;
-	    ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-	    //save canvas image as data url
-	    dataURL = canvas.toDataURL();
-	    console.log(dataURL);
-		if(video != null) { video.pause(); }
-	}
-
-	var el = document.getElementById("photo-button");
-	if(el != null) {
-	    el.addEventListener("click", function() {        
-	        window.cameraApi.captureImage();
-	        map.setImageMark(self);
-	    }, false)
 	}
 
 	window.cameraApi = cameraApi;
