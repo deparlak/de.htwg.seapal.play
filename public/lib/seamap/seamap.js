@@ -919,7 +919,7 @@
             var mark = {}
             mark.id = marksCount.toString();
             mark.label = "Mark "+marksCount;
-            mark.detailed = "created on blabla..";
+            mark.detailed = getCurrentDateTime();
             var position = currentPosition;
             var thnail = image[0];
             var picture = image[1];
@@ -975,6 +975,17 @@
                 },
                 'href' : picture
             });
+        }
+        /* Gets the current date and time in a string */
+        function getCurrentDateTime() {
+            var currentdate = new Date(); 
+            var datetime = currentdate.getDate() + "/"
+                + (currentdate.getMonth()+1)  + "/" 
+                + currentdate.getFullYear() + " "  
+                + currentdate.getHours() + ":"  
+                + currentdate.getMinutes() + ":" 
+                + currentdate.getSeconds();
+            return datetime;
         }
 
         /**
