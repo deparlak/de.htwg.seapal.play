@@ -922,6 +922,8 @@
             mark.detailed = "created on blabla..";
             var position = currentPosition;
             var thnail = image[0];
+            var picture = image[1];
+            var picture_detailed = mark.detailed;
             mark.onMap = new google.maps.Marker({
                 map: map,
                 position: position,
@@ -935,7 +937,7 @@
 
             new LeftClick(mark.onMap);
             google.maps.event.addListener(mark.onMap, 'leftclick', function(event) {
-                console.log("CLICKED");
+                openFancybox(picture, picture_detailed);
             });
             
             marks[marksCount.toString()] = mark;
@@ -955,6 +957,25 @@
             var event = e;
             google.maps.event.trigger(marker, 'leftclick', event);
         };
+        /* Opens a fancybox with the image */
+        function openFancybox(picture, text) {
+            $.fancybox({
+                'autoScale': true,
+                'transitionIn': 'elastic',
+                'transitionOut': 'elastic',
+                'speedIn': 500,
+                'speedOut': 300,
+                'autoDimensions': true,
+                'centerOnScroll': true,
+                'title' : text,
+                'helpers' : {
+                    title : {
+                        type : 'over'
+                    }   
+                },
+                'href' : picture
+            });
+        }
 
         /**
         * *********************************************************************************

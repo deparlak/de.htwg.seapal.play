@@ -64,6 +64,9 @@ $(document).ready(function() {
         console.log('icon-discardTarget');
     });
 
+    /**
+      * Closes the connection to the camera when photo modal is closed 
+      */
     $('#modal-photo').on('hidden.bs.modal', function() {
         window.cameraApi.disable_camera();
     });
