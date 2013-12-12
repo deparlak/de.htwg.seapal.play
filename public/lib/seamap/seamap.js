@@ -211,6 +211,9 @@
 
         // The current position of the ship (fake or real depends if browser supports geolocation and users permission)
         var currentPosition = null;
+
+        // Supresses the click event when longtouch is used
+        var supressClick = false;
         
         // maps
         var map = null;
@@ -894,7 +897,9 @@
             });
 
             google.maps.event.addListener(mark.onMap, 'click', function(event) {
-                openFancybox(picture, picture_detailed);
+                if(!supressClick) {
+                    openFancybox(picture, picture_detailed);
+                }
             });
 
             google.maps.event.addListener(mark.onMap, 'rightclick', function(event) {
@@ -903,7 +908,11 @@
 
             new LongPress(mark.onMap, 500);
             google.maps.event.addListener(mark.onMap, 'longpress', function(event) {
+                supressClick = true;
                 showContextMenu(event.latLng, ContextMenuTypes.DELETE_MARKER, mark);
+                setTimeout(function() {
+                    supressClick = false;
+                }, 500);
             });
             
             marks[marksCount.toString()] = mark;
