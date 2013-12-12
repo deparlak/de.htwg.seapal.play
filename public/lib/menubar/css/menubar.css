@@ -415,6 +415,13 @@ input.menubar-search:focus {
         content: "\f015"
 }
 
+.icon-notSelectedBoat::after{
+        content: ""
+}
+
+.icon-selectedBoat::after{
+        content: "\f00c"
+}
 
 
 /* specification of the icons from the tools */

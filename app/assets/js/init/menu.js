@@ -101,6 +101,12 @@ $(document).ready(function() {
         ev.preventDefault();
         console.log("inpurt");
     });    
+    
+    menu.addCallback('icon-notSelectedBoat', function (self) {
+        $('.icon-selectedBoat').removeClass('icon-selectedBoat').addClass('icon-notSelectedBoat');
+        self.removeClass('icon-notSelectedBoat').addClass('icon-selectedBoat');
+        map.selectBoat(self.data('id'));
+    });
   
   
  //   menu.openMenu();

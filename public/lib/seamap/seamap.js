@@ -175,6 +175,10 @@
             map.setMapTypeId(google.maps.MapTypeId.ROADMAP);
             initOpenSeaMaps();
         };
+        /* select a boat */
+        this.selectBoat = function(id) {
+            console.log("Selected boat "+id);
+        };
         
         
         /* The callbacks list can be used to get notified about events. */
@@ -463,11 +467,16 @@
                 map: map,
                 position: null,
                 title:"crosshair",
-                icon: options.crosshairOptions.markerOptions.image
+                icon: options.crosshairOptions.markerOptions.image,
+                draggable: true
             });
             
             // init left-click context menu listener
             google.maps.event.addListener(crosshairMarker, 'click', function(event) {
+                showContextMenu(event.latLng, ContextMenuTypes.DEFAULT, crosshairMarker);
+            });
+            
+            google.maps.event.addListener(crosshairMarker, 'drag', function(event) { 
                 showContextMenu(event.latLng, ContextMenuTypes.DEFAULT, crosshairMarker);
             });
             

@@ -88,13 +88,13 @@
                                             Your Crew
                                         </div>
                                     </li>
-                                    <div id="crew"></div>
+                                    <div id="logbook-myCrews"></div>
                                     <li class="heading">
                                         <div class="heading1">
                                             You are Crew Member of
                                         </div>
                                     </li>
-                                    <div id="logbook-memberOfCrews"></div>
+                                    <div id="logbook-inCrews"></div>
                                 </div>
                                 <div id="boats" class="inactive-logbook">
                                     <li class="heading">
@@ -113,13 +113,19 @@
                                             Your Boats
                                         </div>
                                     </li>
-                                    <div id="logbook-myBoats"></div>
+                                    <div id="logbook-myBoats">
+                                        <li><a class="menu-icon icon-selectedBoat" data-id="1">Boat 1</a></li>
+                                        <li><a class="menu-icon icon-notSelectedBoat" data-id="2">Boat 2</a></li>
+                                    </div>
                                     <li class="heading">
                                         <div class="heading1">
                                             Boats you have access to
                                         </div>
                                     </li>
-                                    <div id="logbook-accessibleBoats"></div>
+                                    <div id="logbook-accessibleBoats">
+                                        <li><a class="menu-icon icon-notSelectedBoat" data-id="3">Foreign Boat 1</a></li>
+                                        <li><a class="menu-icon icon-notSelectedBoat" data-id="4">Foreign Boat 2</a></li>
+                                    </div>
                                 
                                 </div>
                                 <div id="logbook" class="inactive-logbook">
@@ -128,7 +134,9 @@
                                             Select a logbook to view trips
                                         </div>
                                     </li>
+                                    <div id="logbook-trips"></div>
                                 </div>
+
                             </ul>
                         
                             <ul id="menu-routes" class="menubar-menu inactive-menu-list">
