@@ -912,7 +912,7 @@
                 showContextMenu(event.latLng, ContextMenuTypes.DELETE_MARKER, mark);
                 setTimeout(function() {
                     supressClick = false;
-                }, 500);
+                }, 1000);
             });
             
             marks[marksCount.toString()] = mark;
