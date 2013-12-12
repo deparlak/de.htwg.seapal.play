@@ -928,9 +928,11 @@
             var mark = {}
             mark.id = marksCount.toString();
             mark.label = "Mark "+marksCount;
-            mark.detailed = "created on blabla..";
+            mark.detailed = getCurrentDateTime();
             var position = currentPosition;
             var thnail = image[0];
+            var picture = image[1];
+            var picture_detailed = mark.detailed;
             mark.onMap = new google.maps.Marker({
                 map: map,
                 position: position,
@@ -941,10 +943,58 @@
             google.maps.event.addListener(mark.onMap, 'rightclick', function(event) {
                 showContextMenu(event.latLng, ContextMenuTypes.DELETE_MARKER, mark);
             });
+
+            new LeftClick(mark.onMap);
+            google.maps.event.addListener(mark.onMap, 'leftclick', function(event) {
+                openFancybox(picture, picture_detailed);
+            });
             
             marks[marksCount.toString()] = mark;
             marksCount++;
             callbacks[events.ADDED_MARK].fire(mark);
+        }
+        /* Handles left click event on image marker */
+        function LeftClick(marker) {
+            var me = this;
+            me.marker_ = marker;
+            google.maps.event.addListener(marker, 'mouseup', function(e) {
+                me.onMouseUp_(e);
+            });
+        }
+        LeftClick.prototype.onMouseUp_ = function(e) {
+            var marker = this.marker_;
+            var event = e;
+            google.maps.event.trigger(marker, 'leftclick', event);
+        };
+        /* Opens a fancybox with the image */
+        function openFancybox(picture, text) {
+            $.fancybox({
+                'autoScale': true,
+                'transitionIn': 'elastic',
+                'transitionOut': 'elastic',
+                'speedIn': 500,
+                'speedOut': 300,
+                'autoDimensions': true,
+                'centerOnScroll': true,
+                'title' : text,
+                'helpers' : {
+                    title : {
+                        type : 'over'
+                    }   
+                },
+                'href' : picture
+            });
+        }
+        /* Gets the current date and time in a string */
+        function getCurrentDateTime() {
+            var currentdate = new Date(); 
+            var datetime = currentdate.getDate() + "/"
+                + (currentdate.getMonth()+1)  + "/" 
+                + currentdate.getFullYear() + " "  
+                + currentdate.getHours() + ":"  
+                + currentdate.getMinutes() + ":" 
+                + currentdate.getSeconds();
+            return datetime;
         }
 
         /**
