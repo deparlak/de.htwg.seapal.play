@@ -931,32 +931,18 @@
                 draggable: false
             });
 
-            google.maps.event.addListener(mark.onMap, 'rightclick', function(event) {
-                showContextMenu(event.latLng, ContextMenuTypes.DELETE_MARKER, mark);
+            google.maps.event.addListener(mark.onMap, 'click', function(event) {
+                openFancybox(picture, picture_detailed);
             });
 
-            new LeftClick(mark.onMap);
-            google.maps.event.addListener(mark.onMap, 'leftclick', function(event) {
-                openFancybox(picture, picture_detailed);
+            google.maps.event.addListener(mark.onMap, 'rightclick', function(event) {
+                showContextMenu(event.latLng, ContextMenuTypes.DELETE_MARKER, mark);
             });
             
             marks[marksCount.toString()] = mark;
             marksCount++;
             callbacks[events.ADDED_MARK].fire(mark);
         }
-        /* Handles left click event on image marker */
-        function LeftClick(marker) {
-            var me = this;
-            me.marker_ = marker;
-            google.maps.event.addListener(marker, 'mouseup', function(e) {
-                me.onMouseUp_(e);
-            });
-        }
-        LeftClick.prototype.onMouseUp_ = function(e) {
-            var marker = this.marker_;
-            var event = e;
-            google.maps.event.trigger(marker, 'leftclick', event);
-        };
         /* Opens a fancybox with the image */
         function openFancybox(picture, text) {
             $.fancybox({
