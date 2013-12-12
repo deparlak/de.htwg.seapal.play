@@ -215,6 +215,9 @@
 
         // The current position of the ship (fake or real depends if browser supports geolocation and users permission)
         var currentPosition = null;
+
+        // Supresses the click event when longtouch is used
+        var supressClick = false;
         
         // maps
         var map = null;
@@ -417,44 +420,6 @@
                 }
             });
         }
-
-        /**
-        * *********************************************************************************
-        * Recognizes a long click / long touch
-        * *********************************************************************************
-        */
-        function LongPress(map, length) {
-            this.length_ = length;
-            var me = this;
-            me.map_ = map;
-            me.timeoutId_ = null;
-            google.maps.event.addListener(map, 'mousedown', function(e) {
-                me.onMouseDown_(e);
-            });
-            google.maps.event.addListener(map, 'mouseup', function(e) {
-                me.onMouseUp_(e);
-            });
-            google.maps.event.addListener(map, 'drag', function(e) {
-                me.onMapDrag_(e);
-            });
-        };
-
-        LongPress.prototype.onMouseUp_ = function(e) {
-            clearTimeout(this.timeoutId_);
-        };
-
-        LongPress.prototype.onMouseDown_ = function(e) {
-            clearTimeout(this.timeoutId_);
-            var map = this.map_;
-            var event = e;
-            this.timeoutId_ = setTimeout(function() {
-                google.maps.event.trigger(map, 'longpress', event);
-            }, this.length_);
-        };
-
-        LongPress.prototype.onMapDrag_ = function(e) {
-            clearTimeout(this.timeoutId_);
-        };
         
         /**
         * *********************************************************************************
@@ -940,32 +905,29 @@
                 draggable: false
             });
 
+            google.maps.event.addListener(mark.onMap, 'click', function(event) {
+                if(!supressClick) {
+                    openFancybox(picture, picture_detailed);
+                }
+            });
+
             google.maps.event.addListener(mark.onMap, 'rightclick', function(event) {
                 showContextMenu(event.latLng, ContextMenuTypes.DELETE_MARKER, mark);
             });
 
-            new LeftClick(mark.onMap);
-            google.maps.event.addListener(mark.onMap, 'leftclick', function(event) {
-                openFancybox(picture, picture_detailed);
+            new LongPress(mark.onMap, 500);
+            google.maps.event.addListener(mark.onMap, 'longpress', function(event) {
+                supressClick = true;
+                showContextMenu(event.latLng, ContextMenuTypes.DELETE_MARKER, mark);
+                setTimeout(function() {
+                    supressClick = false;
+                }, 1000);
             });
             
             marks[marksCount.toString()] = mark;
             marksCount++;
             callbacks[events.ADDED_MARK].fire(mark);
         }
-        /* Handles left click event on image marker */
-        function LeftClick(marker) {
-            var me = this;
-            me.marker_ = marker;
-            google.maps.event.addListener(marker, 'mouseup', function(e) {
-                me.onMouseUp_(e);
-            });
-        }
-        LeftClick.prototype.onMouseUp_ = function(e) {
-            var marker = this.marker_;
-            var event = e;
-            google.maps.event.trigger(marker, 'leftclick', event);
-        };
         /* Opens a fancybox with the image */
         function openFancybox(picture, text) {
             $.fancybox({
@@ -1192,44 +1154,6 @@
             
             return marker;
         }
-        
-        /**
-        * *********************************************************************************
-        * Recognizes a long click / long touch
-        * *********************************************************************************
-        */
-        function LongPress(map, length) {
-            this.length_ = length;
-            var me = this;
-            me.map_ = map;
-            me.timeoutId_ = null;
-            google.maps.event.addListener(map, 'mousedown', function(e) {
-                me.onMouseDown_(e);
-            });
-            google.maps.event.addListener(map, 'mouseup', function(e) {
-                me.onMouseUp_(e);
-            });
-            google.maps.event.addListener(map, 'drag', function(e) {
-                me.onMapDrag_(e);
-            });
-        };
-
-        LongPress.prototype.onMouseUp_ = function(e) {
-            clearTimeout(this.timeoutId_);
-        };
-
-        LongPress.prototype.onMouseDown_ = function(e) {
-            clearTimeout(this.timeoutId_);
-            var map = this.map_;
-            var event = e;
-            this.timeoutId_ = setTimeout(function() {
-                google.maps.event.trigger(map, 'longpress', event);
-            }, this.length_);
-        };
-
-        LongPress.prototype.onMapDrag_ = function(e) {
-            clearTimeout(this.timeoutId_);
-        };
 
         /**
         * *********************************************************************************
@@ -1361,6 +1285,44 @@
     };
     
     $.seamap.options = options;
+
+    /**
+    * *********************************************************************************
+    * Recognizes a long click / long touch
+    * *********************************************************************************
+    */
+    function LongPress(map, length) {
+        this.length_ = length;
+        var me = this;
+        me.map_ = map;
+        me.timeoutId_ = null;
+        google.maps.event.addListener(map, 'mousedown', function(e) {
+            me.onMouseDown_(e);
+        });
+        google.maps.event.addListener(map, 'mouseup', function(e) {
+            me.onMouseUp_(e);
+        });
+        google.maps.event.addListener(map, 'drag', function(e) {
+            me.onMapDrag_(e);
+        });
+    };
+
+    LongPress.prototype.onMouseUp_ = function(e) {
+        clearTimeout(this.timeoutId_);
+    };
+
+    LongPress.prototype.onMouseDown_ = function(e) {
+        clearTimeout(this.timeoutId_);
+        var map = this.map_;
+        var event = e;
+        this.timeoutId_ = setTimeout(function() {
+            google.maps.event.trigger(map, 'longpress', event);
+        }, this.length_);
+    };
+
+    LongPress.prototype.onMapDrag_ = function(e) {
+        clearTimeout(this.timeoutId_);
+    };
 
     // extend jquery with our new fancy seamap plugin
     $.fn.seamap = function( opts ) {
