@@ -11,6 +11,9 @@ $(document).ready(function() {
     
     events = map.getEvents();
     
+    var templateRoutes = Handlebars.compile($("#template-routes").html());
+    var templateMarks = Handlebars.compile($("#template-marks").html());
+    
     map.addCallback(events.CREATED_ROUTE, function (self) {
         $("#routes li a").each(function() {
             /* de-select other routes */
@@ -18,7 +21,7 @@ $(document).ready(function() {
                 $(this).removeClass('icon-selectedRoute').addClass('icon-notSelectedRoute');
             }
         });
-        $("#routes").append('<li><a class="menu-icon icon-selectedRoute action" data-id='+self.id+'>'+self.label+'</a></li>');
+        $("#routes").append(templateRoutes(self));
     });
     
     map.addCallback(events.DELETED_ROUTE, function (self) {
@@ -31,7 +34,7 @@ $(document).ready(function() {
     });
 
     map.addCallback(events.ADDED_MARK, function (self) {
-        $("#marks").append('<li><a class="menu-icon icon-selectedMark action" data-id='+self.id+'>'+self.label+'</a></li>');
+        $("#marks").append(templateMarks(self));
     });
 
     map.addCallback(events.NO_GEO_SUPPORT, function (self) {

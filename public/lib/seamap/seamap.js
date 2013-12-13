@@ -752,7 +752,7 @@
                 addRouteMarker(position);
             }
             routeCounter++;
-            callbacks[events.CREATED_ROUTE].fire(route);
+            callbacks[events.CREATED_ROUTE].fire([route]);
         }
                 
         /**
@@ -880,7 +880,7 @@
             
             marks[marksCount.toString()] = mark;
             marksCount++;
-            callbacks[events.ADDED_MARK].fire(mark);
+            callbacks[events.ADDED_MARK].fire([mark]);
         }
 
         /**
@@ -926,7 +926,7 @@
             
             marks[marksCount.toString()] = mark;
             marksCount++;
-            callbacks[events.ADDED_MARK].fire(mark);
+            callbacks[events.ADDED_MARK].fire([mark]);
         }
         /* Opens a fancybox with the image */
         function openFancybox(picture, text) {
