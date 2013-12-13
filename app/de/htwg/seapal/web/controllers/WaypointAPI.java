@@ -57,8 +57,7 @@ public class WaypointAPI extends Controller {
         // TODO check if waypoint belongs to account currently logged in
 		logger.info("WaypointAPI", "--> addWaypoint");
 		Form<Waypoint> filledForm = form.bindFromRequest();
-		Map<String, String> data = form.data();
-		logger.info("Filled Form Data" , filledForm.toString());
+		//logger.info("Filled Form Data" , filledForm.toString());
 
 		ObjectNode response = Json.newObject();
 

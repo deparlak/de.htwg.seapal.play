@@ -1,13 +1,13 @@
 /* boat_info.js */
 
 $(document).ready(function() {
-	
+
 	var waypointId = $('#waypoint_id').val();
-	
+
 	if (waypointId != "") {
 		loadWaypoint(waypointId);
 	}
-	
+
 	$('#form').submit(function(event) {
 		event.preventDefault();
 		var tripId = $('#trip_id').val();
@@ -16,8 +16,9 @@ $(document).ready(function() {
 		var $date = $(this.date)
 		$date.val(Date.parse($date.val()));
 		var $waypointData = $(this);
-		$(this).date = $date.val();
-		
+        // TODO FIX ME
+        $(this).date = 1337;
+
 		jsRoutes.de.htwg.seapal.web.controllers.WaypointAPI.addWaypoint().ajax({
 			data: $(this).serialize(),
 			dataType: "json",
@@ -34,24 +35,24 @@ $(document).ready(function() {
 			}
 		});
 	});
-	
-	
+
+
 
 	$('.datepicker-small').datepicker();
 
 	function initStaticSeamap(waypoint) {
 		jsonObj = [];
-		
+
 		jsonObj.push({lat: waypoint.latitude, lng : waypoint.longitude});
-		
+
 		console.log(jsonObj);
 
 		var config = {
 			defaultRoute 	: jsonObj,
 			height 			: '350px',
-			mode 			: "NOTINTERACTIVE" 
+			mode 			: "NOTINTERACTIVE"
 		};
-		
+
 		if(jsonObj.length > 0) {
 			config.startLat  = jsonObj[0].lat;
 			config.startLong = jsonObj[0].lng;
