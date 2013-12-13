@@ -1,27 +1,26 @@
 package de.htwg.seapal.database.impl;
 
-import java.util.LinkedList;
-import java.util.List;
-import java.util.UUID;
-
+import com.google.inject.Inject;
+import com.google.inject.name.Named;
+import de.htwg.seapal.Constants;
+import de.htwg.seapal.database.ITripDatabase;
+import de.htwg.seapal.model.ITrip;
+import de.htwg.seapal.model.impl.Trip;
+import de.htwg.seapal.utils.logging.ILogger;
 import org.ektorp.CouchDbConnector;
+import org.ektorp.ViewQuery;
 import org.ektorp.support.CouchDbRepositorySupport;
 import org.ektorp.support.GenerateView;
 
-import com.google.inject.Inject;
-import com.google.inject.name.Named;
-
-import de.htwg.seapal.database.ITripDatabase;
-import de.htwg.seapal.model.ITrip;
-import de.htwg.seapal.model.IWaypoint;
-import de.htwg.seapal.model.impl.Trip;
-import de.htwg.seapal.utils.logging.ILogger;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.UUID;
 
 
 public class TripDatabase extends CouchDbRepositorySupport<Trip> implements ITripDatabase {
 
 	private final ILogger logger;
-	
+
 	@Inject
 	protected TripDatabase(@Named("tripCouchDbConnector") CouchDbConnector db, ILogger logger) {
 		super(Trip.class, db, true);
@@ -41,9 +40,9 @@ public class TripDatabase extends CouchDbRepositorySupport<Trip> implements ITri
 	}
 
 	@Override
-	public boolean save(ITrip data) {	
+	public boolean save(ITrip data) {
 		Trip entity = (Trip)data;
-		
+
 		if (entity.isNew()) {
 			// ensure that the id is generated and revision is null for saving a new entity
 			entity.setId(UUID.randomUUID().toString());
@@ -51,7 +50,7 @@ public class TripDatabase extends CouchDbRepositorySupport<Trip> implements ITri
 			add(entity);
 			return true;
 		}
-		
+
 		logger.info("TripDatabase", "Updating entity with UUID: " + entity.getId());
 		update(entity);
 		return false;
@@ -85,5 +84,11 @@ public class TripDatabase extends CouchDbRepositorySupport<Trip> implements ITri
 	public List<ITrip> findByBoat(UUID boatId) {
 		return new LinkedList<ITrip>(queryView("by_boat", boatId.toString()));
 	}
+	
+    @Override
+    public List<Trip> getTrips(String key, String viewId) {
+        ViewQuery query = new ViewQuery().designDocId(Constants.DESIGN_DOCUMENT).viewName(viewId).key(key);
 
+        return db.queryView(query, Trip.class);
+    }
 }

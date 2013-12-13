@@ -1,25 +1,25 @@
 package de.htwg.seapal.database.impl;
 
-import java.util.LinkedList;
-import java.util.List;
-import java.util.UUID;
-
-import org.ektorp.CouchDbConnector;
-import org.ektorp.support.CouchDbRepositorySupport;
-
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
-
+import de.htwg.seapal.Constants;
 import de.htwg.seapal.database.IBoatDatabase;
 import de.htwg.seapal.model.IBoat;
 import de.htwg.seapal.model.impl.Boat;
 import de.htwg.seapal.utils.logging.ILogger;
+import org.ektorp.CouchDbConnector;
+import org.ektorp.ViewQuery;
+import org.ektorp.support.CouchDbRepositorySupport;
+
+import java.util.LinkedList;
+import java.util.List;
+import java.util.UUID;
 
 public class BoatDatabase extends CouchDbRepositorySupport<Boat> implements
 		IBoatDatabase {
 
 	private final ILogger logger;
-	
+
 	@Inject
 	protected BoatDatabase(@Named("boatCouchDbConnector") CouchDbConnector db, ILogger logger) {
 		super(Boat.class, db, true);
@@ -41,7 +41,7 @@ public class BoatDatabase extends CouchDbRepositorySupport<Boat> implements
 	@Override
 	public boolean save(IBoat data) {
 		Boat entity = (Boat)data;
-		
+
 		if (entity.isNew()) {
 			// ensure that the id is generated and revision is null for saving a new entity
 			entity.setId(UUID.randomUUID().toString());
@@ -49,7 +49,7 @@ public class BoatDatabase extends CouchDbRepositorySupport<Boat> implements
 			add(entity);
 			return true;
 		}
-		
+
 		update(entity);
 		return false;
 	}
@@ -76,5 +76,11 @@ public class BoatDatabase extends CouchDbRepositorySupport<Boat> implements
 	public boolean close() {
 		return true;
 	}
+	
+    @Override
+    public List<Boat> getBoats(String userid, String viewId) {
+        ViewQuery query = new ViewQuery().designDocId(Constants.DESIGN_DOCUMENT).viewName(viewId).key(userid);
 
+        return db.queryView(query, Boat.class);
+    }
 }
