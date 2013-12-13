@@ -38,17 +38,22 @@
 }
 .form-signInSeapal input[type="password"]
 {
-    margin-bottom: 10px;
+    margin-bottom: -1px;
     border-top-left-radius: 0;
     border-top-right-radius: 0;
 }
+
+.form-signInSeapal  button {
+    margin-top: 10px;
+}
+
 .account-wall
 {
     margin-top: auto;
     margin-left: auto;
     margin-right: auto;
     width: 360px;
-    height: 368px;
+    height: auto;
     margin-top: 70px;
     padding: 40px 0px 20px 0px;
     background-color: #f7f7f7;

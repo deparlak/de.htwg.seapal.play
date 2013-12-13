@@ -92,8 +92,9 @@ $(document).ready(function() {
         $('#modal-signInSeapal').modal('show');
     });
     
-    menu.addCallback('icon-registerSeapal', function (self) {
-        console.log("registerSeapal");
+    menu.addCallback('icon-signUpSeapal', function (self) {
+        menu.closeMenu();
+        $('#modal-signUpSeapal').modal('show');
     });
   
     $("#search-marksRoutesTracks").keyup( function(ev) {
