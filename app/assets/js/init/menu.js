@@ -89,12 +89,12 @@ $(document).ready(function() {
     
     menu.addCallback('icon-signInSeapal', function (self) {
         menu.closeMenu();
-        $('#modal-signInSeapal').modal('show');
+        window.location = "/login";
     });
     
     menu.addCallback('icon-signUpSeapal', function (self) {
         menu.closeMenu();
-        $('#modal-signUpSeapal').modal('show');
+        window.location = "/signup";
     });
   
     $("#search-marksRoutesTracks").keyup( function(ev) {

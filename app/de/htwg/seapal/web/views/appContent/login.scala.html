@@ -1,0 +1,34 @@
+@(form: Form[de.htwg.seapal.web.controllers.secure.impl.Account], link: play.api.mvc.Call, create: Boolean, title: String)
+
+<div class="offset2">
+    @helper.form(link, 'class -> "form-horizontal") {
+          @if(flash.contains("success")) {
+              <p class="success">@flash.get("success")</p>
+          }
+          @if(form.hasGlobalErrors) {
+              <p class="error">@form.globalError.message</p>
+          }
+          <div class="control-group">
+              <label class="control-label" for="inputEmail">Email</label>
+              <div class="controls">
+                  <input type="email" name="accountName" placeholder="Email">
+              </div>
+          </div>
+          <div class="control-group">
+              <label class="control-label" for="inputPassword">Password</label>
+              <div class="controls">
+                  <input type="password" name="accountPassword" placeholder="Password">
+              </div>
+          </div>
+          <div class="control-group">
+              <div class="controls">
+                  @if(create) {
+                      <button type="submit" class="btn">Create account</button>
+                      <a href="@de.htwg.seapal.web.controllers.routes.Application.login()"><input type="button" class="btn-info" value="Login"/></a>
+                  } else {
+                      <button type="submit" class="btn">Sign in</button>
+                      <a href="@de.htwg.seapal.web.controllers.routes.Application.signup()"><input type="button" class="btn-info" value="Create Account"/></a>
+                  }
+              </div>
+          </div>
+    }</div>
