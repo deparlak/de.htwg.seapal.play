@@ -1,23 +1,28 @@
 @(form: Form[de.htwg.seapal.web.controllers.secure.impl.Account], link: play.api.mvc.Call)
-
-@helper.form(link, 'class -> "form-horizontal") {
-    @if(flash.contains("success")) {
-        <p class="success">@flash.get("success")</p>
-    }
-    @if(form.hasGlobalErrors) {
-        <p class="error">@form.globalError.message</p>
-    }
-    <div class="account-wall">
-        <img class="profile-img" src="@routes.Assets.at("images/seapal_launcher.png")" alt="Seapal">
-        <form class="form-signInSeapal">
-            <input type="text" class="form-control" placeholder="Choose your Username" required autofocus>
-            <input type="text" class="form-control" name="accountName" placeholder="Enter your Email" required autofocus>
-            <input type="password" class="form-control" name="accountPassword" placeholder="Choose your Password" required>
-            <input type="password" class="form-control" placeholder="Confirm your Password" required>
-            <button class="btn btn-lg btn-success btn-block" type="submit">
-                Sign Up for Seapal
-            </button>
-            <a href="#" class="pull-right need-help">Need help? </a><span class="clearfix"></span>
-        </form>
-    </div>
-}
+<!DOCTYPE HTML>
+<html>
+    <head>
+        @appContent.header()
+    </head>
+    <body>
+        @if(flash.contains("success")) {
+            <p class="success">@flash.get("success")</p>
+        }
+        @if(form.hasGlobalErrors) {
+            <p class="error">@form.globalError.message</p>
+        }
+        <div class="account-wall">
+            <img class="profile-img" src="@routes.Assets.at("images/seapal_launcher.png")" alt="Seapal">                  
+            @helper.form(link, 'class -> "form-signInSeapal") {
+                <input type="text" class="form-control" placeholder="Choose your Username" required autofocus>
+                <input type="text" class="form-control" name="accountName" placeholder="Enter your Email" required autofocus>
+                <input type="password" class="form-control" name="accountPassword" placeholder="Choose your Password" required>
+                <input type="password" class="form-control" placeholder="Confirm your Password" required>
+                <button class="btn btn-lg btn-success btn-block" type="submit">
+                    Sign Up for Seapal
+                </button>
+                <a href="#" class="pull-right need-help">Need help? </a><span class="clearfix"></span>
+            }
+        </div>
+    </body>
+</html>
