@@ -14,7 +14,7 @@ $(document).ready(function() {
         if (window.fullScreenApi.supportsFullScreen) {
             if (!window.fullScreenApi.isFullScreen()) {
                 window.fullScreenApi.requestFullScreen(document.body);
-                self.text("Normal");
+                self.text("Window");
             } else {
                 window.fullScreenApi.cancelFullScreen(document.body);
                 self.text("Fullscreen");
@@ -26,14 +26,14 @@ $(document).ready(function() {
     
     menu.addCallback('icon-map', function (self) {
         menu.closeMenu();
-        self.text("Satellite");
+        self.text("Map + Charts");
         self.removeClass('icon-map').addClass('icon-satellite');
         map.satellite();
     });
     
     menu.addCallback('icon-satellite', function (self) {
         menu.closeMenu();
-        self.text("Map + Charts");
+        self.text("Satellite");
         self.removeClass('icon-satellite').addClass('icon-map');
         map.roadmap();
     });
@@ -43,10 +43,16 @@ $(document).ready(function() {
         $('#modal-info').modal('show');
     });
 
-    menu.addCallback('marks-routes-tracks', function (self) {
+    menu.addCallback('marksRoutesTracks', function (self) {
         self.button('toggle');
-        $('.active-mrt').removeClass('active-mrt').addClass('inactive-mrt');
-        $(self.data('name')).removeClass('inactive-mrt').addClass('active-mrt');
+        $('.active-marksRoutesTracks').removeClass('active-marksRoutesTracks').addClass('inactive-marksRoutesTracks');
+        $(self.data('name')).removeClass('inactive-marksRoutesTracks').addClass('active-marksRoutesTracks');
+    });
+    
+    menu.addCallback('logbook', function (self) {
+        self.button('toggle');
+        $('.active-logbook').removeClass('active-logbook').addClass('inactive-logbook');
+        $(self.data('name')).removeClass('inactive-logbook').addClass('active-logbook');
     });
     
     menu.addCallback('icon-selectedMark', function (self) {
@@ -61,12 +67,13 @@ $(document).ready(function() {
     
     menu.addCallback('icon-selectedRoute', function (self) {
         self.removeClass('icon-selectedRoute').addClass('icon-notSelectedRoute');
-        console.log(self.data('id'));
+        map.hideRoute(self.data('id'));
     });
     
     menu.addCallback('icon-notSelectedRoute', function (self) {
+        $('.icon-selectedRoute').removeClass('icon-selectedRoute').addClass('icon-notSelectedRoute');
         self.removeClass('icon-notSelectedRoute').addClass('icon-selectedRoute');
-        console.log(self.data('id'));
+        map.visibleRoute(self.data('id'));
     });
     
     menu.addCallback('icon-selectedTrack', function (self) {
@@ -75,16 +82,30 @@ $(document).ready(function() {
     });
     
     menu.addCallback('icon-notSelectedTrack', function (self) {
+        $('.icon-selectedTrack').removeClass('icon-selectedTrack').addClass('icon-notSelectedTrack');
         self.removeClass('icon-notSelectedTrack').addClass('icon-selectedTrack');
         console.log(self.data('id'));
     });
+    
+    menu.addCallback('icon-signInSeapal', function (self) {
+        menu.closeMenu();
+        window.location = "/login";
+    });
+    
+    menu.addCallback('icon-signUpSeapal', function (self) {
+        menu.closeMenu();
+        window.location = "/signup";
+    });
   
-    $("#search-mrt").keyup( function(ev) {
+    $("#search-marksRoutesTracks").keyup( function(ev) {
         ev.stopPropagation();
         ev.preventDefault();
         console.log("inpurt");
     });    
-  
- //   menu.openMenu();
     
+    menu.addCallback('icon-notSelectedBoat', function (self) {
+        $('.icon-selectedBoat').removeClass('icon-selectedBoat').addClass('icon-notSelectedBoat');
+        self.removeClass('icon-notSelectedBoat').addClass('icon-selectedBoat');
+        map.selectBoat(self.data('id'));
+    });    
 });

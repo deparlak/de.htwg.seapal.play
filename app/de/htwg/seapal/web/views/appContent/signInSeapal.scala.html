@@ -1,0 +1,26 @@
+@(form: Form[de.htwg.seapal.web.controllers.secure.impl.Account], link: play.api.mvc.Call)
+<!DOCTYPE HTML>
+<html>
+    <head>
+        @appContent.header()
+    </head>
+    <body>
+        @if(flash.contains("success")) {
+            <p class="success">@flash.get("success")</p>
+        }
+        @if(form.hasGlobalErrors) {
+            <p class="error">@form.globalError.message</p>
+        }
+        <div class="account-wall">
+            <img class="profile-img" src="@routes.Assets.at("images/seapal_launcher.png")" alt="Seapal">
+            @helper.form(link, 'class -> "form-signInSeapal") {
+                <input type="text" class="form-control" name="accountName" placeholder="Email" required autofocus>
+                <input type="password" class="form-control" name="accountPassword" placeholder="Password" required>
+                <button class="btn btn-lg btn-primary btn-block" type="submit">
+                    Sign in
+                </button>
+                <a href="#" class="pull-right need-help">Need help? </a><span class="clearfix"></span>
+            }
+        </div>
+    </body>
+</html>

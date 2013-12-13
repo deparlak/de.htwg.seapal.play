@@ -1,0 +1,247 @@
+<!DOCTYPE HTML>
+<html>
+    <head>
+        @appContent.header()
+    </head>
+    <body>  
+        <div class="container" style="z-index: 2;  position: relative;"> 
+            <ul class="menubar-menu-main">
+                <li id="menu" class="menu-trigger">
+                    <a class="menubar-icon menubar-icon-menu"><span></span></a>
+                    <nav class="menubar-menu-wrapper">
+                        <div class="scroller">
+                            <ul id="menu-main" class="menubar-menu active-menu-list">
+                                <li><a class="menu-icon icon-fullscreen">Fullscreen</a></li>
+                                <li><a class="menu-icon icon-map action">Satellite</a></li>
+                                <li><a class="menu-icon icon-logbook link" data-link="menu-logbook">Logbook</a></li>
+                                <li><a class="menu-icon icon-dashboard">Dashboard</a></li>
+                                <li><a class="menu-icon icon-routes link" data-link="menu-routes">Marks, Routes, Tracks</a></li>
+                                <li><a class="menu-icon icon-charts">Navigation Charts</a></li>
+                                <li><a class="menu-icon icon-addOns">Add-ons</a></li>
+                                <li><a class="menu-icon icon-poi action">Points of Interest</a></li>
+                                <li><a class="menu-icon icon-weather">Weather</a></li>
+                                <li><a class="menu-icon icon-alarms link" data-link="menu-alarms">Alarms</a></li>
+                                <li><a class="menu-icon icon-info action">Info</a></li>
+                                <li><a class="menu-icon icon-settings link" data-link="menu-settings">Settings</a></li>
+                            </ul>                        
+                        
+                        
+                            <ul id="menu-logbook" class="menubar-menu inactive-menu-list">
+                                <li><a class="menu-icon icon-menuBack link" data-link="menu-main">Back</a></li>
+                                <!-- selector to switch between marks/routes/tracks -->
+                                <li>
+                                    <div class="btn-group-justified menubar-optionsSelector" data-toggle="buttons">
+                                        <label class="btn btn-primary action logbook active" data-name="#account">
+                                            <input type="radio">Account
+                                        </label>
+                                        <label class="btn btn-primary action logbook" data-name="#crew">
+                                            <input type="radio">Crew
+                                        </label>
+                                        <label class="btn btn-primary action logbook" data-name="#boats">
+                                            <input type="radio">Boats
+                                        </label>
+                                        <label class="btn btn-primary action logbook" data-name="#logbook">
+                                            <input type="radio">Logbook
+                                        </label>
+                                    </div>
+                                </li>
+                                <div id="account" class="active-logbook">
+                                    <li class="heading">
+                                        <div class="heading1">
+                                            About SeaPal Accounts
+                                        </div>
+                                    </li>
+                                    <li class="description">
+                                        <div class="description1">
+                                            The Seapal Logbook Feature can store your logbook data in the cloud. 
+                                            This enables you to access your logbooks from other devices or on the web. 
+                                            You just need to create an account. The first 10 trips are free of charge.
+                                        </div>
+                                    </li>
+                                    <li class="heading">
+                                        <div class="heading1">
+                                            Create your Account
+                                        </div>
+                                    </li>
+                                    <li><a class="menu-icon icon-signUpSeapal action">Create a Seapal Account</a></li>
+                                    <li class="heading">
+                                        <div class="heading1">
+                                            Sign In with an existing Account
+                                        </div>
+                                    </li>
+                                    <li><a class="menu-icon icon-signInSeapal action">Sign In</a></li>
+                                </div>
+                                <div id="crew" class="inactive-logbook">
+                                    <li class="heading">
+                                        <div class="heading1">
+                                            About SeaPal Crew
+                                        </div>
+                                    </li>
+                                    <li class="description">
+                                        <div class="description1">
+                                            You can invite others with an Account on SeaPal to read or contribute to your Logbook.
+                                            Likewise you can be invited to join someone elses logbook.
+                                        </div>
+                                    </li>
+                                    <li class="heading">
+                                        <div class="heading1">
+                                            Your Crew
+                                        </div>
+                                    </li>
+                                    <div id="logbook-myCrews"></div>
+                                    <li class="heading">
+                                        <div class="heading1">
+                                            You are Crew Member of
+                                        </div>
+                                    </li>
+                                    <div id="logbook-inCrews"></div>
+                                </div>
+                                <div id="boats" class="inactive-logbook">
+                                    <li class="heading">
+                                        <div class="heading1">
+                                            About SeaPal Boats
+                                        </div>
+                                    </li>
+                                    <li class="description">
+                                        <div class="description1">
+                                            With SeaPal you can keep a seperate Logbook for every boat.
+                                            You select one boat as active to access its Logbook.
+                                        </div>
+                                    </li>
+                                    <li class="heading">
+                                        <div class="heading1">
+                                            Your Boats
+                                        </div>
+                                    </li>
+                                    <div id="logbook-myBoats">
+                                        <li><a class="menu-icon icon-selectedBoat" data-id="1">Boat 1</a></li>
+                                        <li><a class="menu-icon icon-notSelectedBoat" data-id="2">Boat 2</a></li>
+                                    </div>
+                                    <li class="heading">
+                                        <div class="heading1">
+                                            Boats you have access to
+                                        </div>
+                                    </li>
+                                    <div id="logbook-accessibleBoats">
+                                        <li><a class="menu-icon icon-notSelectedBoat" data-id="3">Foreign Boat 1</a></li>
+                                        <li><a class="menu-icon icon-notSelectedBoat" data-id="4">Foreign Boat 2</a></li>
+                                    </div>
+                                
+                                </div>
+                                <div id="logbook" class="inactive-logbook">
+                                    <li class="heading">
+                                        <div class="heading1">
+                                            Select a logbook to view trips
+                                        </div>
+                                    </li>
+                                    <div id="logbook-trips"></div>
+                                </div>
+
+                            </ul>
+                        
+                            <ul id="menu-routes" class="menubar-menu inactive-menu-list">
+                                <li><a class="menu-icon icon-menuBack link" data-link="menu-main">Back</a></li>
+                                <!-- Search for marks/routes/tracks -->
+                                <li class="menubar-search-item menu-icon icon-searchMenu">
+                                    <input placeholder="Search" type="search" class="menubar-menu-search menubar-search" id="search-marksRoutesTracks">
+                                </li>
+                                <!-- selector to switch between marks/routes/tracks -->
+                                <li>
+                                    <div class="btn-group-justified menubar-optionsSelector" data-toggle="buttons">
+                                        <label class="btn btn-primary action marksRoutesTracks active" data-name="#marks">
+                                            <input type="radio">Marks
+                                        </label>
+                                        <label class="btn btn-primary action marksRoutesTracks" data-name="#routes">
+                                            <input type="radio">Routes
+                                        </label>
+                                        <label class="btn btn-primary action marksRoutesTracks" data-name="#tracks">
+                                            <input type="radio">Tracks
+                                        </label>
+                                    </div>
+                                </li>
+                                <!-- all marks -->
+                                <div id="marks" class="active-marksRoutesTracks"></div>
+                                <!-- all routes -->
+                                <div id="routes" class="inactive-marksRoutesTracks"></div>
+                                <!-- all tracks -->
+                                <div id="tracks" class="inactive-marksRoutesTracks"></div>
+                            </ul>
+                        
+                        
+                            <ul id="menu-alarms" class="menubar-menu inactive-menu-list">
+                                <li><a class="menu-icon icon-menuBack link" data-link="menu-main">Back</a></li>
+                                <li class="heading">
+                                    <div class="heading1">
+                                        Start tracking when
+                                    </div>
+                                </li>
+                                <li><a class="menu-icon icon-menuNone">Speed</a></li>
+                                <li class="heading">
+                                    <div class="heading1">
+                                        Stop tracking when
+                                    </div>
+                                </li>
+                                <li><a class="menu-icon icon-menuNone">Duration</a></li>
+                                <li><a class="menu-icon icon-menuNone">Speed</a></li>
+                                <li><a class="menu-icon icon-menuNone">Pos. not ch</a></li>
+                                <li><a class="menu-icon icon-menuNone">At mark</a></li>
+                                <li class="heading">
+                                    <div class="heading1">
+                                        Sound alarm when
+                                    </div>
+                                </li>
+                                <li><a class="menu-icon icon-menuNone">Pos. change</a></li>
+                            </ul>
+                        
+                            <ul id="menu-settings" class="menubar-menu inactive-menu-list">
+                                <li><a class="menu-icon icon-menuBack link" data-link="menu-main">Back</a></li>
+                                <li><a class="menu-icon icon-menuNone">Unit for distance</a></li>
+                                <li><a class="menu-icon icon-menuNone">Unit for temperature</a></li>
+                                <li><a class="menu-icon icon-menuNone">Track record interval</a></li>
+                                <li><a class="menu-icon icon-menuNone">History trend for dashboard</a></li>
+                                <li><a class="menu-icon icon-menuNone">Security circle radius</a></li>
+                            </ul>
+                        
+                        </div><!-- /menubar-scroller -->
+                    </nav>
+                </li>
+                
+                <li id="tools" class="tools-trigger">
+                    <a class="menubar-icon menubar-icon-tools"><span></span></a>
+                    <nav class="menubar-tools-wrapper">
+                        <div class="scroller">
+                        
+                            <ul id="tools-main" class="menubar-menu active-tools-list">
+                                <li><a class="tools-icon icon-searchPosition link" data-link="tools-searchPosition">Search for Position</a></li>
+                                <li><a class="tools-icon icon-startLogging action">Start Logging</a></li>
+                                <li><a class="tools-icon icon-takePhoto action">Take Photo</a></li>
+                                <li><a class="tools-icon icon-setMark action">Set Mark</a></li>
+                                <li><a class="tools-icon icon-setRoute action">Set Route</a></li>
+                                <li><a class="tools-icon icon-GetDistance action">Get Distance</a></li>
+                                <li><a class="tools-icon icon-PersonOverBoard action">Person over Board</a></li>
+                                <li><a class="tools-icon icon-SecurityCircle action">Security Circle</a></li>
+                                <li><a class="tools-icon icon-NorthUp action">North up</a></li>
+                                <li><a class="tools-icon icon-disableSleepMode action">Disable Sleep Mode</a></li>
+                                <li><a class="tools-icon icon-discardTarget action">Discard Target</a></li>
+                            </ul>
+                            
+                            <ul id="tools-searchPosition" class="menubar-menu inactive-tools-list">
+                                <li><a class="tools-icon icon-toolsBack link" data-link="tools-main">Back</a></li>
+                                <li class="menubar-search-item tools-icon icon-searchPosition">
+                                    <input placeholder="Search" type="search" class="menubar-tools-search menubar-search">
+                                </li>
+                            </ul>  
+                            
+                            
+                            
+                        </div><!-- /menubar-scroller -->
+                    </nav>
+                </li>
+            </ul>
+        </div><!-- /container -->
+                
+        <div id="map_canvas" style="height: 100%; position: absolute; top: 0; bottom: -200px; left: 0; right: 0; z-index: 0;"></div>
+        
+        @appContent.footer()
+    </body>
+</html>

@@ -9,18 +9,19 @@ $(document).ready(function() {
     tools = new menubar( 'tools' );
 
     tools.addCallback('icon-startLogging', function (self) {
-        
-        console.log('icon-startLogging');
+        self.text("Stop Logging");
+        self.removeClass('icon-startLogging').addClass('icon-stopLogging');
     });
     
     tools.addCallback('icon-stopLogging', function (self) {
-        
-        console.log('icon-stopLogging');
+        self.text("Start Logging");
+        self.removeClass('icon-stopLogging').addClass('icon-startLogging');
     });
     
     tools.addCallback('icon-takePhoto', function (self) {
-        
-        console.log('icon-takePhoto');
+        menu.closeMenu();        
+        window.cameraApi.setup("photo-video", "photo-button");
+        $('#modal-photo').modal('show');
     });
     
     tools.addCallback('icon-setMark', function (self) {
@@ -39,7 +40,6 @@ $(document).ready(function() {
     });  
     
     tools.addCallback('icon-PersonOverBoard', function (self) {
-        
         console.log('icon-PersonOverBoard');
     });  
     
@@ -61,5 +61,20 @@ $(document).ready(function() {
     tools.addCallback('icon-discardTarget', function (self) {
         
         console.log('icon-discardTarget');
-    });    
+    });
+
+    /**
+      * Closes the connection to the camera when photo modal is closed 
+      */
+    $('#modal-photo').on('hidden.bs.modal', function() {
+        window.cameraApi.disable_camera();
+    });
+
+    /**
+      * Handles the take photo click event!
+      */
+    $('#photo-button').on('click', function() {
+        var image = window.cameraApi.captureImage();
+        map.setImageMark(image);
+    });
 });

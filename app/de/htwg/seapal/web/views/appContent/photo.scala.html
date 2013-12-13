@@ -1,0 +1,24 @@
+<style>
+    #photo-video{height: 100%; width: 100%;}
+</style>
+
+<!-- Modal -->
+<div class="modal fade" id="modal-photo" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title tools-icon icon-takePhoto" id="myModalLabel">Take Photo</h4>
+            </div>
+            <div class="modal-body">
+                <video id="photo-video"></video>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" data-dismiss="modal" id="photo-button">Take it!</button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Abort</button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+<script type="text/javascript" src="@routes.Assets.at("js/init/camera.js")"></script>

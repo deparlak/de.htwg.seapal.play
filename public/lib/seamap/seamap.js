@@ -120,6 +120,11 @@
             }
             throw("Cannot add Callback for the event '"+event+"', because this event does not exist.");
         };
+
+        this.startBoatAnimation = function() {
+            startBoatAnimation();
+        };
+
         /* get the events list */
         this.getEvents = function () {
             return jQuery.extend(true, {}, events);
@@ -133,9 +138,20 @@
             /* set state to marker to set the marker on the next map action */
             state = States.MARKER;
         };
+        this.setImageMark = function(image) {
+            addImageMark(image);
+        }
         /* delete a mark with a specified id */
         this.deleteMark = function (id) {
         
+        };
+        /* hide the route by id */
+        this.hideRoute = function (id) {
+            hideActiveRoute();
+        };
+        /* visible the route by id */
+        this.visibleRoute = function (id) {
+            activateRoute(routes[id]);
         };
         /* hide the mark by id */
         this.hideMark = function (id) {
@@ -159,6 +175,10 @@
             map.setMapTypeId(google.maps.MapTypeId.ROADMAP);
             initOpenSeaMaps();
         };
+        /* select a boat */
+        this.selectBoat = function(id) {
+            console.log("Selected boat "+id);
+        };
         
         
         /* The callbacks list can be used to get notified about events. */
@@ -167,10 +187,12 @@
         var events = 
         {
             //TODO
-            SELECTED_ROUTE  :  "SelectRoute",
+            CREATED_ROUTE   :  "CreatedRoute",
+            DELETED_ROUTE   :  "DeletedRoute",
             FINISH_ROUTE    :  "FinishRouteRecording",
             ADDED_MARK      :  "AddedMark",
             DELETED_MARK    :  "DeletedMark",
+            NO_GEO_SUPPORT  :  "GeolocationNotSupported",
         };
         
         var options = $.seamap.options;
@@ -187,6 +209,15 @@
             "DEFAULT" : 0, 
             "DELETE_MARKER" : 1
         };
+
+        // checks if message for no geolocation support was shown
+        var noGeo_flag = false;
+
+        // The current position of the ship (fake or real depends if browser supports geolocation and users permission)
+        var currentPosition = null;
+
+        // Supresses the click event when longtouch is used
+        var supressClick = false;
         
         // maps
         var map = null;
@@ -198,9 +229,9 @@
         var boatMarker = null;
         
         // routes
-        var routeCounter = 1,
-            routes = [],
-            activeRoute = null;
+        var routes = {};
+        var routeCounter = 1;
+        var activeRoute = null;
 
         // distance
         var distanceroute = null;
@@ -238,12 +269,8 @@
             
             if ( options.mode !== "NOTINTERACTIVE" ) {
                 initContextMenu();    
-                initGoogleMapsListeners();    
-                startBoatAnimation();
-            } 
-            
-            initDefaultRoute();
-            
+                initGoogleMapsListeners();
+            }
             initCrosshairMarker();
         }
 
@@ -278,8 +305,6 @@
                 zoom: options.zoom,
                 center: new google.maps.LatLng(options.startLat, options.startLong),
             });
-            
-            $this.append("<div class='seamapsidebar' style='float:left;width:0%;height:100%;'><div class='seamapsidebar_inner'></div></div>");
         }
 
         /**
@@ -395,62 +420,6 @@
                 }
             });
         }
-
-        /**
-        * *********************************************************************************
-        * Recognizes a long click / long touch
-        * *********************************************************************************
-        */
-        function LongPress(map, length) {
-            this.length_ = length;
-            var me = this;
-            me.map_ = map;
-            me.timeoutId_ = null;
-            google.maps.event.addListener(map, 'mousedown', function(e) {
-                me.onMouseDown_(e);
-            });
-            google.maps.event.addListener(map, 'mouseup', function(e) {
-                me.onMouseUp_(e);
-            });
-            google.maps.event.addListener(map, 'drag', function(e) {
-                me.onMapDrag_(e);
-            });
-        };
-
-        LongPress.prototype.onMouseUp_ = function(e) {
-            clearTimeout(this.timeoutId_);
-        };
-
-        LongPress.prototype.onMouseDown_ = function(e) {
-            clearTimeout(this.timeoutId_);
-            var map = this.map_;
-            var event = e;
-            this.timeoutId_ = setTimeout(function() {
-                google.maps.event.trigger(map, 'longpress', event);
-            }, this.length_);
-        };
-
-        LongPress.prototype.onMapDrag_ = function(e) {
-            clearTimeout(this.timeoutId_);
-        };
-        
-        /**
-        * *********************************************************************************
-        * Initializes the default route of the map, if options.defaultRoute was set.
-        * *********************************************************************************
-        */
-        function initDefaultRoute() {
-            if(options.defaultRoute == null) return;
-            
-            routeId = routeCounter++;
-            
-            activeRoute = routes[routeId] = new $.seamap.route(routeId, map, "ROUTE");    
-            activeRoute.setNotInteractive();
-            
-            $.each(options.defaultRoute, function() {    
-                addRouteMarker(new google.maps.LatLng(this.lat, this.lng));    
-            });
-        }
         
         /**
         * *********************************************************************************
@@ -463,11 +432,16 @@
                 map: map,
                 position: null,
                 title:"crosshair",
-                icon: options.crosshairOptions.markerOptions.image
+                icon: options.crosshairOptions.markerOptions.image,
+                draggable: true
             });
             
             // init left-click context menu listener
             google.maps.event.addListener(crosshairMarker, 'click', function(event) {
+                showContextMenu(event.latLng, ContextMenuTypes.DEFAULT, crosshairMarker);
+            });
+            
+            google.maps.event.addListener(crosshairMarker, 'drag', function(event) { 
                 showContextMenu(event.latLng, ContextMenuTypes.DEFAULT, crosshairMarker);
             });
             
@@ -476,26 +450,34 @@
                 
         /**
         * *********************************************************************************
-        * Starts the AJAX calls using long polling to animate the boat on the maps.
+        * Starts long polling to animate the boat on the maps via Geolocation API in HTML5.
         * *********************************************************************************
         */
-        function startBoatAnimation(){
-            jsRoutes.de.htwg.seapal.web.controllers.BoatPositionAPI.current().ajax({
-                dataType : 'json',
-                success : function(response){
-                    position = new google.maps.LatLng(response.lat, response.lng);
-                    handleBoatPosition(position);
-                    noerror = true;
-                },
-                complete: function(response){
-                    if(!self.noerror){
-                        setTimeout(function(){startBoatAnimation();},5000);
-                    }else{
-                        startBoatAnimation();
-                    }
-                    noerror = false;
+        function startBoatAnimation(){            
+            get_location();
+            setTimeout(function(){startBoatAnimation();}, 5000);
+        }
+        /**
+         * Gets the current location of the device (via HTML5)
+         */
+        function get_location() {
+            if (Modernizr.geolocation) {
+                navigator.geolocation.getCurrentPosition(handleBoatPosition, error_handling);
+            } else {
+                if(!noGeo_flag) {
+                   callbacks[events.NO_GEO_SUPPORT].fire("Your PC doesn't support geolocation!");
+                   noGeo_flag = true;
                 }
-            });
+                handleFakeBoatPositionUpdate();
+            }
+        }
+        /**
+         * Error handling if user denies access to the geolocation data
+         */
+        function error_handling(errNo) {
+            if(errNo.code == 1) {
+                handleFakeBoatPositionUpdate();   
+            }
         }
 
         /**
@@ -504,6 +486,21 @@
         * *********************************************************************************
         */
         function handleBoatPosition(position){
+            currentPosition = new google.maps.LatLng(position.coords.latitude, position.coords.longitude);
+            handleBoatPositionUpdate(currentPosition);
+        }
+        /**
+         * Handles the boat position with fake/generated geolocation data
+         */
+        function handleFakeBoatPositionUpdate() {
+            //TODO: Get center of current view of map as boat position + a variation
+            currentPosition = map.getCenter();
+            handleBoatPositionUpdate(currentPosition);
+        }
+        /**
+         * Updates the boat icon on the map 
+         */
+        function handleBoatPositionUpdate(position) {
             if(boatMarker == null){
                 boatMarker = new google.maps.Marker({
                     position: position,
@@ -586,7 +583,7 @@
                 content: getContextMenuContent,
                 placement: function(){
                     var leftDist = $('#tooltip_helper').position().left;
-                    var width = $this.width() - $(".seamapsidebar",$this).width();
+                    var width = $this.width();
         
                     return (leftDist > width / 2 ? "left" : "right");
                 }
@@ -609,10 +606,10 @@
 
             var xPos = pos.x;
             var yPos = pos.y + 10;
-            var width = $this.width() - $(".seamapsidebar",$this).width();
+            var width = $this.width();
             var height = $this.height();
 
-            $('#tooltip_helper').css({top: yPos, left: xPos + $(".seamapsidebar",$this).width()});
+            $('#tooltip_helper').css({top: yPos, left: xPos});
 
             // check whether the popup is displayed outside of the maps container
             if (xPos > 5 && xPos < width - 5 && yPos > 5 && yPos < height - 5) {
@@ -650,107 +647,7 @@
             ctx += '</div>'
             return ctx;
         }
-                
-        /**
-        * *********************************************************************************
-        * Display the sidebar with the given heading.
-        * *********************************************************************************
-        */    
-        function showSidebar(heading) {
-            console.log("show sidebar");
-            var sidebarWidth = 275;
-            $(".seamapsidebar").siblings("div:not(#tooltip_helper,.popover)").animate({'margin-left':sidebarWidth,width:$(window).width() - sidebarWidth});
-            $(".seamapsidebar", $this).animate({width:sidebarWidth});
-            
-            $(".seamapsidebar .seamapsidebar_inner", $this).html('<h4>' + heading + '</h4><div class="seamapalerts"></div>');
-        }
         
-        /**
-        * *********************************************************************************
-        * Shows the sidevar of the given route.
-        * *********************************************************************************
-        */    
-        function showSidebarWithRoute(route) {
-            console.log(route);
-            showSidebar('Route <span class="badge" style="background-color:' + route.color + ';">#' + route.id + '</span>');
-            appendContentIntoSidebar('<ul class="nav nav-tabs nav-stacked"></ul>');
-            appendContentIntoSidebar('<div class="buttons_bottom"><div><a class="closeIt btn btn-block" href="#close"> Finish Route Recording</a></div></div>');
-
-            $.each(route.markers, function() {
-                appendMarkerIntoSidebar(this);
-            });
-            
-            $this.unbind('click.sidebar');
-            $this.on("click.sidebar", ".seamapsidebar a.delete", function(){
-                route.removeMarker(route.markers[getParmFromHash($(this).attr("href"), "deleteId")])
-            });
-            
-            $this.on("click.sidebar", ".seamapsidebar a.closeIt", function(){
-                handleExitRouteCreation();
-            });
-        }
-        
-        /**
-        * *********************************************************************************
-        * Hides the sidebar.
-        * *********************************************************************************
-        */    
-        function hideSidebar() {
-            $(".seamapsidebar").siblings("div:not(#tooltip_helper,.popover)").animate({'margin-left':'0%',width:'100%'});
-            $(".seamapsidebar", $this).animate({width:'0%'});
-            $(".seamapsidebar .seamapsidebar_inner", $this).html("");
-        }
-        
-        /**
-        * *********************************************************************************
-        * Appends content into the sidebar.
-        * *********************************************************************************
-        */    
-        function appendContentIntoSidebar(content) {            
-            $(".seamapsidebar .seamapsidebar_inner", $this).append(content);
-        }
-        
-        /**
-        * *********************************************************************************
-        * Appends content into the sidebar element with the given selector.
-        * *********************************************************************************
-        */    
-        function appendContentIntoSidebarElement(content, selector) {    
-            $(".seamapsidebar .seamapsidebar_inner " +  selector, $this).append(content);
-        }
-        
-        /**
-        * *********************************************************************************
-        * Deletes the sidebar element with the given selector.
-        * *********************************************************************************
-        */    
-        function clearSidebarElement(selector) {    
-            $(".seamapsidebar .seamapsidebar_inner " +  selector, $this).html("");
-        }
-        
-        /**
-        * *********************************************************************************
-        * Appends a info notificaion into the sidebar.
-        * *********************************************************************************
-        */    
-        function appendInfoIntoSidebar(content, type) {    
-            $(".seamapsidebar .seamapsidebar_inner .seamapalerts", $this)
-                .append('<div class="alert alert-' + type + '"><button type="button" class="close" data-dismiss="alert">&times;</button>' + content + '</div>');
-        }
-        
-        /**
-        * *********************************************************************************
-        * Appends a marker into the sidebar.
-        * *********************************************************************************
-        */    
-        function appendMarkerIntoSidebar(marker) {    
-            var content = $('<li class="well well-small"><div class="btn-toolbar pull-right" style="margin:0"> \
-                    <div class="btn-group"><a class="delete btn" href="#page?deleteId='+marker.id+'"><i class="icon-remove"></i></a></div></div> \
-                    <b>#' + marker.id + '</b> <small>- Lat ' + toGeoString(marker.getPosition().lat(), "N", "S", 2) + ' Lon ' + 
-                    toGeoString(marker.getPosition().lng(), "E", "W", 3) + '</small></li>');
-            appendContentIntoSidebarElement(content, '.nav');
-        }
-
         /**
         * *********************************************************************************
         * Hides the context menu and the crosshair.
@@ -770,11 +667,15 @@
             hideContextMenu();
             hideCrosshairMarker();
             
-            activeRoute = distanceroute = new $.seamap.route(-1, map, "DISTANCE");            
+            var distance = {}
+            distance.id = "-1";
+            distance.onMap = new $.seamap.route("-1", map, "DISTANCE");
+            activeRoute = distance;  
+            distanceroute = distance;            
             position = crosshairMarker.getPosition();
             /* just add a route marker if a position was selected */
             if (null != position) {
-                activeRoute.addMarker(position);
+                activeRoute.onMap.addMarker(position);
             }
             
             state = States.DISTANCE;
@@ -801,7 +702,7 @@
         */
         function removeDistanceRoute() {
             if (distanceroute != null) {
-                distanceroute.removeFromMap();
+                distanceroute.onMap.removeFromMap();
                 distanceroute = null;
             }
         }
@@ -815,27 +716,43 @@
         function handleAddNewRoute() {
             hideContextMenu();
             hideCrosshairMarker();
-            
-            routeId = routeCounter++;
 
-            activeRoute = routes[routeId] = new $.seamap.route(routeId, map, "ROUTE");        
+            var route = {}
+            route.id = routeCounter.toString();
+            route.label = "Route "+routeCounter;
+            route.detailed = "created on blabla..";
+            route.onMap = new $.seamap.route(route.id, map, "ROUTE");
+
+            routes[route.id] = route;        
+  
+            activateRoute(route); 
             
             activate = function() {
-                removeDistanceRoute();
-                activateRoute(this);
+                //FIXME : This code seems not to be required at all.
+              //  removeDistanceRoute();
+              //  activateRoute(route);
             }
             
-            activeRoute.addEventListener("remove", activate);    
-            activeRoute.addEventListener("drag", activate);    
-            activeRoute.addEventListener("click", activate);
+            /* remove method will check if we remove all markers, which cause a deletion of the route */
+            remove = function() {
+                if (0 == activeRoute.onMap.markers.length) {
+                    callbacks[events.DELETED_ROUTE].fire(activeRoute);
+                    deleteActiveRoute();
+                }
+            }
+            
+            activeRoute.onMap.addEventListener("remove", remove);    
+            activeRoute.onMap.addEventListener("drag", activate);    
+            activeRoute.onMap.addEventListener("click", activate);
         
-            activateRoute(activeRoute);
+
             position = crosshairMarker.getPosition();
             /* just add a route marker if a position was selected */
             if (null != position) {
                 addRouteMarker(position);
             }
-            callbacks[events.SELECTED_ROUTE].fire();
+            routeCounter++;
+            callbacks[events.CREATED_ROUTE].fire(route);
         }
                 
         /**
@@ -846,11 +763,36 @@
         function activateRoute(route) {
             hideCrosshairMarker(crosshairMarker);
             hideContextMenu();
-
+            hideActiveRoute();
+            /* important that state will be set here, because hideActiveRoute() will set the state to NORMAL */
             state = States.ROUTE;
-            showSidebarWithRoute(route);
             activeRoute = route;
-                
+            activeRoute.onMap.visible();
+        }
+        /**
+        * *********************************************************************************
+        * Hide the active route
+        * *********************************************************************************
+        */ 
+        function hideActiveRoute(){
+            if (activeRoute != null) {
+                state = States.NORMAL;
+                activeRoute.onMap.hide();
+                activeRoute = null;
+            }
+        }
+        /**
+        * *********************************************************************************
+        * Delete the active route
+        * *********************************************************************************
+        */ 
+        function deleteActiveRoute(){
+            if (activeRoute != null) {
+                state = States.NORMAL;
+                activeRoute.onMap.hide();
+                delete routes[activeRoute.id];
+                activeRoute = null;
+            }
         }
         
         /**
@@ -862,8 +804,6 @@
         function handleExitRouteCreation() {
             hideContextMenu();
             hideCrosshairMarker();
-            hideSidebar();
-            
             state = States.NORMAL;
         }        
         
@@ -876,12 +816,8 @@
             hideContextMenu();
             hideCrosshairMarker();
             
-            var newmarker = activeRoute.addMarker(latLng);
-            activeRoute.drawPath();
-            
-            if(state == States.ROUTE) {
-                appendMarkerIntoSidebar(newmarker);
-            }
+            var newmarker = activeRoute.onMap.addMarker(latLng);
+            activeRoute.onMap.drawPath();
         }
         
         /**
@@ -945,6 +881,82 @@
             marks[marksCount.toString()] = mark;
             marksCount++;
             callbacks[events.ADDED_MARK].fire(mark);
+        }
+
+        /**
+        * *********************************************************************************
+        * Adds a image marker to the given position and
+        * bind the click-events to open its context menu.
+        * *********************************************************************************
+        */
+        function addImageMark(image) {
+            var mark = {}
+            mark.id = marksCount.toString();
+            mark.label = "Mark "+marksCount;
+            mark.detailed = getCurrentDateTime();
+            var position = currentPosition;
+            var thnail = image[0];
+            var picture = image[1];
+            var picture_detailed = mark.detailed;
+            mark.onMap = new google.maps.Marker({
+                map: map,
+                position: position,
+                icon: thnail,
+                draggable: false
+            });
+
+            google.maps.event.addListener(mark.onMap, 'click', function(event) {
+                if(!supressClick) {
+                    openFancybox(picture, picture_detailed);
+                }
+            });
+
+            google.maps.event.addListener(mark.onMap, 'rightclick', function(event) {
+                showContextMenu(event.latLng, ContextMenuTypes.DELETE_MARKER, mark);
+            });
+
+            new LongPress(mark.onMap, 500);
+            google.maps.event.addListener(mark.onMap, 'longpress', function(event) {
+                supressClick = true;
+                showContextMenu(event.latLng, ContextMenuTypes.DELETE_MARKER, mark);
+                setTimeout(function() {
+                    supressClick = false;
+                }, 1000);
+            });
+            
+            marks[marksCount.toString()] = mark;
+            marksCount++;
+            callbacks[events.ADDED_MARK].fire(mark);
+        }
+        /* Opens a fancybox with the image */
+        function openFancybox(picture, text) {
+            $.fancybox({
+                'autoScale': true,
+                'transitionIn': 'elastic',
+                'transitionOut': 'elastic',
+                'speedIn': 500,
+                'speedOut': 300,
+                'autoDimensions': true,
+                'centerOnScroll': true,
+                'title' : text,
+                'helpers' : {
+                    title : {
+                        type : 'over'
+                    }   
+                },
+                'href' : picture
+            });
+        }
+        /* Gets the current date and time in a string */
+        function getCurrentDateTime() {
+            var currentdate = new Date(); 
+            var datetime = currentdate.getDate() + "/"
+                + (currentdate.getMonth()+1)  + "/" 
+                + currentdate.getFullYear() + " "  
+                + currentdate.getHours() + ":"  
+                + currentdate.getMinutes() + ":" 
+                + currentdate.getSeconds();
+            return datetime;
         }
 
         /**
@@ -1017,17 +1029,6 @@
           );
           return currentLatLngOffset;
         }
-        
-        /**
-        * *********************************************************************************
-        * Gets the hash-parameters. If there is no param, an empty string will be returned.
-        * *********************************************************************************
-        */
-        function getParmFromHash(url, parm) {
-            var re = new RegExp("#.*[?&]" + parm + "=([^&]+)(&|$)");
-            var match = url.match(re);
-            return(match ? match[1] : "");
-        }
     };
     
     /**
@@ -1073,6 +1074,30 @@
         this.setNotInteractive = function() {
             this.notinteractive = true;
         }
+        /**
+        * *********************************************************************************
+        * hide the route
+        * *********************************************************************************
+        */        
+        this.hide = function () {
+            if(this.label != null) this.label.setMap(null);
+            this.path.setVisible(false);
+            $.each(this.markers, function(){
+                this.setVisible(false);
+            });
+        }
+        /**
+        * *********************************************************************************
+        * visible the route
+        * *********************************************************************************
+        */        
+        this.visible = function () {
+            this.updateLabel();
+            this.path.setVisible(true);
+            $.each(this.markers, function(){
+                this.setVisible(true);
+            });
+        }
         
         /**
         * *********************************************************************************
@@ -1113,13 +1138,11 @@
     
                 google.maps.event.addListener(marker, 'rightclick', function(event) {
                     $this.removeMarker(marker);
-                    $this.notify("remove");
                 });
                 
                 new LongPress(marker, 500);
                 google.maps.event.addListener(marker, 'longpress', function(event) {
                     $this.removeMarker(marker);
-                    $this.notify("remove");
                 });
 
                 google.maps.event.addListener(marker, 'click', function(event) {
@@ -1131,44 +1154,6 @@
             
             return marker;
         }
-        
-        /**
-        * *********************************************************************************
-        * Recognizes a long click / long touch
-        * *********************************************************************************
-        */
-        function LongPress(map, length) {
-            this.length_ = length;
-            var me = this;
-            me.map_ = map;
-            me.timeoutId_ = null;
-            google.maps.event.addListener(map, 'mousedown', function(e) {
-                me.onMouseDown_(e);
-            });
-            google.maps.event.addListener(map, 'mouseup', function(e) {
-                me.onMouseUp_(e);
-            });
-            google.maps.event.addListener(map, 'drag', function(e) {
-                me.onMapDrag_(e);
-            });
-        };
-
-        LongPress.prototype.onMouseUp_ = function(e) {
-            clearTimeout(this.timeoutId_);
-        };
-
-        LongPress.prototype.onMouseDown_ = function(e) {
-            clearTimeout(this.timeoutId_);
-            var map = this.map_;
-            var event = e;
-            this.timeoutId_ = setTimeout(function() {
-                google.maps.event.trigger(map, 'longpress', event);
-            }, this.length_);
-        };
-
-        LongPress.prototype.onMapDrag_ = function(e) {
-            clearTimeout(this.timeoutId_);
-        };
 
         /**
         * *********************************************************************************
@@ -1300,6 +1285,44 @@
     };
     
     $.seamap.options = options;
+
+    /**
+    * *********************************************************************************
+    * Recognizes a long click / long touch
+    * *********************************************************************************
+    */
+    function LongPress(map, length) {
+        this.length_ = length;
+        var me = this;
+        me.map_ = map;
+        me.timeoutId_ = null;
+        google.maps.event.addListener(map, 'mousedown', function(e) {
+            me.onMouseDown_(e);
+        });
+        google.maps.event.addListener(map, 'mouseup', function(e) {
+            me.onMouseUp_(e);
+        });
+        google.maps.event.addListener(map, 'drag', function(e) {
+            me.onMapDrag_(e);
+        });
+    };
+
+    LongPress.prototype.onMouseUp_ = function(e) {
+        clearTimeout(this.timeoutId_);
+    };
+
+    LongPress.prototype.onMouseDown_ = function(e) {
+        clearTimeout(this.timeoutId_);
+        var map = this.map_;
+        var event = e;
+        this.timeoutId_ = setTimeout(function() {
+            google.maps.event.trigger(map, 'longpress', event);
+        }, this.length_);
+    };
+
+    LongPress.prototype.onMapDrag_ = function(e) {
+        clearTimeout(this.timeoutId_);
+    };
 
     // extend jquery with our new fancy seamap plugin
     $.fn.seamap = function( opts ) {

@@ -9,7 +9,7 @@ object ApplicationBuild extends Build {
     val appName         = "seapalweb"
     val appVersion      = "1.0-SNAPSHOT"
 
-    // JaCoco settings  
+    // JaCoco settings
     lazy val jacocoSettings = Defaults.defaultSettings ++ Seq(jacoco.settings:_*)
 
    // general project dependencies
@@ -18,41 +18,41 @@ object ApplicationBuild extends Build {
 	    javaJdbc,
 	    javaEbean,
 	    "com.google.inject" % "guice" % "3.0",
-	    "org.ektorp" % "org.ektorp" % "1.3.0",
-	    "de.htwg.seapal" % "core" % "1.0-SNAPSHOT"
+	    "org.ektorp" % "org.ektorp" % "1.3.0"
+	    //"de.htwg.seapal" % "core" % "1.0-SNAPSHOT"
 	)
 
     val main = play.Project(appName, appVersion, appDependencies, settings = jacocoSettings).settings(
     	// disable parallel execution
 	    parallelExecution in jacoco.Config := false,
-	    
+
 	    routesImport ++= Seq(
 	    		"_root_.utils.Binders._",
 	    		"java.util.UUID"
 	    	),
-	    
+
 	    templatesImport ++= Seq(
 	    		"play.mvc.Http.Context.Implicit._",
 	    		"de.htwg.seapal.web.views.html._",
 	    		"de.htwg.seapal.web._"
 	    	),
-		
+
 		//javascriptEntryPoints <<= baseDirectory(base =>
 		//	base / "public" / "js" ** "*.js"
 		//),
-	    
+
 		// known as group id...
 		organization := "de.htwg.seapal",
-		
+
 		// disable using the Scala version in output paths and artifacts
 		crossPaths := false,
-		
+
 		// add additional resovers
-	    resolvers += "HTWG Resolver" at "http://lenny2.in.htwg-konstanz.de:8081/artifactory/libs-snapshot-local",
+	    //resolvers += "HTWG Resolver" at "http://lenny2.in.htwg-konstanz.de:8081/artifactory/libs-snapshot-local",
 
 		// add publishing target
-	    publishTo := Some("HTWG Publish To" at "http://lenny2.in.htwg-konstanz.de:8081/artifactory/libs-snapshot-local;build.timestamp=" + new java.util.Date().getTime()), 
-	  
+	    publishTo := Some("HTWG Publish To" at "http://lenny2.in.htwg-konstanz.de:8081/artifactory/libs-snapshot-local;build.timestamp=" + new java.util.Date().getTime()),
+
 	  	// setup entry points for sonar code analyzer
 	  	pomExtra :=
 		  <build>
@@ -63,7 +63,7 @@ object ApplicationBuild extends Build {
 		        <directory>app</directory>
 		      </resource>
 		    </resources>
-		  </build> 
+		  </build>
     )
 
 }
