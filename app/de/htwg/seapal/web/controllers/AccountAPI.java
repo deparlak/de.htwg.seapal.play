@@ -7,7 +7,7 @@ import de.htwg.seapal.web.controllers.helpers.PasswordHash;
 import de.htwg.seapal.web.controllers.secure.IAccount;
 import de.htwg.seapal.web.controllers.secure.IAccountController;
 import de.htwg.seapal.web.controllers.secure.impl.Account;
-//import de.htwg.seapal.web.views.html.content.login;
+import de.htwg.seapal.web.views.html.appContent.*;
 import org.codehaus.jackson.node.ObjectNode;
 import play.data.DynamicForm;
 import play.data.Form;
@@ -35,7 +35,7 @@ public class AccountAPI
     private ILogger logger;
 
     public Result signup() {
-        /*Form<Account> filledForm = form.bindFromRequest();
+        Form<Account> filledForm = form.bindFromRequest();
         Map<String, String> data = form.data();
 
         ObjectNode response = Json.newObject();
@@ -54,7 +54,7 @@ public class AccountAPI
                 flash("errors", "Account already exists");
             }
 
-            return badRequest(login.render(filledForm, routes.AccountAPI.signup(), true, "Create Account"));
+            return badRequest(signUpSeapal.render(filledForm, routes.AccountAPI.signup()));
         } else {
             try {
                 account.setAccountPassword(PasswordHash.createHash(account.getAccountPassword()));
@@ -66,13 +66,12 @@ public class AccountAPI
             }
             session().clear();
             session(IAccountController.AUTHN_COOKIE_KEY, filledForm.get().getUUID().toString());
-            return redirect(routes.Application.index());
-        }*/
-        return null;
+            return redirect(routes.Application.app());
+        }
     }
 
     public Result login() {
-        /*Form<Account> filledForm = DynamicForm.form(Account.class).bindFromRequest();
+        Form<Account> filledForm = DynamicForm.form(Account.class).bindFromRequest();
 
 
         ObjectNode response = Json.newObject();
@@ -85,7 +84,7 @@ public class AccountAPI
                 session().clear();
                 session(IAccountController.AUTHN_COOKIE_KEY, account.getUUID().toString());
                 flash("success", "You've been logged in");
-                return redirect(routes.Application.index());
+                return redirect(routes.Application.app());
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -97,14 +96,13 @@ public class AccountAPI
             flash("errors", "authentication failed");
         }
 
-        return badRequest(login.render(filledForm, routes.AccountAPI.login(), false, "Login"));*/
-        return null;
+        return badRequest(signInSeapal.render(filledForm, routes.AccountAPI.login()));
     }
 
     public static Result logout() {
         session().clear();
         flash("success", "You've been logged out");
-        return redirect(routes.Application.index());
+        return redirect(routes.Application.app());
     }
 
     public static class Secured

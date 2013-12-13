@@ -1,15 +1,26 @@
-<!-- Modal -->
-<div class="modal fade" id="modal-signInSeapal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="false">
-    <div class="account-wall">
-        <button type="button" class="signInSeapalClose close" data-dismiss="modal" aria-hidden="true">&times;</button>
-        <img class="profile-img" src="@routes.Assets.at("images/seapal_launcher.png")" alt="Seapal">
-        <form class="form-signInSeapal">
-            <input type="text" class="form-control" placeholder="Email" required autofocus>
-            <input type="password" class="form-control" placeholder="Password" required>
-            <button class="btn btn-lg btn-primary btn-block" type="submit">
-                Sign in
-            </button>
-            <a href="#" class="pull-right need-help">Need help? </a><span class="clearfix"></span>
-        </form>
-    </div>
-</div><!-- /.modal -->
+@(form: Form[de.htwg.seapal.web.controllers.secure.impl.Account], link: play.api.mvc.Call)
+<!DOCTYPE HTML>
+<html>
+    <head>
+        @appContent.header()
+    </head>
+    <body>
+        @if(flash.contains("success")) {
+            <p class="success">@flash.get("success")</p>
+        }
+        @if(form.hasGlobalErrors) {
+            <p class="error">@form.globalError.message</p>
+        }
+        <div class="account-wall">
+            <img class="profile-img" src="@routes.Assets.at("images/seapal_launcher.png")" alt="Seapal">
+            @helper.form(link, 'class -> "form-signInSeapal") {
+                <input type="text" class="form-control" name="accountName" placeholder="Email" required autofocus>
+                <input type="password" class="form-control" name="accountPassword" placeholder="Password" required>
+                <button class="btn btn-lg btn-primary btn-block" type="submit">
+                    Sign in
+                </button>
+                <a href="#" class="pull-right need-help">Need help? </a><span class="clearfix"></span>
+            }
+        </div>
+    </body>
+</html>

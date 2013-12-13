@@ -9,6 +9,7 @@ import de.htwg.seapal.web.controllers.helpers.Menus;
 import de.htwg.seapal.web.controllers.secure.IAccountController;
 import de.htwg.seapal.web.controllers.secure.impl.Account;
 import de.htwg.seapal.web.views.html.*;
+import de.htwg.seapal.web.views.html.appContent.*;
 import org.codehaus.jackson.node.ObjectNode;
 import play.Routes;
 import play.data.DynamicForm;
@@ -46,6 +47,14 @@ public class Application extends Controller {
 	public static Result app(){
 		return ok(app.render());
 	}
+
+    public static Result login() {
+        return ok(signInSeapal.render(DynamicForm.form(Account.class), routes.AccountAPI.login()));
+    }
+
+    public static Result signup() {
+        return ok(signUpSeapal.render(DynamicForm.form(Account.class), routes.AccountAPI.signup()));
+    }
     /*
     @Security.Authenticated(AccountAPI.Secured.class)
     public static Result boat_info() {
