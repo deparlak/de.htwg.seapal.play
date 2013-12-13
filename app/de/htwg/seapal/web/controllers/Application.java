@@ -49,11 +49,11 @@ public class Application extends Controller {
 	}
 
     public static Result login() {
-        return ok(login.render(DynamicForm.form(Account.class), routes.AccountAPI.login(), false, "Login"));
+        return ok(signInSeapal.render(DynamicForm.form(Account.class), routes.AccountAPI.login()));
     }
 
     public static Result signup() {
-        return ok(login.render(DynamicForm.form(Account.class), routes.AccountAPI.signup(), true, "Create Account"));
+        return ok(signUpSeapal.render(DynamicForm.form(Account.class), routes.AccountAPI.signup()));
     }
     /*
     @Security.Authenticated(AccountAPI.Secured.class)

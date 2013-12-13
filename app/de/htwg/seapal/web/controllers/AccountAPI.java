@@ -7,7 +7,7 @@ import de.htwg.seapal.web.controllers.helpers.PasswordHash;
 import de.htwg.seapal.web.controllers.secure.IAccount;
 import de.htwg.seapal.web.controllers.secure.IAccountController;
 import de.htwg.seapal.web.controllers.secure.impl.Account;
-import de.htwg.seapal.web.views.html.appContent.login;
+import de.htwg.seapal.web.views.html.appContent.*;
 import org.codehaus.jackson.node.ObjectNode;
 import play.data.DynamicForm;
 import play.data.Form;
@@ -54,7 +54,7 @@ public class AccountAPI
                 flash("errors", "Account already exists");
             }
 
-            return badRequest(login.render(filledForm, routes.AccountAPI.signup(), true, "Create Account"));
+            return badRequest(signUpSeapal.render(filledForm, routes.AccountAPI.signup()));
         } else {
             try {
                 account.setAccountPassword(PasswordHash.createHash(account.getAccountPassword()));
@@ -96,13 +96,13 @@ public class AccountAPI
             flash("errors", "authentication failed");
         }
 
-        return badRequest(login.render(filledForm, routes.AccountAPI.login(), false, "Login"));
+        return badRequest(signInSeapal.render(filledForm, routes.AccountAPI.login()));
     }
 
     public static Result logout() {
         session().clear();
         flash("success", "You've been logged out");
-        return redirect(routes.Application.index());
+        return redirect(routes.Application.app());
     }
 
     public static class Secured
