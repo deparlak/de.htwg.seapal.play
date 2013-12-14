@@ -10,15 +10,26 @@
     * *************************************************************************************
     */
     var options = {
-        defaultRoute         : null,
+        //default mode.
         mode                 : "INTERACTIVE",
-        startLat             : 47.655,
-        startLong             : 9.205,
-        zoom                 : 10,
+
+        //map default options
+        map : {
+            mapTypeId : google.maps.MapTypeId.ROADMAP,
+            disableDefaultUI: true,
+            mapTypeControl: false,
+            panControl: false,
+            zoomControl: false,
+            scaleControl: false,
+            streetViewControl: false,
+            rotateControl: false,
+            rotateControlOptions: false,
+            overviewMapControl: false,
+            OverviewMapControlOptions: false,
+            zoom: 10,
+            center: new google.maps.LatLng(47.655, 9.205),
+        },
         
-        height : function() {
-            return
-        },    
         // Stroke colors: [0] is used for the distance tool, [1..] are used for the routes
         strokeColors : ['grey','red','blue','green','yellow','blueviolet','darkorange','magenta','black'],
         
@@ -276,6 +287,9 @@
         }
         
         init();
+           // mark.id = marksCount.toString();
+           // mark.label = "Mark "+marksCount;
+           // mark.detailed = "created on blabla..";
 
         /**
         * *********************************************************************************
@@ -284,7 +298,7 @@
         * *********************************************************************************
         */
         function init() {
-            initMap();
+            map = new google.maps.Map(element, options.map);
             initOpenSeaMaps();
             
             if ( options.mode !== "NOTINTERACTIVE" ) {
@@ -292,39 +306,6 @@
                 initGoogleMapsListeners();
             }
             initCrosshairMarker();
-        }
-
-        /**
-        * *********************************************************************************
-        * Initialized the GoogleMaps (zoom level, center position, ...)
-        * *********************************************************************************
-        */
-        function initMap() {
-            if(typeof options.height == 'function') {
-                $this.height(options.height());
-                
-                $(window).resize(function(){
-                    $this.height(options.height());
-                });
-            } else {
-                $this.height(options.height);
-            }        
-                        
-            map = new google.maps.Map(element, {
-                mapTypeId : google.maps.MapTypeId.ROADMAP,
-                disableDefaultUI: true,
-                mapTypeControl: false,
-                panControl: false,
-                zoomControl: false,
-                scaleControl: false,
-                streetViewControl: false,
-                rotateControl: false,
-                rotateControlOptions: false,
-                overviewMapControl: false,
-                OverviewMapControlOptions: false,
-                zoom: options.zoom,
-                center: new google.maps.LatLng(options.startLat, options.startLong),
-            });
         }
 
         /**
