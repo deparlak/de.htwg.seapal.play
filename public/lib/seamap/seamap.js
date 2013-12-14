@@ -10,15 +10,26 @@
     * *************************************************************************************
     */
     var options = {
-        defaultRoute         : null,
+        //default mode.
         mode                 : "INTERACTIVE",
-        startLat             : 47.655,
-        startLong             : 9.205,
-        zoom                 : 10,
+
+        //map default options
+        map : {
+            mapTypeId : google.maps.MapTypeId.ROADMAP,
+            disableDefaultUI: true,
+            mapTypeControl: false,
+            panControl: false,
+            zoomControl: false,
+            scaleControl: false,
+            streetViewControl: false,
+            rotateControl: false,
+            rotateControlOptions: false,
+            overviewMapControl: false,
+            OverviewMapControlOptions: false,
+            zoom: 10,
+            center: new google.maps.LatLng(47.655, 9.205),
+        },
         
-        height : function() {
-            return
-        },    
         // Stroke colors: [0] is used for the distance tool, [1..] are used for the routes
         strokeColors : ['grey','red','blue','green','yellow','blueviolet','darkorange','magenta','black'],
         
@@ -100,6 +111,15 @@
             }
         }
     };
+    
+    /**
+    * *************************************************************************************
+    * Methods which should be extended into this jequery plugin for synchronisation purpose.
+    * *************************************************************************************
+    */
+    var sync = {
+
+    };
 
     /**
     * *************************************************************************************
@@ -107,6 +127,9 @@
     * *************************************************************************************
     */
     $.seamap = function(element){    
+        /* the required list holds all names of the methods which has to be defined. */
+        var syncRequiredMethods = ['getInitialRoutes'];
+    
         /* add a callback function to get notified about actions */
         this.addCallback = function (event, method) {
             for(var actual in events) {
@@ -196,6 +219,7 @@
         };
         
         var options = $.seamap.options;
+        var sync = $.seamap.sync;
     
         // The states of the plugin
         var States = {
@@ -255,7 +279,17 @@
         // set as destination path
         var destpath = new google.maps.Polyline(options.polyOptions);
 
+        //check if all required methods are defined.
+        for (var i in syncRequiredMethods) {
+            if (undefined === sync[syncRequiredMethods[i]]) {
+                throw("The plugin has to be extended with a method called: '"+syncRequiredMethods[i]+"'."); 
+            }
+        }
+        
         init();
+           // mark.id = marksCount.toString();
+           // mark.label = "Mark "+marksCount;
+           // mark.detailed = "created on blabla..";
 
         /**
         * *********************************************************************************
@@ -264,7 +298,7 @@
         * *********************************************************************************
         */
         function init() {
-            initMap();
+            map = new google.maps.Map(element, options.map);
             initOpenSeaMaps();
             
             if ( options.mode !== "NOTINTERACTIVE" ) {
@@ -272,39 +306,6 @@
                 initGoogleMapsListeners();
             }
             initCrosshairMarker();
-        }
-
-        /**
-        * *********************************************************************************
-        * Initialized the GoogleMaps (zoom level, center position, ...)
-        * *********************************************************************************
-        */
-        function initMap() {
-            if(typeof options.height == 'function') {
-                $this.height(options.height());
-                
-                $(window).resize(function(){
-                    $this.height(options.height());
-                });
-            } else {
-                $this.height(options.height);
-            }        
-                        
-            map = new google.maps.Map(element, {
-                mapTypeId : google.maps.MapTypeId.ROADMAP,
-                disableDefaultUI: true,
-                mapTypeControl: false,
-                panControl: false,
-                zoomControl: false,
-                scaleControl: false,
-                streetViewControl: false,
-                rotateControl: false,
-                rotateControlOptions: false,
-                overviewMapControl: false,
-                OverviewMapControlOptions: false,
-                zoom: options.zoom,
-                center: new google.maps.LatLng(options.startLat, options.startLong),
-            });
         }
 
         /**
@@ -722,15 +723,16 @@
             route.label = "Route "+routeCounter;
             route.detailed = "created on blabla..";
             route.onMap = new $.seamap.route(route.id, map, "ROUTE");
+            route.updated = true;
 
             routes[route.id] = route;        
   
             activateRoute(route); 
             
+            /* activate the route if a markers will be clicked when the route is not selected. */
             activate = function() {
-                //FIXME : This code seems not to be required at all.
-              //  removeDistanceRoute();
-              //  activateRoute(route);
+                removeDistanceRoute();
+                activateRoute(route);
             }
             
             /* remove method will check if we remove all markers, which cause a deletion of the route */
@@ -738,13 +740,20 @@
                 if (0 == activeRoute.onMap.markers.length) {
                     callbacks[events.DELETED_ROUTE].fire(activeRoute);
                     deleteActiveRoute();
+                } else {
+                    activate();
                 }
             }
             
-            activeRoute.onMap.addEventListener("remove", remove);    
-            activeRoute.onMap.addEventListener("drag", activate);    
+            update = function() {
+                route.updated = true;
+            }
+            
+            activeRoute.onMap.addEventListener("remove", remove);      
             activeRoute.onMap.addEventListener("click", activate);
-        
+            activeRoute.onMap.addEventListener("add", update);
+            activeRoute.onMap.addEventListener("drag", update);  
+            activeRoute.onMap.addEventListener("remove", update);  
 
             position = crosshairMarker.getPosition();
             /* just add a route marker if a position was selected */
@@ -761,8 +770,6 @@
         * *********************************************************************************
         */
         function activateRoute(route) {
-            hideCrosshairMarker(crosshairMarker);
-            hideContextMenu();
             hideActiveRoute();
             /* important that state will be set here, because hideActiveRoute() will set the state to NORMAL */
             state = States.ROUTE;
@@ -776,6 +783,7 @@
         */ 
         function hideActiveRoute(){
             if (activeRoute != null) {
+                uploadRouteUpdate();
                 state = States.NORMAL;
                 activeRoute.onMap.hide();
                 activeRoute = null;
@@ -788,6 +796,7 @@
         */ 
         function deleteActiveRoute(){
             if (activeRoute != null) {
+                uploadRouteDeletion();
                 state = States.NORMAL;
                 activeRoute.onMap.hide();
                 delete routes[activeRoute.id];
@@ -802,10 +811,34 @@
         * *********************************************************************************
         */
         function handleExitRouteCreation() {
+            uploadRouteUpdate();
             hideContextMenu();
             hideCrosshairMarker();
             state = States.NORMAL;
-        }        
+        }   
+
+        /**
+        * *********************************************************************************
+        * Check if the active route has some changes which should be uploaded.
+        * *********************************************************************************
+        */
+        function uploadRouteUpdate() {
+            if (activeRoute != null && activeRoute.updated) {
+                console.log("Sync route");
+                activeRoute.updated = false;
+            } else if (activeRoute != null) {
+                console.log("route already in sync");
+            }            
+        }
+        
+        /**
+        * *********************************************************************************
+        * Check if the active route has ever been uploaded and so has to be deleted on the server.
+        * *********************************************************************************
+        */
+        function uploadRouteDeletion() {
+            console.log("Route deleted, upload to server.");        
+        } 
         
         /**
         * *********************************************************************************
@@ -1285,7 +1318,8 @@
     };
     
     $.seamap.options = options;
-
+    $.seamap.sync = sync;
+    
     /**
     * *********************************************************************************
     * Recognizes a long click / long touch
@@ -1325,11 +1359,16 @@
     };
 
     // extend jquery with our new fancy seamap plugin
-    $.fn.seamap = function( opts ) {
+    $.fn.seamap = function( syncMethods, opts ) {        
+        //extend sync methods
+        if( typeof syncMethods === 'object') {
+            $.extend(sync, syncMethods);
+        }
+        //extend options
         if( typeof opts === 'object') {
             $.extend(options, opts);
         }
-    
+        
         return this.each(function () {
             $this = $(this);
         
@@ -1342,6 +1381,5 @@
             }
         });
   
-    };
-
+    };    
 })( jQuery, window );
