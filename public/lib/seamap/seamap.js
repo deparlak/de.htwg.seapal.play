@@ -100,6 +100,15 @@
             }
         }
     };
+    
+    /**
+    * *************************************************************************************
+    * Methods which should be extended into this jequery plugin for synchronisation purpose.
+    * *************************************************************************************
+    */
+    var sync = {
+
+    };
 
     /**
     * *************************************************************************************
@@ -107,6 +116,9 @@
     * *************************************************************************************
     */
     $.seamap = function(element){    
+        /* the required list holds all names of the methods which has to be defined. */
+        var syncRequiredMethods = ['getInitialRoutes'];
+    
         /* add a callback function to get notified about actions */
         this.addCallback = function (event, method) {
             for(var actual in events) {
@@ -196,6 +208,7 @@
         };
         
         var options = $.seamap.options;
+        var sync = $.seamap.sync;
     
         // The states of the plugin
         var States = {
@@ -255,6 +268,13 @@
         // set as destination path
         var destpath = new google.maps.Polyline(options.polyOptions);
 
+        //check if all required methods are defined.
+        for (var i in syncRequiredMethods) {
+            if (undefined === sync[syncRequiredMethods[i]]) {
+                throw("The plugin has to be extended with a method called: '"+syncRequiredMethods[i]+"'."); 
+            }
+        }
+        
         init();
 
         /**
@@ -739,11 +759,12 @@
                 if (0 == activeRoute.onMap.markers.length) {
                     callbacks[events.DELETED_ROUTE].fire(activeRoute);
                     deleteActiveRoute();
+                } else {
+                    activate();
                 }
             }
             
             update = function() {
-                console.log("update on route.");
                 route.updated = true;
             }
             
@@ -781,7 +802,7 @@
         */ 
         function hideActiveRoute(){
             if (activeRoute != null) {
-                uploadRoute();
+                uploadRouteUpdate();
                 state = States.NORMAL;
                 activeRoute.onMap.hide();
                 activeRoute = null;
@@ -794,6 +815,7 @@
         */ 
         function deleteActiveRoute(){
             if (activeRoute != null) {
+                uploadRouteDeletion();
                 state = States.NORMAL;
                 activeRoute.onMap.hide();
                 delete routes[activeRoute.id];
@@ -808,7 +830,7 @@
         * *********************************************************************************
         */
         function handleExitRouteCreation() {
-            uploadRoute();
+            uploadRouteUpdate();
             hideContextMenu();
             hideCrosshairMarker();
             state = States.NORMAL;
@@ -819,7 +841,7 @@
         * Check if the active route has some changes which should be uploaded.
         * *********************************************************************************
         */
-        function uploadRoute() {
+        function uploadRouteUpdate() {
             if (activeRoute != null && activeRoute.updated) {
                 console.log("Sync route");
                 activeRoute.updated = false;
@@ -827,6 +849,15 @@
                 console.log("route already in sync");
             }            
         }
+        
+        /**
+        * *********************************************************************************
+        * Check if the active route has ever been uploaded and so has to be deleted on the server.
+        * *********************************************************************************
+        */
+        function uploadRouteDeletion() {
+            console.log("Route deleted, upload to server.");        
+        } 
         
         /**
         * *********************************************************************************
@@ -1306,7 +1337,8 @@
     };
     
     $.seamap.options = options;
-
+    $.seamap.sync = sync;
+    
     /**
     * *********************************************************************************
     * Recognizes a long click / long touch
@@ -1346,11 +1378,16 @@
     };
 
     // extend jquery with our new fancy seamap plugin
-    $.fn.seamap = function( opts ) {
+    $.fn.seamap = function( syncMethods, opts ) {        
+        //extend sync methods
+        if( typeof syncMethods === 'object') {
+            $.extend(sync, syncMethods);
+        }
+        //extend options
         if( typeof opts === 'object') {
             $.extend(options, opts);
         }
-    
+        
         return this.each(function () {
             $this = $(this);
         
@@ -1363,6 +1400,5 @@
             }
         });
   
-    };
-
+    };    
 })( jQuery, window );
