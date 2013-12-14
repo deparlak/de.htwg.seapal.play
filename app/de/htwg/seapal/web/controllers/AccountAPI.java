@@ -93,7 +93,7 @@ public class AccountAPI
         response.put("success", false);
         response.put("errors", filledForm.errorsAsJson());
         if (account == null) {
-            flash("errors", "authentication failed");
+            flash("errors", "Wrong username or password");
         }
 
         return badRequest(signInSeapal.render(filledForm, routes.AccountAPI.login()));

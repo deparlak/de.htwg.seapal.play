@@ -6,7 +6,17 @@
     </head>
     <body>
         <div class="account-wall">
-            <img class="profile-img" src="@routes.Assets.at("images/seapal_launcher.png")" alt="Seapal">
+            <img class="profile-img" src="@routes.Assets.at("images/seapal_launcher.png")" alt="Seapal">            
+            @if(flash.contains("errors")) {
+                <div class="error-message">
+                    <a>@flash.get("errors")</a>
+                </div>
+            }
+            @if(form.hasGlobalErrors) {
+                <div class="error-message">
+                    <a>@form.globalError.message</a>
+                </div>
+            }
             @helper.form(link, 'class -> "form-signInSeapal") {
                 <input type="text" class="form-control" name="accountName" placeholder="Email" required autofocus>
                 <input type="password" class="form-control" name="accountPassword" placeholder="Password" required>
