@@ -46,7 +46,7 @@
                                     </div>
                                 </li>
                                 <div id="account" class="active-logbook">
-                                    @if(flash.contains("success")) {                                        
+                                    @if(session.contains("id")) {                                        
                                         <li><a class="menu-icon icon-signOut action" href="@de.htwg.seapal.web.controllers.routes.AccountAPI.logout()">Logout</a></li>
                                     } else {
                                         <li class="description">

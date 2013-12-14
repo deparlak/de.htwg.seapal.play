@@ -5,12 +5,6 @@
         @appContent.header()
     </head>
     <body>
-        @if(flash.contains("success")) {
-            <p class="success">@flash.get("success")</p>
-        }
-        @if(form.hasGlobalErrors) {
-            <p class="error">@form.globalError.message</p>
-        }
         <div class="account-wall">
             <img class="profile-img" src="@routes.Assets.at("images/seapal_launcher.png")" alt="Seapal">
             @helper.form(link, 'class -> "form-signInSeapal") {
