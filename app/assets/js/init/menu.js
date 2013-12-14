@@ -6,8 +6,6 @@
  */
 
 $(document).ready(function() {    
-    menu = new menubar( 'menu' );
-
     menu.addCallback('icon-fullscreen', function (self) {
         menu.closeMenu();
 
@@ -20,7 +18,7 @@ $(document).ready(function() {
                 self.text("Fullscreen");
             }
         } else {
-            window.alert("Your Browser does not support fullscreen mode! Sorry.");
+            output.info("Your Browser does not support fullscreen mode! Sorry.");
         }
     });
     
@@ -39,8 +37,11 @@ $(document).ready(function() {
     });
     
     menu.addCallback('icon-info', function (self) {
-        menu.closeMenu();
-        $('#modal-info').modal('show');
+        output.info("Seapal is developed in a cooperation between IBN Verlag and the University of Applied Science Konstanz (HTWG).<br/>Further information and a user guide are available at seapal.info.<br/>For new, follow Seapal at Google+.<br/>Please support our project and rate Seapal in the App Store<br/>The weather layer is provided by openportguide.org");
+    });
+    
+    menu.addCallback('icon-addOns', function (self) {
+        output.info("Add-ons are not supported in the web app. With Add-ons you can download for example offline maps to use the app without an internet connection.");
     });
 
     menu.addCallback('marksRoutesTracks', function (self) {

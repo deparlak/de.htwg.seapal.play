@@ -722,15 +722,16 @@
             route.label = "Route "+routeCounter;
             route.detailed = "created on blabla..";
             route.onMap = new $.seamap.route(route.id, map, "ROUTE");
+            route.updated = true;
 
             routes[route.id] = route;        
   
             activateRoute(route); 
             
+            /* activate the route if a markers will be clicked when the route is not selected. */
             activate = function() {
-                //FIXME : This code seems not to be required at all.
-              //  removeDistanceRoute();
-              //  activateRoute(route);
+                removeDistanceRoute();
+                activateRoute(route);
             }
             
             /* remove method will check if we remove all markers, which cause a deletion of the route */
@@ -741,10 +742,16 @@
                 }
             }
             
-            activeRoute.onMap.addEventListener("remove", remove);    
-            activeRoute.onMap.addEventListener("drag", activate);    
+            update = function() {
+                console.log("update on route.");
+                route.updated = true;
+            }
+            
+            activeRoute.onMap.addEventListener("remove", remove);      
             activeRoute.onMap.addEventListener("click", activate);
-        
+            activeRoute.onMap.addEventListener("add", update);
+            activeRoute.onMap.addEventListener("drag", update);  
+            activeRoute.onMap.addEventListener("remove", update);  
 
             position = crosshairMarker.getPosition();
             /* just add a route marker if a position was selected */
@@ -761,8 +768,6 @@
         * *********************************************************************************
         */
         function activateRoute(route) {
-            hideCrosshairMarker(crosshairMarker);
-            hideContextMenu();
             hideActiveRoute();
             /* important that state will be set here, because hideActiveRoute() will set the state to NORMAL */
             state = States.ROUTE;
@@ -776,6 +781,7 @@
         */ 
         function hideActiveRoute(){
             if (activeRoute != null) {
+                uploadRoute();
                 state = States.NORMAL;
                 activeRoute.onMap.hide();
                 activeRoute = null;
@@ -802,10 +808,25 @@
         * *********************************************************************************
         */
         function handleExitRouteCreation() {
+            uploadRoute();
             hideContextMenu();
             hideCrosshairMarker();
             state = States.NORMAL;
-        }        
+        }   
+
+        /**
+        * *********************************************************************************
+        * Check if the active route has some changes which should be uploaded.
+        * *********************************************************************************
+        */
+        function uploadRoute() {
+            if (activeRoute != null && activeRoute.updated) {
+                console.log("Sync route");
+                activeRoute.updated = false;
+            } else if (activeRoute != null) {
+                console.log("route already in sync");
+            }            
+        }
         
         /**
         * *********************************************************************************
