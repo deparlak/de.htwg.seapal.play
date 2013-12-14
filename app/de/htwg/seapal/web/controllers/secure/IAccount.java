@@ -14,6 +14,8 @@ public interface IAccount
 
     String getAccountPassword();
 
+    String getRepeatedAccountPassword();
+
     void setAccountPassword(String password);
 
     List<UUID> getBoats();

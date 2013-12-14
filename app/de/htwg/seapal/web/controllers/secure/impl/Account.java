@@ -12,6 +12,7 @@ public final class Account
 
     public String accountName;
     public String accountPassword;
+    public String repeatedAccountPassword;
     private List<UUID> boats = new ArrayList<>();
     private List<UUID> trips = new ArrayList<>();
 
@@ -19,12 +20,14 @@ public final class Account
         setId(UUID.randomUUID().toString());
         this.accountName = "";
         this.accountPassword = "";
+        this.repeatedAccountPassword = "";
     }
 
     public Account(IAccount account) {
         setId(account.getId());
         this.accountName = account.getAccountName();
         this.accountPassword = account.getAccountPassword();
+        this.repeatedAccountPassword = account.getRepeatedAccountPassword();
     }
 
     @Override
@@ -40,6 +43,11 @@ public final class Account
     @Override
     public String getAccountPassword() {
         return this.accountPassword;
+    }
+
+    @Override
+    public String getRepeatedAccountPassword() {
+        return this.repeatedAccountPassword;
     }
 
     @Override

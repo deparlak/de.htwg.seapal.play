@@ -57,6 +57,10 @@ public class AccountAPI
             return badRequest(signUpSeapal.render(filledForm, routes.AccountAPI.signup()));
         } else {
             try {
+                if(!checkPasswords(account)) {
+                    flash("errors", "The passwords you've entered differ!");
+                    return badRequest(signUpSeapal.render(filledForm, routes.AccountAPI.signup()));
+                }
                 account.setAccountPassword(PasswordHash.createHash(account.getAccountPassword()));
                 controller.saveAccount(account);
             } catch (InvalidKeySpecException e) {
@@ -116,6 +120,11 @@ public class AccountAPI
         public Result onUnauthorized(Context ctx) {
             return null;//redirect(routes.Application.login());
         }
-
+    }
+    /**
+     * Checks wether the two entered passwords are the same
+     */
+    private boolean checkPasswords(IAccount account) {
+        return account.getAccountPassword().equals(account.getRepeatedAccountPassword());
     }
 }
