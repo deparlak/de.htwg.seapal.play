@@ -12,11 +12,6 @@
                     <a>@flash.get("errors")</a>
                 </div>
             }
-            @if(form.hasGlobalErrors) {
-                <div class="error-message">
-                    <a>@form.globalError.message</a>
-                </div>
-            }
             @helper.form(link, 'class -> "form-signInSeapal") {
                 <input type="text" class="form-control" placeholder="Choose your Username" required autofocus>
                 <input type="text" class="form-control" name="accountName" placeholder="Enter your Email" required autofocus>
