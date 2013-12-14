@@ -42,7 +42,7 @@ public abstract class SeapalBaseTestModule extends AbstractModule {
 
 	@Provides
     HttpClient getHttpClient(@Named("databaseHost") String databaseHost, @Named("databasePort") int databasePort) {
-        return new StdHttpClient.Builder().host(databaseHost).port(databasePort).username("pakohan").password("pakohan").build();
+        return new StdHttpClient.Builder().host(databaseHost).port(databasePort).username("root").password("root").build();
     }
 
     @Provides

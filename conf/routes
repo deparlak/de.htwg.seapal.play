@@ -29,7 +29,10 @@ GET		/api/waypoint/$waypointId<[0-9a-fA-F\-]+>	@de.htwg.seapal.web.controllers.W
 POST	/api/waypoint								@de.htwg.seapal.web.controllers.WaypointAPI.addWaypoint()
 
 # authentication
+GET     /login                                      de.htwg.seapal.web.controllers.Application.login()
 POST	/login                                      @de.htwg.seapal.web.controllers.AccountAPI.login()
+GET		/logout        								de.htwg.seapal.web.controllers.AccountAPI.logout()
+GET		/signup        								de.htwg.seapal.web.controllers.Application.signup()
 POST	/signup        								@de.htwg.seapal.web.controllers.AccountAPI.signup()
 
 # Javascript routing
