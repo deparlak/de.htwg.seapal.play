@@ -46,30 +46,29 @@
                                     </div>
                                 </li>
                                 <div id="account" class="active-logbook">
-                                    <li class="heading">
-                                        <div class="heading1">
-                                            About SeaPal Accounts
-                                        </div>
-                                    </li>
-                                    <li class="description">
-                                        <div class="description1">
-                                            The Seapal Logbook Feature can store your logbook data in the cloud. 
-                                            This enables you to access your logbooks from other devices or on the web. 
-                                            You just need to create an account. The first 10 trips are free of charge.
-                                        </div>
-                                    </li>
-                                    <li class="heading">
-                                        <div class="heading1">
-                                            Create your Account
-                                        </div>
-                                    </li>
-                                    <li><a class="menu-icon icon-signUpSeapal action">Create a Seapal Account</a></li>
-                                    <li class="heading">
-                                        <div class="heading1">
-                                            Sign In with an existing Account
-                                        </div>
-                                    </li>
-                                    <li><a class="menu-icon icon-signInSeapal action">Sign In</a></li>
+                                    @if(flash.contains("success")) {                                        
+                                        <li><a class="menu-icon icon-signOut action" href="@de.htwg.seapal.web.controllers.routes.AccountAPI.logout()">Logout</a></li>
+                                    } else {
+                                        <li class="description">
+                                            <div class="description1">
+                                                The Seapal Logbook Feature can store your logbook data in the cloud. 
+                                                This enables you to access your logbooks from other devices or on the web. 
+                                                You just need to create an account. The first 10 trips are free of charge.
+                                            </div>
+                                        </li>
+                                        <li class="heading">
+                                            <div class="heading1">
+                                                Create your Account
+                                            </div>
+                                        </li>
+                                        <li><a class="menu-icon icon-signUpSeapal action">Create a Seapal Account</a></li>
+                                        <li class="heading">
+                                            <div class="heading1">
+                                                Sign In with an existing Account
+                                            </div>
+                                        </li>
+                                        <li><a class="menu-icon icon-signInSeapal action">Sign In</a></li>
+                                    }
                                 </div>
                                 <div id="crew" class="inactive-logbook">
                                     <li class="heading">
