@@ -1,13 +1,13 @@
 /**
  * camera.js
  *
- * Define the actions for the camera.
+ * API to access the camera and take a photo.
  * 
  */
 
 (function() {
 
-	var cameraApi = {
+	var camera = {
             setup: function(video, button) {},
             captureImage: function() {},
             disable_camera: function() {}
@@ -20,7 +20,7 @@
 	var button_id;
 
 	/* Initializes the video stream and checks user permission for open video */
-	cameraApi.setup = function(video, button) {
+	camera.setup = function(video, button) {
 		video_id = video;
 		button_id = button;
 		document.getElementById(button_id).disabled = true;
@@ -32,14 +32,14 @@
 	}
 
 	/* Capture an image and returns it BASE64 encoded */
-	cameraApi.captureImage = function() {
+	camera.captureImage = function() {
 	    dataURL[0] = takePhoto(20, 20);
 	    dataURL[1] = takePhoto(1, 1);
 		return dataURL;
 	}
 
 	/* Disables the video stream */
-	cameraApi.disable_camera = function() {
+	camera.disable_camera = function() {
 		if(video != null) {
 			video.pause();
 			video_stream.stop();
@@ -68,12 +68,10 @@
 	    document.getElementById(button_id).disabled = false;
 	}
 
-	/* Error handling (fallback of function setuo) */
-	function error(e) { 
-		console.log(e);
+	/* Error handling (callback of function setup) */
+	function error(e) {
 		document.getElementById(button_id).disabled = true;
-		alert(e);
 	}
 
-	window.cameraApi = cameraApi;
+	window.camera = camera;
 })();

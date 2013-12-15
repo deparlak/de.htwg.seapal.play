@@ -1,13 +1,13 @@
 /**
  * fullscreen.js
  *
- * Define the actions for a fullscreen app
+ * API to switch with the Browser to Fullscreen and back to normal window mode.
  * 
  */
  
 (function() {
     var 
-        fullScreenApi = { 
+        fullScreen = { 
             supportsFullScreen: false,
             isFullScreen: function() { return false; }, 
             requestFullScreen: function() {}, 
@@ -19,14 +19,14 @@
     
     // check for native support
     if (typeof document.cancelFullScreen != 'undefined') {
-        fullScreenApi.supportsFullScreen = true;
+        fullScreen.supportsFullScreen = true;
     } else {     
         // check for fullscreen support by vendor prefix
         for (var i = 0, il = browserPrefixes.length; i < il; i++ ) {
-            fullScreenApi.prefix = browserPrefixes[i];
+            fullScreen.prefix = browserPrefixes[i];
             
-            if (typeof document[fullScreenApi.prefix + 'CancelFullScreen' ] != 'undefined' ) {
-                fullScreenApi.supportsFullScreen = true;
+            if (typeof document[fullScreen.prefix + 'CancelFullScreen' ] != 'undefined' ) {
+                fullScreen.supportsFullScreen = true;
                 
                 break;
             }
@@ -34,10 +34,10 @@
     }
     
     // update methods to do something useful
-    if (fullScreenApi.supportsFullScreen) {
-        fullScreenApi.fullScreenEventName = fullScreenApi.prefix + 'fullscreenchange';
+    if (fullScreen.supportsFullScreen) {
+        fullScreen.fullScreenEventName = fullScreen.prefix + 'fullscreenchange';
         
-        fullScreenApi.isFullScreen = function() {
+        fullScreen.isFullScreen = function() {
             switch (this.prefix) {  
                 case '':
                     return document.fullScreen;
@@ -47,10 +47,10 @@
                     return document[this.prefix + 'FullScreen'];
             }
         }
-        fullScreenApi.requestFullScreen = function(el) {
+        fullScreen.requestFullScreen = function(el) {
             return (this.prefix === '') ? el.requestFullScreen() : el[this.prefix + 'RequestFullScreen']();
         }
-        fullScreenApi.cancelFullScreen = function(el) {
+        fullScreen.cancelFullScreen = function(el) {
             return (this.prefix === '') ? document.cancelFullScreen() : document[this.prefix + 'CancelFullScreen']();
         }       
     }
@@ -61,13 +61,13 @@
     
             return this.each(function() {
                 var el = jQuery(this);
-                if (fullScreenApi.supportsFullScreen) {
-                    fullScreenApi.requestFullScreen(el);
+                if (fullScreen.supportsFullScreen) {
+                    fullScreen.requestFullScreen(el);
                 }
             });
         };
     }
 
     // export api
-    window.fullScreenApi = fullScreenApi;   
+    window.fullScreen = fullScreen;   
 })();

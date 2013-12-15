@@ -286,6 +286,8 @@
             }
         }
         
+        sync.getInitialRoutes(this);
+        
         init();
            // mark.id = marksCount.toString();
            // mark.label = "Mark "+marksCount;

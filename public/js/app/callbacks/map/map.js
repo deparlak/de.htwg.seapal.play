@@ -6,8 +6,8 @@
  */
 
 $(document).ready(function() {
-    $("#map_canvas").seamap({getInitialRoutes : function () {
-            console.log(console.log("initial routes was called."));
+    $("#map_canvas").seamap({getInitialRoutes : function (self) {
+            console.log(self);
     }});
     map = $('#map_canvas').data('seamap');
     

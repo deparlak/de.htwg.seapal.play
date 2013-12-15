@@ -2,7 +2,18 @@
 <!DOCTYPE HTML>
 <html>
     <head>
-        @appContent.header()
+        <meta charset="utf-8">
+        <meta http-equiv='content-type' content='text/html; charset=utf-8'/>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta name='keywords' content='sea navigation, Seapal, sign up'/>
+        <meta name='description' content='Create an account for Seapal.'/>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+        <title>SeaPal Sign Up</title>
+        <link type="text/css" rel="stylesheet" href="@routes.Assets.at("lib/bootstrap/css/bootstrap.min.css")" />
+        <link type="text/css" rel="stylesheet" href="@routes.Assets.at("css/signInSeapal.css")" />
+        <script src="http://code.jquery.com/jquery-latest.js"></script>
+        <script src="@routes.Assets.at("lib/bootstrap/js/bootstrap.min.js")"></script>
+        <script type="text/javascript" src="@routes.Assets.at("lib/modalOutput/modalOutput.js")"></script>
     </head>
 
     <body>
@@ -21,7 +32,7 @@
                 <button class="btn btn-lg btn-success btn-block" type="submit">
                     Sign Up for Seapal
                 </button>
-                <a href="#" class="pull-right need-help" onclick="javascript:output.info('Your password must contain at least eight characters.<br/>A valid email looks like (eg.): john-doe&#64;email.com');">
+                <a href="#" class="pull-right need-help" onclick="javascript:new modalOutput('modal', 'modal-title', 'modal-body').info('Your password must contain at least eight characters.<br/>A valid email looks like (eg.): john-doe&#64;email.com');">
                     Need help?
                 </a>
                 <span class="clearfix"></span>

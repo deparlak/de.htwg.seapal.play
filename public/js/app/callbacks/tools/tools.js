@@ -1,5 +1,5 @@
 /**
- * menu.js
+ * tools.js
  *
  * Define the actions for the tool entry's.
  * 
@@ -18,7 +18,7 @@ $(document).ready(function() {
     
     tools.addCallback('icon-takePhoto', function (self) {
         menu.closeMenu();        
-        window.cameraApi.setup("photo-video", "photo-button");
+        window.camera.setup("photo-video", "photo-button");
         $('#modal-photo').modal('show');
     });
     
@@ -56,20 +56,5 @@ $(document).ready(function() {
 
     tools.addCallback('icon-discardTarget', function (self) {
         console.log('icon-discardTarget');
-    });
-
-    /**
-      * Closes the connection to the camera when photo modal is closed 
-      */
-    $('#modal-photo').on('hidden.bs.modal', function() {
-        window.cameraApi.disable_camera();
-    });
-
-    /**
-      * Handles the take photo click event!
-      */
-    $('#photo-button').on('click', function() {
-        var image = window.cameraApi.captureImage();
-        map.setImageMark(image);
     });
 });
