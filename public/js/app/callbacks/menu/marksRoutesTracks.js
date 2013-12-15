@@ -23,7 +23,7 @@ $(document).ready(function() {
         console.log("Search in tracks "+search);
     };
 
-    menu.addCallback('marksRoutesTracks', function (self) {
+    menu.addCallback('leftclick', 'marksRoutesTracks', function (self) {
         self.button('toggle');
         $('.active-marksRoutesTracks').removeClass('active-marksRoutesTracks').addClass('inactive-marksRoutesTracks');
         $(self.data('name')).removeClass('inactive-marksRoutesTracks').addClass('active-marksRoutesTracks');
@@ -37,5 +37,5 @@ $(document).ready(function() {
         method[active]($('#search-marksRoutesTracks').val());
         event.stopPropagation();
         event.preventDefault();
-    }); 
+    });
 });

@@ -22,6 +22,8 @@
 
     function menubar( id, options ) {    
         this.callbacks = {};
+        this.callbacks.leftclick = {};
+        this.callbacks.rightclick = {};
         this.el = document.getElementById( id );
         this.prefix = id;
         this._init();
@@ -34,11 +36,14 @@
            called if an hmtl object will be triggered which owns the
            class "action" and "<onClass>". 
         */
-        addCallback : function (onClass, method) {
-            if (!this.callbacks[onClass]) {
-                this.callbacks[onClass] = $.Callbacks();
+        addCallback : function (event, onClass, method) {
+            if(undefined === this.callbacks[event]) {
+                throw("Cannot add callback, because event '"+event+"' does not exist.");  
             }
-            this.callbacks[onClass].add(method);
+            if (!this.callbacks[event][onClass]) {
+                this.callbacks[event][onClass] = $.Callbacks();
+            }
+            this.callbacks[event][onClass].add(method);
         },  
         _closeSubmenus : function() {
             var self = this;
@@ -59,7 +64,7 @@
                 this.removeEventListener( self.eventtype, self.bodyClickFn );
             };
             /* add the built in calback for a 'link' marked element. Links can be used for multiple menu's */
-            this.addCallback('link', function (elem) {
+            this.addCallback('leftclick', 'link', function (elem) {
                 self._closeSubmenus();
                 $("#"+elem.data("link")).removeClass("inactive-"+self.prefix+"-list").addClass("active-"+self.prefix+"-list");
             });
@@ -67,21 +72,31 @@
         _initEvents : function() {
             var self = this;
             
-            var action = function(event){
-                var classList = $(this).attr('class').split(/\s+/);
-                for (var i in classList) {
-                    if (self.callbacks[classList[i]]) {
-                        self.callbacks[classList[i]].fire($(this));
-                    }
-                }
+            var action = function (event){
                 event.stopPropagation();
                 event.preventDefault();
+                var classList = $(this).attr('class').split(/\s+/);
+
+                //left mouse button
+                if (1 == event.which) {
+                    var action = 'leftclick';
+                }
+                else if (3 == event.which) {
+                    var action = 'rightclick';
+                } else {
+                    return;
+                }
+                for (var i in classList) {
+                    if (self.callbacks[action][classList[i]]) {
+                        self.callbacks[action][classList[i]].fire($(this));
+                    }
+                }
             };
-            
+
             /* a element of the menu was clicked. Check if any callback has to be fired */
-            $("#"+self.prefix+" > nav > div > ul > li").on( 'click', 'a',  action);
-            $("#"+self.prefix+" > nav > div > ul > li > div").on( 'click', 'label',  action);
-            $("#"+self.prefix+" > nav > div > ul > div").on( 'click', 'li > a',  action);
+            $("#"+self.prefix+" > nav > div > ul > li").on( 'mousedown', 'a',  action);
+            $("#"+self.prefix+" > nav > div > ul > li > div").on( 'mousedown', 'label',  action);
+            $("#"+self.prefix+" > nav > div > ul > div").on( 'mousedown', 'li > a',  action);
 
             if( !mobilecheck() ) {
                 this.trigger.addEventListener( 'mouseover', function(ev) { self.openIconMenu(); } );
