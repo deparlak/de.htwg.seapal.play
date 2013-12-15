@@ -14,7 +14,6 @@
 <link type="text/css" rel="stylesheet" href="@routes.Assets.at("lib/menubar/css/normalize.css")" />
 <link type="text/css" rel="stylesheet" href="@routes.Assets.at("lib/menubar/css/menubar.css")" />
 <link type="text/css" rel="stylesheet" href="@routes.Assets.at("css/seamap.css")" />
-<link type="text/css" rel="stylesheet" href="@routes.Assets.at("css/signInSeapal.css")" />
 
 <!-- JS -->
 <script src="http://code.jquery.com/jquery-latest.js"></script>
@@ -28,6 +27,11 @@
 <script type="text/javascript" src="@routes.Assets.at("lib/seamap/seamap.js")"></script>
 <script type="text/javascript" src="@routes.Assets.at("lib/modernizr.js")"></script>
 <script type="text/javascript" src="@routes.Assets.at("lib/handlebars/handlebars-v1.1.2.js")"></script>
+@if(session.contains("id")) {  
+    <script type="text/javascript" src="@routes.Assets.at("js/init/isLoggedIn.js")"></script>
+} else {
+    <script type="text/javascript" src="@routes.Assets.at("js/init/isLoggedOut.js")"></script>
+}
 <script type="text/javascript" src="@routes.Assets.at("js/init/globals.js")"></script>
 <script type="text/javascript" src="@routes.Assets.at("js/init/map.js")"></script>
 <script type="text/javascript" src="@routes.Assets.at("js/init/menu.js")"></script>
