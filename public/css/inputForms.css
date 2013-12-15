@@ -16,7 +16,7 @@
     max-width: 1150px;
 }
 
-.inputForm_Trip-modal
+.inputForm_Track-modal
 {
     max-width: 800px;
 }
@@ -48,13 +48,13 @@
     width: 100px;
 }
 
-.form_trip
+.form_track
 {
 	padding: 15px;
     margin: 0 auto;
 }
 
-.form_trip textarea
+.form_track textarea
 {
     width: auto;
     resize: none;

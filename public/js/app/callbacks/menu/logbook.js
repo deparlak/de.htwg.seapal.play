@@ -40,6 +40,10 @@ $(document).ready(function() {
     });  
 
     menu.addCallback('rightclick', ['icon-notSelectedBoat', 'icon-selectedBoat'], function (self) {
-        $('#modal-form_trip').modal('show');
-    });    
+        $('#modal-form_boat').modal('show');
+    });
+
+    menu.addCallback('rightclick', ['icon-notSelectedTrack', 'icon-selectedTrack'], function (self) {
+        $('#modal-form_track').modal('show');
+    });
 });
