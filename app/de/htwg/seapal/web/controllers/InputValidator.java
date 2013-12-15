@@ -22,7 +22,7 @@ public class InputValidator {
 	public static final String[] Error_Messages  = new String[]{
 		"Please enter a valid email adress!", 
 		"The passwords you've entered differ!",
-		"The passwords you've entered is to short. Use at least " + MIN_LENGTH + " characters!"
+		"The password you've entered is to short. Use at least " + MIN_LENGTH + " characters!"
 	};
 
 	/**
