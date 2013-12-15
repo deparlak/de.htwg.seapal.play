@@ -40,6 +40,6 @@ $(document).ready(function() {
     });  
 
     menu.addCallback('rightclick', ['icon-notSelectedBoat', 'icon-selectedBoat'], function (self) {
-        console.log('Boat selected with id '+self.data('id'));
+        $('#modal-form_trip').modal('show');
     });    
 });
