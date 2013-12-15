@@ -9,12 +9,12 @@ $(document).ready(function() {
     menu.addCallback('icon-fullscreen', function (self) {
         menu.closeMenu();
 
-        if (window.fullScreenApi.supportsFullScreen) {
-            if (!window.fullScreenApi.isFullScreen()) {
-                window.fullScreenApi.requestFullScreen(document.body);
+        if (window.fullScreen.supportsFullScreen) {
+            if (!window.fullScreen.isFullScreen()) {
+                window.fullScreen.requestFullScreen(document.body);
                 self.text("Window");
             } else {
-                window.fullScreenApi.cancelFullScreen(document.body);
+                window.fullScreen.cancelFullScreen(document.body);
                 self.text("Fullscreen");
             }
         } else {
