@@ -41,9 +41,7 @@ $(document).ready(function() {
     });
     
     menu.addCallback('icon-addOns', function (self) {
-        menu.closeMenu();
-        $('#modal-form_boat').modal('show');
-        //output.info("Add-ons are not supported in the web app. With Add-ons you can download for example offline maps to use the app without an internet connection.");
+        output.info("Add-ons are not supported in the web app. With Add-ons you can download for example offline maps to use the app without an internet connection.");
     });
 
     menu.addCallback('marksRoutesTracks', function (self) {
