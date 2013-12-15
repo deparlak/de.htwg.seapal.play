@@ -23,7 +23,7 @@ $(document).ready(function() {
         console.log("Search in Coordinates "+search);
     };
 
-    tools.addCallback('searchPosition', function (self) {
+    tools.addCallback('leftclick', 'searchPosition', function (self) {
         self.button('toggle');
         $('.active-searchPosition').removeClass('active-searchPosition').addClass('inactive-searchPosition');
         $(self.data('name')).removeClass('inactive-searchPosition').addClass('active-searchPosition');

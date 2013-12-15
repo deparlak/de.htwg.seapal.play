@@ -6,6 +6,9 @@
  */
 
 $(document).ready(function() {
+    $(document).bind("contextmenu", function(e) {
+        return false;
+    });
     output = new modalOutput('modal', 'modal-title', 'modal-body');
     menu = new menubar( 'menu' );
     tools = new menubar( 'tools' );
