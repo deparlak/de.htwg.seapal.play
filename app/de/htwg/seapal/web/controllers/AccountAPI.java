@@ -57,13 +57,10 @@ public class AccountAPI
             return badRequest(signUpSeapal.render(filledForm, routes.AccountAPI.signup()));
         } else {
             try {
-                if(!InputValidator.validate(account.getAccountName())) {
-                    flash("errors", "Please enter a valid email adress!");
-                    return badRequest(signUpSeapal.render(filledForm, routes.AccountAPI.signup()));
-                }
 
-                if(!InputValidator.checkPasswords(account)) {
-                    flash("errors", "The passwords you've entered differ!");
+                InputValidator.Error result = InputValidator.validate(account);
+                if(result != InputValidator.Error.NONE) {
+                    flash("errors", InputValidator.Error_Messages[result.ordinal()]);
                     return badRequest(signUpSeapal.render(filledForm, routes.AccountAPI.signup()));
                 }
 
