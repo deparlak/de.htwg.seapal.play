@@ -1,0 +1,176 @@
+<!-- Modal -->
+<div class="modal fade" id="modal-form_boat" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="false">
+	<div class="inputForm-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title">Your boats</h4>
+            </div>
+            <div class="inputForm-content">
+            	<form class="form_boat">
+		            <div>
+						<div class="row">
+							<div class="col-12 col-sm-1_a font-light">
+								<label for="boat_name">Bootsname</label>
+							</div>
+							<div class="col-12 col-sm-1_a font-light">
+								<input type="text" name="boat_name" tabindex="1" required />
+							</div>
+							<div class="col-12 col-sm-1_a font-light">
+								<label for="boat_type">Typ</label>
+							</div>
+							<div class="col-12 col-sm-1_a font-light">
+								<input type="text" name="boat_type" tabindex="9" />
+							</div>
+							<div class="col-12 col-sm-1_a font-light">
+								<label for="build_year">Baujahr</label>
+							</div>
+							<div class="col-12 col-sm-1_a font-light">
+								<input type="number" name="build_year" tabindex="17" min="1900" />
+							</div>
+							<div class="col-12 col-sm-1_a font-light">
+								<label for="register_nr">Registernr.</label>
+							</div>
+							<div class="col-12 col-sm-1_a font-light">
+								<input type="number" name="register_nr" tabindex="2" />
+							</div>
+						</div>
+						<div class="row">
+							<div class="col-12 col-sm-1_a font-light">
+								<label for="constructor">Konstrukteur</label>
+							</div>
+							<div class="col-12 col-sm-1_a font-light">
+								<input type="text" name="constructor" tabindex="10" />
+							</div>
+							<div class="col-12 col-sm-1_a font-light">
+								<label for="engine">Motor</label>
+							</div>
+							<div class="col-12 col-sm-1_a font-light">
+								<input type="text" name="engine" tabindex="18" />
+							</div>
+							<div class="col-12 col-sm-1_a font-light">
+								<label for="sail_sign">Segelzeichen</label>
+							</div>
+							<div class="col-12 col-sm-1_a font-light">
+								<input type="text" name="sail_sign" tabindex="3" />
+							</div>
+							<div class="col-12 col-sm-1_a font-light">
+								<label for="boat_length">Länge</label>
+							</div>
+							<div class="col-12 col-sm-1_a font-light">
+								<input type="number" name="boat_length" tabindex="11" min="0.1" step="0.1" />
+							</div>
+						</div>
+						<div class="row">
+							<div class="col-12 col-sm-1_a font-light">
+								<label for="fueltank_size">Tankgröße</label>
+							</div>
+							<div class="col-12 col-sm-1_a font-light">
+								<input type="number" name="fueltank_size" tabindex="19" min="0" step="0.1"  />
+							</div>
+							<div class="col-12 col-sm-1_a font-light">
+								<label for="home_port">Heimathafen</label>
+							</div>
+							<div class="col-12 col-sm-1_a font-light">
+								<input type="text" name="home_port" tabindex="4" />
+							</div>
+							<div class="col-12 col-sm-1_a font-light">
+								<label for="boat_width">Breite</label>
+							</div>
+							<div class="col-12 col-sm-1_a font-light">
+								<input type="number" name="boat_width" tabindex="12" min="0.1" step="0.1" />
+							</div>
+							<div class="col-12 col-sm-1_a font-light">
+								<label for="watertank_size">Wassertankgröße</label>
+							</div>
+							<div class="col-12 col-sm-1_a font-light">
+								<input type="number" name="watertank_size" tabindex="20" min="0" step="0.1" />
+							</div>							
+						</div>
+						<div class="row">
+							<div class="col-12 col-sm-1_a font-light">
+								<label for="yachtclub">Yachtclub</label>
+							</div>
+							<div class="col-12 col-sm-1_a font-light">
+								<input type="text" name="yachtclub" tabindex="5" />
+							</div>
+							<div class="col-12 col-sm-1_a font-light">
+								<label for="draught">Tiefgang</label>
+							</div>
+							<div class="col-12 col-sm-1_a font-light">
+								<input type="number" name="draught" tabindex="13" min="0" step="0.1" />
+							</div>
+							<div class="col-12 col-sm-1_a font-light">
+								<label for="wastewatertank_size">Abwassertankgröße</label>
+							</div>
+							<div class="col-12 col-sm-1_a font-light">
+								<input type="number" name="wastewatertank_size" tabindex="21" min="0" step="0.1" />
+							</div>
+							<div class="col-12 col-sm-1_a font-light">
+								<label for="owner">Eigner</label>
+							</div>
+							<div class="col-12 col-sm-1_a font-light">
+								<input type="text" name="owner" tabindex="6" />
+							</div>							
+						</div>
+						<div class="row">
+							<div class="col-12 col-sm-1_a font-light">
+								<label for="mast_height">Masthöhe</label>
+							</div>
+							<div class="col-12 col-sm-1_a font-light">
+								<input type="number" name="mast_height" tabindex="14" min="0" step="0.1" />
+							</div>
+							<div class="col-12 col-sm-1_a font-light">
+								<label for="mainsail_size">Großsegelgröße</label>
+							</div>
+							<div class="col-12 col-sm-1_a font-light">
+								<input type="number" name="mainsail_size" tabindex="22" min="0" step="0.1" />
+							</div>
+							<div class="col-12 col-sm-1_a font-light">
+								<label for="insurance">Versicherung</label>
+							</div>
+							<div class="col-12 col-sm-1_a font-light">
+								<input type="text" name="insurance" tabindex="7" />
+							</div>
+							<div class="col-12 col-sm-1_a font-light">
+								<label for="water_displacement">Verdrängung</label>
+							</div>
+							<div class="col-12 col-sm-1_a font-light">
+								<input type="number" name="water_displacement" tabindex="15" min="0" step="0.1" />
+							</div>
+						</div>
+						<div class="row">
+							<div class="col-12 col-sm-1_a font-light">
+								<label for="genua_size">Genuagröße</label>
+							</div>
+							<div class="col-12 col-sm-1_a font-light">
+								<input type="number" name="genua_size" tabindex="23" min="0" step="0.1" />
+							</div>
+							<div class="col-12 col-sm-1_a font-light">
+								<label for="callsign">Rufzeichen</label>
+							</div>
+							<div class="col-12 col-sm-1_a font-light">
+								<input type="text" name="callsign" tabindex="8" />
+							</div>
+							<div class="col-12 col-sm-1_a font-light">
+								<label for="rig_kind">Rig-Art</label>
+							</div>
+							<div class="col-12 col-sm-1_a font-light">
+								<input type="text" name="rig_kind" tabindex="16" />
+							</div>
+							<div class="col-12 col-sm-1_a font-light">
+								<label for="spi_size">Spigröße</label>
+							</div>
+							<div class="col-12 col-sm-1_a font-light">
+								<input type="number" name="spi_size" tabindex="24" min="0" step="0.1" />
+							</div>
+						</div>
+						<div class="inputForm-footer">
+							<button type="submit" class="btn btn-primary">Save</button>
+							<button type="button" class="btn btn-danger" data-dismiss="modal">Abort</button>
+            			</div>
+        		</form>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
