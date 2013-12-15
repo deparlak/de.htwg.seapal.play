@@ -4,6 +4,7 @@
     <head>
         @appContent.header()
     </head>
+
     <body>
         <div class="account-wall">
             <img class="profile-img" src="@routes.Assets.at("images/seapal_launcher.png")" alt="Seapal">
@@ -20,7 +21,15 @@
                 <button class="btn btn-lg btn-success btn-block" type="submit">
                     Sign Up for Seapal
                 </button>
+                <a href="#" class="pull-right need-help" onclick="javascript:output.info('Your password must contain at least eight characters.<br/>A valid email looks like (eg.): john-doe&#64;email.com');">
+                    Need help?
+                </a>
+                <span class="clearfix"></span>
             }
         </div>
     </body>
+
+    <footer>
+        @appContent.footer()
+    </footer>
 </html>
