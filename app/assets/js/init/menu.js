@@ -101,7 +101,6 @@ $(document).ready(function() {
     $("#search-marksRoutesTracks").keyup( function(ev) {
         ev.stopPropagation();
         ev.preventDefault();
-        console.log("inpurt");
     });    
     
     menu.addCallback('icon-notSelectedBoat', function (self) {

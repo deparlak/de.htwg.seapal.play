@@ -67,13 +67,15 @@
         _initEvents : function() {
             var self = this;
             
-            var action = function(){
+            var action = function(event){
                 var classList = $(this).attr('class').split(/\s+/);
                 for (var i in classList) {
                     if (self.callbacks[classList[i]]) {
                         self.callbacks[classList[i]].fire($(this));
                     }
                 }
+                event.stopPropagation();
+                event.preventDefault();
             };
             
             /* a element of the menu was clicked. Check if any callback has to be fired */

@@ -15,7 +15,7 @@
                                 <li><a class="menu-icon icon-map action">Satellite</a></li>
                                 <li><a class="menu-icon icon-logbook link" data-link="menu-logbook">Logbook</a></li>
                                 <li><a class="menu-icon icon-dashboard">Dashboard</a></li>
-                                <li><a class="menu-icon icon-routes link" data-link="menu-routes">Marks, Routes, Tracks</a></li>
+                                <li><a class="menu-icon icon-marksRoutesTracks link" data-link="menu-marksRoutesTracks">Marks, Routes, Tracks</a></li>
                                 <li><a class="menu-icon icon-charts">Navigation Charts</a></li>
                                 <li><a class="menu-icon icon-addOns">Add-ons</a></li>
                                 <li><a class="menu-icon icon-poi action">Points of Interest</a></li>
@@ -138,7 +138,7 @@
 
                             </ul>
                         
-                            <ul id="menu-routes" class="menubar-menu inactive-menu-list">
+                            <ul id="menu-marksRoutesTracks" class="menubar-menu inactive-menu-list">
                                 <li><a class="menu-icon icon-menuBack link" data-link="menu-main">Back</a></li>
                                 <!-- Search for marks/routes/tracks -->
                                 <li class="menubar-search-item menu-icon icon-searchMenu">
@@ -227,8 +227,31 @@
                             <ul id="tools-searchPosition" class="menubar-menu inactive-tools-list">
                                 <li><a class="tools-icon icon-toolsBack link" data-link="tools-main">Back</a></li>
                                 <li class="menubar-search-item tools-icon icon-searchPosition">
-                                    <input placeholder="Search" type="search" class="menubar-tools-search menubar-search">
+                                    <input placeholder="Search" type="search" class="menubar-tools-search menubar-search" id="search-searchPosition">
                                 </li>
+                                <!-- selector to switch between marks/routes/tracks -->
+                                <li>
+                                    <div class="btn-group-justified menubar-optionsSelector" data-toggle="buttons">
+                                        <label class="btn btn-primary action searchPosition active" data-name="#SearchPlaces">
+                                            <input type="radio">Places
+                                        </label>
+                                        <label class="btn btn-primary action searchPosition" data-name="#SearchMarks">
+                                            <input type="radio">Marks
+                                        </label>
+                                        <label class="btn btn-primary action searchPosition" data-name="#SearchCoordinates">
+                                            <input type="radio">Coordinates
+                                        </label>
+                                    </div>
+                                </li>
+                                <!-- all places -->
+                                <div id="SearchPlaces" class="inactive-searchPosition"></div>
+                                <!-- all marks -->
+                                <div id="SearchMarks" class="active-searchPosition"></div>
+                                <!-- all coordinates -->
+                                <div id="SearchCoordinates" class="inactive-searchPosition"></div>
+                                <!-- all POI's -->
+                                <div id="searchPOIs" class="inactive-searchPosition"></div>
+                                
                             </ul>  
                             
                             
