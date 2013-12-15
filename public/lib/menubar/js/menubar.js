@@ -37,6 +37,18 @@
            class "action" and "<onClass>". 
         */
         addCallback : function (event, onClass, method) {
+            if (Array.isArray(event)) {
+                for (var i in event) {
+                    this.addCallback(event[i], onClass, method);
+                }
+                return;
+            }
+            if (Array.isArray(onClass)) {
+                for (var j in onClass) {
+                    this.addCallback(event, onClass[j], method);
+                }
+                return;
+            }
             if(undefined === this.callbacks[event]) {
                 throw("Cannot add callback, because event '"+event+"' does not exist.");  
             }

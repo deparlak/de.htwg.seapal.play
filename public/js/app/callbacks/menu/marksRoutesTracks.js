@@ -38,4 +38,25 @@ $(document).ready(function() {
         event.stopPropagation();
         event.preventDefault();
     });
+    
+    menu.addCallback('leftclick', 'icon-selectedMark', function (self) {
+        self.removeClass('icon-selectedMark').addClass('icon-notSelectedMark');
+        map.hideMark(self.data('id'));
+    });
+    
+    menu.addCallback('leftclick', 'icon-notSelectedMark', function (self) {
+        self.removeClass('icon-notSelectedMark').addClass('icon-selectedMark');
+        map.visibleMark(self.data('id'));
+    });
+    
+    menu.addCallback('leftclick', 'icon-selectedRoute', function (self) {
+        self.removeClass('icon-selectedRoute').addClass('icon-notSelectedRoute');
+        map.hideRoute(self.data('id'));
+    });
+    
+    menu.addCallback('leftclick', 'icon-notSelectedRoute', function (self) {
+        $('.icon-selectedRoute').removeClass('icon-selectedRoute').addClass('icon-notSelectedRoute');
+        self.removeClass('icon-notSelectedRoute').addClass('icon-selectedRoute');
+        map.visibleRoute(self.data('id'));
+    });
 });
