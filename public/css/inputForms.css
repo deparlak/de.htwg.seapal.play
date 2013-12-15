@@ -7,9 +7,18 @@
     margin-top: 70px;
     margin-left: auto;
     margin-right: auto;
-    max-width: 1150px;
     height: auto;
     padding: 40px 0px 20px 0px;
+} 
+
+.inputForm_Boat-modal
+{
+    max-width: 1150px;
+}
+
+.inputForm_Trip-modal
+{
+    max-width: 800px;
 }
 
 .inputForm-content {
@@ -43,4 +52,10 @@
 {
 	padding: 15px;
     margin: 0 auto;
+}
+
+.form_trip textarea
+{
+    width: auto;
+    resize: none;
 }
