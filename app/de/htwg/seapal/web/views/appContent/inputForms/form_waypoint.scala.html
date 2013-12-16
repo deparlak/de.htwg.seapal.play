@@ -7,20 +7,108 @@
                 <h4 class="modal-title">Your waypoints</h4>
             </div>
             <div class="inputForm-content">
-            	<form class="form_global">
+            	<form class="form_global form_waypoint">
                     <div class="row">
-                        <div class="col-12 col-sm-1 font-light">
-                            <label for="track_title">Titel</label>
+                        <div class="some_left_padding col-12 col-sm-1">
+                            <label for="waypoint_titel">Titel</label>
                         </div>
-                        <div class="col-12 col-sm-5 font-light">
-                            <input type="text" name="track_title" tabindex="1" required />
+                        <div class="no_padding col-12 col-sm-3">
+                            <input type="text" name="waypoint_titel" tabindex="1" />
                         </div>
-                        <div class="col-12 col-sm-1 font-light">
-                            <label for="track_skipper">Skipper</label>
+                        <div class="some_left_padding col-12 col-sm-1">
+                            <label for="waypoint_posN">Pos.N</label>
                         </div>
-                        <div class="col-12 col-sm-5 font-light">
-                            <input type="text" name="track_skipper" tabindex="2" required />
+                        <div class="no_padding col-12 col-sm-3">
+                            <input type="text" name="waypoint_posN" tabindex="2" readonly />
                         </div>
+                        <div class="some_left_padding col-12 col-sm-1">
+                            <label for="waypoint_posE">Pos.E</label>
+                        </div>
+                        <div class="no_padding col-12 col-sm-3">
+                            <input type="text" name="waypoint_posE" tabindex="3" readonly />
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="some_left_padding col-12 col-sm-1">
+                            <label for="waypoint_COG">COG</label>
+                        </div>
+                        <div class="no_padding col-12 col-sm-1">
+                            <input type="text" name="waypoint_COG" tabindex="4" readonly />
+                        </div>
+                        <div class="some_left_padding col-12 col-sm-1">
+                            <label for="waypoint_SOG">SOG</label>
+                        </div>
+                        <div class="no_padding col-12 col-sm-1">
+                            <input type="text" name="waypoint_SOG" tabindex="5" readonly />
+                        </div>
+                        <div class="some_left_padding col-12 col-sm-1">
+                            <label for="waypoint_BTM">BTM</label>
+                        </div>
+                        <div class="no_padding col-12 col-sm-1">
+                            <input type="text" name="waypoint_BTM" tabindex="6" readonly />
+                        </div>
+                        <div class="some_left_padding col-12 col-sm-1">
+                            <label for="waypoint_DTM">DTM</label>
+                        </div>
+                        <div class="no_padding col-12 col-sm-1">
+                            <input type="text" name="waypoint_DTM" tabindex="7" readonly />
+                        </div>
+                        <div class="some_left_padding col-12 col-sm-1">
+                            <label for="waypoint_date">Date</label>
+                        </div>
+                        <div class="no_padding col-12 col-sm-3">
+                            <input type="text" name="waypoint_date" tabindex="8" readonly />
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="some_left_padding col-12 col-sm-2">
+                            <label for="waypoint_maneuver">Maneuver</label>
+                        </div>
+                        <div class="no_padding col-12 col-sm-2">
+                            <select name="waypoint_maneuver" tabindex="9">
+                                <option value="waypoint_maneuver_none">-</option>
+                                <option value="waypoint_maneuver_mob">Man overboard</option>
+                                <option value="waypoint_maneuver_w">Wende</option>
+                                <option value="waypoint_maneuver_h">Halse</option>
+                                <option value="waypoint_maneuver_a">Aufschiesser</option>
+                            </select>
+                        </div>
+                        <div class="some_left_padding col-12 col-sm-2">
+                            <label for="waypoint_headsail">Headsail</label>
+                        </div>
+                        <div class="no_padding no_padding col-12 col-sm-2">
+                            <select name="waypoint_headsail" tabindex="10">
+                                <option value="waypoint_headsail_none">-</option>
+                                <option value="waypoint_headsail_f">Fock</option>
+                                <option value="waypoint_headsail_g">Genua</option>
+                                <option value="waypoint_headsail_s">Spinnacker</option>
+                            </select>
+                        </div>
+                        <div class="some_left_padding col-12 col-sm-2">
+                            <label for="waypoint_mainsail">Mainsail</label>
+                        </div>
+                        <div class="no_padding col-12 col-sm-2">
+                            <select name="waypoint_mainsail" tabindex="11">
+                                <option value="waypoint_mainsail_none">-</option>
+                                <option value="waypoint_mainsail_f">Fock</option>
+                                <option value="waypoint_mainsail_g">Großsegel</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="some_left_padding col-12 col-sm-2">
+                            <label for="waypoint_headingTo">Heading to</label>
+                        </div>
+                        <div class="no_padding col-12 col-sm-2">
+                            <select id="waypoint_headingTo_select" name="waypoint_headingTo" tabindex="12">
+                                <option value="waypoint_headingTo_none">-</option>
+
+                            </select>
+                        </div>
+                    </div>
+                    <div class="inputForm-footer">
+                        <button type="submit" class="btn btn-primary">Save</button>
+                        <button type="button" class="btn btn-danger" data-dismiss="modal">Abort</button>
                     </div>
                 </form>
             </div>

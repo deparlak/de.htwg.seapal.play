@@ -33,6 +33,7 @@
     box-shadow: 0px 2px 2px rgba(0, 0, 0, 0.3);
 	position: relative;
 	background-clip: padding-box;
+    padding-right: 15px !important;
 }
 
 .inputForm-footer
@@ -57,4 +58,26 @@
 {
     width: 100%;
     resize: none;
+}
+
+.form_waypoint label
+{
+    text-align: center !important;
+}
+
+.form_waypoint select
+{
+    width: 100%;
+}
+
+.no_padding
+{
+    padding-left: 0px !important;
+    padding-right: 0px !important;
+}
+
+.some_left_padding
+{
+    padding-left: 15px !important;
+    padding-right: 0px !important;   
 }
