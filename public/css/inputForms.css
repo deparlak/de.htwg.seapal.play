@@ -51,6 +51,7 @@
 
 .form_global input
 {
+    max-width: 400px;
     width: 100%;
 }
 
@@ -60,14 +61,22 @@
     resize: none;
 }
 
-.form_waypoint label
-{
-    text-align: center !important;
-}
-
 .form_waypoint select
 {
     width: 100%;
+}
+
+.form_waypoint img
+{
+    padding-left: 5%;
+    max-width: 100%;
+    max-height: 205px;
+}
+
+.form_waypoint textarea
+{
+    width: 100%;
+    resize: none;
 }
 
 .no_padding

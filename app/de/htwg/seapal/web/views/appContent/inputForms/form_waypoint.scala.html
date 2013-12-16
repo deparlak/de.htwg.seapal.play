@@ -68,9 +68,9 @@
                             <select name="waypoint_maneuver" tabindex="9">
                                 <option value="waypoint_maneuver_none">-</option>
                                 <option value="waypoint_maneuver_mob">Man overboard</option>
-                                <option value="waypoint_maneuver_w">Wende</option>
-                                <option value="waypoint_maneuver_h">Halse</option>
-                                <option value="waypoint_maneuver_a">Aufschiesser</option>
+                                <option value="waypoint_maneuver_tack">Tack</option>
+                                <option value="waypoint_maneuver_jibe">Jibe</option>
+                                <option value="waypoint_maneuver_shooting">Shooting head to wind</option>
                             </select>
                         </div>
                         <div class="some_left_padding col-12 col-sm-2">
@@ -79,9 +79,9 @@
                         <div class="no_padding no_padding col-12 col-sm-2">
                             <select name="waypoint_headsail" tabindex="10">
                                 <option value="waypoint_headsail_none">-</option>
-                                <option value="waypoint_headsail_f">Fock</option>
-                                <option value="waypoint_headsail_g">Genua</option>
-                                <option value="waypoint_headsail_s">Spinnacker</option>
+                                <option value="waypoint_headsail_jib">Jib</option>
+                                <option value="waypoint_headsail_genoa">Genoa</option>
+                                <option value="waypoint_headsail_spinnaker">Spinnaker</option>
                             </select>
                         </div>
                         <div class="some_left_padding col-12 col-sm-2">
@@ -90,8 +90,8 @@
                         <div class="no_padding col-12 col-sm-2">
                             <select name="waypoint_mainsail" tabindex="11">
                                 <option value="waypoint_mainsail_none">-</option>
-                                <option value="waypoint_mainsail_f">Fock</option>
-                                <option value="waypoint_mainsail_g">Großsegel</option>
+                                <option value="waypoint_mainsail_jib">Jib</option>
+                                <option value="waypoint_mainsail_mainsail">Mainsail</option>
                             </select>
                         </div>
                     </div>
@@ -100,10 +100,18 @@
                             <label for="waypoint_headingTo">Heading to</label>
                         </div>
                         <div class="no_padding col-12 col-sm-2">
-                            <select id="waypoint_headingTo_select" name="waypoint_headingTo" tabindex="12">
-                                <option value="waypoint_headingTo_none">-</option>
-
-                            </select>
+                            <select id="waypoint_headingTo_select" name="waypoint_headingTo" tabindex="12"></select>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="some_left_padding col-12 col-sm-1">
+                            <label for="waypoint_Notes">Notes</label>
+                        </div>
+                        <div class="no_padding col-12 col-sm-5">                            
+                            <textarea name="waypoint_Notes" rows="10" tabindex="9"></textarea>
+                        </div>
+                        <div class="no_padding col-12 col-sm-6">                            
+                            <img src="@routes.Assets.at("images/screenshots/23-big.jpg")">
                         </div>
                     </div>
                     <div class="inputForm-footer">
