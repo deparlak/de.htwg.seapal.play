@@ -916,6 +916,15 @@
             google.maps.event.addListener(mark.onMap, 'rightclick', function(event) {
                 showContextMenu(event.latLng, ContextMenuTypes.DELETE_MARKER, mark);
             });
+
+            new LongPress(mark.onMap, 500);
+            google.maps.event.addListener(mark.onMap, 'longpress', function(event) {
+                supressClick = true;
+                showContextMenu(event.latLng, ContextMenuTypes.DELETE_MARKER, mark);
+                setTimeout(function() {
+                    supressClick = false;
+                }, 1000);
+            });
             
             marks[marksCount.toString()] = mark;
             marksCount++;
