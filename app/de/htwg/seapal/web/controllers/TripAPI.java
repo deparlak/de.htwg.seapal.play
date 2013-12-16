@@ -34,12 +34,12 @@ public class TripAPI extends Controller {
 
     @Security.Authenticated(AccountAPI.Secured.class)
     public Result tripsAsJson(UUID boatId) {
-        return ok(Json.toJson(controller.getTrips(session(IAccountController.AUTHN_COOKIE_KEY) + "+" + boatId.toString(), "tripsAsJson")));
+        return ok(Json.toJson(controller.getTrips(session(IAccountController.AUTHN_COOKIE_KEY) + boatId.toString(), "tripsAsJson")));
     }
 
     @Security.Authenticated(AccountAPI.Secured.class)
     public Result tripAsJson(UUID id) {
-        return ok(Json.toJson(controller.getTrips(session(IAccountController.AUTHN_COOKIE_KEY) + "+" + id.toString(), "tripAsJson").get(0)));
+        return ok(Json.toJson(controller.getTrips(session(IAccountController.AUTHN_COOKIE_KEY) + id.toString(), "tripAsJson").get(0)));
     }
 
     @Security.Authenticated(AccountAPI.Secured.class)
