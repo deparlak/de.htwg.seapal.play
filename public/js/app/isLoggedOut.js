@@ -6,5 +6,16 @@
  */
  
 $(document).ready(function() {    
-    console.log("is logged out");
+    window.seamapSync =
+    {
+        downloadBoats : function (self, output) {
+        
+        },
+        downloadTrips : function (self, output) {
+        
+        },
+        downloadRoutes : function (self, output) {
+        
+        },
+    };
 });

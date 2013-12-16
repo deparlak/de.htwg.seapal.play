@@ -115,11 +115,10 @@
     /**
     * *************************************************************************************
     * Methods which should be extended into this jequery plugin for synchronisation purpose.
+    * Look at the variable "syncRequiredMethods" which holds all required methods.
     * *************************************************************************************
     */
-    var sync = {
-
-    };
+    var sync = { };
 
     /**
     * *************************************************************************************
@@ -128,7 +127,12 @@
     */
     $.seamap = function(element){    
         /* the required list holds all names of the methods which has to be defined. */
-        var syncRequiredMethods = ['getInitialRoutes'];
+        var syncRequiredMethods = 
+        [
+        'downloadBoats',         //trigger download of boats
+        'downloadTrips',         //trigger download of trips
+        'downloadRoutes',        //trigger download of routes
+        ];
     
         /* add a callback function to get notified about actions */
         this.addCallback = function (event, method) {
@@ -285,14 +289,8 @@
                 throw("The plugin has to be extended with a method called: '"+syncRequiredMethods[i]+"'."); 
             }
         }
-        
-        sync.getInitialRoutes(this);
-        
         init();
-           // mark.id = marksCount.toString();
-           // mark.label = "Mark "+marksCount;
-           // mark.detailed = "created on blabla..";
-
+        
         /**
         * *********************************************************************************
         * Initializes the GoogleMaps with OpenSeaMaps overlay, the context menu, the

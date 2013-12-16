@@ -16,8 +16,6 @@ $(document).ready(function() {
     output.before(function() { menu.closeMenu() });
     output.before(function() { tools.closeMenu() });
     
-    $("#map_canvas").seamap({getInitialRoutes : function (self, output) {
-        console.log("test");
-    }}, {marks : marks});
+    $("#map_canvas").seamap(seamapSync);
     map = $('#map_canvas').data('seamap');
 });
