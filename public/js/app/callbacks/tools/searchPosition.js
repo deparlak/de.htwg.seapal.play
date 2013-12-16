@@ -12,6 +12,13 @@ $(document).ready(function() {
     var service = new google.maps.places.PlacesService(map.getGoogleMapsHandle());
     var templateSearchPlaces = Handlebars.compile($("#template-SearchPlaces").html());
     
+    Handlebars.registerHelper('cutStringLength', function(string) {
+        if (string.length > 20) {
+            return string.substring(0, 20)+"...";
+        }
+        return string;
+    });
+    
     method["#SearchPlaces"] = function(search) {
         var request = {
             bounds: map.getGoogleMapsHandle().getBounds(),
@@ -21,11 +28,16 @@ $(document).ready(function() {
     };
    
     function SearchPlacesCallback(results, status) {
-        if (status != google.maps.places.PlacesServiceStatus.OK) {
-            alert(status);
-            return;
+        if (status == google.maps.places.PlacesServiceStatus.ZERO_RESULTS) {
+            results = {status : {ZERO_RESULTS : true}};
+        } else if (status == google.maps.places.PlacesServiceStatus.OVER_QUERY_LIMIT) {
+            results = {status : {OVER_QUERY_LIMIT : true}};
+        } else if (status == google.maps.places.PlacesServiceStatus.OK) {
+            //everything ok with the result
+        } else {
+            results = {status : {UNKNOWN_ERROR : true}};
         }
-        console.log(results);
+        //console.log(results);
         $("#SearchPlaces").html(templateSearchPlaces(results));
     }
     
@@ -48,10 +60,18 @@ $(document).ready(function() {
     });
     
     $("#search-searchPosition").keydown( function(event) {
-        if ( event.which == 13 ) {
-            method[active]($('#search-searchPosition').val());
-            event.stopPropagation();
-            event.preventDefault();
+        //SearchPlaces will only search after hitting enter, because the Search method has a quota which will be reached too fast
+        if ( event.which == 13 || active != "#SearchPlaces") {
+            var search = "";
+            search += $('#search-searchPosition').val();
+            if (search.length > 0) {
+                method[active](search);
+                event.stopPropagation();
+                event.preventDefault();
+            }
+        //if we search for places, we will display a message that the search is in action.
+        } else if (active == "#SearchPlaces") {
+            $("#SearchPlaces").html(templateSearchPlaces({status : {SEARCHING : true}}));
         }
     }); 
 });

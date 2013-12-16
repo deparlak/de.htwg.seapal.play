@@ -10,8 +10,40 @@
     {{/each}}
 </script>
 
-<script id="template-SearchPlaces" type="text/x-handlebars-template">
-    {{#each this}}
-        <li><a class="tools-icon icon-toolsNone action">{{name}}</a></li>
-    {{/each}}
+<script id="template-SearchPlaces" type="text/x-handlebars-template">   
+    {{#if status.SEARCHING}}
+        <li class="heading">
+            <div class="heading1">
+                Hit enter to start your search...
+            </div>
+        </li>
+    {{else}} {{#if status.ZERO_RESULTS}}
+        <li class="heading">
+            <div class="heading1">
+                No result found for this query...
+            </div>
+        </li>
+    {{else}} {{#if status.OVER_QUERY_LIMIT}}
+        <li class="heading">
+            <div class="heading1">
+                Too many request, try later again...
+            </div>
+        </li>
+    {{else}} {{#if status.UNKNOWN_ERROR}}
+        <li class="heading">
+            <div class="heading1">
+                An unknown error occurred, try later again...
+            </div>
+        </li>
+    {{else}}
+        {{#each this}}
+            <li><a class="tools-icon icon-toolsNone action">{{cutStringLength name}}</a></li>
+        {{else}}
+            <li class="heading">
+                <div class="heading1">
+                    No results found.
+                </div>
+            </li>
+        {{/each}}
+    {{/if}}{{/if}}{{/if}}{{/if}}
 </script>
