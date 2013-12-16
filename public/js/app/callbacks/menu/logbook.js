@@ -49,6 +49,10 @@ $(document).ready(function() {
         $('#modal-form_track').modal('show');
     });
 
+    menu.addCallback('rightclick', ['icon-notSelectedMark', 'icon-selectedMark'], function (self) {
+        $('#modal-form_marker').modal('show');
+    });
+
     /**
      * Shows the waypoint modal and closes the parent track modal
      */
