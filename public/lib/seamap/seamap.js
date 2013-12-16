@@ -344,6 +344,7 @@
 
             $this.on("click", "#addMark", handleAddMark);
             $this.on("click", "#deleteMark", handleDeleteMark);
+            $this.on("click", "#editMark", handleEditMark);
             $this.on("click", "#addNewRoute", handleAddNewRoute);
             $this.on("click", "#exitRouteCreation", handleExitRouteCreation);
             $this.on("click", "#setAsDestination", handleSetAsDestination);
@@ -651,6 +652,7 @@
                     break;
                 case ContextMenuTypes.DELETE_MARKER:
                     ctx += '<button id="deleteMark" type="button" class="btn"><i class="icon-map-marker"></i> Delete Mark</button>';
+                    ctx += '<button id="editMark" type="button" class="btn"><i class="icon-map-marker"></i> Edit Mark</button>';
                     break;
             }
             ctx += '</div>'
@@ -880,6 +882,16 @@
             deleteSelectedMark();
             hideContextMenu();
         }
+
+        /**
+        * *********************************************************************************
+        * Handler function for editing a mark. Also hides the context menu.
+        * *********************************************************************************
+        */
+        function handleEditMark() {
+            editSelectedMark();
+            hideContextMenu();
+        }
         
         /**
         * *********************************************************************************
@@ -916,6 +928,15 @@
             google.maps.event.addListener(mark.onMap, 'rightclick', function(event) {
                 showContextMenu(event.latLng, ContextMenuTypes.DELETE_MARKER, mark);
             });
+
+            new LongPress(mark.onMap, 500);
+            google.maps.event.addListener(mark.onMap, 'longpress', function(event) {
+                supressClick = true;
+                showContextMenu(event.latLng, ContextMenuTypes.DELETE_MARKER, mark);
+                setTimeout(function() {
+                    supressClick = false;
+                }, 1000);
+            });
             
             marks[marksCount.toString()] = mark;
             marksCount++;
@@ -932,7 +953,7 @@
             var mark = {}
             mark.id = marksCount.toString();
             mark.label = "Mark "+marksCount;
-            mark.detailed = getCurrentDateTime();
+            mark.detailed = getCurrentDateTime() + " / " + getCurrentCoordinatesAsString();
             var position = currentPosition;
             var thnail = image[0];
             var picture = image[1];
@@ -997,6 +1018,49 @@
                 + currentdate.getSeconds();
             return datetime;
         }
+        /* Gets the current coordinates in a human readable format */
+        function getCurrentCoordinatesAsString() {
+            var curr = currentPosition;
+            var north = currentPosition.nb;
+            var east = currentPosition.ob;
+            return toLatLngString(north, "lat") + " " + toLatLngString(east, "lng");
+        }
+        /* Gets the current coordinates in a human readable format array for use in the specific forms */
+        function toLatLngArray(dms, type) {
+            var sign = 1, Abs=0;
+            var days, minutes, secounds, direction;
+            var result = new Array();
+
+            if(dms < 0) {
+                sign = -1;
+            }
+
+            Abs = Math.abs( Math.round(dms * 1000000.));
+            days = Math.floor(Abs / 1000000);
+            minutes = Math.floor(((Abs/1000000) - days) * 60);
+            secounds = ( Math.floor((( ((Abs/1000000) - days) * 60) - minutes) * 100000) *60/100000 ).toFixed();
+            days = days * sign;
+
+            if(type == 'lat') {
+                direction = days<0 ? 'S' : 'N';
+            }
+
+            if(type == 'lng') {
+                direction = days<0 ? 'W' : 'E';
+            }
+
+            result[0] = (days * sign);
+            result[1] = minutes;
+            result[2] = secounds;
+            result[3] = direction;
+            
+            return result;
+        }
+        /* Gets the current coordinates in a human readable format in a complete string*/
+        function toLatLngString(dms, type) {
+            var tmp = toLatLngArray(dms, type);
+            return tmp[0] + '° ' + tmp[1] + "' " + tmp[2] + "'' " + tmp[3];
+        }
 
         /**
         * *********************************************************************************
@@ -1009,6 +1073,17 @@
                 delete marks[selectedMark.id];
                 callbacks[events.DELETED_MARK].fire(selectedMark);
                 console.log(marks);
+            }
+        }
+
+        /**
+        * *********************************************************************************
+        * Edit the selected mark.
+        * *********************************************************************************
+        */
+        function editSelectedMark() {
+            if(selectedMark != null) {
+                $('#modal-form_marker').modal('show');
             }
         }
 
