@@ -63,7 +63,7 @@ public class TripAPI extends Controller {
 		} else {
 			response.put("success", true);
             ITrip trip = filledForm.get();
-            trip.setSkipper(session(IAccountController.AUTHN_COOKIE_KEY));
+            trip.setOwner(session(IAccountController.AUTHN_COOKIE_KEY));
             boolean created = controller.saveTrip(trip);
 			if(created) {
                 accountController.addBoat(trip.getUUID());
