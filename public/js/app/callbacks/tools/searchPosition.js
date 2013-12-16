@@ -9,11 +9,25 @@ $(document).ready(function() {
     var lastSearch = {};
     var active = "#SearchPlaces";
     var method = {};
-    
+    var service = new google.maps.places.PlacesService(map.getGoogleMapsHandle());
+    var templateSearchPlaces = Handlebars.compile($("#template-SearchPlaces").html());
     
     method["#SearchPlaces"] = function(search) {
-        console.log("Search in places "+search);
+        var request = {
+            bounds: map.getGoogleMapsHandle().getBounds(),
+            query: search
+        };
+        service.textSearch(request, SearchPlacesCallback);
     };
+   
+    function SearchPlacesCallback(results, status) {
+        if (status != google.maps.places.PlacesServiceStatus.OK) {
+            alert(status);
+            return;
+        }
+        console.log(results);
+        $("#SearchPlaces").html(templateSearchPlaces(results));
+    }
     
     method["#SearchMarks"] = function(search) {
         console.log("Search in marks "+search);
@@ -33,9 +47,11 @@ $(document).ready(function() {
         $('#search-searchPosition').val(lastSearch[active]);  
     });
     
-    $("#search-searchPosition").keyup( function(event) {
-        method[active]($('#search-searchPosition').val());
-        event.stopPropagation();
-        event.preventDefault();
+    $("#search-searchPosition").keydown( function(event) {
+        if ( event.which == 13 ) {
+            method[active]($('#search-searchPosition').val());
+            event.stopPropagation();
+            event.preventDefault();
+        }
     }); 
 });

@@ -130,8 +130,14 @@
         var syncRequiredMethods = 
         [
         'downloadBoats',         //trigger download of boats
-        'downloadTrips',         //trigger download of trips
+        'downloadTracks',        //trigger download of tracks
         'downloadRoutes',        //trigger download of routes
+        'downloadMarks',         //trigger download of marks
+        
+        'uploadBoat',           //trigger upload of boat
+        'uploadTrack',          //trigger upload of track
+        'uploadRoute',          //trigger upload of route
+        'uploadMark',           //trigger upload of mark
         ];
     
         /* add a callback function to get notified about actions */
@@ -152,6 +158,11 @@
             startBoatAnimation();
         };
 
+        /* get the handle of the google map */
+        this.getGoogleMapsHandle = function () {
+            return map;
+        };
+        
         /* get the events list */
         this.getEvents = function () {
             return jQuery.extend(true, {}, events);
@@ -273,9 +284,8 @@
         var state = States.NORMAL;
 
         // context-menu/selection
-        var contextMenuType = ContextMenuTypes.DEFAULT,
-            
-            contextMenuVisible = false;
+        var contextMenuType = ContextMenuTypes.DEFAULT;
+        var contextMenuVisible = false;
     
         // bind our jquery element
         var $this = $(element);
@@ -554,8 +564,6 @@
         * *********************************************************************************
         */
         function hideContextMenu() { 
-            //$('#tooltip_helper').popover('hide'); <-- REMARK: this does cause problems!
-            
             $('.popover').css({'display':'none'});
             contextMenuVisible = false;
         }
@@ -824,11 +832,9 @@
         */
         function uploadRouteUpdate() {
             if (activeRoute != null && activeRoute.updated) {
-                console.log("Sync route");
+                sync.uploadRoute(activeRoute);
                 activeRoute.updated = false;
-            } else if (activeRoute != null) {
-                console.log("route already in sync");
-            }            
+            }         
         }
         
         /**
@@ -837,7 +843,7 @@
         * *********************************************************************************
         */
         function uploadRouteDeletion() {
-            console.log("Route deleted, upload to server.");        
+            sync.uploadRoute("delete");      
         } 
         
         /**

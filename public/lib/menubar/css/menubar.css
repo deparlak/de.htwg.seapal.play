@@ -426,6 +426,10 @@ input.menubar-search:focus {
 
 /* specification of the icons from the tools */
 
+.icon-toolsNone::before{
+        content: "\f08d";     
+}
+
 .icon-toolsBack::before{
         content: "\f122";     
 }
