@@ -4,27 +4,22 @@
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                <h4 class="modal-title">Your trips</h4>
+                <h4 class="modal-title">Your tracks</h4>
             </div>
             <div class="inputForm-content">
-            	<form class="form_track">
+            	<form class="form_global form_track">
             		<div class="row">
             			<div class="col-12 col-sm-1 font-light">
         					<label for="track_title">Titel</label>
 						</div>
-						<div class="col-12 col-sm-11 font-light">
+						<div class="col-12 col-sm-5 font-light">
 							<input type="text" name="track_title" tabindex="1" required />
 						</div>
-            		</div>
-            		<div class="row">
-            			<div class="col-12 col-sm-1 font-light">
+						<div class="col-12 col-sm-1 font-light">
         					<label for="track_skipper">Skipper</label>
 						</div>
-						<div class="col-12 col-sm-4 font-light">
+						<div class="col-12 col-sm-5 font-light">
 							<input type="text" name="track_skipper" tabindex="2" required />
-						</div>
-						<div class="col-12 col-sm-7 font-light">
-							<input type="checkbox" name="track_tank_filled" tabindex="3"> Tank filled</input>
 						</div>
             		</div>
             		<div class="row">
@@ -46,41 +41,43 @@
         					<label for="track_startDate">Start</label>
 						</div>
 						<div class="col-12 col-sm-3 font-light">
-        					<input type="text" name="track_startDate" tabindex="6" required />
+        					<input type="text" class="datepicker" data-date-format="mm/dd/yy" name="track_startDate" tabindex="6" readonly required />
 						</div>
 						<div class="col-12 col-sm-1 font-light">
         					<label for="track_endDate">End</label>
 						</div>
 						<div class="col-12 col-sm-3 font-light">
-        					<input type="text" name="track_endDate" tabindex="7" required />
+                            <input type="text" class="datepicker" data-date-format="mm/dd/yy" name="track_endDate" tabindex="7" readonly />
 						</div>
 						<div class="col-12 col-sm-1 font-light">
         					<label for="track_duration">Duration</label>
 						</div>
 						<div class="col-12 col-sm-3 font-light">
-        					<input type="text" name="track_dauration" tabindex="8" required />
+        					<input type="text" name="track_dauration" tabindex="8" />
 						</div>
             		</div>
+                    <div class="row"><br></div>
             		<div class="row">
             			<div class="col-12 col-sm-1 font-light">
         					<label for="track_crew">Crew</label>
 						</div>
-            			<div class="col-12 col-sm-4 font-light">        					
+            			<div class="col-12 col-sm-5 font-light">        					
             				<textarea name="track_crew" rows="10" tabindex="9"></textarea>
 						</div>
 						<div class="col-12 col-sm-1 font-light">
         					<label for="track_notes">Notes</label>
 						</div>
-						<div class="col-12 col-sm-6 font-light">        					
+						<div class="col-12 col-sm-5 font-light">        					
             				<textarea name="track_notes" rows="10" tabindex="10"></textarea>
 						</div>
-            		</div>
+            		</div>            		            
+					<div class="inputForm-footer">
+						<button type="submit" class="btn btn-primary">Save</button>
+						<button type="button" id="open_waypoint_modal" class="btn btn-info">See waypoints</button>
+						<button type="button" class="btn btn-danger" data-dismiss="modal">Abort</button>
+					</div>
         		</form>
-            </div>            
-			<div class="inputForm-footer">
-				<button type="submit" class="btn btn-primary">Save</button>
-				<button type="button" class="btn btn-danger" data-dismiss="modal">Abort</button>
-			</div>
+            </div>
         </div><!-- /.modal-content -->
     </div><!-- /.modal-dialog -->
 </div><!-- /.modal -->

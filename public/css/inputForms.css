@@ -21,6 +21,11 @@
     max-width: 800px;
 }
 
+.inputForm_Waypoint-modal
+{
+    max-width: 800px;
+}
+
 .inputForm-content {
     background-color: #f7f7f7;
     -moz-box-shadow: 0px 2px 2px rgba(0, 0, 0, 0.3);
@@ -37,25 +42,19 @@
   	border-top: 1px solid #e5e5e5;
 }
 
-.form_boat
+.form_global
 {
     padding: 15px;
     margin: 0 auto;
 }
 
-.form_boat input
+.form_global input
 {
-    width: 100px;
-}
-
-.form_track
-{
-	padding: 15px;
-    margin: 0 auto;
+    width: 100%;
 }
 
 .form_track textarea
 {
-    width: auto;
+    width: 100%;
     resize: none;
 }
