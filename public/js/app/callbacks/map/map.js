@@ -5,14 +5,7 @@
  * 
  */
 
-$(document).ready(function() {
-    $("#map_canvas").seamap({getInitialRoutes : function (self) {
-            console.log(self);
-    }});
-    map = $('#map_canvas').data('seamap');
-    
-
-    
+$(document).ready(function() {    
     events = map.getEvents();
     
     var templateRoutes = Handlebars.compile($("#template-routes").html());
