@@ -46,4 +46,19 @@ $(document).ready(function() {
     menu.addCallback('rightclick', ['icon-notSelectedTrack', 'icon-selectedTrack'], function (self) {
         $('#modal-form_track').modal('show');
     });
+
+    /**
+     * Shows the waypoint modal and closes the parent track modal
+     */
+    $('#open_waypoint_modal').on('click',
+        function showWaypointModal() {
+            $('#modal-form_track').modal('hide');
+            $('#modal-form_waypoint').modal('show');
+        }
+    );
+
+    /**
+     * Launches datepicker needed for the specific form(s)
+     */
+    $('.datepicker').datepicker();
 });
