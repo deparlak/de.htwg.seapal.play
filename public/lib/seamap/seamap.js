@@ -953,7 +953,7 @@
             var mark = {}
             mark.id = marksCount.toString();
             mark.label = "Mark "+marksCount;
-            mark.detailed = getCurrentDateTime();
+            mark.detailed = getCurrentDateTime() + " " + getCurrentCoordinatesAsString();
             var position = currentPosition;
             var thnail = image[0];
             var picture = image[1];
@@ -1017,6 +1017,50 @@
                 + currentdate.getMinutes() + ":" 
                 + currentdate.getSeconds();
             return datetime;
+        }
+
+        function getCurrentCoordinatesAsString() {
+            var curr = currentPosition;
+            var north = currentPosition.nb;
+            var east = currentPosition.ob;
+            console.log(currentPosition);
+            return toLatLngString(north, "lat") + " " + toLatLngString(east, "lng");
+        }
+
+        function toLatLngArray(dms, type) {
+            var sign = 1, Abs=0;
+            var days, minutes, secounds, direction;
+            var result = new Array();
+
+            if(dms < 0) {
+                sign = -1;
+            }
+
+            Abs = Math.abs( Math.round(dms * 1000000.));
+            days = Math.floor(Abs / 1000000);
+            minutes = Math.floor(((Abs/1000000) - days) * 60);
+            secounds = ( Math.floor((( ((Abs/1000000) - days) * 60) - minutes) * 100000) *60/100000 ).toFixed();
+            days = days * sign;
+
+            if(type == 'lat') {
+                direction = days<0 ? 'S' : 'N';
+            }
+
+            if(type == 'lng') {
+                direction = days<0 ? 'W' : 'E';
+            }
+
+            result[0] = (days * sign);
+            result[1] = minutes;
+            result[2] = secounds;
+            result[3] = direction;
+            
+            return result;
+        }
+
+        function toLatLngString(dms, type) {
+            var tmp = toLatLngArray(dms, type);
+            return tmp[0] + '° ' + tmp[1] + "' " + tmp[2] + "'' " + tmp[3];
         }
 
         /**
