@@ -6,6 +6,8 @@
  */
 
 $(document).ready(function() {
+    var waypoint_headingTo_template = Handlebars.compile($("#waypoint_headingTo_option").html());
+
     menu.addCallback('leftclick', 'logbook', function (self) {
         self.button('toggle');
         $('.active-logbook').removeClass('active-logbook').addClass('inactive-logbook');
@@ -47,11 +49,17 @@ $(document).ready(function() {
         $('#modal-form_track').modal('show');
     });
 
+    menu.addCallback('rightclick', ['icon-notSelectedMark', 'icon-selectedMark'], function (self) {
+        $('#modal-form_marker').modal('show');
+    });
+
     /**
      * Shows the waypoint modal and closes the parent track modal
      */
     $('#open_waypoint_modal').on('click',
         function showWaypointModal() {
+            $("#waypoint_headingTo_select").html(waypoint_headingTo_template(
+                [{id:0, label:"-"}, {id:1, label:"Routepoint 1"}, {id:2, label:"Routepoint 2"}, {id:3, label:"Routepoint 3"}]));
             $('#modal-form_track').modal('hide');
             $('#modal-form_waypoint').modal('show');
         }

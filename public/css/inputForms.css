@@ -26,6 +26,11 @@
     max-width: 800px;
 }
 
+.inputForm_Marker-modal
+{
+    max-width: 650px;
+}
+
 .inputForm-content {
     background-color: #f7f7f7;
     -moz-box-shadow: 0px 2px 2px rgba(0, 0, 0, 0.3);
@@ -33,6 +38,7 @@
     box-shadow: 0px 2px 2px rgba(0, 0, 0, 0.3);
 	position: relative;
 	background-clip: padding-box;
+    padding-right: 15px !important;
 }
 
 .inputForm-footer
@@ -50,6 +56,7 @@
 
 .form_global input
 {
+    max-width: 400px;
     width: 100%;
 }
 
@@ -57,4 +64,39 @@
 {
     width: 100%;
     resize: none;
+}
+
+.form_waypoint select
+{
+    width: 100%;
+}
+
+.form_waypoint img
+{
+    padding-left: 5%;
+    max-width: 100%;
+    max-height: 205px;
+}
+
+.form_waypoint textarea
+{
+    width: 100%;
+    resize: none;
+}
+
+.no_padding
+{
+    padding-left: 0px !important;
+    padding-right: 0px !important;
+}
+
+.some_left_padding
+{
+    padding-left: 15px !important;
+    padding-right: 0px !important;   
+}
+
+.coords_row
+{
+    width: 50px !important;
 }
