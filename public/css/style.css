@@ -333,6 +333,13 @@ body {
 		text-decoration: none;
 	}
 
+	#slide-2 img {
+		display: inline-block;
+		height: 100%;
+		margin: 0 auto;
+		width: 100%;
+	}
+
 	#slide-2 i {
 		font-size: 80px;
 		color: white;
