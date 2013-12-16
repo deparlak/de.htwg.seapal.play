@@ -953,7 +953,7 @@
             var mark = {}
             mark.id = marksCount.toString();
             mark.label = "Mark "+marksCount;
-            mark.detailed = getCurrentDateTime() + " " + getCurrentCoordinatesAsString();
+            mark.detailed = getCurrentDateTime() + " / " + getCurrentCoordinatesAsString();
             var position = currentPosition;
             var thnail = image[0];
             var picture = image[1];
@@ -1018,15 +1018,14 @@
                 + currentdate.getSeconds();
             return datetime;
         }
-
+        /* Gets the current coordinates in a human readable format */
         function getCurrentCoordinatesAsString() {
             var curr = currentPosition;
             var north = currentPosition.nb;
             var east = currentPosition.ob;
-            console.log(currentPosition);
             return toLatLngString(north, "lat") + " " + toLatLngString(east, "lng");
         }
-
+        /* Gets the current coordinates in a human readable format array for use in the specific forms */
         function toLatLngArray(dms, type) {
             var sign = 1, Abs=0;
             var days, minutes, secounds, direction;
@@ -1057,7 +1056,7 @@
             
             return result;
         }
-
+        /* Gets the current coordinates in a human readable format in a complete string*/
         function toLatLngString(dms, type) {
             var tmp = toLatLngArray(dms, type);
             return tmp[0] + '° ' + tmp[1] + "' " + tmp[2] + "'' " + tmp[3];
