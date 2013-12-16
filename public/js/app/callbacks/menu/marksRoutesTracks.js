@@ -8,19 +8,19 @@
 $(document).ready(function() {    
     var lastSearch = {};
     var active = "#marks";
-    var method = {};
-    
-    
-    method["#marks"] = function(search) {
-        console.log("Search in marks "+search);
-    };
-    
-    method["#routes"] = function(search) {
-        console.log("Search in routes "+search);
-    };
-    
-    method["#tracks"] = function(search) {
-        console.log("Search in tracks "+search);
+
+    search = function(inElement, search) {
+        console.log(inElement);
+        console.log(search);
+        $(inElement+" li").each(function(index) {
+            console.log($(this));
+            //does not match search criterium, so hide this element
+            if (-1 == $(this).text().indexOf(search)) {
+                $(this).removeClass("visible").addClass("hidden");
+            } else {
+                $(this).removeClass("hidden").addClass("visible");
+            }
+        });
     };
 
     menu.addCallback('leftclick', 'marksRoutesTracks', function (self) {
@@ -34,7 +34,7 @@ $(document).ready(function() {
     });
     
     $("#search-marksRoutesTracks").keyup( function(event) {
-        method[active]($('#search-marksRoutesTracks').val());
+        search(active, $('#search-marksRoutesTracks').val());
         event.stopPropagation();
         event.preventDefault();
     });

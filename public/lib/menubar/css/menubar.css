@@ -655,6 +655,14 @@ input.menubar-search:focus {
     border-radius:0px;
 }
 
+.visible {
+    display:block;
+}
+
+.hidden {
+    display:none;
+}
+
 
 
 /* styles on minimized size */
