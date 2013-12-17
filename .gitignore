@@ -15,6 +15,7 @@ dist
 .target
 /.settings
 *.db
+/lib/core-1.0-SNAPSHOT.jar
 public/video/bg.mp4
 public/video/bg.webm
 public/video/bg2.mp4
