@@ -250,11 +250,20 @@
             "DELETE_MARKER" : 1
         };
 
+        // Factor to calc kmh to knots
+        var KMH_TO_KNOTS = 0.539;
+
         // checks if message for no geolocation support was shown
         var noGeo_flag = false;
 
         // The current position of the ship (fake or real depends if browser supports geolocation and users permission)
         var currentPosition = null;
+
+        // The current speed of the ship (fake or real depends if browser supports geolocation and users permission)
+        var currentSpeed = null;
+
+        // The current course of the ship (fake or real depends if browser supports geolocation and users permission)
+        var currentCourse = null;
 
         // Supresses the click event when longtouch is used
         var supressClick = false;
@@ -500,20 +509,25 @@
         */
         function handleBoatPosition(position){
             currentPosition = new google.maps.LatLng(position.coords.latitude, position.coords.longitude);
+            currentSpeed = position.coords.speed;
+            currentCourse = position.coords.heading;
             handleBoatPositionUpdate(currentPosition);
+            console.log(position);
         }
         /**
          * Handles the boat position with fake/generated geolocation data
          */
         function handleFakeBoatPositionUpdate() {
             currentPosition = map.getCenter();
+            currentSpeed = 12;
+            currentCourse = 270;
             handleBoatPositionUpdate(currentPosition);
         }
         /**
          * Updates the boat icon on the map 
          */
         function handleBoatPositionUpdate(position) {            
-            callbacks[events.BOAT_POS_UPDATE].fire(getCurrentCoordinatesAsString());
+            callbacks[events.BOAT_POS_UPDATE].fire(getCurrentBoatInformation());
             if(boatMarker == null){
                 boatMarker = new google.maps.Marker({
                     position: position,
@@ -1019,6 +1033,16 @@
                 + currentdate.getSeconds();
             return datetime;
         }
+        /* Gets the current boat information (speed course position) */
+        function getCurrentBoatInformation() {
+            var speed = currentSpeed != null ? kmhToKn(currentSpeed) : "-";
+            var course = currentCourse != null ? currentCourse : "-";
+            return "COG " + course + "° SOG " + speed + "kn " + getCurrentCoordinatesAsString();
+        }
+        /* Converts kmh to knots */
+        function kmhToKn(speed) {
+            return speed * KMH_TO_KNOTS;
+        }        
         /* Gets the current coordinates in a human readable format */
         function getCurrentCoordinatesAsString() {
             var curr = currentPosition;
