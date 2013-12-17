@@ -8,7 +8,7 @@ UUIDOfAccount looks like '523b7def-af42-4b3a-8eca-63a583f69ecf'
 --
 
 -- Boats --
-Get all boats that belong to the current user
+Get all boats that belong to the currently logged in user.
 GET /api/boat
 > Cookie: PLAY_SESSION="playInternalHash-id=UUIDOfAccount"
 < 200
@@ -43,7 +43,42 @@ GET /api/boat
   "_rev": "2-6f53f9467726b2fa04ad1aedb0249562"
 }]
 
-This will add a new boat to the DB
+Get a single boat. this is also an array. If the array is empty, the boat either doesn't exist or you don't have access to it.
+GET /api/boat/$id<[0-9a-fA-F\-]+>
+> Cookie: PLAY_SESSION="playInternalHash-id=UUIDOfAccount"
+< 200
+< Content-Type: application/json
+[{
+  "owner": "523b7def-af42-4b3a-8eca-63a583f69ecf",
+  "crew": [],
+  "boatName": "test4",
+  "registerNr": "",
+  "sailSign": "",
+  "homePort": "",
+  "yachtclub": "",
+  "insurance": "",
+  "callSign": "",
+  "type": "",
+  "constructor": "",
+  "length": 0.0,
+  "width": 0.0,
+  "draft": 0.0,
+  "mastHeight": 0.0,
+  "displacement": 0.0,
+  "rigging": "",
+  "yearOfConstruction": 0,
+  "motor": "",
+  "tankSize": 0.0,
+  "wasteWaterTankSize": 0.0,
+  "freshWaterTankSize": 0.0,
+  "mainSailSize": 0.0,
+  "genuaSize": 0.0,
+  "spiSize": 0.0,
+  "_id": "010a0c10-4e6a-437e-87b6-cdcf7056d76f",
+  "_rev": "2-6f53f9467726b2fa04ad1aedb0249562"
+}]
+
+Add a new boat to the database. The field owner will be set to the id of the currently logged in user.
 POST /api/boat
 > Cookie: PLAY_SESSION="playInternalHash-id=UUIDOfAccount"
 [{
@@ -79,3 +114,10 @@ POST /api/boat
 {
     "success": true
 }
+
+-- Trips --
+Get all trips that belong to the currently logged in user.
+GET /api/boat/$id<[0-9a-fA-F\-]+>/trips
+> Cookie: PLAY_SESSION="playInternalHash-id=UUIDOfAccount"
+< 200
+< Content-Type: application/json
