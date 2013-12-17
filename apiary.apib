@@ -52,9 +52,38 @@ POST /shopping-cart
 { "status": "created", "url": "/shopping-cart/2" }
 
 
--- Payment Resources --
-This resource allows you to submit payment information to process your *shopping cart* items
-POST /payment
-{ "cc": "12345678900", "cvc": "123", "expiry": "0112" }
-< 200
-{ "receipt": "/payment/receipt/1" }
+-- This will add a new boat to the DB
+POST /api/boat
+[{
+  "owner": "UUIDOfAccount",
+  "crew": [],
+  "boatName": "test4",
+  "registerNr": "",
+  "sailSign": "",
+  "homePort": "",
+  "yachtclub": "",
+  "insurance": "",
+  "callSign": "",
+  "type": "",
+  "constructor": "",
+  "length": 0.0,
+  "width": 0.0,
+  "draft": 0.0,
+  "mastHeight": 0.0,
+  "displacement": 0.0,
+  "rigging": "",
+  "yearOfConstruction": 0,
+  "motor": "",
+  "tankSize": 0.0,
+  "wasteWaterTankSize": 0.0,
+  "freshWaterTankSize": 0.0,
+  "mainSailSize": 0.0,
+  "genuaSize": 0.0,
+  "spiSize": 0.0,
+  "_id": "010a0c10-4e6a-437e-87b6-cdcf7056d76f",
+  "_rev": "2-6f53f9467726b2fa04ad1aedb0249562"
+}]
+< 201
+{
+    "success": true
+}
