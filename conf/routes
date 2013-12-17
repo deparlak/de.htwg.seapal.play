@@ -11,18 +11,20 @@ GET           /app                                              de.htwg.seapal.w
 #GET		/trip/$tripId<[0-9a-fA-F\-]+>/waypoint		de.htwg.seapal.web.controllers.Application.waypoint_add(tripId: UUID)
 #GET		/waypoint/$waypointId<[0-9a-fA-F\-]+>		@de.htwg.seapal.web.controllers.Application.waypoint_show(waypointId: UUID)
 
-# API
+# Boats
 GET           /api/boat/$id<[0-9a-fA-F\-]+>        @de.htwg.seapal.web.controllers.BoatAPI.boatAsJson(id: UUID)
 GET           /api/boat        @de.htwg.seapal.web.controllers.BoatAPI.boatsAsJson()
 POST          /api/boat        @de.htwg.seapal.web.controllers.BoatAPI.addBoat()
 DELETE        /api/boat/$id<[0-9a-fA-F\-]+>        @de.htwg.seapal.web.controllers.BoatAPI.deleteBoat(id: UUID)
 
+# Trips
 GET           /api/trip        @de.htwg.seapal.web.controllers.TripAPI.allTripsAsJson()
 GET           /api/trip/$id<[0-9a-fA-F\-]+>        @de.htwg.seapal.web.controllers.TripAPI.tripAsJson(id: UUID)
 GET           /api/boat/$id<[0-9a-fA-F\-]+>/trips        @de.htwg.seapal.web.controllers.TripAPI.tripsAsJson(id: UUID)
 DELETE        /api/trip/$id<[0-9a-fA-F\-]+>        @de.htwg.seapal.web.controllers.TripAPI.deleteTrip(id: UUID)
 POST          /api/trip        @de.htwg.seapal.web.controllers.TripAPI.addTrip()
 
+# Waypoints
 GET           /api/trip/$id<[0-9a-fA-F\-]+>/waypoints        @de.htwg.seapal.web.controllers.WaypointAPI.waypointsAsJson(id: UUID)
 GET           /api/waypoint/$waypointId<[0-9a-fA-F\-]+>        @de.htwg.seapal.web.controllers.WaypointAPI.waypointAsJson(waypointId: UUID)
 POST          /api/waypoint        @de.htwg.seapal.web.controllers.WaypointAPI.addWaypoint()
@@ -33,6 +35,12 @@ DELETE        /api/mark/$id<[0-9a-fA-F\-]+>        @de.htwg.seapal.web.controlle
 GET           /api/route/$id<[0-9a-fA-F\-]+>/marks        @de.htwg.seapal.web.controllers.MarkAPI.marksOfRoute(id: UUID)
 GET           /api/mark/$id<[0-9a-fA-F\-]+>        @de.htwg.seapal.web.controllers.MarkAPI.markAsJson(id: UUID)
 GET           /api/mark        @de.htwg.seapal.web.controllers.MarkAPI.standaloneMarks()
+
+# Routes
+GET           /api/route/$id<[0-9a-fA-F\-]+>        @de.htwg.seapal.web.controllers.RouteAPI.routeAsJson(id: UUID)
+GET           /api/route        @de.htwg.seapal.web.controllers.RouteAPI.routesAsJson()
+POST          /api/route        @de.htwg.seapal.web.controllers.RouteAPI.addRoute()
+DELETE        /api/route/$id<[0-9a-fA-F\-]+>        @de.htwg.seapal.web.controllers.RouteAPI.deleteRoute(id: UUID)
 
 # authentication
 GET           /login                                            de.htwg.seapal.web.controllers.Application.login()
