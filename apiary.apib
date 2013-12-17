@@ -43,14 +43,6 @@ GET /api/boat
   "_id": "010a0c10-4e6a-437e-87b6-cdcf7056d76f",
   "_rev": "2-6f53f9467726b2fa04ad1aedb0249562"
 }]
-Save new products in your shopping cart
-POST /shopping-cart
-> Content-Type: application/json
-{ "product":"1AB23ORM", "quantity": 2 }
-< 201
-< Content-Type: application/json
-{ "status": "created", "url": "/shopping-cart/2" }
-
 
 -- This will add a new boat to the DB
 POST /api/boat
