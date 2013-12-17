@@ -133,8 +133,48 @@ DELETE /api/boat/$id<[0-9a-fA-F\-]+>
 }
 
 -- Trips --
-Get all trips that belong to the currently logged in user.
+Get all trips that belong to this boat.
 GET /api/boat/$id<[0-9a-fA-F\-]+>/trips
 > Cookie: PLAY_SESSION="playInternalHash-id=UUIDOfAccount"
 < 200
 < Content-Type: application/json
+{
+    "error": "this isn't the JSON document you're looking for"
+}
+
+Get all trips that belong to the currently logged in user.
+GET /api/trip
+> Cookie: PLAY_SESSION="playInternalHash-id=UUIDOfAccount"
+< 200
+< Content-Type: application/json
+{
+    "error": "this isn't the JSON document you're looking for"
+}
+
+Get a single trip.
+GET /api/trip/$id<[0-9a-fA-F\-]+>
+> Cookie: PLAY_SESSION="playInternalHash-id=UUIDOfAccount"
+< 200
+< Content-Type: application/json
+{
+    "error": "this isn't the JSON document you're looking for"
+}
+
+Delete a trip.
+DELETE /api/trip/$id<[0-9a-fA-F\-]+>
+> Cookie: PLAY_SESSION="playInternalHash-id=UUIDOfAccount"
+< 200
+< Content-Type: application/json
+{
+    "error": "this isn't the JSON document you're looking for"
+}
+
+Create a new trip.
+POST /api/trip
+> Cookie: PLAY_SESSION="playInternalHash-id=UUIDOfAccount"
+< 200
+< Content-Type: application/json
+{
+    "error": "this isn't the JSON document you're looking for"
+}
+
