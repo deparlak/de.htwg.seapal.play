@@ -1,9 +1,9 @@
 # Routes
 
 # Static pages
-GET     /           								de.htwg.seapal.web.controllers.Application.index()
-GET     /impressum     								de.htwg.seapal.web.controllers.Application.impressum()
-GET		/app										de.htwg.seapal.web.controllers.Application.app()
+GET           /                                                 de.htwg.seapal.web.controllers.Application.index()
+GET           /impressum                                        de.htwg.seapal.web.controllers.Application.impressum()
+GET           /app                                              de.htwg.seapal.web.controllers.Application.app()
 #GET		/trips										de.htwg.seapal.web.controllers.Application.trip_list(id: UUID = null)
 #GET		/boat/$boatId<[0-9a-fA-F\-]+>/trips			de.htwg.seapal.web.controllers.Application.trip_list(boatId: UUID)
 #GET		/boat/$boatId<[0-9a-fA-F\-]+>/trip  		de.htwg.seapal.web.controllers.Application.trip_add(boatId: UUID)
@@ -12,30 +12,37 @@ GET		/app										de.htwg.seapal.web.controllers.Application.app()
 #GET		/waypoint/$waypointId<[0-9a-fA-F\-]+>		@de.htwg.seapal.web.controllers.Application.waypoint_show(waypointId: UUID)
 
 # API
-GET		/api/boat/$id<[0-9a-fA-F\-]+>				@de.htwg.seapal.web.controllers.BoatAPI.boatAsJson(id: UUID)
-GET		/api/boat									@de.htwg.seapal.web.controllers.BoatAPI.boatsAsJson()
-POST	/api/boat									@de.htwg.seapal.web.controllers.BoatAPI.addBoat()
-DELETE	/api/boat/$id<[0-9a-fA-F\-]+> 				@de.htwg.seapal.web.controllers.BoatAPI.deleteBoat(id: UUID)
+GET           /api/boat/$id<[0-9a-fA-F\-]+>        @de.htwg.seapal.web.controllers.BoatAPI.boatAsJson(id: UUID)
+GET           /api/boat        @de.htwg.seapal.web.controllers.BoatAPI.boatsAsJson()
+POST          /api/boat        @de.htwg.seapal.web.controllers.BoatAPI.addBoat()
+DELETE        /api/boat/$id<[0-9a-fA-F\-]+>        @de.htwg.seapal.web.controllers.BoatAPI.deleteBoat(id: UUID)
 
-GET		/api/trip									@de.htwg.seapal.web.controllers.TripAPI.allTripsAsJson()
-GET		/api/trip/$id<[0-9a-fA-F\-]+>				@de.htwg.seapal.web.controllers.TripAPI.tripAsJson(id: UUID)
-GET		/api/boat/$id<[0-9a-fA-F\-]+>/trips			@de.htwg.seapal.web.controllers.TripAPI.tripsAsJson(id: UUID)
-DELETE	/api/trip/$id<[0-9a-fA-F\-]+> 				@de.htwg.seapal.web.controllers.TripAPI.deleteTrip(id: UUID)
-POST	/api/trip									@de.htwg.seapal.web.controllers.TripAPI.addTrip()
+GET           /api/trip        @de.htwg.seapal.web.controllers.TripAPI.allTripsAsJson()
+GET           /api/trip/$id<[0-9a-fA-F\-]+>        @de.htwg.seapal.web.controllers.TripAPI.tripAsJson(id: UUID)
+GET           /api/boat/$id<[0-9a-fA-F\-]+>/trips        @de.htwg.seapal.web.controllers.TripAPI.tripsAsJson(id: UUID)
+DELETE        /api/trip/$id<[0-9a-fA-F\-]+>        @de.htwg.seapal.web.controllers.TripAPI.deleteTrip(id: UUID)
+POST          /api/trip        @de.htwg.seapal.web.controllers.TripAPI.addTrip()
 
-GET		/api/trip/$id<[0-9a-fA-F\-]+>/waypoints		@de.htwg.seapal.web.controllers.WaypointAPI.waypointsAsJson(id: UUID)
-GET		/api/waypoint/$waypointId<[0-9a-fA-F\-]+>	@de.htwg.seapal.web.controllers.WaypointAPI.waypointAsJson(waypointId: UUID)
-POST	/api/waypoint								@de.htwg.seapal.web.controllers.WaypointAPI.addWaypoint()
+GET           /api/trip/$id<[0-9a-fA-F\-]+>/waypoints        @de.htwg.seapal.web.controllers.WaypointAPI.waypointsAsJson(id: UUID)
+GET           /api/waypoint/$waypointId<[0-9a-fA-F\-]+>        @de.htwg.seapal.web.controllers.WaypointAPI.waypointAsJson(waypointId: UUID)
+POST          /api/waypoint        @de.htwg.seapal.web.controllers.WaypointAPI.addWaypoint()
+
+# Marks
+POST          /api/mark        @de.htwg.seapal.web.controllers.MarkAPI.addMark()
+DELETE        /api/mark/$id<[0-9a-fA-F\-]+>        @de.htwg.seapal.web.controllers.MarkAPI.deleteMark(id: UUID)
+GET           /api/route/$id<[0-9a-fA-F\-]+>/marks        @de.htwg.seapal.web.controllers.MarkAPI.marksOfRoute(id: UUID)
+GET           /api/mark/$id<[0-9a-fA-F\-]+>        @de.htwg.seapal.web.controllers.MarkAPI.markAsJson(id: UUID)
+GET           /api/mark        @de.htwg.seapal.web.controllers.MarkAPI.standaloneMarks()
 
 # authentication
-GET     /login                                      de.htwg.seapal.web.controllers.Application.login()
-POST	/login                                      @de.htwg.seapal.web.controllers.AccountAPI.login()
-GET		/logout        								de.htwg.seapal.web.controllers.AccountAPI.logout()
-GET		/signup        								de.htwg.seapal.web.controllers.Application.signup()
-POST	/signup        								@de.htwg.seapal.web.controllers.AccountAPI.signup()
+GET           /login                                            de.htwg.seapal.web.controllers.Application.login()
+POST          /login        @de.htwg.seapal.web.controllers.AccountAPI.login()
+GET           /logout                                           de.htwg.seapal.web.controllers.AccountAPI.logout()
+GET           /signup                                           de.htwg.seapal.web.controllers.Application.signup()
+POST          /signup        @de.htwg.seapal.web.controllers.AccountAPI.signup()
 
 # Javascript routing
-GET     /assets/javascripts/routes      		    de.htwg.seapal.web.controllers.Application.javascriptRoutes()
+GET           /assets/javascripts/routes                        de.htwg.seapal.web.controllers.Application.javascriptRoutes()
 
 # Map static resources from the /public folder to the /assets URL path
-GET     /assets/*file	                        	controllers.Assets.at(path="/public", file)
+GET           /assets/*file                                     controllers.Assets.at(path="/public", file)
