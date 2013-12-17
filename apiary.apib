@@ -178,3 +178,30 @@ POST /api/trip
     "error": "this isn't the JSON document you're looking for"
 }
 
+-- Waypoints --
+Get all waypoints of a single trip.
+GET /api/trip/$id<[0-9a-fA-F\-]+>/waypoints
+> Cookie: PLAY_SESSION="playInternalHash-id=UUIDOfAccount"
+< 200
+< Content-Type: application/json
+{
+    "error": "this isn't the JSON document you're looking for"
+}
+
+Get a single waypoint.
+GET /api/waypoint/$waypointId<[0-9a-fA-F\-]+>
+> Cookie: PLAY_SESSION="playInternalHash-id=UUIDOfAccount"
+< 200
+< Content-Type: application/json
+{
+    "error": "this isn't the JSON document you're looking for"
+}
+
+Get all waypoints that belong to the currently logged in user.
+POST /api/waypoint
+> Cookie: PLAY_SESSION="playInternalHash-id=UUIDOfAccount"
+< 200
+< Content-Type: application/json
+{
+    "error": "this isn't the JSON document you're looking for"
+}
