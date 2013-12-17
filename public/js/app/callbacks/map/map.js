@@ -40,7 +40,7 @@ $(document).ready(function() {
     });
     
     map.addCallback(events.BOAT_POS_UPDATE, function (self) {
-        $('#infoBar').text(self);
+        $('#infoBar').html(self.html);
     });
 
     map.addCallback(events.DELETED_MARK, function (self) {
