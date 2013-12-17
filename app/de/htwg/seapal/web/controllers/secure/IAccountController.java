@@ -1,7 +1,5 @@
 package de.htwg.seapal.web.controllers.secure;
 
-import de.htwg.seapal.model.IBoat;
-import de.htwg.seapal.model.ITrip;
 import de.htwg.seapal.utils.observer.IObservable;
 import de.htwg.seapal.web.controllers.secure.impl.Account;
 import play.data.Form;
@@ -43,24 +41,6 @@ public interface IAccountController
 
     IAccount authenticate(Form<Account> form)
             throws Exception;
-
-    void addBoat(UUID account, UUID boat);
-
-    void deleteBoat(UUID account, UUID boat);
-
-    void deleteBoat(UUID boatID);
-
-    List<IBoat> getAllBoats(List<IBoat> allBoats);
-
-    boolean hasBoat(UUID boatID);
-
-    void addBoat(UUID boatID);
-
-    boolean hasTrip(UUID tripID);
-
-    List<ITrip> getAllTrips(List<ITrip> allTrips);
-
-    void deleteTrip(UUID tripID);
 
     boolean accountExists(String accountName)
             throws Exception;

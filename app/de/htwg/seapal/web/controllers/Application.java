@@ -43,8 +43,8 @@ public class Application extends Controller {
 	public static Result impressum() {
 		return ok(impressum.render());
 	}
-	
-	public static Result app(){
+
+    public static Result app(){
 		return ok(app.render());
 	}
 
@@ -94,7 +94,7 @@ public class Application extends Controller {
 	      Routes.javascriptRouter("jsRoutes",
 	        // Routes
 
-	    	// API  
+	    	// API
 	        de.htwg.seapal.web.controllers.routes.javascript.BoatAPI.boatAsJson(),
 	        de.htwg.seapal.web.controllers.routes.javascript.BoatAPI.boatsAsJson(),
 	        de.htwg.seapal.web.controllers.routes.javascript.BoatAPI.deleteBoat(),

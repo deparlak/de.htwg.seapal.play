@@ -114,6 +114,7 @@ public class AccountAPI
 
     public static class Secured
             extends Security.Authenticator {
+
         @Override
         public String getUsername(Context ctx) {
             return ctx.session().get(IAccountController.AUTHN_COOKIE_KEY);
@@ -121,7 +122,24 @@ public class AccountAPI
 
         @Override
         public Result onUnauthorized(Context ctx) {
-            return null;//redirect(routes.Application.login());
+            return redirect(routes.Application.login());
+        }
+    }
+
+    public static class SecuredAPI
+            extends Security.Authenticator {
+
+        @Override
+        public String getUsername(Context ctx) {
+            return ctx.session().get(IAccountController.AUTHN_COOKIE_KEY);
+        }
+
+        @Override
+        public Result onUnauthorized(Context ctx) {
+            ObjectNode response = Json.newObject();
+            response.put("error","unauthorized");
+
+            return unauthorized(response);
         }
     }
 }
