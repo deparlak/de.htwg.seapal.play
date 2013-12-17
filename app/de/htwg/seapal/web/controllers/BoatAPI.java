@@ -2,7 +2,6 @@ package de.htwg.seapal.web.controllers;
 
 import com.google.inject.Inject;
 import de.htwg.seapal.controller.IBoatController;
-import de.htwg.seapal.model.IBoat;
 import de.htwg.seapal.model.impl.Boat;
 import de.htwg.seapal.utils.logging.ILogger;
 import de.htwg.seapal.web.controllers.secure.IAccountController;
@@ -28,23 +27,17 @@ public class BoatAPI extends Controller {
     @Inject
 	private ILogger logger;
 
-    @Security.Authenticated(AccountAPI.Secured.class)
+    @Security.Authenticated(AccountAPI.SecuredAPI.class)
     public Result boatsAsJson() {
-        return ok(Json.toJson(controller.getBoats(session(IAccountController.AUTHN_COOKIE_KEY), "list")));
+        return ok(Json.toJson(controller.queryView("boatsAsJson", session(IAccountController.AUTHN_COOKIE_KEY))));
    	}
 
-    @Security.Authenticated(AccountAPI.Secured.class)
+    @Security.Authenticated(AccountAPI.SecuredAPI.class)
     public Result boatAsJson(UUID id) {
-		IBoat boat = controller.getBoat(id);
+        return ok(Json.toJson(controller.queryView("boatAsJson", session(IAccountController.AUTHN_COOKIE_KEY) + id)));
+    }
 
-        if(boat != null && accountController.hasBoat(id)){
-			return ok(Json.toJson(boat));
-		} else {
-			return notFound();
-		}
-	}
-
-    @Security.Authenticated(AccountAPI.Secured.class)
+    @Security.Authenticated(AccountAPI.SecuredAPI.class)
     public Result addBoat() {
 		logger.info("BoatAPI", "--> addBoat");
 		Form<Boat> filledForm = form.bindFromRequest();
@@ -59,11 +52,12 @@ public class BoatAPI extends Controller {
 			return badRequest(response);
 		} else {
 			response.put("success", true);
-            IBoat boat = filledForm.get();
+            Boat boat = filledForm.get();
+
             boat.setOwner(session(IAccountController.AUTHN_COOKIE_KEY));
+
 			boolean created = controller.saveBoat(boat);
             if(created) {
-                accountController.addBoat(boat.getUUID());
                 logger.info("BoatAPI", "Boat created");
 				return created(response);
 			} else {
@@ -73,10 +67,9 @@ public class BoatAPI extends Controller {
 		}
 	}
 
-    @Security.Authenticated(AccountAPI.Secured.class)
+    @Security.Authenticated(AccountAPI.SecuredAPI.class)
     public Result deleteBoat(UUID id) {
 		controller.deleteBoat(id);
-        accountController.deleteBoat(id);
         ObjectNode response = Json.newObject();
 		response.put("success", true);
 

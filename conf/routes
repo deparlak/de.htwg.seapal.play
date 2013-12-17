@@ -18,7 +18,6 @@ POST	/api/boat									@de.htwg.seapal.web.controllers.BoatAPI.addBoat()
 DELETE	/api/boat/$id<[0-9a-fA-F\-]+> 				@de.htwg.seapal.web.controllers.BoatAPI.deleteBoat(id: UUID)
 
 GET		/api/trip									@de.htwg.seapal.web.controllers.TripAPI.allTripsAsJson()
-
 GET		/api/trip/$id<[0-9a-fA-F\-]+>				@de.htwg.seapal.web.controllers.TripAPI.tripAsJson(id: UUID)
 GET		/api/boat/$id<[0-9a-fA-F\-]+>/trips			@de.htwg.seapal.web.controllers.TripAPI.tripsAsJson(id: UUID)
 DELETE	/api/trip/$id<[0-9a-fA-F\-]+> 				@de.htwg.seapal.web.controllers.TripAPI.deleteTrip(id: UUID)

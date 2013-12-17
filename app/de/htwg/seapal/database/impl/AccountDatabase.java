@@ -2,12 +2,11 @@ package de.htwg.seapal.database.impl;
 
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
+import de.htwg.seapal.database.IAccountDatabase;
 import de.htwg.seapal.utils.logging.ILogger;
 import de.htwg.seapal.web.controllers.secure.IAccount;
-import de.htwg.seapal.database.IAccountDatabase;
 import de.htwg.seapal.web.controllers.secure.impl.Account;
 import org.ektorp.CouchDbConnector;
-import org.ektorp.ViewQuery;
 import org.ektorp.support.CouchDbRepositorySupport;
 
 import java.util.LinkedList;
@@ -77,13 +76,15 @@ public class AccountDatabase
     public boolean close() {
         return true;
     }
+    @Override
+    public List<? extends IAccount> queryViews(final String viewName, final String key) {
+        return super.queryView(viewName, key);
+    }
 
     @Override
     public Account getAccount(final String email)
             throws Exception {
-        ViewQuery query = new ViewQuery().designDocId("_design/list").viewName("names").key(email);
-
-        List<Account> accounts = db.queryView(query, Account.class);
+        List<Account> accounts = super.queryView("by_email", email);
         if (accounts.size() > 1) {
             throw new Exception("more than one account exists!");
         } else if (accounts.size() == 0) {
