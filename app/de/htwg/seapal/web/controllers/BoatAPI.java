@@ -27,17 +27,17 @@ public class BoatAPI extends Controller {
     @Inject
 	private ILogger logger;
 
-    @Security.Authenticated(AccountAPI.Secured.class)
+    @Security.Authenticated(AccountAPI.SecuredAPI.class)
     public Result boatsAsJson() {
-        return ok(Json.toJson(controller.getBoats(session(IAccountController.AUTHN_COOKIE_KEY), "all_boats")));
+        return ok(Json.toJson(controller.queryView("boatsAsJson", session(IAccountController.AUTHN_COOKIE_KEY))));
    	}
 
-    @Security.Authenticated(AccountAPI.Secured.class)
+    @Security.Authenticated(AccountAPI.SecuredAPI.class)
     public Result boatAsJson(UUID id) {
-        return ok(Json.toJson(controller.getBoats(session(IAccountController.AUTHN_COOKIE_KEY) + id, "single_boat")));
+        return ok(Json.toJson(controller.queryView("boatAsJson", session(IAccountController.AUTHN_COOKIE_KEY) + id)));
     }
 
-    @Security.Authenticated(AccountAPI.Secured.class)
+    @Security.Authenticated(AccountAPI.SecuredAPI.class)
     public Result addBoat() {
 		logger.info("BoatAPI", "--> addBoat");
 		Form<Boat> filledForm = form.bindFromRequest();
@@ -53,7 +53,9 @@ public class BoatAPI extends Controller {
 		} else {
 			response.put("success", true);
             Boat boat = filledForm.get();
+
             boat.setOwner(session(IAccountController.AUTHN_COOKIE_KEY));
+
 			boolean created = controller.saveBoat(boat);
             if(created) {
                 logger.info("BoatAPI", "Boat created");
@@ -65,7 +67,7 @@ public class BoatAPI extends Controller {
 		}
 	}
 
-    @Security.Authenticated(AccountAPI.Secured.class)
+    @Security.Authenticated(AccountAPI.SecuredAPI.class)
     public Result deleteBoat(UUID id) {
 		controller.deleteBoat(id);
         ObjectNode response = Json.newObject();

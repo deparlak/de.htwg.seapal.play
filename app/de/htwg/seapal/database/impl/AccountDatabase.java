@@ -76,11 +76,15 @@ public class AccountDatabase
     public boolean close() {
         return true;
     }
+    @Override
+    public List<? extends IAccount> queryViews(final String viewName, final String key) {
+        return super.queryView(viewName, key);
+    }
 
     @Override
     public Account getAccount(final String email)
             throws Exception {
-        List<Account> accounts = super.queryView("by_email", "_design/list");
+        List<Account> accounts = super.queryView("by_email", email);
         if (accounts.size() > 1) {
             throw new Exception("more than one account exists!");
         } else if (accounts.size() == 0) {

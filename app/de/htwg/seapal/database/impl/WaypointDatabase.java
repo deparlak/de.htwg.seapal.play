@@ -1,25 +1,22 @@
 package de.htwg.seapal.database.impl;
 
-import java.util.LinkedList;
-import java.util.List;
-import java.util.UUID;
-
-import org.ektorp.CouchDbConnector;
-import org.ektorp.support.CouchDbRepositorySupport;
-import org.ektorp.support.GenerateView;
-
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
-
 import de.htwg.seapal.database.IWaypointDatabase;
 import de.htwg.seapal.model.IWaypoint;
 import de.htwg.seapal.model.impl.Waypoint;
 import de.htwg.seapal.utils.logging.ILogger;
+import org.ektorp.CouchDbConnector;
+import org.ektorp.support.CouchDbRepositorySupport;
+
+import java.util.LinkedList;
+import java.util.List;
+import java.util.UUID;
 
 public class WaypointDatabase extends CouchDbRepositorySupport<Waypoint> implements IWaypointDatabase {
 
 	private final ILogger logger;
-	
+
 	@Inject
 	protected WaypointDatabase(@Named("waypointCouchDbConnector") CouchDbConnector db, ILogger logger) {
 		super(Waypoint.class, db, true);
@@ -41,7 +38,7 @@ public class WaypointDatabase extends CouchDbRepositorySupport<Waypoint> impleme
 	@Override
 	public boolean save(IWaypoint data) {
 		Waypoint entity = (Waypoint)data;
-		
+
 		if (entity.isNew()) {
 			// ensure that the id is generated and revision is null for saving a new entity
 			entity.setId(UUID.randomUUID().toString());
@@ -49,7 +46,7 @@ public class WaypointDatabase extends CouchDbRepositorySupport<Waypoint> impleme
 			add(entity);
 			return true;
 		}
-		
+
 		logger.info("WaypointDatabase", "Updating entity with UUID: " + entity.getId());
 		update(entity);
 		return false;
@@ -77,10 +74,8 @@ public class WaypointDatabase extends CouchDbRepositorySupport<Waypoint> impleme
 	public boolean close() {
 		return true;
 	}
-
-	@Override
-	@GenerateView
-	public List<IWaypoint> findByTrip(UUID tripId) {
-		return new LinkedList<IWaypoint>(queryView("by_trip", tripId.toString()));
-	}
+    @Override
+    public List<? extends IWaypoint> queryViews(final String viewName, final String key) {
+        return super.queryView(viewName, key);
+    }
 }

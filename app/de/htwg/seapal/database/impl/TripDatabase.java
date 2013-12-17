@@ -8,7 +8,6 @@ import de.htwg.seapal.model.impl.Trip;
 import de.htwg.seapal.utils.logging.ILogger;
 import org.ektorp.CouchDbConnector;
 import org.ektorp.support.CouchDbRepositorySupport;
-import org.ektorp.support.GenerateView;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -76,10 +75,8 @@ public class TripDatabase extends CouchDbRepositorySupport<Trip> implements ITri
 	public boolean close() {
 		return true;
 	}
-
-	@Override
-	@GenerateView
-	public List<ITrip> findByBoat(UUID boatId) {
-		return new LinkedList<ITrip>(queryView("by_boat", boatId.toString()));
-	}
+    @Override
+    public List<? extends ITrip> queryViews(final String viewName, final String key) {
+        return super.queryView(viewName, key);
+    }
 }

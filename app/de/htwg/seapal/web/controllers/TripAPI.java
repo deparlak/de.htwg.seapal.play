@@ -3,6 +3,7 @@ package de.htwg.seapal.web.controllers;
 import com.google.inject.Inject;
 import de.htwg.seapal.controller.IBoatController;
 import de.htwg.seapal.controller.ITripController;
+import de.htwg.seapal.controller.IWaypointController;
 import de.htwg.seapal.model.ITrip;
 import de.htwg.seapal.model.impl.Trip;
 import de.htwg.seapal.utils.logging.ILogger;
@@ -24,27 +25,27 @@ public class TripAPI extends Controller {
 	private ITripController controller;
 
     @Inject
-    private IAccountController accountController;
-
-    @Inject
     private IBoatController boatController;
 
     @Inject
 	private ILogger logger;
 
+    @Inject
+    private IWaypointController waypointController;
+
     @Security.Authenticated(AccountAPI.Secured.class)
     public Result tripsAsJson(UUID boatId) {
-        return ok(Json.toJson(controller.getTrips(session(IAccountController.AUTHN_COOKIE_KEY) + boatId.toString(), "tripsAsJson")));
+        return ok(Json.toJson(controller.queryView("tripsAsJson", session(IAccountController.AUTHN_COOKIE_KEY) + boatId.toString())));
     }
 
     @Security.Authenticated(AccountAPI.Secured.class)
     public Result tripAsJson(UUID id) {
-        return ok(Json.toJson(controller.getTrips(session(IAccountController.AUTHN_COOKIE_KEY) + id.toString(), "tripAsJson").get(0)));
+        return ok(Json.toJson(controller.queryView("tripAsJson", session(IAccountController.AUTHN_COOKIE_KEY) + id.toString()).get(0)));
     }
 
     @Security.Authenticated(AccountAPI.Secured.class)
     public Result allTripsAsJson() {
-        return ok(Json.toJson(controller.getTrips(session(IAccountController.AUTHN_COOKIE_KEY), "allTripsAsJson").get(0)));
+        return ok(Json.toJson(controller.queryView("allTripsAsJson", session(IAccountController.AUTHN_COOKIE_KEY)).get(0)));
     }
 
     @Security.Authenticated(AccountAPI.Secured.class)
@@ -66,10 +67,10 @@ public class TripAPI extends Controller {
             trip.setOwner(session(IAccountController.AUTHN_COOKIE_KEY));
             boolean created = controller.saveTrip(trip);
 			if(created) {
-                accountController.addBoat(trip.getUUID());
                 logger.info("TripAPI", "Trip created");
 				return created(response);
-			}else{
+			} else {
+                waypointController.updateCrew(trip.getUUID(), trip.getCrew());
 				logger.info("TripAPI", "Trip updated");
 				return ok(response);
 			}
@@ -79,7 +80,6 @@ public class TripAPI extends Controller {
     @Security.Authenticated(AccountAPI.Secured.class)
     public Result deleteTrip(UUID id) {
 		controller.deleteTrip(id);
-        accountController.deleteTrip(id);
         ObjectNode response = Json.newObject();
 		response.put("success", true);
 
