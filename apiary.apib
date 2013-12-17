@@ -7,9 +7,7 @@ make sure that you're logged in.
 UUIDOfAccount looks like '523b7def-af42-4b3a-8eca-63a583f69ecf'
 --
 
---
-Boats
---
+-- Boats --
 Get all boats that belong to the current user
 GET /api/boat
 > Cookie: PLAY_SESSION="playInternalHash-id=UUIDOfAccount"
@@ -45,7 +43,6 @@ GET /api/boat
   "_rev": "2-6f53f9467726b2fa04ad1aedb0249562"
 }]
 
---
 This will add a new boat to the DB
 POST /api/boat
 > Cookie: PLAY_SESSION="playInternalHash-id=UUIDOfAccount"
