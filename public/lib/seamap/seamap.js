@@ -231,6 +231,7 @@
             ADDED_MARK      :  "AddedMark",
             DELETED_MARK    :  "DeletedMark",
             NO_GEO_SUPPORT  :  "GeolocationNotSupported",
+            BOAT_POS_UPDATE :  "Boat position uodated"
         };
         
         var options = $.seamap.options;
@@ -505,14 +506,14 @@
          * Handles the boat position with fake/generated geolocation data
          */
         function handleFakeBoatPositionUpdate() {
-            //TODO: Get center of current view of map as boat position + a variation
             currentPosition = map.getCenter();
             handleBoatPositionUpdate(currentPosition);
         }
         /**
          * Updates the boat icon on the map 
          */
-        function handleBoatPositionUpdate(position) {
+        function handleBoatPositionUpdate(position) {            
+            callbacks[events.BOAT_POS_UPDATE].fire(getCurrentCoordinatesAsString());
             if(boatMarker == null){
                 boatMarker = new google.maps.Marker({
                     position: position,

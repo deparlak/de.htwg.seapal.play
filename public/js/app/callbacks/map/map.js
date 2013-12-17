@@ -38,6 +38,10 @@ $(document).ready(function() {
         alert(self);
         console.log(self);
     });
+    
+    map.addCallback(events.BOAT_POS_UPDATE, function (self) {
+        $('#infoBar').text(self);
+    });
 
     map.addCallback(events.DELETED_MARK, function (self) {
         $("#marks li a").each(function() {
