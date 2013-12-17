@@ -189,6 +189,7 @@ input.menubar-menu-search {
         font-weight: 300;
         font-family: 'Lato', Arial, sans-serif;
         cursor: pointer;
+        width:260px;
 }
 
 input.menubar-tools-search {
@@ -200,6 +201,7 @@ input.menubar-tools-search {
         font-weight: 300;
         font-family: 'Lato', Arial, sans-serif;
         cursor: pointer;
+        width:260px;
 }
 
 /* placeholder */
