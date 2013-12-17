@@ -1,0 +1,10 @@
+{
+   "_id": "_design/Person",
+   "language": "coffeescript",
+   "views": {
+       "by_account": {
+           "map": "(doc)->\n emit doc.owner, doc"
+       }
+   },
+   "validate_doc_update": "(newDoc,oldDoc,userCtx)->\n if oldDoc? and !newDoc._deleted? and newDoc.owner isnt oldDoc.owner\n  throw forbidden: 'old and new user dont match'"
+}

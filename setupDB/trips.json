@@ -1,0 +1,16 @@
+{
+   "_id": "_design/Trip",
+   "language": "coffeescript",
+   "views": {
+       "tripsAsJson": {
+           "map": "(doc)->\n if doc? and doc.boat? and doc.skipper? and doc.boat.length > 0 and doc.skipper.length > 0\n  emit \"#{doc.skipper}#{doc.boat}\", doc"
+       },
+       "tripAsJson": {
+           "map": "(doc)->\n if doc? and doc.skipper? and doc.skipper.length > 0\n  emit \"#{doc.skipper}#{doc._id}\", doc"
+       },
+       "allTripsAsJson": {
+           "map": "(doc)->\n if doc? and doc.skipper? and doc.skipper.length > 0\n  emit doc.skipper, doc"
+       }
+   },
+   "validate_doc_update": "(newDoc,oldDoc,userCtx)->\n if oldDoc? and !newDoc._deleted? and newDoc.owner isnt oldDoc.owner\n  throw forbidden: 'old and new user dont match'"
+}

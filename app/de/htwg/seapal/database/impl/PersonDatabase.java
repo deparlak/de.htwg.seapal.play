@@ -13,67 +13,76 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
 
-public class PersonDatabase extends CouchDbRepositorySupport<Person> implements
-		IPersonDatabase {
+public class PersonDatabase
+        extends CouchDbRepositorySupport<Person>
+        implements IPersonDatabase {
 
-	private final ILogger logger;
+    private final ILogger logger;
 
-	@Inject
-	protected PersonDatabase(@Named("personCouchDbConnector") CouchDbConnector db, ILogger logger) {
-		super(Person.class, db);
-		super.initStandardDesignDocument();
-		this.logger = logger;
-	}
+    @Inject
+    protected PersonDatabase(@Named("personCouchDbConnector") CouchDbConnector db, ILogger logger) {
+        super(Person.class, db);
+        super.initStandardDesignDocument();
+        this.logger = logger;
+    }
 
-	@Override
-	public boolean open() {
-		logger.info("PersonDatabase", "Database connection opened");
-		return true;
-	}
+    @Override
+    public boolean open() {
+        logger.info("PersonDatabase", "Database connection opened");
+        return true;
+    }
 
-	@Override
-	public UUID create() {
-		return null;
-	}
+    @Override
+    public UUID create() {
+        return null;
+    }
 
-	@Override
-	public boolean save(IPerson data) {
-		Person entity = (Person)data;
+    @Override
+    public boolean save(IPerson data) {
+        Person entity = (Person) data;
 
-		if (entity.isNew()) {
-			// ensure that the id is generated and revision is null for saving a new entity
-			entity.setId(UUID.randomUUID().toString());
-			entity.setRevision(null);
-			add(entity);
-			return true;
-		}
+        if (entity.isNew()) {
+            // ensure that the id is generated and revision is null for saving a new entity
+            entity.setId(UUID.randomUUID().toString());
+            entity.setRevision(null);
+            add(entity);
+            return true;
+        }
 
-		logger.info("PersonDatabase", "Updating entity with UUID: " + entity.getId());
-		update(entity);
-		return false;
-	}
+        logger.info("PersonDatabase", "Updating entity with UUID: " + entity.getId());
+        update(entity);
+        return false;
+    }
 
-	@Override
-	public IPerson get(UUID id) {
-		return get(id.toString());
-	}
+    @Override
+    public IPerson get(UUID id) {
+        return get(id.toString());
+    }
 
-	@Override
-	public List<IPerson> loadAll() {
-		List<IPerson> persons = new LinkedList<IPerson>(getAll());
-		logger.info("PersonDatabase", "Loaded entities. Count: " + persons.size());
-		return persons;
-	}
+    @Override
+    public List<IPerson> loadAll() {
+        List<IPerson> persons = new LinkedList<IPerson>(getAll());
+        logger.info("PersonDatabase", "Loaded entities. Count: " + persons.size());
+        return persons;
+    }
 
-	@Override
-	public void delete(UUID id) {
-		logger.info("PersonDatabase", "Removing entity with UUID: " + id.toString());
-		remove((Person)get(id));
-	}
+    @Override
+    public void delete(UUID id) {
+        logger.info("PersonDatabase", "Removing entity with UUID: " + id.toString());
+        remove((Person) get(id));
+    }
 
-	@Override
-	public boolean close() {
-		return true;
-	}
+    @Override
+    public boolean close() {
+        return true;
+    }
+    @Override
+    public List<? extends IPerson> queryViews(final String viewName, final String key) {
+        return super.queryView(viewName, key);
+    }
 
+    @Override
+    public List<Person> queryView(final String viewName, final String key) {
+        return super.queryView(viewName, key);
+    }
 }

@@ -5,6 +5,7 @@ import de.htwg.seapal.controller.IWaypointController;
 import de.htwg.seapal.model.IWaypoint;
 import de.htwg.seapal.model.impl.Waypoint;
 import de.htwg.seapal.utils.logging.ILogger;
+import de.htwg.seapal.web.controllers.secure.IAccountController;
 import org.codehaus.jackson.node.ObjectNode;
 import play.data.Form;
 import play.libs.Json;
@@ -24,21 +25,16 @@ public class WaypointAPI extends Controller {
 	@Inject
 	private ILogger logger;
 
-    @Security.Authenticated(AccountAPI.Secured.class)
+    @Security.Authenticated(AccountAPI.SecuredAPI.class)
     public Result waypointAsJson(UUID waypointId) {
+        return ok(Json.toJson(controller.queryView("waypointAsJson", session(IAccountController.AUTHN_COOKIE_KEY) + waypointId.toString())));
+    }
 
-        // TODO check if waypoint belongs to account currently logged in
-		IWaypoint waypoint = controller.getWaypoint(waypointId);
-		return ok(Json.toJson(waypoint));
-	}
-
-    @Security.Authenticated(AccountAPI.Secured.class)
+    @Security.Authenticated(AccountAPI.SecuredAPI.class)
     public Result waypointsAsJson(UUID tripId) {
+        List<? extends IWaypoint> waypoints = controller.queryView("waypointsAsJson", session(IAccountController.AUTHN_COOKIE_KEY) + tripId.toString());
 
-        // TODO check if trip belongs to account currently logged in
-		List<IWaypoint> waypoints = controller.getAllWaypoints(tripId);
-
-		Collections.sort(waypoints, new Comparator<IWaypoint>(){
+        Collections.sort(waypoints, new Comparator<IWaypoint>(){
 
 	            @Override
 	            public int compare(IWaypoint arg0, IWaypoint arg1) {
@@ -47,17 +43,16 @@ public class WaypointAPI extends Controller {
 
 	        });
 
-
 		return ok(Json.toJson(waypoints));
 	}
 
-    @Security.Authenticated(AccountAPI.Secured.class)
+    @Security.Authenticated(AccountAPI.SecuredAPI.class)
     public Result addWaypoint() {
 
         // TODO check if waypoint belongs to account currently logged in
 		logger.info("WaypointAPI", "--> addWaypoint");
 		Form<Waypoint> filledForm = form.bindFromRequest();
-		//logger.info("Filled Form Data" , filledForm.toString());
+		logger.info("Filled Form Data" , filledForm.toString());
 
 		ObjectNode response = Json.newObject();
 

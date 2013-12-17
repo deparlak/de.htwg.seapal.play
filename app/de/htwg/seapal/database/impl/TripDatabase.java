@@ -2,15 +2,12 @@ package de.htwg.seapal.database.impl;
 
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
-import de.htwg.seapal.Constants;
 import de.htwg.seapal.database.ITripDatabase;
 import de.htwg.seapal.model.ITrip;
 import de.htwg.seapal.model.impl.Trip;
 import de.htwg.seapal.utils.logging.ILogger;
 import org.ektorp.CouchDbConnector;
-import org.ektorp.ViewQuery;
 import org.ektorp.support.CouchDbRepositorySupport;
-import org.ektorp.support.GenerateView;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -78,17 +75,8 @@ public class TripDatabase extends CouchDbRepositorySupport<Trip> implements ITri
 	public boolean close() {
 		return true;
 	}
-
-	@Override
-	@GenerateView
-	public List<ITrip> findByBoat(UUID boatId) {
-		return new LinkedList<ITrip>(queryView("by_boat", boatId.toString()));
-	}
-	
     @Override
-    public List<Trip> getTrips(String key, String viewId) {
-        ViewQuery query = new ViewQuery().designDocId(Constants.DESIGN_DOCUMENT).viewName(viewId).key(key);
-
-        return db.queryView(query, Trip.class);
+    public List<? extends ITrip> queryViews(final String viewName, final String key) {
+        return super.queryView(viewName, key);
     }
 }
