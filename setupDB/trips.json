@@ -1,0 +1,16 @@
+{
+   "_id": "_design/Trip",
+   "language": "javascript",
+   "views": {
+       "tripsAsJson": {
+           "map": "function(doc) {if (doc && doc.boat && doc.skipper && doc.boat.length > 0 && doc.skipper.length > 0) {emit(doc.skipper + '+' + doc.boat, doc);}}"
+       },
+       "tripAsJson": {
+           "map": "function(doc) {if (doc && doc.skipper && doc.skipper.length > 0) {emit(doc.skipper + '+' + doc._id, doc);}}"
+       },
+       "allTripsAsJson": {
+           "map": "function(doc) {if (doc && doc.skipper && doc.skipper.length > 0) {emit(doc.skipper, doc);}}"
+       }
+   },
+   "validate_doc_update": "function(doc, oldDoc, userCtx) {if (!doc && doc.boat && doc.skipper && doc.boat.length > 0 && doc.skipper.length > 0) {throw({forbidden : 'no way'});}}"
+}

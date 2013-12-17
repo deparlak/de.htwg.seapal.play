@@ -1,0 +1,16 @@
+{
+  "_id": "_design/Mark",
+  "language": "coffeescript",
+  "views": {
+    "marksOfRoute": {
+      "map": "(doc)->\n if doc?\n  if doc.owner? && doc.owner.length? && doc.owner.length > 0\n   emit \"#{doc.owner}#{doc._id}\", doc\n  if doc.crew? && doc.crew.length? && doc.crew.length > 0\n   for crew_member of doc.crew\n    emit \"#{crew_member}#{doc._id}\", doc\n"
+    },
+    "markAsJson": {
+      "map": "(doc)->\n if doc?\n  if doc.owner? && doc.owner.length? && doc.owner.length > 0\n   emit \"#{doc.owner}#{doc._id}\", doc\n  if doc.crew? && doc.crew.length? && doc.crew.length > 0\n   for crew_member of doc.crew\n    emit \"#{crew_member}#{doc._id}\", doc\n"
+    },
+    "standaloneMarks": {
+      "map": "(doc)->\n if doc?\n  if doc.owner? && doc.owner.length? && doc.owner.length > 0\n   emit \"#{doc.owner}#{doc._id}\", doc\n  if doc.crew? && doc.crew.length? && doc.crew.length > 0\n   for crew_member of doc.crew\n    emit \"#{crew_member}#{doc._id}\", doc\n"
+    }
+  },
+  "validate_doc_update": "(newDoc, oldDoc, userCtx) ->\n if oldDoc? and !newDoc._deleted? and newDoc.owner isnt oldDoc.owner\n  throw forbidden: 'old and new user dont match'"
+}
