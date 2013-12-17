@@ -208,3 +208,41 @@ POST /api/waypoint
 {
     "error": "this isn't the JSON document you're looking for"
 }
+
+-- Routes --
+Get all routes that belong to the currently logged in user.
+GET /api/route
+> Cookie: PLAY_SESSION="playInternalHash-id=UUIDOfAccount"
+< 200
+< Content-Type: application/json
+{
+    "error": "this isn't the JSON document you're looking for"
+}
+
+Get a single route.
+GET /api/route/$id<[0-9a-fA-F\-]+>
+> Cookie: PLAY_SESSION="playInternalHash-id=UUIDOfAccount"
+< 200
+< Content-Type: application/json
+{
+    "error": "this isn't the JSON document you're looking for"
+}
+
+Add a new route to the database. The field owner will be set to the id of the currently logged in user.
+POST /api/route
+> Cookie: PLAY_SESSION="playInternalHash-id=UUIDOfAccount"
+{
+    "error": "this isn't the JSON document you're looking for"
+}
+< 201
+{
+    "success": true
+}
+
+Delete a boat from the database.
+DELETE /api/route/$id<[0-9a-fA-F\-]+>
+> Cookie: PLAY_SESSION="playInternalHash-id=UUIDOfAccount"
+< 200
+{
+    "success": true
+}
