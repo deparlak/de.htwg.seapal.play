@@ -7,6 +7,15 @@ make sure that you're logged in.
 UUIDOfAccount looks like '523b7def-af42-4b3a-8eca-63a583f69ecf'
 --
 
+-- General --
+If you request a document you don't have access to, you'll receive an empty JSON array. If you're not logged in (Play Session cookie does not exist), you'll receive the following JSON object:
+GET /restricted/url
+< 401
+< Content-Type: application/json
+{
+    "error": "unauthorized"
+}
+
 -- Boats --
 Get all boats that belong to the currently logged in user.
 GET /api/boat
