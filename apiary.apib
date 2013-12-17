@@ -1,21 +1,19 @@
 HOST: http://localhost:9000/
 
---- Sample API v2 ---
----
-Welcome to the our sample API documentation. All comments can be written in (support [Markdown](http://daringfireball.net/projects/markdown/syntax) syntax)
----
+--- Seapal Play ---
+--
+make sure that you're logged in.
+--
 
 --
-Shopping Cart Resources
-The following is a section of resources related to the shopping cart
+Boats
 --
-List products added into your shopping-cart. (comment block again in Markdown)
-GET /shopping-cart
+Get all boats that belong to the current user
+GET /api/boat
+> Cookie: PLAY_SESSION="playInternalHash-id=UUIDOfAccount"
 < 200
 < Content-Type: application/json
-{ "items": [
-  { "url": "/shopping-cart/1", "product":"2ZY48XPZ", "quantity": 1, "name": "New socks", "price": 1.25 }
-] }
+[{"owner":"523b7def-af42-4b3a-8eca-63a583f69ecf","crew":[],"boatName":"test4","registerNr":"","sailSign":"","homePort":"","yachtclub":"","insurance":"","callSign":"","type":"","constructor":"","length":0.0,"width":0.0,"draft":0.0,"mastHeight":0.0,"displacement":0.0,"rigging":"","yearOfConstruction":0,"motor":"","tankSize":0.0,"wasteWaterTankSize":0.0,"freshWaterTankSize":0.0,"mainSailSize":0.0,"genuaSize":0.0,"spiSize":0.0,"_id":"010a0c10-4e6a-437e-87b6-cdcf7056d76f","_rev":"2-6f53f9467726b2fa04ad1aedb0249562"},{"owner":"523b7def-af42-4b3a-8eca-63a583f69ecf","crew":[],"boatName":"test","registerNr":"","sailSign":"","homePort":"","yachtclub":"","insurance":"","callSign":"","type":"","constructor":"","length":0.0,"width":0.0,"draft":0.0,"mastHeight":0.0,"displacement":0.0,"rigging":"","yearOfConstruction":0,"motor":"","tankSize":0.0,"wasteWaterTankSize":0.0,"freshWaterTankSize":0.0,"mainSailSize":0.0,"genuaSize":0.0,"spiSize":0.0,"_id":"123ed5e5-54f3-486c-9f0b-99c9f70c416e","_rev":"2-a74e2927ad12dc328be1867d7f39cfd5"},{"owner":"523b7def-af42-4b3a-8eca-63a583f69ecf","crew":[],"boatName":"test3","registerNr":"","sailSign":"","homePort":"","yachtclub":"","insurance":"","callSign":"","type":"","constructor":"","length":0.0,"width":0.0,"draft":0.0,"mastHeight":0.0,"displacement":0.0,"rigging":"","yearOfConstruction":0,"motor":"","tankSize":0.0,"wasteWaterTankSize":0.0,"freshWaterTankSize":0.0,"mainSailSize":0.0,"genuaSize":0.0,"spiSize":0.0,"_id":"5ebb48ef-45ee-4e96-9920-4d768017bc65","_rev":"2-51279618c2241c61c35a0905e691fe19"},{"owner":"523b7def-af42-4b3a-8eca-63a583f69ecf","crew":[],"boatName":"test4","registerNr":"","sailSign":"","homePort":"","yachtclub":"","insurance":"","callSign":"","type":"","constructor":"","length":0.0,"width":0.0,"draft":0.0,"mastHeight":0.0,"displacement":0.0,"rigging":"","yearOfConstruction":0,"motor":"","tankSize":0.0,"wasteWaterTankSize":0.0,"freshWaterTankSize":0.0,"mainSailSize":0.0,"genuaSize":0.0,"spiSize":0.0,"_id":"a9ce0e71-c35d-49fd-8512-d68681456026","_rev":"1-57db95f7eec13979ac60a94a5aacef5b"}]
 
 Save new products in your shopping cart
 POST /shopping-cart
