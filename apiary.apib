@@ -124,6 +124,14 @@ POST /api/boat
     "success": true
 }
 
+Delete a boat from the database.
+DELETE /api/boat/$id<[0-9a-fA-F\-]+>
+> Cookie: PLAY_SESSION="playInternalHash-id=UUIDOfAccount"
+< 200
+{
+    "success": true
+}
+
 -- Trips --
 Get all trips that belong to the currently logged in user.
 GET /api/boat/$id<[0-9a-fA-F\-]+>/trips
