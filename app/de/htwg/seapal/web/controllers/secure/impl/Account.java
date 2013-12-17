@@ -5,6 +5,7 @@ import de.htwg.seapal.web.controllers.secure.IAccount;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import org.codehaus.jackson.annotate.JsonIgnore;
 
 public final class Account
         extends de.htwg.seapal.model.ModelDocument
@@ -45,6 +46,7 @@ public final class Account
         return this.accountPassword;
     }
 
+    @JsonIgnore
     @Override
     public String getRepeatedAccountPassword() {
         return this.repeatedAccountPassword;
