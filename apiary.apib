@@ -248,17 +248,8 @@ DELETE /api/route/$id<[0-9a-fA-F\-]+>
 }
 
 -- Marks --
-Get all trips that belong to this route.
-GET /api/route/$id<[0-9a-fA-F\-]+>/marks
-> Cookie: PLAY_SESSION="playInternalHash-id=UUIDOfAccount"
-< 200
-< Content-Type: application/json
-{
-    "error": "this isn't the JSON document you're looking for"
-}
-
-Get all marks that belong to the currently logged in user but don't belong to any route.
-GET /api/mark
+Get all marks that belong to this boat.
+GET /api/boat/$id<[0-9a-fA-F\-]+>/marks
 > Cookie: PLAY_SESSION="playInternalHash-id=UUIDOfAccount"
 < 200
 < Content-Type: application/json
