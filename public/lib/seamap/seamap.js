@@ -251,8 +251,9 @@
         };
 
         /* Array pointer at the default route */
-        var defaultRoutePointer = 0;
+        var fakeRoutePointer = 0;
 
+        /* The default route the boat would follow when geolocation API is forbidden by user */
         var defaultRoute = [
             [47.662862243806494, 9.206426935195955],
             [47.66290559848635, 9.204967813491853],
@@ -270,6 +271,13 @@
             [47.662782760137446, 9.205708103179964]
         ];
 
+        var generatedTrackingRoute = null;
+
+        var TRACKING_DELAY = 5000;
+
+        var isSimulating = false;
+
+        var isTracking = false;
 
         // Factor to calc kmh to knots
         var KMH_TO_KNOTS = 0.539;
@@ -505,6 +513,7 @@
          */
         function get_location() {
             if (Modernizr.geolocation) {
+                isSimulating = false;
                 navigator.geolocation.getCurrentPosition(handleBoatPosition, error_handling);
             } else {
                 if(!noGeo_flag) {
@@ -518,8 +527,9 @@
          * Error handling if user denies access to the geolocation data
          */
         function error_handling(errNo) {
+            isSimulating = true;
             if(errNo.code == 1) {
-                handleFakeBoatPositionUpdate(defaultRoute);   
+                handleFakeBoatPositionUpdate();   
             }
         }
 
@@ -533,24 +543,66 @@
             currentSpeed = position.coords.speed;
             currentCourse = position.coords.heading;
             handleBoatPositionUpdate(currentPosition);
-            console.log(position);
         }
         /**
          * Handles the boat position with fake/generated geolocation data
          */
-        function handleFakeBoatPositionUpdate(route) {
-            if(defaultRoutePointer >= route.length) {
-                defaultRoutePointer = 0;
+        function handleFakeBoatPositionUpdate() {
+            if(isTracking && generatedTrackingRoute != null) {
+                fakeTrackingRoutePositionUpdate(generatedTrackingRoute);
+            } else {
+                fakeTrackingRoutePositionUpdate(defaultRoute);
             }
-            currentPosition = new google.maps.LatLng(route[defaultRoutePointer][0],
-                                                     route[defaultRoutePointer][1]);
+        }
+        /**
+         * Handles the boat position with fake/generated geolocation data
+         */
+        function generateFakeTrackingRoute(route) {            
+            var len = 5;
+            var result = new Array();
+            var tmp = new Array();
+            var j = 0;            
+            for (var i = 1; i <= route.onMap.markers.length; i++) {
+                tmp[0] = route.onMap.markers[i - 1].position.nb;
+                tmp[1] = route.onMap.markers[i - 1].position.ob;
+                result[j] = tmp;
+                tmp = new Array();
+                j++;
+
+                if (i == route.onMap.markers.length) {
+                    generatedTrackingRoute = result;
+                    return;
+                }
+                var lngKoeff = (route.onMap.markers[i].position.nb - route.onMap.markers[i - 1].position.nb) / len;
+                var latKoeff = (route.onMap.markers[i].position.ob - route.onMap.markers[i - 1].position.ob) / len;
+
+                for (var k = 1; k < len; k++) {
+                    tmp[0] = route.onMap.markers[i - 1].position.nb + (k * lngKoeff);
+                    tmp[1] = route.onMap.markers[i - 1].position.ob + (k * latKoeff);
+                    result[j] = tmp;
+                    tmp = new Array();
+                    j++;
+                };
+            };            
+        }
+        /**
+         * Handles the boat position tracking a route with fake/generated geolocation data
+         */
+        function fakeTrackingRoutePositionUpdate(routeArray) {
+            if(fakeRoutePointer >= routeArray.length) {
+                fakeRoutePointer = 0;
+            }
+
+            currentPosition = new google.maps.LatLng(routeArray[fakeRoutePointer][0],
+                                                     routeArray[fakeRoutePointer][1]);
             
             currentSpeed = (Math.random() * 15);
             currentCourse = Math.floor(Math.random() * 360);
             
-            defaultRoutePointer++;
+            fakeRoutePointer++;
             handleBoatPositionUpdate(currentPosition);
         }
+
         /**
          * Updates the boat icon on the map 
          */
@@ -569,6 +621,41 @@
             }
         }
         
+        /**
+        * *********************************************************************************
+        * Handles the tracking (simulated or real)
+        * *********************************************************************************
+        */
+        this.startTracking = function() {
+            if(activeRoute == null) {
+                output.warning("No route selected");
+                $('#toolsToggleLogging').text("Start Logging");
+                $('#toolsToggleLogging').removeClass('icon-stopLogging').addClass('icon-startLogging');
+                return;
+            }
+
+            if(isSimulating) {
+                fakeRoutePointer = 0;
+                generateFakeTrackingRoute(activeRoute);
+            }
+
+            isTracking = true;
+            handleTracking();
+            
+        }
+        /* stops the tracking */
+        this.stopTracking = function() {
+            isTracking = false;
+        }
+        /* Handles the tracking itself */
+        function handleTracking() {
+            if(!isTracking) { 
+                return;
+            }
+            setTimeout(function(){handleTracking();}, TRACKING_DELAY);
+            console.log("Tracking: " + currentPosition);
+        }
+
         /**
         * *********************************************************************************
         * Hides the crosshair marker.
