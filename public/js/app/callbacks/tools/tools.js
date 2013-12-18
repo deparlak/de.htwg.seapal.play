@@ -9,11 +9,13 @@ $(document).ready(function() {
     tools.addCallback('leftclick', 'icon-startLogging', function (self) {
         self.text("Stop Logging");
         self.removeClass('icon-startLogging').addClass('icon-stopLogging');
+        map.startTracking();
     });
 
     tools.addCallback('leftclick', 'icon-stopLogging', function (self) {
         self.text("Start Logging");
         self.removeClass('icon-stopLogging').addClass('icon-startLogging');
+        map.stopTracking();
     });
     
     tools.addCallback('leftclick', 'icon-takePhoto', function (self) {
