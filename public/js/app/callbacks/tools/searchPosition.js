@@ -56,10 +56,10 @@ $(document).ready(function() {
         history[active].unshift(search);
     }
     
-    function removeFromHistory() {
+    function removeFromHistory(of) {
         //remove the last insert entry from the history.
-        if (!(history[active] === undefined)){
-            history[active].shift();
+        if (!(history[of] === undefined)){
+            history[of].shift();
         }
     }
     
@@ -77,12 +77,12 @@ $(document).ready(function() {
         var lonMin = parseInt(string.substring(16, 18));
         var lonSec = parseInt(string.substring(19, 21));
         var lonDir = string.substring(23, 24);
-        
+
         if (latDegree < 0 || latDegree > 90 || isNaN(latDegree)) {
             obj.error = "Lat degree should be in range of 0 to 90";
             return obj;
         }
-        if (lonDegree < 0 || lonDegree > 90 || isNaN(lonDegree)) {
+        if (lonDegree < 0 || lonDegree > 180 || isNaN(lonDegree)) {
             obj.error = "Lon degree should be in range of 0 to 180";
             return obj;
         }
@@ -130,9 +130,8 @@ $(document).ready(function() {
         
         //query was not ok, so remove the searched jquery from the history
         if (!render.status.OK) {
-            removeFromHistory();
+            removeFromHistory(div);
         }
-        console.log(history);
         $(div).html(templateSearchPlaces(render));
     }
     
@@ -150,6 +149,7 @@ $(document).ready(function() {
     }
     
     method["#SearchPlaces"] = function(search) {
+        addToHistory(search);
         var request = {
             bounds: map.getGoogleMapsHandle().getBounds(),
             query: search
@@ -158,14 +158,11 @@ $(document).ready(function() {
     };
       
     method["#SearchPOIs"] = function(search) {
-        var request = {
-            bounds: map.getGoogleMapsHandle().getBounds(),
-            query: search
-        };
-        service.textSearch(request, SearchPOIsCallback);
+        $(active).html(templateSearchPlaces({history : history[active], status : {SEARCHING_POIS : true}}));
     };
     
     method["#SearchCoordinates"] = function(search) {
+        addToHistory(search);
         //check if position was complete typed in.
         if (!$("#search-searchPosition").inputmask("isComplete")) {
             $(active).html(templateSearchPlaces({status : {SEARCHING_COORDINATES_INCOMPLETE : true}}));
@@ -192,8 +189,6 @@ $(document).ready(function() {
         $('#search-searchPosition').val("");
         active = self.data('name');
         
-        console.log(active);
-        console.log(lastSearch);
         if (active != "#SearchCoordinates") {
             $('#search-searchPosition').inputmask('remove');        
         } else {
@@ -211,17 +206,22 @@ $(document).ready(function() {
             var search = "";
             search += $('#search-searchPosition').val();
             if (search.length > 0) {
-                addToHistory(search);
                 method[active](search);
 //                $('#search-searchPosition').blur();
             }
         //if we search not for marks, we will display a message that the search is in action.
         } else if (active == "#SearchPlaces") {
-            $(active).html(templateSearchPlaces({status : {SEARCHING_PLACES : true}}));
+            $(active).html(templateSearchPlaces({type : active, history : history[active], status : {SEARCHING_PLACES : true}}));
         } else if (active == "#SearchCoordinates") {
-            $(active).html(templateSearchPlaces({status : {SEARCHING_COORDINATES : true}}));
+            $(active).html(templateSearchPlaces({type : active, history : history[active], status : {SEARCHING_COORDINATES : true}}));
         } else if (active == "#SearchPOIs") {
-            $(active).html(templateSearchPlaces({status : {SEARCHING_POIS : true}}));
+            $(active).html(templateSearchPlaces({type : active, history : history[active], status : {SEARCHING_POIS : true}}));
         }
     }); 
+    
+    //callback for a selection of a history entry
+    tools.addCallback('leftclick', 'icon-previousSearch', function (self) {
+        $('#search-searchPosition').val(self.data('search'));
+        method[self.data('type')](self.data('search'));
+    });
 });

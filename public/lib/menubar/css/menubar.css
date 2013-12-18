@@ -484,6 +484,10 @@ input.menubar-search:focus {
         content: "\f014"
 }
 
+.icon-previousSearch::before{
+        content: "\f02e"  
+}
+
 /* if an icon anchor has a span, hide the span */
 
 .menu-icon span {
@@ -717,13 +721,13 @@ input.menubar-search:focus {
     line-height:25px !important;
 }
 
-/* headings in a li*/
+/* description in a li*/
 .description{
+    box-shadow:none !important;
     background: #FFFFFF;
     color:black;
-}
-
-.description1{
+    margin-top:10px;
+    margin-bottom:10px;
     margin-left:20px;
     margin-right:20px;
     font-size:15px;

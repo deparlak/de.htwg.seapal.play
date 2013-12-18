@@ -18,32 +18,25 @@
             </div>
         </li>
     {{else}} {{#if status.SEARCHING_PLACES}}
-        <li class="heading">
-            <div class="heading1">
+        <li class="description">
                 Hit enter to start your search...
             </div>
         </li>
     {{else}} {{#if status.SEARCHING_COORDINATES}}
-        <li class="heading">
-            <div class="heading1">
+        <li class="description">
                 Type in Coordinates and hit enter to start...<br/>
                 First Lat with format xx&deg;xx.xx N/S<br/>
-                Second Lon with format xx&deg;xx.xx W/E
-            </div>
+                Second Lon with format xxx&deg;xx.xx W/E
         </li>
     {{else}} {{#if status.SEARCHING_COORDINATES_INCOMPLETE}}
-        <li class="heading">
-            <div class="heading1">
+        <li class="description">
                 Your input is not complete..<br/>
-                First Lat with format xx'xx.xx N/S<br/>
-                Second Lon with format xx'xx.xx W/E
-            </div>
+                First Lat with format xx&deg;xx.xx N/S<br/>
+                Second Lon with format xxx&deg;xx.xx W/E
         </li>
     {{else}} {{#if status.SEARCHING_POIS}}
-        <li class="heading">
-            <div class="heading1">
-                Hit enter to start your search...
-            </div>
+        <li class="description">
+                Search for Points of Interest is actually not supported in the webapp. Please try our Apple or Android app for this feature.
         </li>
     {{else}} {{#if status.ZERO_RESULTS}}
         <li class="heading">
@@ -71,4 +64,15 @@
             </div>
         </li>
     {{/if}}{{/if}}{{/if}}{{/if}}{{/if}}{{/if}}{{/if}}{{/if}}
+    
+    {{#if history}}
+        <li class="heading">
+            <div class="heading1">
+                Previous Searches
+            </div>
+        </li>
+        {{#each history}}
+            <li><a class="tools-icon icon-previousSearch action" data-type={{../type}} data-search="{{this}}">{{cutStringLength this}}</a></li>
+        {{/each}}
+    {{/if}}
 </script>
