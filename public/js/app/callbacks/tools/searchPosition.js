@@ -74,10 +74,6 @@ $(document).ready(function() {
         };
         service.textSearch(request, SearchPOIsCallback);
     };
-   
-    method["#SearchMarks"] = function(search) {
-        console.log("Search in marks "+search);
-    };
     
     method["#SearchCoordinates"] = function(search) {
         //check if position was complete typed in.
@@ -103,7 +99,7 @@ $(document).ready(function() {
         if (active != "#SearchCoordinates") {
             $('#search-searchPosition').inputmask('remove');        
         } else {
-            $('#search-searchPosition').inputmask({mask: "[e]99Â°99.99' c [e]999Â°99.99' d"});
+            $('#search-searchPosition').inputmask({mask: "99°99.99' c 999°99.99' d"});
         }        
         $('#search-searchPosition').val(lastSearch[active]);
         /* unfocus and focus because the search input was modified before */
@@ -118,6 +114,7 @@ $(document).ready(function() {
             search += $('#search-searchPosition').val();
             if (search.length > 0) {
                 method[active](search);
+                $('#search-searchPosition').blur();
             }
         //if we search not for marks, we will display a message that the search is in action.
         } else if (active == "#SearchPlaces") {
