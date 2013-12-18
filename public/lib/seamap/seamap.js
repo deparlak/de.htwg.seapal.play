@@ -250,6 +250,27 @@
             "DELETE_MARKER" : 1
         };
 
+        /* Array pointer at the default route */
+        var defaultRoutePointer = 0;
+
+        var defaultRoute = [
+            [47.662862243806494, 9.206426935195955],
+            [47.66290559848635, 9.204967813491853],
+            [47.66275385695047, 9.204248981475862],
+            [47.6622552745126, 9.203111724853548],
+            [47.66181449476839, 9.202360706329378],
+            [47.66126532135546, 9.201716976165804],
+            [47.66063665522542, 9.200729923248323],
+            [47.65961054022222, 9.20257528305057],
+            [47.66016695719919, 9.205396966934236],
+            [47.66090401990831, 9.20829375267032],
+            [47.66159771648151, 9.20878727912906],
+            [47.66213966051584, 9.207853870391878],
+            [47.66255876004476, 9.206448392868074],
+            [47.662782760137446, 9.205708103179964]
+        ];
+
+
         // Factor to calc kmh to knots
         var KMH_TO_KNOTS = 0.539;
 
@@ -498,7 +519,7 @@
          */
         function error_handling(errNo) {
             if(errNo.code == 1) {
-                handleFakeBoatPositionUpdate();   
+                handleFakeBoatPositionUpdate(defaultRoute);   
             }
         }
 
@@ -517,12 +538,16 @@
         /**
          * Handles the boat position with fake/generated geolocation data
          */
-        function handleFakeBoatPositionUpdate() {
-            //currentPosition = randomizePosition(map.getCenter());
-            currentPosition = map.getCenter();
-            console.log(currentPosition);
-            currentSpeed = 12;
-            currentCourse = 270;
+        function handleFakeBoatPositionUpdate(route) {
+            if(defaultRoutePointer >= route.length) {
+                defaultRoutePointer = 0;
+            }
+            currentPosition = new google.maps.LatLng(route[defaultRoutePointer][0],
+                                                     route[defaultRoutePointer][1]);
+            currentSpeed = Math.round((Math.random() * 15) * 10) / 10;
+            currentCourse = Math.floor(Math.random() * 360);
+
+            defaultRoutePointer++;
             handleBoatPositionUpdate(currentPosition);
         }
         /**
@@ -1089,14 +1114,6 @@
         function toLatLngString(dms, type) {
             var tmp = toLatLngArray(dms, type);
             return tmp[0] + '° ' + tmp[1] + "' " + tmp[2] + "'' " + tmp[3];
-        }
-
-        function randomizePosition(position) {
-            var zoom = map.getZoom();
-            console.log(zoom);
-            position.nb += (Math.random() - 0.5) / (10 * zoom);
-            position.ob += (Math.random() - 0.5) / (10 * zoom);
-            return position;
         }
 
         /**
