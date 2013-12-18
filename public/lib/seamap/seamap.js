@@ -544,9 +544,10 @@
             }
             currentPosition = new google.maps.LatLng(route[defaultRoutePointer][0],
                                                      route[defaultRoutePointer][1]);
-            currentSpeed = Math.round((Math.random() * 15) * 10) / 10;
+            
+            currentSpeed = (Math.random() * 15);
             currentCourse = Math.floor(Math.random() * 360);
-
+            
             defaultRoutePointer++;
             handleBoatPositionUpdate(currentPosition);
         }
@@ -1062,8 +1063,9 @@
         }
         /* Gets the current boat information (speed course position) */
         function getCurrentBoatInformation() {
+            var tmp = currentSpeed != null ? kmhToKn(currentSpeed) : "-";
             var obj = {};
-            obj.speed = currentSpeed != null ? kmhToKn(currentSpeed) : "-";
+            obj.speed = tmp.toFixed(4);
             obj.course = currentCourse != null ? currentCourse : "-";
             obj.pos = currentPosition;
             obj.html = "COG " + obj.course + "° SOG " + obj.speed + "kn <br/>" + getCurrentCoordinatesAsString();
