@@ -11,7 +11,29 @@
 </script>
 
 <script id="template-SearchPlaces" type="text/x-handlebars-template">   
-    {{#if status.SEARCHING}}
+    {{#if status.SEARCHING_PLACES}}
+        <li class="heading">
+            <div class="heading1">
+                Hit enter to start your search...
+            </div>
+        </li>
+    {{else}} {{#if status.SEARCHING_COORDINATES}}
+        <li class="heading">
+            <div class="heading1">
+                Type in Coordinates and hit enter to start...<br/>
+                First Lat with format xx'xx.xx N/S<br/>
+                Second Lon with format xx'xx.xx W/E
+            </div>
+        </li>
+    {{else}} {{#if status.SEARCHING_COORDINATES_INCOMPLETE}}
+        <li class="heading">
+            <div class="heading1">
+                Your input is not complete..<br/>
+                First Lat with format xx'xx.xx N/S<br/>
+                Second Lon with format xx'xx.xx W/E
+            </div>
+        </li>
+    {{else}} {{#if status.SEARCHING_POIS}}
         <li class="heading">
             <div class="heading1">
                 Hit enter to start your search...
@@ -29,21 +51,18 @@
                 Too many request, try later again...
             </div>
         </li>
-    {{else}} {{#if status.UNKNOWN_ERROR}}
+    {{else}} {{#if status.OK}}
+        {{#each SearchPlaces}}
+            <li><a class="tools-icon icon-toolsNone action">{{cutStringLength name}}</a></li>
+        {{/each}}
+        {{#each SearchCoordinates}}
+            <li><a class="tools-icon icon-toolsNone action">{{cutStringLength formatted_address}}</a></li>
+        {{/each}}
+    {{else}}
         <li class="heading">
             <div class="heading1">
                 An unknown error occurred, try later again...
             </div>
         </li>
-    {{else}}
-        {{#each this}}
-            <li><a class="tools-icon icon-toolsNone action">{{cutStringLength name}}</a></li>
-        {{else}}
-            <li class="heading">
-                <div class="heading1">
-                    No results found.
-                </div>
-            </li>
-        {{/each}}
-    {{/if}}{{/if}}{{/if}}{{/if}}
+    {{/if}}{{/if}}{{/if}}{{/if}}{{/if}}{{/if}}{{/if}}
 </script>

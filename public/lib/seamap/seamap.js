@@ -1035,9 +1035,12 @@
         }
         /* Gets the current boat information (speed course position) */
         function getCurrentBoatInformation() {
-            var speed = currentSpeed != null ? kmhToKn(currentSpeed) : "-";
-            var course = currentCourse != null ? currentCourse : "-";
-            return "COG " + course + "° SOG " + speed + "kn " + getCurrentCoordinatesAsString();
+            var obj = {};
+            obj.speed = currentSpeed != null ? kmhToKn(currentSpeed) : "-";
+            obj.course = currentCourse != null ? currentCourse : "-";
+            obj.pos = currentPosition;
+            obj.html = "COG " + obj.course + "° SOG " + obj.speed + "kn <br/>" + getCurrentCoordinatesAsString();
+            return obj;
         }
         /* Converts kmh to knots */
         function kmhToKn(speed) {
@@ -1045,7 +1048,6 @@
         }        
         /* Gets the current coordinates in a human readable format */
         function getCurrentCoordinatesAsString() {
-            var curr = currentPosition;
             var north = currentPosition.nb;
             var east = currentPosition.ob;
             return toLatLngString(north, "lat") + " " + toLatLngString(east, "lng");

@@ -4,6 +4,9 @@
         @appContent.header()
     </head>
     <body>  
+        <div id="infoBar"><b>Seapal</b><br/>webapp</div>
+        
+        <!-- selector to switch between marks/routes/tracks -->
         <div class="container" style="z-index: 2;  position: relative;"> 
             <ul class="menubar-menu-main">
                 <li id="menu" class="menu-trigger">
@@ -206,8 +209,6 @@
                     </nav>
                 </li>
                 
-                <div class="heading"><p align="center"><span id="infoBar"></span></p></div>
-
                 <li id="tools" class="tools-trigger">
                     <a class="menubar-icon menubar-icon-tools"><span></span></a>
                     <nav class="menubar-tools-wrapper">
@@ -242,7 +243,10 @@
                                             <input type="radio">Marks
                                         </label>
                                         <label class="btn btn-primary action searchPosition" data-name="#SearchCoordinates">
-                                            <input type="radio">Coordinates
+                                            <input type="radio">Coordinate
+                                        </label>
+                                        <label class="btn btn-primary action searchPosition" data-name="#SearchPOIs">
+                                            <input type="radio">POI
                                         </label>
                                     </div>
                                 </li>
@@ -253,8 +257,7 @@
                                 <!-- all coordinates -->
                                 <div id="SearchCoordinates" class="inactive-searchPosition"></div>
                                 <!-- all POI's -->
-                                <div id="searchPOIs" class="inactive-searchPosition"></div>
-                                
+                                <div id="SearchPOIs" class="inactive-searchPosition"></div>
                             </ul>  
                             
                             
@@ -264,7 +267,7 @@
                 </li>
             </ul>
         </div><!-- /container -->
-                
+           
         <div id="map_canvas" style="height: 100%; position: absolute; top: 0; bottom: -200px; left: 0; right: 0; z-index: 0;"></div>
         
         @appContent.footer()
