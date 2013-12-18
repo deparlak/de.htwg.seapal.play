@@ -151,7 +151,7 @@ public class AccountAPI
         mail.addRecipient("John Doe <" + account.getAccountName() + ">");
         mail.addFrom("seapalweb@gmail.com");
         mail.send("To Reset your password, click the following link: http://localhost:9000/pwreset/" + token);*/
-        System.out.println("Token:" + token);
+        System.out.println("http://localhost:9000/pwreset/" + token);
         flash("success", "You have received an email with a link to reset your password!");
         return redirect(routes.Application.forgotten());
     }
