@@ -1,9 +1,9 @@
 package de.htwg.seapal.web.controllers.secure.impl;
 
 import de.htwg.seapal.web.controllers.secure.IAccount;
+import org.codehaus.jackson.annotate.JsonIgnore;
 
 import java.util.UUID;
-import org.codehaus.jackson.annotate.JsonIgnore;
 
 public final class Account
         extends de.htwg.seapal.model.ModelDocument
@@ -12,6 +12,8 @@ public final class Account
     public String accountName;
     public String accountPassword;
     public String repeatedAccountPassword;
+    private String token;
+    private long timeout;
 
     public Account() {
         setId(UUID.randomUUID().toString());
@@ -51,5 +53,21 @@ public final class Account
     @Override
     public void setAccountPassword(final String password) {
         this.accountPassword = password;
+    }
+    @Override
+    public void setResetToken(final String token) {
+        this.token = token;
+    }
+    @Override
+    public String getResetToken() {
+        return token;
+    }
+    @Override
+    public void setResetTimeout(final long timeout) {
+        this.timeout = timeout;
+    }
+    @Override
+    public long getResetTimeout() {
+        return this.timeout;
     }
 }

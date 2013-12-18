@@ -44,5 +44,7 @@ public interface IAccountController
 
     boolean accountExists(String accountName)
             throws Exception;
+
+    List<? extends IAccount> queryView(String viewName, String key);
 }
 
