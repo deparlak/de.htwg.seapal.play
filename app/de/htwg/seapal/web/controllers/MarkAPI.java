@@ -26,8 +26,8 @@ public class MarkAPI
 	private ILogger logger;
 
     @Security.Authenticated(AccountAPI.SecuredAPI.class)
-    public Result marksAsJson(UUID boat) {
-        return ok(Json.toJson(controller.queryView("marksAsJson", session(IAccountController.AUTHN_COOKIE_KEY) + boat.toString())));
+    public Result marksAsJson() {
+        return ok(Json.toJson(controller.queryView("marksAsJson", session(IAccountController.AUTHN_COOKIE_KEY))));
    	}
 
     @Security.Authenticated(AccountAPI.SecuredAPI.class)
