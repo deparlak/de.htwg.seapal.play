@@ -518,7 +518,9 @@
          * Handles the boat position with fake/generated geolocation data
          */
         function handleFakeBoatPositionUpdate() {
+            //currentPosition = randomizePosition(map.getCenter());
             currentPosition = map.getCenter();
+            console.log(currentPosition);
             currentSpeed = 12;
             currentCourse = 270;
             handleBoatPositionUpdate(currentPosition);
@@ -1087,6 +1089,14 @@
         function toLatLngString(dms, type) {
             var tmp = toLatLngArray(dms, type);
             return tmp[0] + '° ' + tmp[1] + "' " + tmp[2] + "'' " + tmp[3];
+        }
+
+        function randomizePosition(position) {
+            var zoom = map.getZoom();
+            console.log(zoom);
+            position.nb += (Math.random() - 0.5) / (10 * zoom);
+            position.ob += (Math.random() - 0.5) / (10 * zoom);
+            return position;
         }
 
         /**
