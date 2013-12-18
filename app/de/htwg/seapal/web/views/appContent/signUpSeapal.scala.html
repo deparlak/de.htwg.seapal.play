@@ -21,7 +21,7 @@
             <img class="profile-img" src="@routes.Assets.at("images/seapal_launcher.png")" alt="Seapal">
             @if(flash.contains("errors")) {
                 <div class="error-message">
-                    <a>@flash.get("errors")</a>
+                    <p>@flash.get("errors")</p>
                 </div>
             }
             @helper.form(link, 'class -> "form-signInSeapal") {
