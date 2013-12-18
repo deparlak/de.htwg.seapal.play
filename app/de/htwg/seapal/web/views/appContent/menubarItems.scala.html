@@ -11,7 +11,13 @@
 </script>
 
 <script id="template-SearchPlaces" type="text/x-handlebars-template">   
-    {{#if status.SEARCHING_PLACES}}
+    {{#if error}}
+        <li class="heading">
+            <div class="heading1">
+                {{error}}
+            </div>
+        </li>
+    {{else}} {{#if status.SEARCHING_PLACES}}
         <li class="heading">
             <div class="heading1">
                 Hit enter to start your search...
@@ -64,5 +70,5 @@
                 An unknown error occurred, try later again...
             </div>
         </li>
-    {{/if}}{{/if}}{{/if}}{{/if}}{{/if}}{{/if}}{{/if}}
+    {{/if}}{{/if}}{{/if}}{{/if}}{{/if}}{{/if}}{{/if}}{{/if}}
 </script>
