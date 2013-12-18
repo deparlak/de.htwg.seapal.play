@@ -628,10 +628,7 @@
         */
         this.startTracking = function() {
             if(activeRoute == null) {
-                output.warning("No route selected");
-                $('#toolsToggleLogging').text("Start Logging");
-                $('#toolsToggleLogging').removeClass('icon-stopLogging').addClass('icon-startLogging');
-                return;
+                return false;
             }
 
             if(isSimulating) {
@@ -641,7 +638,7 @@
 
             isTracking = true;
             handleTracking();
-            
+            return true;
         }
         /* stops the tracking */
         this.stopTracking = function() {

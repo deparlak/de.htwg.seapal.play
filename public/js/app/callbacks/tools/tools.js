@@ -9,7 +9,12 @@ $(document).ready(function() {
     tools.addCallback('leftclick', 'icon-startLogging', function (self) {
         self.text("Stop Logging");
         self.removeClass('icon-startLogging').addClass('icon-stopLogging');
-        map.startTracking();
+
+        if(!map.startTracking()) {
+            output.warning("No route for tracking selected! Please select a route.");
+            self.text("Start Logging");
+            self.removeClass('icon-stopLogging').addClass('icon-startLogging');    
+        }
     });
 
     tools.addCallback('leftclick', 'icon-stopLogging', function (self) {
