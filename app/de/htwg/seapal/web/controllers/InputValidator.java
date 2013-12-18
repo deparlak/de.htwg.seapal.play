@@ -43,6 +43,23 @@ public class InputValidator {
 		}
 		return Error.NONE;
 	}
+
+	/**
+	 * Validates the form input
+	 * 
+	 * @param password The password form to be validated
+	 * @param repeadtedPassword The repeated password
+	 * @return Error code that could be used with the corresponding error message from Error_Messages
+	 */
+	public static Error validate(String password, String repeatedPassword) {
+		if (!checkPasswords(password, repeatedPassword)) {
+			return Error.PASSWORDS_DIFFER;
+		}
+		if(!checkLength(password)) {
+			return Error.INVALID_LENGTH;
+		}
+		return Error.NONE;
+	}
  
 	/**
 	 * Validate hex with regular expression
@@ -66,6 +83,17 @@ public class InputValidator {
         return account.getAccountPassword().equals(account.getRepeatedAccountPassword());
     }
 
+    /**
+     * Checks wether the two entered passwords are the same
+     * 
+     * @param password The password form to be validated
+	 * @param repeadtedPassword The repeated password
+     * @return true if both passwords are equal
+     */
+    private static boolean checkPasswords(String password, String repeatedPassword) {
+        return password.equals(repeatedPassword);
+    }
+
 	/**
      * Checks if the password is of the correct min. length
      * 
@@ -74,5 +102,15 @@ public class InputValidator {
      */
     private static boolean checkLength(IAccount account) {
     	return MIN_LENGTH <= account.getAccountPassword().length();
+    }
+
+    /**
+     * Checks if the password is of the correct min. length
+     * 
+     * @param password The password to be checked
+     * @return true if password of correct length
+     */
+    private static boolean checkLength(String password) {
+    	return MIN_LENGTH <= password.length();
     }
 }

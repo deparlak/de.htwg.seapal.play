@@ -36,11 +36,10 @@ POST          /api/route        @de.htwg.seapal.web.controllers.RouteAPI.addRout
 DELETE        /api/route/$id<[0-9a-fA-F\-]+>        @de.htwg.seapal.web.controllers.RouteAPI.deleteRoute(id: UUID)
 
 # Marks
+GET           /api/mark       @de.htwg.seapal.web.controllers.MarkAPI.marksAsJson()
 POST          /api/mark        @de.htwg.seapal.web.controllers.MarkAPI.addMark()
 DELETE        /api/mark/$id<[0-9a-fA-F\-]+>        @de.htwg.seapal.web.controllers.MarkAPI.deleteMark(id: UUID)
-GET           /api/route/$id<[0-9a-fA-F\-]+>/marks        @de.htwg.seapal.web.controllers.MarkAPI.marksOfRoute(id: UUID)
 GET           /api/mark/$id<[0-9a-fA-F\-]+>        @de.htwg.seapal.web.controllers.MarkAPI.markAsJson(id: UUID)
-GET           /api/mark        @de.htwg.seapal.web.controllers.MarkAPI.standaloneMarks()
 
 # authentication
 GET           /login                                            de.htwg.seapal.web.controllers.Application.login()

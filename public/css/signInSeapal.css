@@ -68,9 +68,20 @@
     font-weight: bold;
 }
 
-.error-message a
+.error-message p
 {
     color: #fe2e2e;
+}
+
+.info-message
+{
+    text-align: center;
+    font-weight: bold;
+}
+
+.message-link a
+{
+    margin-left: 15px;
 }
 
 .login-title

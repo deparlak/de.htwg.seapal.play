@@ -5,14 +5,8 @@ import com.google.inject.Provides;
 import com.google.inject.Singleton;
 import com.google.inject.name.Named;
 import com.google.inject.name.Names;
-import de.htwg.seapal.controller.IBoatController;
-import de.htwg.seapal.controller.IRaceController;
-import de.htwg.seapal.controller.ITripController;
-import de.htwg.seapal.controller.IWaypointController;
-import de.htwg.seapal.controller.impl.BoatController;
-import de.htwg.seapal.controller.impl.RaceController;
-import de.htwg.seapal.controller.impl.TripController;
-import de.htwg.seapal.controller.impl.WaypointController;
+import de.htwg.seapal.controller.*;
+import de.htwg.seapal.controller.impl.*;
 import de.htwg.seapal.web.controllers.secure.IAccountController;
 import de.htwg.seapal.web.controllers.secure.impl.AccountController;
 import org.ektorp.CouchDbInstance;
@@ -37,8 +31,9 @@ public abstract class SeapalBaseTestModule extends AbstractModule {
         bind(IBoatController.class).to(BoatController.class).in(Singleton.class);
         bind(ITripController.class).to(TripController.class).in(Singleton.class);
 		bind(IWaypointController.class).to(WaypointController.class).in(Singleton.class);
-		bind(IRaceController.class).to(RaceController.class).in(Singleton.class);
-	}
+        bind(IRaceController.class).to(RaceController.class).in(Singleton.class);
+        bind(IMarkController.class).to(MarkController.class).in(Singleton.class);
+    }
 
 	@Provides
     HttpClient getHttpClient(@Named("databaseHost") String databaseHost, @Named("databasePort") int databasePort) {

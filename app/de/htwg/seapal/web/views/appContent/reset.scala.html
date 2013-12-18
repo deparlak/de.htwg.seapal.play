@@ -15,12 +15,25 @@
     <body>
         <div class="account-wall">
             <img class="profile-img" src="@routes.Assets.at("images/seapal_launcher.png")" alt="Seapal">
-            <form method="post" action="@de.htwg.seapal.web.controllers.routes.AccountAPI.resetPassword">
+            @if(!flash.contains("success")) {
+                @if(flash.contains("errors")) {
+                    <div class="error-message">
+                        <p>@flash.get("errors")</p>
+                    </div>
+                }
+                <form class="form-signInSeapal" method="post" action="@de.htwg.seapal.web.controllers.routes.AccountAPI.resetPassword">
                 <input type="hidden" name="token" value="@token">
                 <input type="password" class="form-control" name="accountPassword" placeholder="Password" required>
-                <button class="btn btn-lg btn-primary btn-block" type="submit">
-                    Sign in
-                </button></form>
+                <input type="password" class="form-control" name="repeatedAccountPassword" placeholder="Repeat Password" required>
+                <button class="btn btn-lg btn-primary btn-block" type="submit">Set new password</button></form>
+            } else {
+                <div class="info-message">
+                    <p>@flash.get("success")</p>
+                </div>
+                <div class="message-link">
+                    <a href="@de.htwg.seapal.web.controllers.routes.Application.app()">Back to the app</a>
+                </div>
+            }            
         </div>
     </body>
 </html>
