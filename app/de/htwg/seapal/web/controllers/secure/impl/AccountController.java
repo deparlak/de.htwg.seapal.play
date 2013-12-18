@@ -129,4 +129,8 @@ public final class AccountController
             throws Exception {
         return db.getAccount(email) != null;
     }
+    @Override
+    public List<? extends IAccount> queryView(final String viewName, final String key) {
+        return db.queryViews(viewName, key);
+    }
 }

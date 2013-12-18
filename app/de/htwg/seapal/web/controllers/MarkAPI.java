@@ -26,18 +26,13 @@ public class MarkAPI
 	private ILogger logger;
 
     @Security.Authenticated(AccountAPI.SecuredAPI.class)
-    public Result marksOfRoute(UUID route) {
-        return ok(Json.toJson(controller.queryView("marksOfRoute", session(IAccountController.AUTHN_COOKIE_KEY) + route.toString())));
+    public Result marksAsJson(UUID boat) {
+        return ok(Json.toJson(controller.queryView("marksAsJson", session(IAccountController.AUTHN_COOKIE_KEY) + boat.toString())));
    	}
 
     @Security.Authenticated(AccountAPI.SecuredAPI.class)
     public Result markAsJson(UUID mark) {
         return ok(Json.toJson(controller.queryView("markAsJson", session(IAccountController.AUTHN_COOKIE_KEY) + mark.toString())));
-    }
-
-    @Security.Authenticated(AccountAPI.SecuredAPI.class)
-    public Result standaloneMarks() {
-        return ok(Json.toJson(controller.queryView("standaloneMarks", session(IAccountController.AUTHN_COOKIE_KEY))));
     }
 
     @Security.Authenticated(AccountAPI.SecuredAPI.class)

@@ -48,6 +48,11 @@ POST          /login        @de.htwg.seapal.web.controllers.AccountAPI.login()
 GET           /logout                                           de.htwg.seapal.web.controllers.AccountAPI.logout()
 GET           /signup                                           de.htwg.seapal.web.controllers.Application.signup()
 POST          /signup        @de.htwg.seapal.web.controllers.AccountAPI.signup()
+# reset PW
+GET           /forgottenForm                                    de.htwg.seapal.web.controllers.Application.forgotten()
+GET           /pwreset/$token<-?[0-9]{1,10}>        @de.htwg.seapal.web.controllers.AccountAPI.resetForm(token: Int)
+POST          /forgotten        @de.htwg.seapal.web.controllers.AccountAPI.requestNewPassword()
+POST          /reset        @de.htwg.seapal.web.controllers.AccountAPI.resetPassword()
 
 # Javascript routing
 GET           /assets/javascripts/routes                        de.htwg.seapal.web.controllers.Application.javascriptRoutes()

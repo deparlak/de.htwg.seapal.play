@@ -18,7 +18,8 @@ object ApplicationBuild extends Build {
 	    javaJdbc,
 	    javaEbean,
 	    "com.google.inject" % "guice" % "3.0",
-	    "org.ektorp" % "org.ektorp" % "1.3.0"
+	    "org.ektorp" % "org.ektorp" % "1.3.0",
+     "com.typesafe" %% "play-plugins-mailer" % "2.1-RC2"
 	    //"de.htwg.seapal" % "core" % "1.0-SNAPSHOT"
 	)
 
