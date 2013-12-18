@@ -103,7 +103,7 @@ $(document).ready(function() {
         if (active != "#SearchCoordinates") {
             $('#search-searchPosition').inputmask('remove');        
         } else {
-            $('#search-searchPosition').inputmask({mask: "[e]99'99.99' c [e]999'99.99' d"});
+            $('#search-searchPosition').inputmask({mask: "[e]99°99.99' c [e]999°99.99' d"});
         }        
         $('#search-searchPosition').val(lastSearch[active]);
         /* unfocus and focus because the search input was modified before */
