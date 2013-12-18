@@ -248,8 +248,8 @@ DELETE /api/route/$id<[0-9a-fA-F\-]+>
 }
 
 -- Marks --
-Get all marks that belong to this boat.
-GET /api/boat/$id<[0-9a-fA-F\-]+>/marks
+Get all marks that belong to this account.
+GET /api/mark/
 > Cookie: PLAY_SESSION="playInternalHash-id=UUIDOfAccount"
 < 200
 < Content-Type: application/json
