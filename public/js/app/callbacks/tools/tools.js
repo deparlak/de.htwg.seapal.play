@@ -45,7 +45,7 @@ $(document).ready(function() {
     });  
     
     tools.addCallback('leftclick', 'icon-PersonOverBoard', function (self) {
-        console.log('icon-PersonOverBoard');
+        map.togglePersonOverboard();
     });  
     
     tools.addCallback('leftclick', 'icon-SecurityCircle', function (self) {
