@@ -691,7 +691,7 @@
         function addManOverboardMark() {
             var mark = {}
             var position = currentPosition;
-            mark.id = marksCount.toString();
+            mark.id = "POB";
             mark.label = "Person overboard";
             mark.detailed = "created on blabla..";
             mark.onMap = new google.maps.Marker({
@@ -701,7 +701,6 @@
                 draggable: false
             });
             manoverboardMark = mark;
-            marksCount++;
         }
         /* Removes the person overboard mark */
         function removeManOverboardMark() {
