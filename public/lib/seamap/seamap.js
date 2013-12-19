@@ -548,7 +548,7 @@
          * Handles the boat position with fake/generated geolocation data
          */
         function handleFakeBoatPositionUpdate() {
-            if(isTracking && generatedTrackingRoute != null) {
+            if(isTracking && activeRoute != null) {
                 fakeTrackingRoutePositionUpdate(generatedTrackingRoute);
             } else {
                 fakeTrackingRoutePositionUpdate(defaultRoute);
