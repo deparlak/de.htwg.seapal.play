@@ -6,34 +6,37 @@
     <body>  
         <div id="infoBar"></div>
         
+
+
         <!-- selector to switch between marks/routes/tracks -->
         <div class="container" style="z-index: 2;  position: relative;"> 
             <ul class="menubar-menu-main">
                 <li id="menu" class="menu-trigger">
                     <a class="menubar-icon menubar-icon-menu"><span></span></a>
-                    <nav class="menubar-menu-wrapper">                                 
-                        
+                    <nav class="menubar-menu-wrapper">
                         <!--
                             A footer of any submenu. the footer should have a id, which is similar to the menu which it belong to. 
                             For example the id of the menu is "menu-logbook", so the footer should have the id "footer-logbook"
                         -->
-                        <div id="footer-logbook" class="menubar-footer btn-group-justified menubar-optionsSelector visible" data-toggle="buttons">
-                            <label class="btn action menubar-footer-item" data-name="#marks">
-                                <input type="radio"><i class="fa fa-edit"></i>
-                            </label>
-                            <label class="btn action menubar-footer-item" data-name="#marks">
-                                <input type="radio"><i class="fa fa-plus"></i>
-                            </label>
-                            <label class="btn action menubar-footer-item" data-name="#marks">
-                                <input type="radio"><i class="fa fa-trash-o"></i>
-                            </label>
-                        </div>
+                        <div id="menubar-menu-footer">
+                            <div id="footer-logbook" class="menu-footer btn-group-justified menubar-optionsSelector visible" data-toggle="buttons">
+                                <label class="btn action menu-footer-item" data-name="#marks">
+                                    <input type="radio"><i class="fa fa-edit"></i>
+                                </label>
+                                <label class="btn action menu-footer-item" data-name="#marks">
+                                    <input type="radio"><i class="fa fa-plus"></i>
+                                </label>
+                                <label class="btn action menu-footer-item" data-name="#marks">
+                                    <input type="radio"><i class="fa fa-trash-o"></i>
+                                </label>
+                            </div>       
+                        <div>
                         
                         <div class="scroller">
                             <ul id="menu-main" class="menubar-menu active-menu-list">
                                 <li><a class="menu-icon icon-fullscreen">Fullscreen</a></li>
                                 <li><a class="menu-icon icon-map action">Satellite</a></li>
-                                <li><a class="menu-icon icon-logbook link" data-link="menu-logbook" data-footer="footer-logbook">Logbook</a></li>
+                                <li><a class="menu-icon icon-logbook link" data-link="menu-logbook">Logbook</a></li>
                                 <li><a class="menu-icon icon-dashboard">Dashboard</a></li>
                                 <li><a class="menu-icon icon-marksRoutesTracks link" data-link="menu-marksRoutesTracks">Marks, Routes, Tracks</a></li>
                                 <li><a class="menu-icon icon-charts">Navigation Charts</a></li>
@@ -44,8 +47,7 @@
                                 <li><a class="menu-icon icon-info action">Info</a></li>
                                 <li><a class="menu-icon icon-settings link" data-link="menu-settings">Settings</a></li>
                             </ul>                        
-                        
-                        
+                            
                             <ul id="menu-logbook" class="menubar-menu inactive-menu-list">
                                 <li><a class="menu-icon icon-menuBack link" data-link="menu-main">Back</a></li>
                                 <!-- selector to switch between marks/routes/tracks -->

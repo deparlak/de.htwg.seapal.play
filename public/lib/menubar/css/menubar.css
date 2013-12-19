@@ -670,6 +670,25 @@ input.menubar-search:focus {
 }
 
 
+.menu-footer{
+    background: white;
+    color:blue;
+    width:100%;
+    left:0px;
+    height: 40px;
+    line-height: 40px;
+    font-size:20px;
+    position: fixed;
+    bottom: 0px;
+    z-index: 4;
+    vertical-align:-2px;
+}
+
+.menu-footer-item {
+    border:0px;
+    border-radius:0px;
+}
+
 
 /* styles on minimized size */
 /******************************************************/
@@ -732,23 +751,4 @@ input.menubar-search:focus {
     margin-right:20px;
     font-size:15px;
     line-height:20px !important;
-}
-
-.menubar-footer{
-    background: white;
-    color:blue;
-    width:100%;
-    left:0px;
-    height: 40px;
-    line-height: 40px;
-    font-size:20px;
-    position: fixed;
-    bottom: 0px;
-    z-index: 4;
-    vertical-align:-2px;
-}
-
-.menubar-footer-item {
-    border:0px;
-    border-radius:0px;
 }
