@@ -178,7 +178,10 @@
         this.getGoogleMapsHandle = function () {
             return map;
         };
-        
+        /* get the actual boat position*/
+        this.getCurrentBoatInformation = function () {
+            return getCurrentBoatInformation();
+        };
         /* get the events list */
         this.getEvents = function () {
             return jQuery.extend(true, {}, events);
