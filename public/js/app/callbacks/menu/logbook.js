@@ -12,6 +12,7 @@ $(document).ready(function() {
         self.button('toggle');
         $('.active-logbook').removeClass('active-logbook').addClass('inactive-logbook');
         $(self.data('name')).removeClass('inactive-logbook').addClass('active-logbook');
+        console.log(self.data('name'));
     });
     
     menu.addCallback('leftclick', 'icon-selectedTrack', function (self) {

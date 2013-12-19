@@ -195,10 +195,6 @@
         this.setImageMark = function(image) {
             addImageMark(image);
         }
-        /* delete a mark with a specified id */
-        this.deleteMark = function (id) {
-        
-        };
         /* hide the route by id */
         this.hideRoute = function (id) {
             hideActiveRoute();
@@ -207,6 +203,22 @@
         this.visibleRoute = function (id) {
             activateRoute(routes[id]);
         };
+        /* remove a route with a specified id */
+        this.removeRoute = function (id) {
+            console.log("TODO: remove route");
+        };
+        /* hide the track by id */
+        this.hideTrack = function (id) {
+            console.log("TODO: hide track");
+        };
+        /* visible the track by id */
+        this.visibleTrack = function (id) {
+            console.log("TODO: visible track");
+        };
+        /* remove a track with a specified id */
+        this.removeTrack = function (id) {
+            console.log("TODO: remove track");
+        };
         /* hide the mark by id */
         this.hideMark = function (id) {
             marks[id].onMap.setVisible(false);
@@ -214,6 +226,10 @@
         /* visible the mark by id */
         this.visibleMark = function (id) {
             marks[id].onMap.setVisible(true);
+        };
+        /* remove a mark with a specified id */
+        this.removeMark = function (id) {
+            console.log("TODO: remove mark");
         };
         /* get distance */
         this.getDistance = function () {

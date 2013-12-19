@@ -14,35 +14,30 @@
                 <li id="menu" class="menu-trigger">
                     <a class="menubar-icon menubar-icon-menu"><span></span></a>
                     <nav class="menubar-menu-wrapper">
-                        <!--
-                            A footer of any submenu. the footer should have a id, which is similar to the menu which it belong to. 
-                            For example the id of the menu is "menu-logbook", so the footer should have the id "footer-logbook"
-                        -->
-                        <div id="menubar-menu-footer">
-                            <div id="footer-logbook" class="menu-footer btn-group-justified menubar-optionsSelector visible" data-toggle="buttons">
-                                <label class="btn action menu-footer-item" data-name="#marks">
-                                    <input type="radio"><i class="fa fa-edit"></i>
-                                </label>
-                                <label class="btn action menu-footer-item" data-name="#marks">
-                                    <input type="radio"><i class="fa fa-plus"></i>
-                                </label>
-                                <label class="btn action menu-footer-item" data-name="#marks">
-                                    <input type="radio"><i class="fa fa-trash-o"></i>
-                                </label>
-                            </div>       
-                        <div>
+
+                        <div id="menu-marksRoutesTracks-footer" class="menu-footer btn-group-justified menubar-optionsSelector hidden" data-toggle="buttons">
+                            <label class="btn action menu-footer-item marksRoutesTracksEdit">
+                                <input type="radio"><i class="fa fa-edit"></i>
+                            </label>
+                            <label class="btn action menu-footer-item marksRoutesTracksAdd">
+                                <input type="radio"><i class="fa fa-plus"></i>
+                            </label>
+                            <label class="btn action menu-footer-item marksRoutesTracksRemove">
+                                <input type="radio"><i class="fa fa-trash-o"></i>
+                            </label>
+                        </div>
                         
                         <div class="scroller">
                             <ul id="menu-main" class="menubar-menu active-menu-list">
-                                <li><a class="menu-icon icon-fullscreen">Fullscreen</a></li>
+                                <li><a class="menu-icon icon-fullscreen action">Fullscreen</a></li>
                                 <li><a class="menu-icon icon-map action">Satellite</a></li>
                                 <li><a class="menu-icon icon-logbook link" data-link="menu-logbook">Logbook</a></li>
-                                <li><a class="menu-icon icon-dashboard">Dashboard</a></li>
+                                <li><a class="menu-icon icon-dashboard action">Dashboard</a></li>
                                 <li><a class="menu-icon icon-marksRoutesTracks link" data-link="menu-marksRoutesTracks">Marks, Routes, Tracks</a></li>
-                                <li><a class="menu-icon icon-charts">Navigation Charts</a></li>
-                                <li><a class="menu-icon icon-addOns">Add-ons</a></li>
+                                <li><a class="menu-icon icon-charts action">Navigation Charts</a></li>
+                                <li><a class="menu-icon icon-addOns action">Add-ons</a></li>
                                 <li><a class="menu-icon icon-poi action">Points of Interest</a></li>
-                                <li><a class="menu-icon icon-weather">Weather</a></li>
+                                <li><a class="menu-icon icon-weather action">Weather</a></li>
                                 <li><a class="menu-icon icon-alarms link" data-link="menu-alarms">Alarms</a></li>
                                 <li><a class="menu-icon icon-info action">Info</a></li>
                                 <li><a class="menu-icon icon-settings link" data-link="menu-settings">Settings</a></li>
@@ -179,7 +174,7 @@
                                 <div id="routes" class="inactive-marksRoutesTracks"></div>
                                 <!-- all tracks -->
                                 <div id="tracks" class="inactive-marksRoutesTracks">
-                                    <li><a class="menu-icon icon-selectedTrack" data-id="1">Track 1</a></li>
+                                    <li><a class="menu-icon icon-selectedTrack action" data-id="1">Track 1</a></li>
                                 </div>
                             </ul>
                         
