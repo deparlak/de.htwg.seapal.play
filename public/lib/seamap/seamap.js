@@ -48,6 +48,22 @@
                     new google.maps.Point(21, 36))
             }
         },
+
+        // Default options for the marker
+        personOverboardOptions : {
+            polyOptions : {
+                strokeColor: '#000000',
+                strokeOpacity: 0.5,
+                strokeWeight: 3
+            },
+            markerOptions : {
+                image : new google.maps.MarkerImage(
+                    "/assets/images/manoverboard.png",
+                    new google.maps.Size(42, 42),
+                    new google.maps.Point(0,0),
+                    new google.maps.Point(21, 21))
+            }
+        },
         
         // Default options for the routing tool
         routeOptions : {
@@ -271,12 +287,16 @@
             [47.662782760137446, 9.205708103179964]
         ];
 
+        // The tracking route generated from the activeRoute 
         var generatedTrackingRoute = null;
 
+        // The delay when tracking points are set 
         var TRACKING_DELAY = 5000;
 
+        // Checks whether the position simulation is active (when user denies geolocation) 
         var isSimulating = false;
 
+        // Checks if the app is currently tracking
         var isTracking = false;
 
         // Factor to calc kmh to knots
@@ -306,6 +326,9 @@
         // boat marker
         var boatMarker = null;
         
+        // The id of the manoverboard marker
+        var manoverboardMark = null;
+
         // routes
         var routes = {};
         var routeCounter = 1;
@@ -651,6 +674,41 @@
             }
             setTimeout(function(){handleTracking();}, TRACKING_DELAY);
             console.log("Tracking: " + currentPosition);
+        }
+        /**
+        * *********************************************************************************
+        * Handles the person overboard
+        * *********************************************************************************
+        */
+        this.togglePersonOverboard = function() {
+            if(manoverboardMark == null) {
+                addManOverboardMark();
+            } else {
+                removeManOverboardMark();
+            }
+        }
+        /* Adds the person overboard mark */
+        function addManOverboardMark() {
+            var mark = {}
+            var position = currentPosition;
+            mark.id = marksCount.toString();
+            mark.label = "Person overboard";
+            mark.detailed = "created on blabla..";
+            mark.onMap = new google.maps.Marker({
+                map: map,
+                position: position,
+                icon: options.personOverboardOptions.markerOptions.image,
+                draggable: false
+            });
+            manoverboardMark = mark;
+            marksCount++;
+        }
+        /* Removes the person overboard mark */
+        function removeManOverboardMark() {
+            selectedMark = manoverboardMark;
+            deleteSelectedMark();
+            selectedMark = null;
+            manoverboardMark = null;
         }
 
         /**
