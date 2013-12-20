@@ -1227,6 +1227,8 @@
             obj.speed = currentSpeed != null ? kmhToKn(currentSpeed) : "-";
             obj.course = currentCourse != null ? currentCourse.toFixed(2) : "-";
             obj.pos = currentPosition;
+            obj.latStr = toLatLngString(obj.pos.nb, "lat");
+            obj.lngStr = toLatLngString(obj.pos.ob, "lng");
             obj.html = "COG " + obj.course + "° SOG " + obj.speed + "kn <br/>" + getCurrentCoordinatesAsString();
             return obj;
         }

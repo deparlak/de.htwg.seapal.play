@@ -8,11 +8,17 @@
 $(document).ready(function() {    
     var lastSearch = {};
     var history = {};
-    var active = "#SearchPlaces";
     var method = {};
     var service = new google.maps.places.PlacesService(map.getGoogleMapsHandle());
     var geocoder = new google.maps.Geocoder();
     var templateSearchPlaces = Handlebars.compile($("#template-SearchPlaces").html());
+    var active = "#SearchPOIs";
+    displaySearchInfos();
+    active = "#SearchCoordinates";
+    displaySearchInfos();
+    active = "#SearchPlaces";
+    displaySearchInfos();
+    
     //extend the input mask plugin to be able to input N which is North and S which is South for latitude and WE (West and East) for longitude.
     $.extend($.inputmask.defaults.definitions, {
         'c': { 
@@ -143,6 +149,16 @@ $(document).ready(function() {
         renderCallback("#SearchCoordinates", results, status);
     }
     
+    function displaySearchInfos() {
+        if (active == "#SearchPlaces") {
+            $(active).html(templateSearchPlaces({type : active, history : history[active], status : {SEARCHING_PLACES : true}}));
+        } else if (active == "#SearchCoordinates") {
+            $(active).html(templateSearchPlaces({type : active, history : history[active], status : {SEARCHING_COORDINATES : true}}));
+        } else if (active == "#SearchPOIs") {
+            $(active).html(templateSearchPlaces({type : active, history : history[active], status : {SEARCHING_POIS : true}}));
+        }
+    }
+    
     method["#SearchPlaces"] = function(search) {
         addToHistory(search);
         var request = {
@@ -191,6 +207,9 @@ $(document).ready(function() {
             $('#search-searchPosition').val(lastSearch[active]);
             $('#search-searchPosition').inputmask({mask: "99°99.99' c 999°99.99' d", clearMaskOnLostFocus : false, clearIncomplete : false, autoUnmask : true });
         }
+        /* blur and focus again, to avoid that the inputmask will not be displayed immediately */
+        $('#search-searchPosition').blur();
+        $('#search-searchPosition').focus();
     });
     
     $("#search-searchPosition").keydown( function(event) {
@@ -201,24 +220,30 @@ $(document).ready(function() {
             if (search.length > 0) {
                 method[active](search);
             }
-        //if we search not for marks, we will display a message that the search is in action.
-        } else if (active == "#SearchPlaces") {
-            $(active).html(templateSearchPlaces({type : active, history : history[active], status : {SEARCHING_PLACES : true}}));
-        } else if (active == "#SearchCoordinates") {
-            $(active).html(templateSearchPlaces({type : active, history : history[active], status : {SEARCHING_COORDINATES : true}}));
-        } else if (active == "#SearchPOIs") {
-            $(active).html(templateSearchPlaces({type : active, history : history[active], status : {SEARCHING_POIS : true}}));
+        } else {
+            displaySearchInfos();
         }
     }); 
     
     //callback for a selection of a history entry
     tools.addCallback('leftclick', 'icon-previousSearch', function (self) {
-        $('#search-searchPosition').val(self.data('search'));
+        if (active == "#SearchCoordinates") {
+            $('#search-searchPosition').inputmask('remove');
+            $('#search-searchPosition').val(self.data('search'));
+            $('#search-searchPosition').inputmask({mask: "99°99.99' c 999°99.99' d", clearMaskOnLostFocus : false, clearIncomplete : false, autoUnmask : true });
+        } else {
+            $('#search-searchPosition').val(self.data('search'));
+        }
         method[self.data('type')](self.data('search'));
     });
     
     /* callbacks for locations which where found */
     tools.addCallback('leftclick', 'icon-actualPositionSearch', function (self) {
-        console.log(map.getCurrentBoatInformation());
+        var pos = map.getCurrentBoatInformation();
+        pos = pos.latStr+" "+pos.lngStr;
+        $('#search-searchPosition').inputmask('remove');
+        $('#search-searchPosition').val(pos);
+        $('#search-searchPosition').inputmask({mask: "99°99.99' c 999°99.99' d", clearMaskOnLostFocus : false, clearIncomplete : false, autoUnmask : true });
+        method["#SearchCoordinates"](pos);
     });
 });

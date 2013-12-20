@@ -19,21 +19,21 @@
         </li>
     {{else}} {{#if status.SEARCHING_PLACES}}
         <li class="description">
-                Hit enter to start your search...
+                Type in a Place and hit enter to start...
             </div>
         </li>
     {{else}} {{#if status.SEARCHING_COORDINATES}}
         <li class="description">
                 Type in Coordinates and hit enter to start...<br/>
-                First Lat with format xx&deg;xx.xx N/S<br/>
-                Second Lon with format xxx&deg;xx.xx W/E
+                First Latitude with format xx&deg;xx.xx N/S<br/>
+                Second Longitude with format xxx&deg;xx.xx W/E
         </li>
         <li><a class="tools-icon icon-actualPositionSearch action">Search from my actual position</a></li>
     {{else}} {{#if status.SEARCHING_COORDINATES_INCOMPLETE}}
         <li class="description">
                 Your input is not complete..<br/>
-                First Lat with format xx&deg;xx.xx N/S<br/>
-                Second Lon with format xxx&deg;xx.xx W/E
+                First Latitude with format xx&deg;xx.xx N/S<br/>
+                Second Longitude with format xxx&deg;xx.xx W/E
         </li>
     {{else}} {{#if status.SEARCHING_POIS}}
         <li class="description">
