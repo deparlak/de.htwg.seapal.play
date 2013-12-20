@@ -141,7 +141,6 @@
                 ev.stopPropagation();
                 ev.preventDefault();
                 if( self.isMenuOpen ) {
-                    alert("dat");
                     self.closeMenu();
                     document.removeEventListener( self.eventtype, self.bodyClickFn );
                 }
