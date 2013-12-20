@@ -1225,7 +1225,7 @@
         function getCurrentBoatInformation() {
             var obj = {};
             obj.speed = currentSpeed != null ? kmhToKn(currentSpeed) : "-";
-            obj.course = currentCourse != null ? currentCourse : "-";
+            obj.course = currentCourse != null ? currentCourse.toFixed(2) : "-";
             obj.pos = currentPosition;
             obj.html = "COG " + obj.course + "° SOG " + obj.speed + "kn <br/>" + getCurrentCoordinatesAsString();
             return obj;
@@ -1243,7 +1243,7 @@
         /* Gets the current coordinates in a human readable format array for use in the specific forms */
         function toLatLngArray(dms, type) {
             var sign = 1, Abs=0;
-            var days, minutes, secounds, direction;
+            var days, minutes, direction;
             var result = new Array();
 
             if(dms < 0) {
@@ -1252,8 +1252,7 @@
 
             Abs = Math.abs( Math.round(dms * 1000000.));
             days = Math.floor(Abs / 1000000);
-            minutes = Math.floor(((Abs/1000000) - days) * 60);
-            secounds = ( Math.floor((( ((Abs/1000000) - days) * 60) - minutes) * 100000) *60/100000 ).toFixed();
+            minutes = (((Abs/1000000) - days) * 60).toFixed(2);
             days = days * sign;
 
             if(type == 'lat') {
@@ -1266,15 +1265,28 @@
 
             result[0] = (days * sign);
             result[1] = minutes;
-            result[2] = secounds;
-            result[3] = direction;
+            result[2] = direction;
             
             return result;
         }
         /* Gets the current coordinates in a human readable format in a complete string*/
         function toLatLngString(dms, type) {
             var tmp = toLatLngArray(dms, type);
-            return tmp[0] + '°' + tmp[1] + "." + tmp[2] + "' " + tmp[3];
+            var deg = tmp[0].toString();
+
+            if(type == 'lat') {
+                if(deg.length == 1) {
+                    deg = "0" + deg;
+                }
+            } else if(type == 'lng') {
+                if(deg.length == 1) {
+                    deg = "00" + deg;
+                } else if(deg.length == 2) {
+                    deg = "0" + deg;
+                }
+            }
+
+            return deg + '°' + tmp[1] +"' " + tmp[2];
         }
 
         /**
