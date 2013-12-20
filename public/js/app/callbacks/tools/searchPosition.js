@@ -24,11 +24,6 @@ $(document).ready(function() {
             validator: "W|E",
             cardinality: 1,
             casing: "upper"
-        },
-        'e': {
-            validator: "-|\\+",
-            cardinality: 1,
-            casing: "upper"
         }
     });
     
@@ -190,14 +185,12 @@ $(document).ready(function() {
         active = self.data('name');
         
         if (active != "#SearchCoordinates") {
-            $('#search-searchPosition').inputmask('remove');        
+            $('#search-searchPosition').inputmask('remove');       
+            $('#search-searchPosition').val(lastSearch[active]);            
         } else {
-            $('#search-searchPosition').inputmask({mask: "99°99.99' c 999°99.99' d"});
-        }        
-        /* unfocus and focus because the search input was modified before */
-        //$('#search-searchPosition').blur();
-        //$('#search-searchPosition').focus();
-        $('#search-searchPosition').val(lastSearch[active]);
+            $('#search-searchPosition').val(lastSearch[active]);
+            $('#search-searchPosition').inputmask({mask: "99°99.99' c 999°99.99' d", clearMaskOnLostFocus : false, clearIncomplete : false, autoUnmask : true });
+        }
     });
     
     $("#search-searchPosition").keydown( function(event) {
@@ -207,7 +200,6 @@ $(document).ready(function() {
             search += $('#search-searchPosition').val();
             if (search.length > 0) {
                 method[active](search);
-//                $('#search-searchPosition').blur();
             }
         //if we search not for marks, we will display a message that the search is in action.
         } else if (active == "#SearchPlaces") {
