@@ -29,6 +29,7 @@ $(document).ready(function() {
     };
     
     removeSelection = function () {
+        console.log("start remove");
         for (var i in removeElements) {
             console.log("remove "+i);
         }
