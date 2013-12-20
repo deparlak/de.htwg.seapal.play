@@ -94,12 +94,12 @@ $(document).ready(function() {
             obj.error = "Lon min should be in range of 0 to 60";
             return obj;
         }
-        if (latSec < 0 || latSec > 60 || isNaN(latSec)) {
-            obj.error = "Lat sec should be in range of 0 to 60";
+        if (latSec < 0 || latSec > 99 || isNaN(latSec)) {
+            obj.error = "Lat min.xx should be in range of 0 to 99";
             return obj;
         }
-        if (lonSec < 0 || lonSec > 60 || isNaN(lonSec)) {
-            obj.error = "Lon sec should be in range of 0 to 60";
+        if (lonSec < 0 || lonSec > 99 || isNaN(lonSec)) {
+            obj.error = "Lon min.xx should be in range of 0 to 99";
             return obj;
         }
         if (latDir != 'N' && latDir != 'S') {
@@ -110,8 +110,8 @@ $(document).ready(function() {
             obj.error = "Lon Direction has to be 'W' or 'E'.";
             return obj;
         }
-        obj.lat = latDegree + latMin * 0.6 + latSec * 0.36;
-        obj.lon = lonDegree + lonMin * 0.6 + lonSec * 0.36;
+        obj.lat = latDegree + ((latMin + (latSec / 100)) / 60);
+        obj.lon = lonDegree + ((lonMin + (lonSec / 100)) / 60);
         if ('W' == latDir) {
             obj.lat = -1 * obj.lat;
         }
