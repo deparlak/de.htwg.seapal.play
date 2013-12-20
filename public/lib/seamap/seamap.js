@@ -1274,7 +1274,7 @@
         /* Gets the current coordinates in a human readable format in a complete string*/
         function toLatLngString(dms, type) {
             var tmp = toLatLngArray(dms, type);
-            return tmp[0] + '° ' + tmp[1] + "' " + tmp[2] + "'' " + tmp[3];
+            return tmp[0] + '°' + tmp[1] + "." + tmp[2] + "' " + tmp[3];
         }
 
         /**

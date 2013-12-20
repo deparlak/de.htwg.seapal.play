@@ -15,17 +15,6 @@ $(document).ready(function() {
         console.log(self.data('name'));
     });
     
-    menu.addCallback('leftclick', 'icon-selectedTrack', function (self) {
-        self.removeClass('icon-selectedTrack').addClass('icon-notSelectedTrack');
-        console.log(self.data('id'));
-    });
-    
-    menu.addCallback('leftclick', 'icon-notSelectedTrack', function (self) {
-        $('.icon-selectedTrack').removeClass('icon-selectedTrack').addClass('icon-notSelectedTrack');
-        self.removeClass('icon-notSelectedTrack').addClass('icon-selectedTrack');
-        console.log(self.data('id'));
-    });
-    
     menu.addCallback('leftclick', 'icon-signInSeapal', function (self) {
         menu.closeMenu();
         window.location = "/login";

@@ -224,4 +224,9 @@ $(document).ready(function() {
         $('#search-searchPosition').val(self.data('search'));
         method[self.data('type')](self.data('search'));
     });
+    
+    /* callbacks for locations which where found */
+    tools.addCallback('leftclick', 'icon-actualPositionSearch', function (self) {
+        console.log(map.getCurrentBoatInformation());
+    });
 });

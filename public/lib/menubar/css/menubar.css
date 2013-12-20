@@ -488,6 +488,10 @@ input.menubar-search:focus {
         content: "\f02e"  
 }
 
+.icon-actualPositionSearch::before{
+        content: "\f05b"  
+}
+
 /* if an icon anchor has a span, hide the span */
 
 .menu-icon span {
@@ -751,4 +755,11 @@ input.menubar-search:focus {
     margin-right:20px;
     font-size:15px;
     line-height:20px !important;
+}
+
+/* add class to mark an element to be removed */
+.remove{
+    text-decoration:line-through !important;
+    background: #EBEBEB;
+    opacity:0.5;
 }
