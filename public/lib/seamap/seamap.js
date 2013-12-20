@@ -1272,7 +1272,21 @@
         /* Gets the current coordinates in a human readable format in a complete string*/
         function toLatLngString(dms, type) {
             var tmp = toLatLngArray(dms, type);
-            return tmp[0] + '°' + tmp[1] +"' " + tmp[2];
+            var deg = tmp[0].toString();
+
+            if(type == 'lat') {
+                if(deg.length == 1) {
+                    deg = "0" + deg;
+                }
+            } else if(type == 'lng') {
+                if(deg.length == 1) {
+                    deg = "00" + deg;
+                } else if(deg.length == 2) {
+                    deg = "0" + deg;
+                }
+            }
+
+            return deg + '°' + tmp[1] +"' " + tmp[2];
         }
 
         /**
