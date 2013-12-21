@@ -1098,9 +1098,6 @@
         * *********************************************************************************
         */
         function handleAddNewTrack() {
-            if(activeTrack != null) {
-                hideActiveTrack();
-            }
             var track = {}
             track.id = trackCounter.toString();
             track.label = "Track " + trackCounter;
@@ -1121,7 +1118,8 @@
         * Activates the route, so that it is also visible in the sidebar.
         * *********************************************************************************
         */
-        function activateTrack(track) {            
+        function activateTrack(track) {
+            hideActiveTrack();
             /* important that state will be set here, because hideActiveRoute() will set the state to NORMAL */
             state = States.TRACK;
             activeTrack = track;
