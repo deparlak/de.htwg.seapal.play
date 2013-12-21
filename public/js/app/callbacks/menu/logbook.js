@@ -6,13 +6,31 @@
  */
 
 $(document).ready(function() {
+    var active = "#account";
     var waypoint_headingTo_template = Handlebars.compile($("#waypoint_headingTo_option").html());
 
+    /* when we open logbook submenu, we have to visible the footer for the submenu */
+    menu.addCallback('leftclick', 'icon-logbook', function (self) {
+        $(active+"-footer").removeClass('hidden').addClass('visible'); 
+    });
+    
+    /* when we swith one of the submenus */
     menu.addCallback('leftclick', 'logbook', function (self) {
         self.button('toggle');
         $('.active-logbook').removeClass('active-logbook').addClass('inactive-logbook');
         $(self.data('name')).removeClass('inactive-logbook').addClass('active-logbook');
-        console.log(self.data('name'));
+        /* hide the other footer and visible the now active */
+        $(active+"-footer").removeClass('visible').addClass('hidden');
+        active = self.data('name');
+        $(active+"-footer").removeClass('hidden').addClass('visible'); 
+    });
+    
+    menu.addCallback('leftclick', 'logbookCrewAdd', function (self) {
+        console.log("TODO addCrew");
+    });
+   
+    menu.addCallback('leftclick', 'logbookBoatsAdd', function (self) {
+        console.log("TODO addBoat");
     });
     
     menu.addCallback('leftclick', 'icon-signInSeapal', function (self) {
