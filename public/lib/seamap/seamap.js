@@ -210,7 +210,7 @@
             return jQuery.extend(true, {}, events);
         };
         /* set new route */
-        this.setRoute = function () {
+        this.setRoute = function () {            
             handleAddNewRoute();
         };
         /* set new mark */
@@ -294,7 +294,8 @@
             DELETED_MARK    :  "DeletedMark",
             NO_GEO_SUPPORT  :  "GeolocationNotSupported",
             BOAT_POS_UPDATE :  "Boat position uodated",
-            CREATED_TRACK   :  "CreatedTrack"
+            CREATED_TRACK   :  "CreatedTrack",
+            TRACKING_ACTIVE :  "Tracking is active"
         };
         
         var options = $.seamap.options;
@@ -968,6 +969,11 @@
         * *********************************************************************************
         */
         function handleAddNewRoute() {
+            if(isTracking) {
+                callbacks[events.TRACKING_ACTIVE].fire("This options is disabled because tracking is active!");
+                return;
+            }
+            
             hideContextMenu();
             hideCrosshairMarker();
 
