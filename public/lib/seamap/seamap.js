@@ -46,6 +46,13 @@
                     new google.maps.Size(42, 42),
                     new google.maps.Point(0,0),
                     new google.maps.Point(21, 36))
+            },
+            tmpMarkerOptions : {
+                image : new google.maps.MarkerImage(
+                    "/assets/images/pin_marker.png",
+                    new google.maps.Size(42, 42),
+                    new google.maps.Point(0,0),
+                    new google.maps.Point(21, 36))
             }
         },
 
@@ -197,7 +204,11 @@
         };
         this.setImageMark = function(image) {
             addImageMark(image);
-        }
+        };
+        /* set a temporary mark */
+        this.setTemporaryMark = function(position) {
+            handleSetTemporaryMark(position);
+        };
         /* hide the route by id */
         this.hideRoute = function (id) {
             hideActiveRoute();
@@ -360,6 +371,9 @@
         var marks = {};
         var marksCount = 1;
         var selectedMark = null;
+        
+        //temporary marker
+        var temporaryMarker = null;
         
         // editing states
         var state = States.NORMAL;
@@ -1108,6 +1122,24 @@
 
             destpath.setMap(map);
             destpath.setPath([boatMarker.getPosition(), crosshairMarker.getPosition()]);
+        }
+        
+        /**
+        * *********************************************************************************
+        * set a temporary marker to the screen, which will be overwritten if the method will be called again.
+        * *********************************************************************************
+        */
+        function handleSetTemporaryMark(position) {
+            if (null != temporaryMarker) {
+                temporaryMarker.setMap(null); 
+            }
+            temporaryMarker = new google.maps.Marker({
+                map: map,
+                position: position,
+                icon: options.defaultOptions.tmpMarkerOptions.image,
+                draggable: false
+            });
+            map.setCenter(position);
         }
         
         /**

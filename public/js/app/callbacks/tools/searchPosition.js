@@ -145,7 +145,6 @@ $(document).ready(function() {
     }
     
     function SearchCoordinatesCallback(results, status) {
-        console.log(results);
         renderCallback("#SearchCoordinates", results, status);
     }
     
@@ -185,8 +184,6 @@ $(document).ready(function() {
             $(active).html(templateSearchPlaces(obj));
             return;
         }
-        console.log(search);
-        console.log(obj);
         var latlng = new google.maps.LatLng(obj.lat, obj.lon);
         geocoder.geocode({'latLng': latlng},SearchCoordinatesCallback);
     };
@@ -225,7 +222,7 @@ $(document).ready(function() {
         }
     }); 
     
-    //callback for a selection of a history entry
+    /* callback for a selection of a history entry */
     tools.addCallback('leftclick', 'icon-previousSearch', function (self) {
         if (active == "#SearchCoordinates") {
             $('#search-searchPosition').inputmask('remove');
@@ -237,7 +234,7 @@ $(document).ready(function() {
         method[self.data('type')](self.data('search'));
     });
     
-    /* callbacks for locations which where found */
+    /* callback to search at actual position */
     tools.addCallback('leftclick', 'icon-actualPositionSearch', function (self) {
         var pos = map.getCurrentBoatInformation();
         pos = pos.latStr+" "+pos.lngStr;
@@ -245,5 +242,15 @@ $(document).ready(function() {
         $('#search-searchPosition').val(pos);
         $('#search-searchPosition').inputmask({mask: "99°99.99' c 999°99.99' d", clearMaskOnLostFocus : false, clearIncomplete : false, autoUnmask : true });
         method["#SearchCoordinates"](pos);
+    });
+    
+    /* callback to display a searched place */
+    tools.addCallback('leftclick', 'icon-searchedPlace', function (self) {
+        map.setTemporaryMark(new google.maps.LatLng(self.data('nb'), self.data('ob')));
+    });
+    
+    /* callback to display a searched coordinate */
+    tools.addCallback('leftclick', 'icon-searchedCoordinate', function (self) {
+        map.setTemporaryMark(new google.maps.LatLng(self.data('nb'), self.data('ob')));
     });
 });
