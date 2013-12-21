@@ -83,6 +83,9 @@ $(document).ready(function() {
      */
     $('.datepicker').datepicker();
 
+    /*
+     * On close methods of modals to enable the menu autohide again
+     */
     $('#modal-form_track').on('hidden.bs.modal',
         function() {
             if(!isWaypointModalToBeOpened) {
@@ -90,14 +93,12 @@ $(document).ready(function() {
             }
         }
     );
-
     $('#modal-form_waypoint').on('hidden.bs.modal',
         function() {
             isWaypointModalToBeOpened = false;
             menu.enableAutoClose();
         }
     );
-
     $('#modal-form_marker').on('hidden.bs.modal',
         function() {
             menu.enableAutoClose();
