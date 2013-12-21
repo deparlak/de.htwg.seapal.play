@@ -52,6 +52,7 @@ $(document).ready(function() {
     });  
 
     menu.addCallback('rightclick', ['icon-notSelectedBoat', 'icon-selectedBoat'], function (self) {
+        menu.disableAutoClose();
         $('#modal-form_boat').modal('show');
     });
 
@@ -100,6 +101,11 @@ $(document).ready(function() {
         }
     );
     $('#modal-form_marker').on('hidden.bs.modal',
+        function() {
+            menu.enableAutoClose();
+        }
+    );
+    $('#modal-form_boat').on('hidden.bs.modal',
         function() {
             menu.enableAutoClose();
         }
