@@ -228,11 +228,11 @@
         };
         /* hide the track by id */
         this.hideTrack = function (id) {
-            console.log("TODO: hide track");
+            hideActiveTrack();
         };
         /* visible the track by id */
         this.visibleTrack = function (id) {
-            console.log("TODO: visible track");
+            activateTrack(tracks[id]);
         };
         /* remove a track with a specified id */
         this.removeTrack = function (id) {
@@ -1852,7 +1852,6 @@
             this.markers[this.markers.length] = marker;
             
             // adds or updates the label
-             // adds or updates the label
             if(this.label == null) {
                 this.addLabel();
             } else {
