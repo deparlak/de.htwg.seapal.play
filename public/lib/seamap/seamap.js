@@ -282,7 +282,8 @@
             ADDED_MARK      :  "AddedMark",
             DELETED_MARK    :  "DeletedMark",
             NO_GEO_SUPPORT  :  "GeolocationNotSupported",
-            BOAT_POS_UPDATE :  "Boat position uodated"
+            BOAT_POS_UPDATE :  "Boat position uodated",
+            CREATED_TRACK   :  "CreatedTrack"
         };
         
         var options = $.seamap.options;
@@ -1101,8 +1102,8 @@
                 hideActiveTrack();
             }
             var track = {}
-            track.id = track.toString();
-            track.label = "Track "+track;
+            track.id = trackCounter.toString();
+            track.label = "Track " + trackCounter;
             track.detailed = "created on blabla..";
             track.onMap = new $.seamap.track(track.id, map, "TRACK");
             track.updated = true;
@@ -1112,7 +1113,7 @@
             activateTrack(track); 
             
             trackCounter++;
-            //callbacks[events.CREATED_TRACK].fire([track]);
+            callbacks[events.CREATED_TRACK].fire([track]);
         }
                 
         /**
@@ -1845,14 +1846,17 @@
                 icon: options.markerOptions.image,
                 shadow: options.markerOptions.shadow,
                 animation: google.maps.Animation.DROP,
-                draggable: !this.notinteractive,
+                draggable: false,
                 id: this.markers.length 
             });
             this.markers[this.markers.length] = marker;
             
             // adds or updates the label
+             // adds or updates the label
             if(this.label == null) {
                 this.addLabel();
+            } else {
+                this.updateLabel();
             }
             
             this.notify("add");
