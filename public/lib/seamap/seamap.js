@@ -80,6 +80,22 @@
                     new google.maps.Point(10, 10))
             }
         },
+
+        // Default options for the tracking tool
+        trackOptions : {
+            polyOptions : {
+                strokeColor: '#000000',
+                strokeOpacity: 0.5,
+                strokeWeight: 3
+            },
+            markerOptions : {
+                image : new google.maps.MarkerImage(
+                    "/assets/images/circle.png",
+                    new google.maps.Size(20, 20),
+                    new google.maps.Point(0,0),
+                    new google.maps.Point(10, 10))
+            }
+        },
         
         // Default options for the distance tool
         distanceOptions : {
@@ -277,7 +293,8 @@
             "NORMAL"   : 0, 
             "ROUTE"    : 1, 
             "DISTANCE" : 2,
-            "MARKER"   : 3
+            "MARKER"   : 3,
+            "TRACK"    : 4
         },
         // The context menu types
         ContextMenuTypes = {
@@ -347,6 +364,11 @@
         
         // The id of the manoverboard marker
         var manoverboardMark = null;
+
+        // tracks
+        var tracks = {};
+        var trackCounter = 1;
+        var activeTrack = null;
 
         // routes
         var routes = {};
@@ -679,11 +701,13 @@
             }
 
             isTracking = true;
+            handleAddNewTrack();
             handleTracking();
             return true;
         }
         /* stops the tracking */
         this.stopTracking = function() {
+            handleExitTrackCreation();
             isTracking = false;
         }
         /* Handles the tracking itself */
@@ -692,7 +716,8 @@
                 return;
             }
             setTimeout(function(){handleTracking();}, TRACKING_DELAY);
-            console.log("Tracking: " + currentPosition);
+
+            addTrackMarker(currentPosition);
         }
         /**
         * *********************************************************************************
@@ -1063,6 +1088,123 @@
             var newmarker = activeRoute.onMap.addMarker(latLng);
             activeRoute.onMap.drawPath();
         }
+
+
+        /**
+        * *********************************************************************************
+        * Handles the creation of a new route, activates it and bind the mouse-events.
+        * Also hides the context menu and the marker.
+        * *********************************************************************************
+        */
+        function handleAddNewTrack() {
+            if(activeTrack != null) {
+                hideActiveTrack();
+            }
+            var track = {}
+            track.id = track.toString();
+            track.label = "Track "+track;
+            track.detailed = "created on blabla..";
+            track.onMap = new $.seamap.track(track.id, map, "TRACK");
+            track.updated = true;
+
+            tracks[track.id] = track;        
+  
+            activateTrack(track); 
+            
+            trackCounter++;
+            //callbacks[events.CREATED_TRACK].fire([track]);
+        }
+                
+        /**
+        * *********************************************************************************
+        * Activates the route, so that it is also visible in the sidebar.
+        * *********************************************************************************
+        */
+        function activateTrack(track) {            
+            /* important that state will be set here, because hideActiveRoute() will set the state to NORMAL */
+            state = States.TRACK;
+            activeTrack = track;
+            activeTrack.onMap.visible();
+        }
+        /**
+        * *********************************************************************************
+        * Hide the active route
+        * *********************************************************************************
+        */ 
+        function hideActiveTrack() {
+            if (activeTrack != null) {
+                uploadTrackUpdate();
+                state = States.NORMAL;
+                activeTrack.onMap.hide();
+                activeTrack = null;
+            }
+        }
+        /**
+        * *********************************************************************************
+        * Delete the active route
+        * *********************************************************************************
+        */ 
+        function deleteActiveTrack(){
+            if (activeTrack != null) {
+                uploadTrackDeletion();
+                state = States.NORMAL;
+                activeTrack.onMap.hide();
+                delete routes[activeTrack.id];
+                activeTrack = null;
+            }
+        }
+        
+        /**
+        * *********************************************************************************
+        * Handles the quit of the route creation.
+        * Also closes the context menu, sidebar the hides the crosshair.
+        * *********************************************************************************
+        */
+        function handleExitTrackCreation() {
+            uploadTrackUpdate();
+            state = States.NORMAL;
+        }
+
+        /**
+        * *********************************************************************************
+        * Check if the active route has some changes which should be uploaded.
+        * *********************************************************************************
+        */
+        function uploadTrackUpdate() {
+            if (activeTrack != null && activeTrack.updated) {
+                sync.uploadTrack(activeTrack);
+                activeTrack.updated = false;
+            }         
+        }
+        
+        /**
+        * *********************************************************************************
+        * Check if the active route has ever been uploaded and so has to be deleted on the server.
+        * *********************************************************************************
+        */
+        function uploadTrackDeletion() {
+            sync.uploadTrack("delete");      
+        } 
+        
+        /**
+        * *********************************************************************************
+        * Adds a new route marker to the active route.
+        * *********************************************************************************
+        */
+        function addTrackMarker(latLng) {            
+            var newmarker = activeTrack.onMap.addMarker(latLng);
+            activeTrack.onMap.drawPath();
+        }
+
+
+
+
+
+
+
+
+
+
         
         /**
         * *********************************************************************************
@@ -1626,6 +1768,234 @@
             });
         }
     };
+
+
+
+
+
+
+
+
+    /**
+    * *************************************************************************************
+    * The track object class 
+    * *************************************************************************************
+    */
+    $.seamap.track = function(newtrackid, newgooglemaps, type){
+        this.id = newtrackid;
+        this.googlemaps = newgooglemaps;
+        this.color = $.seamap.options.strokeColors[this.id % ($.seamap.options.strokeColors.length-1)];
+        
+        this.path = null;
+        this.markers = [];
+        this.label = null;
+        this.notinteractive = false;
+        
+        // internal data
+        var eventListener = {
+            add : [],
+            remove : []
+        };
+        
+        options = $.seamap.options.trackOptions;
+        
+        // edit color
+        options.polyOptions.strokeColor = this.color;
+            
+        this.path = new google.maps.Polyline(options.polyOptions);
+        this.path.setMap(this.googlemaps);
+        
+        /**
+        * *********************************************************************************
+        * hide the track
+        * *********************************************************************************
+        */        
+        this.hide = function () {
+            if(this.label != null) this.label.setMap(null);
+            this.path.setVisible(false);
+            $.each(this.markers, function(){
+                this.setVisible(false);
+            });
+        }
+        /**
+        * *********************************************************************************
+        * visible the track
+        * *********************************************************************************
+        */        
+        this.visible = function () {
+            this.updateLabel();
+            this.path.setVisible(true);
+            $.each(this.markers, function(){
+                this.setVisible(true);
+            });
+        }
+        
+        /**
+        * *********************************************************************************
+        * Adds a new track marker to the given position.
+        * *********************************************************************************
+        */
+        this.addMarker = function(position) {
+            var $this = this;
+
+            // create marker
+            var marker = new google.maps.Marker({
+                map: this.googlemaps,
+                position: position,
+                icon: options.markerOptions.image,
+                shadow: options.markerOptions.shadow,
+                animation: google.maps.Animation.DROP,
+                draggable: !this.notinteractive,
+                id: this.markers.length 
+            });
+            this.markers[this.markers.length] = marker;
+            
+            // adds or updates the label
+            if(this.label == null) {
+                this.addLabel();
+            }
+            
+            this.notify("add");
+            
+            return marker;
+        }
+
+        /**
+        * *********************************************************************************
+        * Removes a marker from the track.
+        * *********************************************************************************
+        */
+        this.removeMarker = function($marker) {
+            $marker.setMap(null);
+            this.markers = $.grep(this.markers, function(mark) {
+                return mark != $marker;
+            });
+            
+            var i = 0;
+            $.each(this.markers, function(){
+                this.id = i++;
+            });
+            this.drawPath();
+            this.updateLabel();
+            
+            this.notify("remove");
+        }
+        
+        /**
+        * *********************************************************************************
+        * Adds a label to the last marker.
+        * *********************************************************************************
+        */
+        this.addLabel = function() {        
+            this.label = new Label({map: this.googlemaps });
+            this.label.bindTo('position', this.markers[this.markers.length-1], 'position');
+            $(this.label.span_).css({"margin-left":"15px","padding":"7px","box-shadow":"0px 0px 3px #666","z-index":99999,"color":this.color});
+            this.label.set('text', this.getTotalDistanceText());
+        }
+        
+        /**
+        * *********************************************************************************
+        * Updates the the label (removes the old and adds a new one).
+        * *********************************************************************************
+        */
+        this.updateLabel = function() {
+            if(this.label != null) this.label.setMap(null);
+            if(this.markers.length != 0) this.addLabel();
+        }
+        
+        /**
+        * *********************************************************************************
+        * Removes a whole track from the map (with its paths, labels and markers).
+        * *********************************************************************************
+        */
+        this.removeFromMap = function() {
+            this.path.setMap(null);
+            this.label.setMap(null);
+            $.each(this.markers, function() {
+                this.setMap(null);
+            });
+        }
+
+        /**
+        * *********************************************************************************
+        * Draws a track by conntecting all track markers in the given order.
+        * *********************************************************************************
+        */
+        this.drawPath = function() {
+            var newPath = new Array();
+            for (var i = 0; i < this.markers.length; ++i) {
+                newPath[i] = this.markers[i].getPosition();
+            }
+
+            this.path.setPath(newPath);
+        }
+        
+        /**
+        * *********************************************************************************
+        * Gets the total distance text of the track. Format example: 1234m
+        * *********************************************************************************
+        */
+        this.getTotalDistanceText = function() {
+            var dist = 0;
+
+            if( this.markers.length > 1 ) {
+                for( var i = 0; i < this.markers.length - 1; ++i ) {
+                    dist += this.distance(    this.markers[i].getPosition().lat(),
+                                             this.markers[i].getPosition().lng(),
+                                             this.markers[i + 1].getPosition().lat(),
+                                             this.markers[i + 1].getPosition().lng())
+                }
+            }
+
+            return dist + "m";
+        }
+
+        /**
+        * *********************************************************************************
+        * Calculates the distance in meters between two GEO-coordinates (lat/lng).
+        * *********************************************************************************
+        */
+        this.distance = function(lat1,lon1,lat2,lon2) {
+            var R = 6371; // km (change this constant to get miles)
+            var dLat = (lat2-lat1) * Math.PI / 180;
+            var dLon = (lon2-lon1) * Math.PI / 180; 
+            var a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+                Math.cos(lat1 * Math.PI / 180 ) * Math.cos(lat2 * Math.PI / 180 ) * 
+                Math.sin(dLon/2) * Math.sin(dLon/2); 
+            var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)); 
+            var d = R * c;
+            return Math.round(d*1000); // in meters
+        }
+        
+        /**
+        * *********************************************************************************
+        * Adds an event listener with the given type and function.
+        * *********************************************************************************
+        */
+        this.addEventListener = function(type, fn) {
+            eventListener[type][ eventListener[type].length ] = fn;
+        }
+                
+        /**
+        * *********************************************************************************
+        * Calls the event listener functions, to notify the observers.
+        * *********************************************************************************
+        */
+        this.notify = function(type) {
+            var that = this;
+            $.each(eventListener[type], function(){
+                this.call(that, 0);
+            });
+        }
+    };
+
+
+
+
+
+
+
+
     
     $.seamap.options = options;
     $.seamap.sync = sync;
