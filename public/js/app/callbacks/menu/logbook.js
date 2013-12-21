@@ -9,6 +9,8 @@ $(document).ready(function() {
     var active = "#account";
     var waypoint_headingTo_template = Handlebars.compile($("#waypoint_headingTo_option").html());
 
+    var isWaypointModalToBeOpened = false;
+
     /* when we open logbook submenu, we have to visible the footer for the submenu */
     menu.addCallback('leftclick', 'icon-logbook', function (self) {
         $(active+"-footer").removeClass('hidden').addClass('visible'); 
@@ -54,10 +56,12 @@ $(document).ready(function() {
     });
 
     menu.addCallback('rightclick', ['icon-notSelectedTrack', 'icon-selectedTrack'], function (self) {
-        $('#modal-form_track').modal('show');
+        menu.disableAutoClose();
+        $('#modal-form_track').modal('show');        
     });
 
     menu.addCallback('rightclick', ['icon-notSelectedMark', 'icon-selectedMark'], function (self) {
+        menu.disableAutoClose();
         $('#modal-form_marker').modal('show');
     });
 
@@ -65,11 +69,12 @@ $(document).ready(function() {
      * Shows the waypoint modal and closes the parent track modal
      */
     $('#open_waypoint_modal').on('click',
-        function showWaypointModal() {
+        function() {
+            isWaypointModalToBeOpened = true;
             $("#waypoint_headingTo_select").html(waypoint_headingTo_template(
                 [{id:0, label:"-"}, {id:1, label:"Routepoint 1"}, {id:2, label:"Routepoint 2"}, {id:3, label:"Routepoint 3"}]));
             $('#modal-form_track').modal('hide');
-            $('#modal-form_waypoint').modal('show');
+            $('#modal-form_waypoint').modal('show');            
         }
     );
 
@@ -77,4 +82,25 @@ $(document).ready(function() {
      * Launches datepicker needed for the specific form(s)
      */
     $('.datepicker').datepicker();
+
+    $('#modal-form_track').on('hidden.bs.modal',
+        function() {
+            if(!isWaypointModalToBeOpened) {
+                menu.enableAutoClose();
+            }
+        }
+    );
+
+    $('#modal-form_waypoint').on('hidden.bs.modal',
+        function() {
+            isWaypointModalToBeOpened = false;
+            menu.enableAutoClose();
+        }
+    );
+
+    $('#modal-form_marker').on('hidden.bs.modal',
+        function() {
+            menu.enableAutoClose();
+        }
+    );
 });
