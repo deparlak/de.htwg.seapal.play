@@ -36,22 +36,34 @@ $(document).ready(function() {
     });
     
     menu.addCallback('leftclick', 'icon-signInSeapal', function (self) {
+        if(!map.checkTracking()) {
+            return;
+        }
         menu.closeMenu();
         window.location = "/login";
     });
     
     menu.addCallback('leftclick', 'icon-signUpSeapal', function (self) {
+        if(!map.checkTracking()) {
+            return;
+        }
         menu.closeMenu();
         window.location = "/signup";
     });
     
     menu.addCallback('leftclick', 'icon-notSelectedBoat', function (self) {
+        if(!map.checkTracking()) {
+            return;
+        }
         $('.icon-selectedBoat').removeClass('icon-selectedBoat').addClass('icon-notSelectedBoat');
         self.removeClass('icon-notSelectedBoat').addClass('icon-selectedBoat');
         map.selectBoat(self.data('id'));
     });  
 
     menu.addCallback('rightclick', ['icon-notSelectedBoat', 'icon-selectedBoat'], function (self) {
+        if(!map.checkTracking()) {
+            return;
+        }
         menu.disableAutoClose();
         $('#modal-form_boat').modal('show');
     });
@@ -71,11 +83,15 @@ $(document).ready(function() {
      */
     $('#open_waypoint_modal').on('click',
         function() {
+            if(!map.checkTracking()) {
+                $('#modal-form_track').modal('hide');
+                return;
+            }
             isWaypointModalToBeOpened = true;
             $("#waypoint_headingTo_select").html(waypoint_headingTo_template(
                 [{id:0, label:"-"}, {id:1, label:"Routepoint 1"}, {id:2, label:"Routepoint 2"}, {id:3, label:"Routepoint 3"}]));
             $('#modal-form_track').modal('hide');
-            $('#modal-form_waypoint').modal('show');            
+            $('#modal-form_waypoint').modal('show');
         }
     );
 

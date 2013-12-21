@@ -249,6 +249,14 @@
         this.removeTrack = function (id) {
             console.log("TODO: remove track");
         };
+        /* Checks if the tracking is enabled and displays a message when it is */
+        this.checkTracking = function() {
+            if(isTracking) {
+                callbacks[events.TRACKING_ACTIVE].fire("This option is disabled because you are currently tracking!");
+                return false;
+            }
+            return true;
+        }
         /* hide the mark by id */
         this.hideMark = function (id) {
             marks[id].onMap.setVisible(false);

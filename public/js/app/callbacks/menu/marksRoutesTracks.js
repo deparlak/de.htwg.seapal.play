@@ -104,6 +104,9 @@ $(document).ready(function() {
 
     /* handle leftclick events on a route */ 
     menu.addCallback('leftclick', ['icon-selectedRoute', 'icon-notSelectedRoute'], function (self) {
+        if(!map.checkTracking()) {
+            return;
+        }
         if (state == states.normal && self.hasClass('icon-selectedRoute')) {
             self.removeClass('icon-selectedRoute').addClass('icon-notSelectedRoute');
             map.hideRoute(self.data('id'));
@@ -120,6 +123,9 @@ $(document).ready(function() {
 
     /* handle leftclick events on a track */ 
     menu.addCallback('leftclick', ['icon-selectedTrack', 'icon-notSelectedTrack'], function (self) {
+        if(!map.checkTracking()) {
+            return;
+        }
         if (state == states.normal && self.hasClass('icon-selectedTrack')) {
             self.removeClass('icon-selectedTrack').addClass('icon-notSelectedTrack');
             map.hideTrack(self.data('id'));
