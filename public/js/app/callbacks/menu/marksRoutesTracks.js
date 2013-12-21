@@ -117,16 +117,16 @@ $(document).ready(function() {
             selectToRemove(self);
         }
     });
-    
-    /* handle leftclick events on a track */
-    menu.addCallback('leftclick', ['icon-selectedTrack', 'icon-notSelectedTrack'], function (self) {   
-        if (state == states.normal && self.hasClass('icon-notSelectedTrack')) {
-            $('.icon-selectedTrack').removeClass('icon-SelectedTrack').addClass('icon-notSelectedTrack');
-            self.removeClass('icon-notSelectedTrack').addClass('icon-selectedTrack');
-            map.visibleTrack(self.data('id'));
-        } else if (state == states.normal && self.hasClass('icon-selectedTrack')) {
+
+    /* handle leftclick events on a track */ 
+    menu.addCallback('leftclick', ['icon-selectedTrack', 'icon-notSelectedTrack'], function (self) {
+        if (state == states.normal && self.hasClass('icon-selectedTrack')) {
             self.removeClass('icon-selectedTrack').addClass('icon-notSelectedTrack');
             map.hideTrack(self.data('id'));
+        } else if (state == states.normal && self.hasClass('icon-notSelectedTrack')) {
+            $('.icon-selectedTrack').removeClass('icon-selectedTrack').addClass('icon-notSelectedTrack');
+            self.removeClass('icon-notSelectedTrack').addClass('icon-selectedTrack');
+            map.visibleTrack(self.data('id'));
         } else if (state == states.edit) {
             console.log("TODO edit track");
         } else if (state == states.remove) {
