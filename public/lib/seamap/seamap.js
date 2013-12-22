@@ -1612,7 +1612,7 @@
     $.seamap.route = function(newrouteid, newgooglemaps, type){
         this.id = newrouteid;
         this.googlemaps = newgooglemaps;
-        this.color = $.seamap.options.strokeColors[this.id % ($.seamap.options.strokeColors.length-1)];
+        this.color = $.seamap.options.strokeColors[2];
         
         this.path = null;
         this.markers = [];
@@ -1872,7 +1872,7 @@
     $.seamap.track = function(newtrackid, newgooglemaps, type){
         this.id = newtrackid;
         this.googlemaps = newgooglemaps;
-        this.color = $.seamap.options.strokeColors[this.id % ($.seamap.options.strokeColors.length-1)];
+        this.color = $.seamap.options.strokeColors[3];
         
         this.path = null;
         this.markers = [];
