@@ -33,6 +33,8 @@ public abstract class SeapalBaseTestModule extends AbstractModule {
 		bind(IWaypointController.class).to(WaypointController.class).in(Singleton.class);
         bind(IRaceController.class).to(RaceController.class).in(Singleton.class);
         bind(IMarkController.class).to(MarkController.class).in(Singleton.class);
+        bind(IPersonController.class).to(PersonController.class).in(Singleton.class);
+        bind(IRouteController.class).to(RouteController.class).in(Singleton.class);
     }
 
 	@Provides
