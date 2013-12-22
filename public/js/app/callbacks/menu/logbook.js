@@ -50,6 +50,14 @@ $(document).ready(function() {
         menu.closeMenu();
         window.location = "/signup";
     });
+
+    menu.addCallback('leftclick', 'icon-signOut', function (self) {
+        if(!map.checkTracking()) {
+            return;
+        }
+        menu.closeMenu();
+        window.location = "/logout";
+    });
     
     menu.addCallback('leftclick', 'icon-notSelectedBoat', function (self) {
         if(!map.checkTracking()) {
