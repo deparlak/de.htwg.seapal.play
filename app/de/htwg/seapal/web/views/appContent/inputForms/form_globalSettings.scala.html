@@ -1,0 +1,59 @@
+<!-- Modal -->
+<div class="modal fade" id="modal-form_globalSettings" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="false">
+	<div class="inputForm-modal inputForm_GlobalSettings-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title">Settings</h4>
+            </div>
+            <div class="inputForm-content">
+            	<form class="form_global form_globalSettings">
+                    <div class="row">
+                        <div class="centered col-12 col-sm-8">
+                            <label for="distanceUnit">Unit for distance</label>
+                        </div>
+                        <div class="col-12 col-sm-4">
+                            <input type="text" name="distanceUnit" tabindex="1" required />
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="centered col-12 col-sm-8">
+                            <label for="temperatureUnit">Unit for temperature</label>
+                        </div>
+                        <div class="col-12 col-sm-4">
+                            <input type="text" name="temperatureUnit" tabindex="2" required />
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="centered col-12 col-sm-8">
+                            <label for="trackInteral">Track record interval</label>
+                        </div>
+                        <div class="col-12 col-sm-4">
+                            <input type="text" name="trackInteral" tabindex="3" required />
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="centered col-12 col-sm-8">
+                            <label for="historyTrend">History trend for dashboard</label>
+                        </div>
+                        <div class="col-12 col-sm-4">
+                            <input type="text" name="historyTrend" tabindex="4" required />
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="centered col-12 col-sm-8">
+                            <label for="circleRadius">Security circle radius</label>
+                        </div>
+                        <div class="col-12 col-sm-4">
+                            <input type="text" name="circleRadius" tabindex="5" required />
+                        </div>
+                    </div>
+					<div class="inputForm-footer">
+						<button type="button" class="btn btn-primary" data-dismiss="modal" id="globalSettingsSave">Save</button>
+						<button type="button" class="btn btn-danger" data-dismiss="modal">Abort</button>
+					</div>
+        		</form>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->

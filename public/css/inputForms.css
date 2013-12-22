@@ -21,6 +21,11 @@
     max-width: 800px;
 }
 
+.inputForm_GlobalSettings-modal
+{
+    max-width: 400px;
+}
+
 .inputForm_Waypoint-modal
 {
     max-width: 800px;
@@ -84,6 +89,11 @@
     resize: none;
 }
 
+.form_globalSettings
+{
+
+}
+
 .no_padding
 {
     padding-left: 0px !important;
@@ -99,4 +109,10 @@
 .coords_row
 {
     width: 50px !important;
+}
+
+.centered
+{
+    text-align: left;
+    padding-right: 0px;
 }

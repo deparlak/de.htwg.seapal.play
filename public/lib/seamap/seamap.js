@@ -302,9 +302,16 @@
 
         /* THe global settings object */
         var globalSettings = {
-            TRACKING_DELAY : 5000,
-            CIRCLE_RADIUS  : 250
+            DISTANCE_UNIT       : "Naut-miles",
+            TEMPERATURE_UNIT    : "°C",
+            TRACKING_DELAY      : 5000,
+            HISTORY_TREND       : 1,
+            CIRCLE_RADIUS       : 250
+
         };
+
+        var distanceUnits = ["Miles", "Kilometer", "Naut-miles"];
+        var temperatureUnits = ["°C", "°F", "°K"];
         
         /* The callbacks list can be used to get notified about events. */
         var callbacks = {};
@@ -1265,16 +1272,6 @@
             var newmarker = activeTrack.onMap.addMarker(latLng);
             activeTrack.onMap.drawPath();
         }
-
-
-
-
-
-
-
-
-
-
         
         /**
         * *********************************************************************************
@@ -1857,13 +1854,6 @@
         }
     };
 
-
-
-
-
-
-
-
     /**
     * *************************************************************************************
     * The track object class 
@@ -2078,14 +2068,6 @@
             });
         }
     };
-
-
-
-
-
-
-
-
     
     $.seamap.options = options;
     $.seamap.sync = sync;
