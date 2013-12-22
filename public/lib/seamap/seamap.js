@@ -297,6 +297,14 @@
             }
         }
 
+        this.getGlobalSettings = function() {
+            return globalSettings;
+        }
+
+        this.setGlobalSettings = function(settings) {
+            globalSettings = settings;
+        }
+
         /* The security circle on the map */
         var activeSecurityCircle = null;
 

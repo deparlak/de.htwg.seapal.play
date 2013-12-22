@@ -44,10 +44,6 @@ $(document).ready(function() {
         self.removeClass('icon-satellite').addClass('icon-map');
         map.roadmap();
     });
-
-    menu.addCallback('leftclick', 'icon-settings', function (self) {
-        $('#modal-form_globalSettings').modal('show');
-    });
     
     menu.addCallback('leftclick', 'icon-info', function (self) {
         output.info("Seapal is developed in a cooperation between IBN Verlag and the University of Applied Science Konstanz (HTWG).<br/>Further information and a user guide are available at seapal.info.<br/>For new, follow Seapal at Google+.<br/>Please support our project and rate Seapal in the App Store<br/>The weather layer is provided by openportguide.org");
@@ -57,8 +53,28 @@ $(document).ready(function() {
         output.info("Add-ons are not supported in the web app. With Add-ons you can download for example offline maps to use the app without an internet connection.");
     });
 
-    $('#globalSettingsSave').on('click', function() {
-        console.log("CLICKED");
+    menu.addCallback('leftclick', 'icon-settings', function (self) {
+        var settings = map.getGlobalSettings();
+        var template = Handlebars.compile($("#globalSettings_Template").text());
+        var html = template(settings);
+
+        $('#globalSettingsInputForm').html(html);
+        $('#modal-form_globalSettings').modal('show');
+
+        $('#globalSettingsSave').on('click', function() {
+            var boundData = Handlebars.getBoundData(settings);
+            map.setGlobalSettings(boundData);            
+        });
+    });
+            
+    Handlebars.registerHelper("bindData", function(key) {
+        return "id=handlebar-id-" + key;
     });
 
+    Handlebars.getBoundData = function(obj) {
+        for ( property in obj ) {
+            obj[property] = $('#handlebar-id-'+property).val();
+        }
+        return obj;
+    };
 });
