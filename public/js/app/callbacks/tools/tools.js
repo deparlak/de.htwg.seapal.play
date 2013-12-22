@@ -49,8 +49,7 @@ $(document).ready(function() {
     });  
     
     tools.addCallback('leftclick', 'icon-SecurityCircle', function (self) {
-        
-        console.log('icon-SecurityCircle');
+        map.toggleSecurityCircle();
     });  
     
     tools.addCallback('leftclick', 'icon-NorthUp', function (self) {

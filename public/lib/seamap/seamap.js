@@ -287,7 +287,24 @@
         this.selectBoat = function(id) {
             console.log("Selected boat "+id);
         };
-        
+
+        /* Toggles the security circle */
+        this.toggleSecurityCircle = function() {            
+            if (activeSecurityCircle == null) {
+                showSecurityCircle();
+            } else {
+                hideSecurityCircle();
+            }
+        }
+
+        /* The security circle on the map */
+        var activeSecurityCircle = null;
+
+        /* THe global settings object */
+        var globalSettings = {
+            TRACKING_DELAY : 5000,
+            CIRCLE_RADIUS  : 250
+        };
         
         /* The callbacks list can be used to get notified about events. */
         var callbacks = {};
@@ -346,9 +363,6 @@
 
         // The tracking route generated from the activeRoute 
         var generatedTrackingRoute = null;
-
-        // The delay when tracking points are set 
-        var TRACKING_DELAY = 5000;
 
         // Checks whether the position simulation is active (when user denies geolocation) 
         var isSimulating = false;
@@ -427,6 +441,35 @@
             }
         }
         init();
+
+        /**
+        * *********************************************************************************
+        * Displays/Hides the security circle
+        * *********************************************************************************
+        */
+        function showSecurityCircle() {
+            createSecurityCircle();            
+        }
+        /* Hides the security circle */
+        function hideSecurityCircle() {
+            activeSecurityCircle.setMap(null);
+            activeSecurityCircle = null;            
+        }
+        /* Creates the security circle */
+        function createSecurityCircle() {            
+            var circleOptions = {
+                strokeColor: '#FF0000',
+                strokeOpacity: 0.8,
+                strokeWeight: 2,
+                fillColor: '#FF0000',
+                fillOpacity: 0.35,
+                map: map,
+                center: currentPosition,
+                radius: globalSettings.CIRCLE_RADIUS
+            };
+
+            activeSecurityCircle = new google.maps.Circle(circleOptions);
+        }
         
         /**
         * *********************************************************************************
@@ -739,7 +782,7 @@
             if(!isTracking) { 
                 return;
             }
-            setTimeout(function(){handleTracking();}, TRACKING_DELAY);
+            setTimeout(function(){handleTracking();}, globalSettings.TRACKING_DELAY);
 
             addTrackMarker(currentPosition);
         }
