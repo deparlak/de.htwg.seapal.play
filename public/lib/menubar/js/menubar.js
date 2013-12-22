@@ -24,13 +24,23 @@
         this.callbacks = {};
         this.callbacks.leftclick = {};
         this.callbacks.rightclick = {};
+        this.onMenuCallbacks = {'open' : $.Callbacks(), 'close' : $.Callbacks()};
         this.el = document.getElementById( id );
         this.prefix = id;
+        /* autoclose will close the menubar, if the user clicks on an area out of the menubar */
+        this.autoclose = true;
         this._init();
         menus.push(this);
     }
 
     menubar.prototype = {
+        /* method to add a a method to a special callback, like open, close the menubar */
+        on : function (event, method) {
+            if(undefined === this.onMenuCallbacks[event]) {
+                throw("Cannot add callback, because event '"+event+"' does not exist.");  
+            }
+            this.onMenuCallbacks[event].add(method);
+        },
         /* method will be added to callbacks list.
            All methods which are stored in a callback list, will be
            called if an hmtl object will be triggered which owns the
@@ -72,8 +82,10 @@
 
             var self = this;
             this.bodyClickFn = function() {
-                self.closeMenu();
-                this.removeEventListener( self.eventtype, self.bodyClickFn );
+                if (self.autoclose) {
+                    self.closeMenu();
+                    this.removeEventListener( self.eventtype, self.bodyClickFn );
+                }
             };
             /* add the built in calback for a 'link' marked element. Links can be used for multiple menu's */
             this.addCallback('leftclick', 'link', function (elem) {
@@ -88,8 +100,13 @@
                 event.stopPropagation();
                 event.preventDefault();
                 var classList = $(this).attr('class').split(/\s+/);
+                
+                /* there is no action or link to execute */
+                if (-1 == classList.indexOf('action') && -1 == classList.indexOf('link')) {
+                    return;
+                }
 
-                //left mouse button
+                /* check which mouse button was clicked. */
                 if (1 == event.which) {
                     var action = 'leftclick';
                 }
@@ -108,6 +125,7 @@
             /* a element of the menu was clicked. Check if any callback has to be fired */
             $("#"+self.prefix+" > nav > div > ul > li").on( 'mousedown', 'a',  action);
             $("#"+self.prefix+" > nav > div > ul > li > div").on( 'mousedown', 'label',  action);
+            $("#"+self.prefix+" > nav > div").on( 'mousedown', 'label',  action);
             $("#"+self.prefix+" > nav > div > ul > div").on( 'mousedown', 'li > a',  action);
 
             if( !mobilecheck() ) {
@@ -157,6 +175,7 @@
             this.isMenuOpen = true;
             classie.add( this.menu, 'menubar-open-all' );
             this.closeIconMenu();
+            this.onMenuCallbacks['open'].fire();
         },
         closeMenu : function() {
             if( !this.isMenuOpen ) return;
@@ -166,6 +185,13 @@
             this.isMenuOpen = false;
             classie.remove( this.menu, 'menubar-open-all' );
             this.closeIconMenu();
+            this.onMenuCallbacks['close'].fire();
+        },
+        enableAutoClose : function() {
+            this.autoclose = true;
+        },
+        disableAutoClose : function() {
+            this.autoclose = false;
         }
     }
 

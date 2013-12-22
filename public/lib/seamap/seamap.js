@@ -46,11 +46,50 @@
                     new google.maps.Size(42, 42),
                     new google.maps.Point(0,0),
                     new google.maps.Point(21, 36))
+            },
+            tmpMarkerOptions : {
+                image : new google.maps.MarkerImage(
+                    "/assets/images/pin_marker.png",
+                    new google.maps.Size(42, 42),
+                    new google.maps.Point(0,0),
+                    new google.maps.Point(21, 36))
+            }
+        },
+
+        // Default options for the marker
+        personOverboardOptions : {
+            polyOptions : {
+                strokeColor: '#000000',
+                strokeOpacity: 0.5,
+                strokeWeight: 3
+            },
+            markerOptions : {
+                image : new google.maps.MarkerImage(
+                    "/assets/images/manoverboard.png",
+                    new google.maps.Size(42, 42),
+                    new google.maps.Point(0,0),
+                    new google.maps.Point(21, 21))
             }
         },
         
         // Default options for the routing tool
         routeOptions : {
+            polyOptions : {
+                strokeColor: '#000000',
+                strokeOpacity: 0.5,
+                strokeWeight: 3
+            },
+            markerOptions : {
+                image : new google.maps.MarkerImage(
+                    "/assets/images/circle.png",
+                    new google.maps.Size(20, 20),
+                    new google.maps.Point(0,0),
+                    new google.maps.Point(10, 10))
+            }
+        },
+
+        // Default options for the tracking tool
+        trackOptions : {
             polyOptions : {
                 strokeColor: '#000000',
                 strokeOpacity: 0.5,
@@ -162,13 +201,16 @@
         this.getGoogleMapsHandle = function () {
             return map;
         };
-        
+        /* get the actual boat position*/
+        this.getCurrentBoatInformation = function () {
+            return getCurrentBoatInformation();
+        };
         /* get the events list */
         this.getEvents = function () {
             return jQuery.extend(true, {}, events);
         };
         /* set new route */
-        this.setRoute = function () {
+        this.setRoute = function () {            
             handleAddNewRoute();
         };
         /* set new mark */
@@ -178,10 +220,10 @@
         };
         this.setImageMark = function(image) {
             addImageMark(image);
-        }
-        /* delete a mark with a specified id */
-        this.deleteMark = function (id) {
-        
+        };
+        /* set a temporary mark */
+        this.setTemporaryMark = function(position) {
+            handleSetTemporaryMark(position);
         };
         /* hide the route by id */
         this.hideRoute = function (id) {
@@ -191,6 +233,30 @@
         this.visibleRoute = function (id) {
             activateRoute(routes[id]);
         };
+        /* remove a route with a specified id */
+        this.removeRoute = function (id) {
+            console.log("TODO: remove route");
+        };
+        /* hide the track by id */
+        this.hideTrack = function (id) {
+            hideActiveTrack();
+        };
+        /* visible the track by id */
+        this.visibleTrack = function (id) {
+            activateTrack(tracks[id]);
+        };
+        /* remove a track with a specified id */
+        this.removeTrack = function (id) {
+            console.log("TODO: remove track");
+        };
+        /* Checks if the tracking is enabled and displays a message when it is */
+        this.checkTracking = function() {
+            if(isTracking) {
+                callbacks[events.TRACKING_ACTIVE].fire("This option is disabled because you are currently tracking!");
+                return false;
+            }
+            return true;
+        }
         /* hide the mark by id */
         this.hideMark = function (id) {
             marks[id].onMap.setVisible(false);
@@ -198,6 +264,10 @@
         /* visible the mark by id */
         this.visibleMark = function (id) {
             marks[id].onMap.setVisible(true);
+        };
+        /* remove a mark with a specified id */
+        this.removeMark = function (id) {
+            console.log("TODO: remove mark");
         };
         /* get distance */
         this.getDistance = function () {
@@ -217,7 +287,24 @@
         this.selectBoat = function(id) {
             console.log("Selected boat "+id);
         };
-        
+
+        /* Toggles the security circle */
+        this.toggleSecurityCircle = function() {            
+            if (activeSecurityCircle == null) {
+                showSecurityCircle();
+            } else {
+                hideSecurityCircle();
+            }
+        }
+
+        /* The security circle on the map */
+        var activeSecurityCircle = null;
+
+        /* THe global settings object */
+        var globalSettings = {
+            TRACKING_DELAY : 5000,
+            CIRCLE_RADIUS  : 250
+        };
         
         /* The callbacks list can be used to get notified about events. */
         var callbacks = {};
@@ -231,7 +318,9 @@
             ADDED_MARK      :  "AddedMark",
             DELETED_MARK    :  "DeletedMark",
             NO_GEO_SUPPORT  :  "GeolocationNotSupported",
-            BOAT_POS_UPDATE :  "Boat position uodated"
+            BOAT_POS_UPDATE :  "Boat position uodated",
+            CREATED_TRACK   :  "CreatedTrack",
+            TRACKING_ACTIVE :  "Tracking is active"
         };
         
         var options = $.seamap.options;
@@ -242,7 +331,8 @@
             "NORMAL"   : 0, 
             "ROUTE"    : 1, 
             "DISTANCE" : 2,
-            "MARKER"   : 3
+            "MARKER"   : 3,
+            "TRACK"    : 4
         },
         // The context menu types
         ContextMenuTypes = {
@@ -251,8 +341,9 @@
         };
 
         /* Array pointer at the default route */
-        var defaultRoutePointer = 0;
+        var fakeRoutePointer = 0;
 
+        /* The default route the boat would follow when geolocation API is forbidden by user */
         var defaultRoute = [
             [47.662862243806494, 9.206426935195955],
             [47.66290559848635, 9.204967813491853],
@@ -270,6 +361,14 @@
             [47.662782760137446, 9.205708103179964]
         ];
 
+        // The tracking route generated from the activeRoute 
+        var generatedTrackingRoute = null;
+
+        // Checks whether the position simulation is active (when user denies geolocation) 
+        var isSimulating = false;
+
+        // Checks if the app is currently tracking
+        var isTracking = false;
 
         // Factor to calc kmh to knots
         var KMH_TO_KNOTS = 0.539;
@@ -298,6 +397,14 @@
         // boat marker
         var boatMarker = null;
         
+        // The id of the manoverboard marker
+        var manoverboardMark = null;
+
+        // tracks
+        var tracks = {};
+        var trackCounter = 1;
+        var activeTrack = null;
+
         // routes
         var routes = {};
         var routeCounter = 1;
@@ -310,6 +417,9 @@
         var marks = {};
         var marksCount = 1;
         var selectedMark = null;
+        
+        //temporary marker
+        var temporaryMarker = null;
         
         // editing states
         var state = States.NORMAL;
@@ -331,6 +441,35 @@
             }
         }
         init();
+
+        /**
+        * *********************************************************************************
+        * Displays/Hides the security circle
+        * *********************************************************************************
+        */
+        function showSecurityCircle() {
+            createSecurityCircle();            
+        }
+        /* Hides the security circle */
+        function hideSecurityCircle() {
+            activeSecurityCircle.setMap(null);
+            activeSecurityCircle = null;            
+        }
+        /* Creates the security circle */
+        function createSecurityCircle() {            
+            var circleOptions = {
+                strokeColor: '#FF0000',
+                strokeOpacity: 0.8,
+                strokeWeight: 2,
+                fillColor: '#FF0000',
+                fillOpacity: 0.35,
+                map: map,
+                center: currentPosition,
+                radius: globalSettings.CIRCLE_RADIUS
+            };
+
+            activeSecurityCircle = new google.maps.Circle(circleOptions);
+        }
         
         /**
         * *********************************************************************************
@@ -505,6 +644,7 @@
          */
         function get_location() {
             if (Modernizr.geolocation) {
+                isSimulating = false;
                 navigator.geolocation.getCurrentPosition(handleBoatPosition, error_handling);
             } else {
                 if(!noGeo_flag) {
@@ -518,8 +658,9 @@
          * Error handling if user denies access to the geolocation data
          */
         function error_handling(errNo) {
+            isSimulating = true;
             if(errNo.code == 1) {
-                handleFakeBoatPositionUpdate(defaultRoute);   
+                handleFakeBoatPositionUpdate();   
             }
         }
 
@@ -533,24 +674,66 @@
             currentSpeed = position.coords.speed;
             currentCourse = position.coords.heading;
             handleBoatPositionUpdate(currentPosition);
-            console.log(position);
         }
         /**
          * Handles the boat position with fake/generated geolocation data
          */
-        function handleFakeBoatPositionUpdate(route) {
-            if(defaultRoutePointer >= route.length) {
-                defaultRoutePointer = 0;
+        function handleFakeBoatPositionUpdate() {
+            if(isTracking && activeRoute != null) {
+                fakeTrackingRoutePositionUpdate(generatedTrackingRoute);
+            } else {
+                fakeTrackingRoutePositionUpdate(defaultRoute);
             }
-            currentPosition = new google.maps.LatLng(route[defaultRoutePointer][0],
-                                                     route[defaultRoutePointer][1]);
+        }
+        /**
+         * Handles the boat position with fake/generated geolocation data
+         */
+        function generateFakeTrackingRoute(route) {            
+            var len = 5;
+            var result = new Array();
+            var tmp = new Array();
+            var j = 0;            
+            for (var i = 1; i <= route.onMap.markers.length; i++) {
+                tmp[0] = route.onMap.markers[i - 1].position.nb;
+                tmp[1] = route.onMap.markers[i - 1].position.ob;
+                result[j] = tmp;
+                tmp = new Array();
+                j++;
+
+                if (i == route.onMap.markers.length) {
+                    generatedTrackingRoute = result;
+                    return;
+                }
+                var lngKoeff = (route.onMap.markers[i].position.nb - route.onMap.markers[i - 1].position.nb) / len;
+                var latKoeff = (route.onMap.markers[i].position.ob - route.onMap.markers[i - 1].position.ob) / len;
+
+                for (var k = 1; k < len; k++) {
+                    tmp[0] = route.onMap.markers[i - 1].position.nb + (k * lngKoeff);
+                    tmp[1] = route.onMap.markers[i - 1].position.ob + (k * latKoeff);
+                    result[j] = tmp;
+                    tmp = new Array();
+                    j++;
+                };
+            };            
+        }
+        /**
+         * Handles the boat position tracking a route with fake/generated geolocation data
+         */
+        function fakeTrackingRoutePositionUpdate(routeArray) {
+            if(fakeRoutePointer >= routeArray.length) {
+                fakeRoutePointer = 0;
+            }
+
+            currentPosition = new google.maps.LatLng(routeArray[fakeRoutePointer][0],
+                                                     routeArray[fakeRoutePointer][1]);
             
             currentSpeed = (Math.random() * 15);
             currentCourse = Math.floor(Math.random() * 360);
             
-            defaultRoutePointer++;
+            fakeRoutePointer++;
             handleBoatPositionUpdate(currentPosition);
         }
+
         /**
          * Updates the boat icon on the map 
          */
@@ -569,6 +752,75 @@
             }
         }
         
+        /**
+        * *********************************************************************************
+        * Handles the tracking (simulated or real)
+        * *********************************************************************************
+        */
+        this.startTracking = function() {
+            if(activeRoute == null) {
+                return false;
+            }
+
+            if(isSimulating) {
+                fakeRoutePointer = 0;
+                generateFakeTrackingRoute(activeRoute);
+            }
+
+            isTracking = true;
+            handleAddNewTrack();
+            handleTracking();
+            return true;
+        }
+        /* stops the tracking */
+        this.stopTracking = function() {
+            handleExitTrackCreation();
+            isTracking = false;
+        }
+        /* Handles the tracking itself */
+        function handleTracking() {
+            if(!isTracking) { 
+                return;
+            }
+            setTimeout(function(){handleTracking();}, globalSettings.TRACKING_DELAY);
+
+            addTrackMarker(currentPosition);
+        }
+        /**
+        * *********************************************************************************
+        * Handles the person overboard
+        * *********************************************************************************
+        */
+        this.togglePersonOverboard = function() {
+            if(manoverboardMark == null) {
+                addManOverboardMark();
+            } else {
+                removeManOverboardMark();
+            }
+        }
+        /* Adds the person overboard mark */
+        function addManOverboardMark() {
+            var mark = {}
+            var position = currentPosition;
+            mark.id = "POB";
+            mark.label = "Person overboard";
+            mark.detailed = "created on blabla..";
+            mark.onMap = new google.maps.Marker({
+                map: map,
+                position: position,
+                icon: options.personOverboardOptions.markerOptions.image,
+                draggable: false
+            });
+            manoverboardMark = mark;
+        }
+        /* Removes the person overboard mark */
+        function removeManOverboardMark() {
+            selectedMark = manoverboardMark;
+            deleteSelectedMark();
+            selectedMark = null;
+            manoverboardMark = null;
+        }
+
         /**
         * *********************************************************************************
         * Hides the crosshair marker.
@@ -768,6 +1020,11 @@
         * *********************************************************************************
         */
         function handleAddNewRoute() {
+            if(isTracking) {
+                callbacks[events.TRACKING_ACTIVE].fire("This options is disabled because tracking is active!");
+                return;
+            }
+            
             hideContextMenu();
             hideCrosshairMarker();
 
@@ -903,6 +1160,121 @@
             var newmarker = activeRoute.onMap.addMarker(latLng);
             activeRoute.onMap.drawPath();
         }
+
+
+        /**
+        * *********************************************************************************
+        * Handles the creation of a new route, activates it and bind the mouse-events.
+        * Also hides the context menu and the marker.
+        * *********************************************************************************
+        */
+        function handleAddNewTrack() {
+            var track = {}
+            track.id = trackCounter.toString();
+            track.label = "Track " + trackCounter;
+            track.detailed = "created on blabla..";
+            track.onMap = new $.seamap.track(track.id, map, "TRACK");
+            track.updated = true;
+
+            tracks[track.id] = track;        
+  
+            activateTrack(track); 
+            
+            trackCounter++;
+            callbacks[events.CREATED_TRACK].fire([track]);
+        }
+                
+        /**
+        * *********************************************************************************
+        * Activates the route, so that it is also visible in the sidebar.
+        * *********************************************************************************
+        */
+        function activateTrack(track) {
+            hideActiveTrack();
+            /* important that state will be set here, because hideActiveRoute() will set the state to NORMAL */
+            state = States.TRACK;
+            activeTrack = track;
+            activeTrack.onMap.visible();
+        }
+        /**
+        * *********************************************************************************
+        * Hide the active route
+        * *********************************************************************************
+        */ 
+        function hideActiveTrack() {
+            if (activeTrack != null) {
+                uploadTrackUpdate();
+                state = States.NORMAL;
+                activeTrack.onMap.hide();
+                activeTrack = null;
+            }
+        }
+        /**
+        * *********************************************************************************
+        * Delete the active route
+        * *********************************************************************************
+        */ 
+        function deleteActiveTrack(){
+            if (activeTrack != null) {
+                uploadTrackDeletion();
+                state = States.NORMAL;
+                activeTrack.onMap.hide();
+                delete routes[activeTrack.id];
+                activeTrack = null;
+            }
+        }
+        
+        /**
+        * *********************************************************************************
+        * Handles the quit of the route creation.
+        * Also closes the context menu, sidebar the hides the crosshair.
+        * *********************************************************************************
+        */
+        function handleExitTrackCreation() {
+            uploadTrackUpdate();
+            state = States.NORMAL;
+        }
+
+        /**
+        * *********************************************************************************
+        * Check if the active route has some changes which should be uploaded.
+        * *********************************************************************************
+        */
+        function uploadTrackUpdate() {
+            if (activeTrack != null && activeTrack.updated) {
+                sync.uploadTrack(activeTrack);
+                activeTrack.updated = false;
+            }         
+        }
+        
+        /**
+        * *********************************************************************************
+        * Check if the active route has ever been uploaded and so has to be deleted on the server.
+        * *********************************************************************************
+        */
+        function uploadTrackDeletion() {
+            sync.uploadTrack("delete");      
+        } 
+        
+        /**
+        * *********************************************************************************
+        * Adds a new route marker to the active route.
+        * *********************************************************************************
+        */
+        function addTrackMarker(latLng) {            
+            var newmarker = activeTrack.onMap.addMarker(latLng);
+            activeTrack.onMap.drawPath();
+        }
+
+
+
+
+
+
+
+
+
+
         
         /**
         * *********************************************************************************
@@ -948,6 +1320,24 @@
 
             destpath.setMap(map);
             destpath.setPath([boatMarker.getPosition(), crosshairMarker.getPosition()]);
+        }
+        
+        /**
+        * *********************************************************************************
+        * set a temporary marker to the screen, which will be overwritten if the method will be called again.
+        * *********************************************************************************
+        */
+        function handleSetTemporaryMark(position) {
+            if (null != temporaryMarker) {
+                temporaryMarker.setMap(null); 
+            }
+            temporaryMarker = new google.maps.Marker({
+                map: map,
+                position: position,
+                icon: options.defaultOptions.tmpMarkerOptions.image,
+                draggable: false
+            });
+            map.setCenter(position);
         }
         
         /**
@@ -1065,8 +1455,10 @@
         function getCurrentBoatInformation() {
             var obj = {};
             obj.speed = currentSpeed != null ? kmhToKn(currentSpeed) : "-";
-            obj.course = currentCourse != null ? currentCourse : "-";
+            obj.course = currentCourse != null ? currentCourse.toFixed(2) : "-";
             obj.pos = currentPosition;
+            obj.latStr = toLatLngString(obj.pos.nb, "lat");
+            obj.lngStr = toLatLngString(obj.pos.ob, "lng");
             obj.html = "COG " + obj.course + "° SOG " + obj.speed + "kn <br/>" + getCurrentCoordinatesAsString();
             return obj;
         }
@@ -1083,7 +1475,7 @@
         /* Gets the current coordinates in a human readable format array for use in the specific forms */
         function toLatLngArray(dms, type) {
             var sign = 1, Abs=0;
-            var days, minutes, secounds, direction;
+            var days, minutes, direction;
             var result = new Array();
 
             if(dms < 0) {
@@ -1092,8 +1484,7 @@
 
             Abs = Math.abs( Math.round(dms * 1000000.));
             days = Math.floor(Abs / 1000000);
-            minutes = Math.floor(((Abs/1000000) - days) * 60);
-            secounds = ( Math.floor((( ((Abs/1000000) - days) * 60) - minutes) * 100000) *60/100000 ).toFixed();
+            minutes = (((Abs/1000000) - days) * 60).toFixed(2);
             days = days * sign;
 
             if(type == 'lat') {
@@ -1106,15 +1497,28 @@
 
             result[0] = (days * sign);
             result[1] = minutes;
-            result[2] = secounds;
-            result[3] = direction;
+            result[2] = direction;
             
             return result;
         }
         /* Gets the current coordinates in a human readable format in a complete string*/
         function toLatLngString(dms, type) {
             var tmp = toLatLngArray(dms, type);
-            return tmp[0] + '° ' + tmp[1] + "' " + tmp[2] + "'' " + tmp[3];
+            var deg = tmp[0].toString();
+
+            if(type == 'lat') {
+                if(deg.length == 1) {
+                    deg = "0" + deg;
+                }
+            } else if(type == 'lng') {
+                if(deg.length == 1) {
+                    deg = "00" + deg;
+                } else if(deg.length == 2) {
+                    deg = "0" + deg;
+                }
+            }
+
+            return deg + '°' + tmp[1] +"' " + tmp[2];
         }
 
         /**
@@ -1208,7 +1612,7 @@
     $.seamap.route = function(newrouteid, newgooglemaps, type){
         this.id = newrouteid;
         this.googlemaps = newgooglemaps;
-        this.color = $.seamap.options.strokeColors[this.id % ($.seamap.options.strokeColors.length-1)];
+        this.color = $.seamap.options.strokeColors[2];
         
         this.path = null;
         this.markers = [];
@@ -1452,6 +1856,236 @@
             });
         }
     };
+
+
+
+
+
+
+
+
+    /**
+    * *************************************************************************************
+    * The track object class 
+    * *************************************************************************************
+    */
+    $.seamap.track = function(newtrackid, newgooglemaps, type){
+        this.id = newtrackid;
+        this.googlemaps = newgooglemaps;
+        this.color = $.seamap.options.strokeColors[3];
+        
+        this.path = null;
+        this.markers = [];
+        this.label = null;
+        this.notinteractive = false;
+        
+        // internal data
+        var eventListener = {
+            add : [],
+            remove : []
+        };
+        
+        options = $.seamap.options.trackOptions;
+        
+        // edit color
+        options.polyOptions.strokeColor = this.color;
+            
+        this.path = new google.maps.Polyline(options.polyOptions);
+        this.path.setMap(this.googlemaps);
+        
+        /**
+        * *********************************************************************************
+        * hide the track
+        * *********************************************************************************
+        */        
+        this.hide = function () {
+            if(this.label != null) this.label.setMap(null);
+            this.path.setVisible(false);
+            $.each(this.markers, function(){
+                this.setVisible(false);
+            });
+        }
+        /**
+        * *********************************************************************************
+        * visible the track
+        * *********************************************************************************
+        */        
+        this.visible = function () {
+            this.updateLabel();
+            this.path.setVisible(true);
+            $.each(this.markers, function(){
+                this.setVisible(true);
+            });
+        }
+        
+        /**
+        * *********************************************************************************
+        * Adds a new track marker to the given position.
+        * *********************************************************************************
+        */
+        this.addMarker = function(position) {
+            var $this = this;
+
+            // create marker
+            var marker = new google.maps.Marker({
+                map: this.googlemaps,
+                position: position,
+                icon: options.markerOptions.image,
+                shadow: options.markerOptions.shadow,
+                animation: google.maps.Animation.DROP,
+                draggable: false,
+                id: this.markers.length 
+            });
+            this.markers[this.markers.length] = marker;
+            
+            // adds or updates the label
+            if(this.label == null) {
+                this.addLabel();
+            } else {
+                this.updateLabel();
+            }
+            
+            this.notify("add");
+            
+            return marker;
+        }
+
+        /**
+        * *********************************************************************************
+        * Removes a marker from the track.
+        * *********************************************************************************
+        */
+        this.removeMarker = function($marker) {
+            $marker.setMap(null);
+            this.markers = $.grep(this.markers, function(mark) {
+                return mark != $marker;
+            });
+            
+            var i = 0;
+            $.each(this.markers, function(){
+                this.id = i++;
+            });
+            this.drawPath();
+            this.updateLabel();
+            
+            this.notify("remove");
+        }
+        
+        /**
+        * *********************************************************************************
+        * Adds a label to the last marker.
+        * *********************************************************************************
+        */
+        this.addLabel = function() {        
+            this.label = new Label({map: this.googlemaps });
+            this.label.bindTo('position', this.markers[this.markers.length-1], 'position');
+            $(this.label.span_).css({"margin-left":"15px","padding":"7px","box-shadow":"0px 0px 3px #666","z-index":99999,"color":this.color});
+            this.label.set('text', this.getTotalDistanceText());
+        }
+        
+        /**
+        * *********************************************************************************
+        * Updates the the label (removes the old and adds a new one).
+        * *********************************************************************************
+        */
+        this.updateLabel = function() {
+            if(this.label != null) this.label.setMap(null);
+            if(this.markers.length != 0) this.addLabel();
+        }
+        
+        /**
+        * *********************************************************************************
+        * Removes a whole track from the map (with its paths, labels and markers).
+        * *********************************************************************************
+        */
+        this.removeFromMap = function() {
+            this.path.setMap(null);
+            this.label.setMap(null);
+            $.each(this.markers, function() {
+                this.setMap(null);
+            });
+        }
+
+        /**
+        * *********************************************************************************
+        * Draws a track by conntecting all track markers in the given order.
+        * *********************************************************************************
+        */
+        this.drawPath = function() {
+            var newPath = new Array();
+            for (var i = 0; i < this.markers.length; ++i) {
+                newPath[i] = this.markers[i].getPosition();
+            }
+
+            this.path.setPath(newPath);
+        }
+        
+        /**
+        * *********************************************************************************
+        * Gets the total distance text of the track. Format example: 1234m
+        * *********************************************************************************
+        */
+        this.getTotalDistanceText = function() {
+            var dist = 0;
+
+            if( this.markers.length > 1 ) {
+                for( var i = 0; i < this.markers.length - 1; ++i ) {
+                    dist += this.distance(    this.markers[i].getPosition().lat(),
+                                             this.markers[i].getPosition().lng(),
+                                             this.markers[i + 1].getPosition().lat(),
+                                             this.markers[i + 1].getPosition().lng())
+                }
+            }
+
+            return dist + "m";
+        }
+
+        /**
+        * *********************************************************************************
+        * Calculates the distance in meters between two GEO-coordinates (lat/lng).
+        * *********************************************************************************
+        */
+        this.distance = function(lat1,lon1,lat2,lon2) {
+            var R = 6371; // km (change this constant to get miles)
+            var dLat = (lat2-lat1) * Math.PI / 180;
+            var dLon = (lon2-lon1) * Math.PI / 180; 
+            var a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+                Math.cos(lat1 * Math.PI / 180 ) * Math.cos(lat2 * Math.PI / 180 ) * 
+                Math.sin(dLon/2) * Math.sin(dLon/2); 
+            var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)); 
+            var d = R * c;
+            return Math.round(d*1000); // in meters
+        }
+        
+        /**
+        * *********************************************************************************
+        * Adds an event listener with the given type and function.
+        * *********************************************************************************
+        */
+        this.addEventListener = function(type, fn) {
+            eventListener[type][ eventListener[type].length ] = fn;
+        }
+                
+        /**
+        * *********************************************************************************
+        * Calls the event listener functions, to notify the observers.
+        * *********************************************************************************
+        */
+        this.notify = function(type) {
+            var that = this;
+            $.each(eventListener[type], function(){
+                this.call(that, 0);
+            });
+        }
+    };
+
+
+
+
+
+
+
+
     
     $.seamap.options = options;
     $.seamap.sync = sync;

@@ -9,6 +9,7 @@ $(document).ready(function() {
     events = map.getEvents();
     
     var templateRoutes = Handlebars.compile($("#template-routes").html());
+    var templateTracks = Handlebars.compile($("#template-tracks").html());
     var templateMarks = Handlebars.compile($("#template-marks").html());
     
     map.addCallback(events.CREATED_ROUTE, function (self) {
@@ -19,6 +20,16 @@ $(document).ready(function() {
             }
         });
         $("#routes").append(templateRoutes(self));
+    });
+
+    map.addCallback(events.CREATED_TRACK, function (self) {
+        $("#tracks li a").each(function() {
+            /* de-select other routes */
+            if ($(this).hasClass('icon-selectedTrack')) {
+                $(this).removeClass('icon-selectedTrack').addClass('icon-notSelectedTrack');
+            }
+        });
+        $("#tracks").append(templateTracks(self));
     });
     
     map.addCallback(events.DELETED_ROUTE, function (self) {
@@ -50,6 +61,10 @@ $(document).ready(function() {
                 $(this).remove();
             }
         });
+    });
+
+    map.addCallback(events.TRACKING_ACTIVE, function (self) {
+        output.warning(self);
     });
 
     map.startBoatAnimation();

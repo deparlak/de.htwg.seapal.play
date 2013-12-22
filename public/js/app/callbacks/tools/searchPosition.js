@@ -7,11 +7,18 @@
  
 $(document).ready(function() {    
     var lastSearch = {};
-    var active = "#SearchPlaces";
+    var history = {};
     var method = {};
     var service = new google.maps.places.PlacesService(map.getGoogleMapsHandle());
     var geocoder = new google.maps.Geocoder();
     var templateSearchPlaces = Handlebars.compile($("#template-SearchPlaces").html());
+    var active = "#SearchPOIs";
+    displaySearchInfos();
+    active = "#SearchCoordinates";
+    displaySearchInfos();
+    active = "#SearchPlaces";
+    displaySearchInfos();
+    
     //extend the input mask plugin to be able to input N which is North and S which is South for latitude and WE (West and East) for longitude.
     $.extend($.inputmask.defaults.definitions, {
         'c': { 
@@ -21,11 +28,6 @@ $(document).ready(function() {
         },
         'd': {
             validator: "W|E",
-            cardinality: 1,
-            casing: "upper"
-        },
-        'e': {
-            validator: "-|\\+",
             cardinality: 1,
             casing: "upper"
         }
@@ -38,11 +40,99 @@ $(document).ready(function() {
         return string;
     });
     
+    function addToHistory(search) {
+        //history exist for this element
+        if (history[active] === undefined){
+            history[active] = [];
+        }
+        //element already in history
+        if (-1 != history[active].indexOf(search)) {
+            return;
+        }
+        //history over max
+        if (history[active].length > 20) {
+            history[active].pop();
+        }
+        //set new history entry to begin to show the latest searched things first.
+        history[active].unshift(search);
+    }
+    
+    function removeFromHistory(of) {
+        //remove the last insert entry from the history.
+        if (!(history[of] === undefined)){
+            history[of].shift();
+        }
+    }
+    
+    function LatLngToDecimal(string) {
+        var obj = {};
+        if (24 != string.length) {
+            obj.error = "Lat Lng input has a not correct length.";
+            return obj;
+        }
+        var latDegree = parseInt(string.substring(0, 2));
+        var latMin = parseInt(string.substring(3, 5));
+        var latSec = parseInt(string.substring(6, 8));
+        var latDir = string.substring(10, 11);
+        var lonDegree = parseInt(string.substring(12, 15));
+        var lonMin = parseInt(string.substring(16, 18));
+        var lonSec = parseInt(string.substring(19, 21));
+        var lonDir = string.substring(23, 24);
+
+        if (latDegree < 0 || latDegree > 90 || isNaN(latDegree)) {
+            obj.error = "Lat degree should be in range of 0 to 90";
+            return obj;
+        }
+        if (lonDegree < 0 || lonDegree > 180 || isNaN(lonDegree)) {
+            obj.error = "Lon degree should be in range of 0 to 180";
+            return obj;
+        }
+        if (latMin < 0 || latMin > 60 || isNaN(latMin)) {
+            obj.error = "Lat min should be in range of 0 to 60";
+            return obj;
+        }
+        if (lonMin < 0 || lonMin > 60 || isNaN(lonMin)) {
+            obj.error = "Lon min should be in range of 0 to 60";
+            return obj;
+        }
+        if (latSec < 0 || latSec > 99 || isNaN(latSec)) {
+            obj.error = "Lat min.xx should be in range of 0 to 99";
+            return obj;
+        }
+        if (lonSec < 0 || lonSec > 99 || isNaN(lonSec)) {
+            obj.error = "Lon min.xx should be in range of 0 to 99";
+            return obj;
+        }
+        if (latDir != 'N' && latDir != 'S') {
+            obj.error = "Lat Direction has to be 'N' or 'S'.";
+            return obj;
+        }
+        if (lonDir != 'W' && lonDir != 'E') {
+            obj.error = "Lon Direction has to be 'W' or 'E'.";
+            return obj;
+        }
+        obj.lat = latDegree + ((latMin + (latSec / 100)) / 60);
+        obj.lon = lonDegree + ((lonMin + (lonSec / 100)) / 60);
+        if ('W' == latDir) {
+            obj.lat = -1 * obj.lat;
+        }
+        if ('S' == latDir) {
+            obj.lon = -1 * obj.lon;
+        }  
+        return obj;
+    }
+    
+    
     function renderCallback(div, results, status) {
         var render = {};
         render.status = {};
         render.status[status] = true;
         render[div.substring(1,99)] = results;
+        
+        //query was not ok, so remove the searched jquery from the history
+        if (!render.status.OK) {
+            removeFromHistory(div);
+        }
         $(div).html(templateSearchPlaces(render));
     }
     
@@ -55,11 +145,21 @@ $(document).ready(function() {
     }
     
     function SearchCoordinatesCallback(results, status) {
-        console.log(results);
         renderCallback("#SearchCoordinates", results, status);
     }
     
+    function displaySearchInfos() {
+        if (active == "#SearchPlaces") {
+            $(active).html(templateSearchPlaces({type : active, history : history[active], status : {SEARCHING_PLACES : true}}));
+        } else if (active == "#SearchCoordinates") {
+            $(active).html(templateSearchPlaces({type : active, history : history[active], status : {SEARCHING_COORDINATES : true}}));
+        } else if (active == "#SearchPOIs") {
+            $(active).html(templateSearchPlaces({type : active, history : history[active], status : {SEARCHING_POIS : true}}));
+        }
+    }
+    
     method["#SearchPlaces"] = function(search) {
+        addToHistory(search);
         var request = {
             bounds: map.getGoogleMapsHandle().getBounds(),
             query: search
@@ -68,20 +168,23 @@ $(document).ready(function() {
     };
       
     method["#SearchPOIs"] = function(search) {
-        var request = {
-            bounds: map.getGoogleMapsHandle().getBounds(),
-            query: search
-        };
-        service.textSearch(request, SearchPOIsCallback);
+        $(active).html(templateSearchPlaces({history : history[active], status : {SEARCHING_POIS : true}}));
     };
     
     method["#SearchCoordinates"] = function(search) {
+        addToHistory(search);
         //check if position was complete typed in.
         if (!$("#search-searchPosition").inputmask("isComplete")) {
             $(active).html(templateSearchPlaces({status : {SEARCHING_COORDINATES_INCOMPLETE : true}}));
             return;
         }
-        var latlng = new google.maps.LatLng(40.730885,-73.997383);
+        var obj = LatLngToDecimal(search);
+        //check if an error occurred while parsing
+        if (obj.error) {
+            $(active).html(templateSearchPlaces(obj));
+            return;
+        }
+        var latlng = new google.maps.LatLng(obj.lat, obj.lon);
         geocoder.geocode({'latLng': latlng},SearchCoordinatesCallback);
     };
 
@@ -94,15 +197,14 @@ $(document).ready(function() {
         $('#search-searchPosition').val("");
         active = self.data('name');
         
-        console.log(active);
-        console.log(lastSearch);
         if (active != "#SearchCoordinates") {
-            $('#search-searchPosition').inputmask('remove');        
+            $('#search-searchPosition').inputmask('remove');       
+            $('#search-searchPosition').val(lastSearch[active]);            
         } else {
-            $('#search-searchPosition').inputmask({mask: "99°99.99' c 999°99.99' d"});
-        }        
-        $('#search-searchPosition').val(lastSearch[active]);
-        /* unfocus and focus because the search input was modified before */
+            $('#search-searchPosition').val(lastSearch[active]);
+            $('#search-searchPosition').inputmask({mask: "99°99.99' c 999°99.99' d", clearMaskOnLostFocus : false, clearIncomplete : false, autoUnmask : true });
+        }
+        /* blur and focus again, to avoid that the inputmask will not be displayed immediately */
         $('#search-searchPosition').blur();
         $('#search-searchPosition').focus();
     });
@@ -114,15 +216,41 @@ $(document).ready(function() {
             search += $('#search-searchPosition').val();
             if (search.length > 0) {
                 method[active](search);
-                $('#search-searchPosition').blur();
             }
-        //if we search not for marks, we will display a message that the search is in action.
-        } else if (active == "#SearchPlaces") {
-            $(active).html(templateSearchPlaces({status : {SEARCHING_PLACES : true}}));
-        } else if (active == "#SearchCoordinates") {
-            $(active).html(templateSearchPlaces({status : {SEARCHING_COORDINATES : true}}));
-        } else if (active == "#SearchPOIs") {
-            $(active).html(templateSearchPlaces({status : {SEARCHING_POIS : true}}));
+        } else {
+            displaySearchInfos();
         }
     }); 
+    
+    /* callback for a selection of a history entry */
+    tools.addCallback('leftclick', 'icon-previousSearch', function (self) {
+        if (active == "#SearchCoordinates") {
+            $('#search-searchPosition').inputmask('remove');
+            $('#search-searchPosition').val(self.data('search'));
+            $('#search-searchPosition').inputmask({mask: "99°99.99' c 999°99.99' d", clearMaskOnLostFocus : false, clearIncomplete : false, autoUnmask : true });
+        } else {
+            $('#search-searchPosition').val(self.data('search'));
+        }
+        method[self.data('type')](self.data('search'));
+    });
+    
+    /* callback to search at actual position */
+    tools.addCallback('leftclick', 'icon-actualPositionSearch', function (self) {
+        var pos = map.getCurrentBoatInformation();
+        pos = pos.latStr+" "+pos.lngStr;
+        $('#search-searchPosition').inputmask('remove');
+        $('#search-searchPosition').val(pos);
+        $('#search-searchPosition').inputmask({mask: "99°99.99' c 999°99.99' d", clearMaskOnLostFocus : false, clearIncomplete : false, autoUnmask : true });
+        method["#SearchCoordinates"](pos);
+    });
+    
+    /* callback to display a searched place */
+    tools.addCallback('leftclick', 'icon-searchedPlace', function (self) {
+        map.setTemporaryMark(new google.maps.LatLng(self.data('nb'), self.data('ob')));
+    });
+    
+    /* callback to display a searched coordinate */
+    tools.addCallback('leftclick', 'icon-searchedCoordinate', function (self) {
+        map.setTemporaryMark(new google.maps.LatLng(self.data('nb'), self.data('ob')));
+    });
 });

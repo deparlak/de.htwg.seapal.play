@@ -17,7 +17,7 @@
             <img class="profile-img" src="@routes.Assets.at("images/seapal_launcher.png")" alt="Seapal">
             @if(flash.contains("errors")) {
                 <div class="error-message">
-                    <a>@flash.get("errors")</a>
+                    <p>@flash.get("errors")</p>
                 </div>
             }
             @helper.form(link, 'class -> "form-signInSeapal") {
@@ -27,7 +27,9 @@
                     Sign in
                 </button>
             }
-            <a href="@de.htwg.seapal.web.controllers.routes.Application.forgotten">Forgot Password?</a>
+            <div class="message-link">
+                <a href="@de.htwg.seapal.web.controllers.routes.Application.forgotten">Forgot Password?</a>
+            </div>
         </div>
     </body>
 </html>

@@ -32,6 +32,8 @@ import java.util.Random;
 public class AccountAPI
         extends Controller {
 
+    private static final long TIMEOUT = 60 * 60 * 1000;
+
     static Form<Account> form = Form.form(Account.class);
 
     @Inject
@@ -117,8 +119,6 @@ public class AccountAPI
         return redirect(routes.Application.app());
     }
 
-    private static final long TIMEOUT = 60 * 60 * 1000;
-
     public Result requestNewPassword() {
         Form<Account> filledForm = form.bindFromRequest();
 
@@ -126,9 +126,11 @@ public class AccountAPI
         List<? extends IAccount> list = controller.queryView("by_email", account.getAccountName());
 
         if (list.size() == 0) {
-            return notFound("Account does not exist");
+            flash("errors", "Account does not exist");
+            return redirect(routes.Application.forgotten());
         } else if (list.size() > 1) {
-            return internalServerError("Too many equal reset tokens");
+            flash("errors", "An internal error occured. Please try again!");
+            return redirect(routes.Application.forgotten());
         }
 
         account = list.get(0);
@@ -143,13 +145,15 @@ public class AccountAPI
 
         controller.saveAccount(account);
 
-        MailerAPI mail = play.Play.application().plugin(MailerPlugin.class).email();
+        /*MailerAPI mail = play.Play.application().plugin(MailerPlugin.class).email();
         mail.setSubject("request for password change");
         logger.error("AccountName", account.getAccountName());
         mail.addRecipient("John Doe <" + account.getAccountName() + ">");
         mail.addFrom("seapalweb@gmail.com");
-        mail.send("To Reset your password, click the following link: http://localhost:9000/pwreset/" + token);
-        return ok();
+        mail.send("To Reset your password, click the following link: http://localhost:9000/pwreset/" + token);*/
+        System.out.println("http://localhost:9000/pwreset/" + token);
+        flash("success", "You have received an email with a link to reset your password!");
+        return redirect(routes.Application.forgotten());
     }
 
     public Result resetForm(int token) {
@@ -168,15 +172,24 @@ public class AccountAPI
         logger.error("size", Integer.toString(list.size()));
 
         if (list.size() == 0) {
-            return notFound("Account does not exist");
+            flash("errors", "Account does not/no longer exist!");
+            return resetForm(Integer.parseInt(token));
         } else if (list.size() > 1) {
-            return internalServerError("Too many equal reset tokens");
+            flash("errors", "Too many equal reset tokens, Please request a new token by clicking on I forgot my password!");
+            return resetForm(Integer.parseInt(token));
         }
 
         IAccount account = list.get(0);
 
         if (account.getResetTimeout() < System.currentTimeMillis()) {
-            return forbidden("reset token expired");
+            flash("errors", "Reset token expired. Please request a new token by clicking on I forgot my password!");
+            return resetForm(Integer.parseInt(token));
+        }
+
+        InputValidator.Error result = InputValidator.validate(form.get("accountPassword")[0], form.get("repeatedAccountPassword")[0]);
+        if(result != InputValidator.Error.NONE) {
+            flash("errors", InputValidator.Error_Messages[result.ordinal()]);
+            return resetForm(Integer.parseInt(token));
         }
 
         account.setResetToken("0");
@@ -191,8 +204,9 @@ public class AccountAPI
             e.printStackTrace();
         }
         controller.saveAccount(account);
-
-        return ok();
+        
+        flash("success", "You have successfully changed your password");
+        return resetForm(Integer.parseInt(token));
     }
 
     public static class Secured

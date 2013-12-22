@@ -429,7 +429,7 @@ input.menubar-search:focus {
 /* specification of the icons from the tools */
 
 .icon-toolsNone::before{
-        content: "\f08d";     
+        content: "";     
 }
 
 .icon-toolsBack::before{
@@ -482,6 +482,22 @@ input.menubar-search:focus {
 
 .icon-discardTarget::before {
         content: "\f014"
+}
+
+.icon-previousSearch::before{
+        content: "\f02e"  
+}
+
+.icon-actualPositionSearch::before{
+        content: "\f05b"  
+}
+
+.icon-searchedPlace::before{
+        content: "\f08d"  
+}
+
+.icon-searchedCoordinate::before{
+        content: "\f08d"  
 }
 
 /* if an icon anchor has a span, hide the span */
@@ -666,6 +682,25 @@ input.menubar-search:focus {
 }
 
 
+.menu-footer{
+    background: white;
+    color:blue;
+    width:100%;
+    left:0px;
+    height: 40px;
+    line-height: 40px;
+    font-size:20px;
+    position: fixed;
+    bottom: 0px;
+    z-index: 4;
+    vertical-align:-2px;
+}
+
+.menu-footer-item {
+    border:0px;
+    border-radius:0px;
+}
+
 
 /* styles on minimized size */
 /******************************************************/
@@ -717,15 +752,22 @@ input.menubar-search:focus {
     line-height:25px !important;
 }
 
-/* headings in a li*/
+/* description in a li*/
 .description{
+    box-shadow:none !important;
     background: #FFFFFF;
     color:black;
-}
-
-.description1{
+    margin-top:10px;
+    margin-bottom:10px;
     margin-left:20px;
     margin-right:20px;
     font-size:15px;
     line-height:20px !important;
+}
+
+/* add class to mark an element to be removed */
+.remove{
+    text-decoration:line-through !important;
+    background: #EBEBEB;
+    opacity:0.5;
 }
