@@ -32,14 +32,7 @@ $(document).ready(function() {
             casing: "upper"
         }
     });
-    
-    Handlebars.registerHelper('cutStringLength', function(string) {
-        if (string.length > 20) {
-            return string.substring(0, 20)+"...";
-        }
-        return string;
-    });
-    
+        
     function addToHistory(search) {
         //history exist for this element
         if (history[active] === undefined){

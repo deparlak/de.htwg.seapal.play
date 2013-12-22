@@ -63,23 +63,7 @@ $(document).ready(function() {
 
         $('#globalSettingsSave').on('click', function() {
             var boundData = Handlebars.getBoundData(settings);
-            console.log(boundData);
             map.setGlobalSettings(boundData);            
         });
     });
-            
-    Handlebars.registerHelper("bindData", function(key) {
-        return "id=handlebar-id-" + key;
-    });
-
-    Handlebars.getBoundData = function(obj) {
-        for ( property in obj ) {
-            if ($('#handlebar-id-'+property).attr('type') == 'number') {
-                obj[property] = parseInt($('#handlebar-id-'+property).val());
-            } else {
-                obj[property] = $('#handlebar-id-'+property).val();
-            }            
-        }
-        return obj;
-    };
 });
