@@ -463,7 +463,7 @@
         * *********************************************************************************
         */
         function showSecurityCircle() {
-            createSecurityCircle();            
+            createSecurityCircle();
         }
         /* Hides the security circle */
         function hideSecurityCircle() {
@@ -484,6 +484,23 @@
             };
 
             activeSecurityCircle = new google.maps.Circle(circleOptions);
+        }
+        /* calculates the distance from the center of the circle to the current position */
+        function getDistanceFromCircle() {
+                    return calculateDistance(activeSecurityCircle.center.nb, activeSecurityCircle.center.ob,
+                                             currentPosition.nb, currentPosition.ob);
+        }
+        /* calculates the distance between two positions. Coordinates needed in decimal form! */
+        function calculateDistance(lat1, lon1, lat2, lon2) {
+            var R = 6371; // km (change this constant to get miles)
+            var dLat = (lat2-lat1) * Math.PI / 180;
+            var dLon = (lon2-lon1) * Math.PI / 180; 
+            var a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+                Math.cos(lat1 * Math.PI / 180 ) * Math.cos(lat2 * Math.PI / 180 ) * 
+                Math.sin(dLon/2) * Math.sin(dLon/2); 
+            var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)); 
+            var d = R * c;
+            return Math.round(d*1000); // in meters
         }
         
         /**
@@ -650,7 +667,7 @@
         * Starts long polling to animate the boat on the maps via Geolocation API in HTML5.
         * *********************************************************************************
         */
-        function startBoatAnimation(){            
+        function startBoatAnimation(){
             get_location();
             setTimeout(function(){startBoatAnimation();}, 5000);
         }
