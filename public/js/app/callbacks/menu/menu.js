@@ -5,7 +5,10 @@
  * 
  */
 
-$(document).ready(function() {    
+$(document).ready(function() {
+
+    var alreadySetFlag = false; // Checks whether the submit event is already captured by the specific method
+
     /* on close of the menu, hide all menu-footers which are possible open. */
     menu.on('close', function () {
         $('.menu-footer').removeClass('visible').addClass('hidden');
@@ -61,9 +64,15 @@ $(document).ready(function() {
         $('#globalSettingsInputForm').html(html);
         $('#modal-form_globalSettings').modal('show');
 
-        $('#globalSettingsSave').on('click', function() {
-            var boundData = Handlebars.getBoundData(settings);
-            map.setGlobalSettings(boundData);            
-        });
+        if(!alreadySetFlag) {
+            alreadySetFlag = true;
+            $('#modal-form_globalSettings').submit(function() {
+                var boundData = Handlebars.getBoundData(settings);
+                map.setGlobalSettings(boundData);
+                console.log(map.getGlobalSettings());
+                $('#modal-form_globalSettings').modal('hide');
+                return false;
+            });
+        }
     });
 });
