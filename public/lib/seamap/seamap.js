@@ -192,10 +192,11 @@
             }
             throw("Cannot add Callback for the event '"+event+"', because this event does not exist.");
         };
-
-        this.startBoatAnimation = function() {
-            startBoatAnimation();
+        /* remove a route,mark,track,boat,... */
+        this.remove = function() {
+            
         };
+        
 
         /* get the handle of the google map */
         this.getGoogleMapsHandle = function () {
@@ -457,6 +458,8 @@
         }
         init();
 
+        startBoatAnimation();
+        
         /**
         * *********************************************************************************
         * Displays/Hides the security circle

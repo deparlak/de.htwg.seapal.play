@@ -33,7 +33,7 @@ $(document).ready(function() {
     
     removeSelection = function () {
         for (var i in removeElements) {
-            console.log("TODO call remove method in seamap.js for "+active+" "+removeElements[i].data('id'));
+            map.remove(active.substring(1, active.length), removeElements[i].data('id'));
             removeElements[i].remove();
         }
         state = states.normal;
@@ -125,8 +125,6 @@ $(document).ready(function() {
             $('.icon-selectedRoute').removeClass('icon-selectedRoute').addClass('icon-notSelectedRoute');
             self.removeClass('icon-notSelectedRoute').addClass('icon-selectedRoute');
             map.visibleRoute(self.data('id'));
-        } else if (state == states.edit) {
-            console.log("TODO edit route");
         } else if (state == states.remove) {
             selectToRemove(self);
         }
@@ -144,8 +142,6 @@ $(document).ready(function() {
             $('.icon-selectedTrack').removeClass('icon-selectedTrack').addClass('icon-notSelectedTrack');
             self.removeClass('icon-notSelectedTrack').addClass('icon-selectedTrack');
             map.visibleTrack(self.data('id'));
-        } else if (state == states.edit) {
-            console.log("TODO edit track");
         } else if (state == states.remove) {
             selectToRemove(self);
         }

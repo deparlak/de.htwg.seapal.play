@@ -66,6 +66,4 @@ $(document).ready(function() {
     map.addCallback(events.TRACKING_ACTIVE, function (self) {
         output.warning(self);
     });
-
-    map.startBoatAnimation();
 });
