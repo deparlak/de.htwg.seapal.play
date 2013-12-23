@@ -771,3 +771,9 @@ input.menubar-search:focus {
     background: #EBEBEB;
     opacity:0.5;
 }
+
+.btn.menu-footer-item.active, .btn.menu-footer-item:active {
+    -webkit-box-shadow : none;
+    box-shadow : none;
+    outline : none;
+}
