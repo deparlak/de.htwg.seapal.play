@@ -19,7 +19,13 @@
             <label for="distanceUnit">Unit for distance</label>
         </div>
         <div class="col-12 col-sm-4">
-            <input type="text" name="distanceUnit" tabindex="1" {{bindData "DISTANCE_UNIT"}} value={{DISTANCE_UNIT}} required />
+            <select name="distanceUnit" tabindex="1" {{bindData "DISTANCE_UNIT"}}>
+                {{#select DISTANCE_UNIT}}
+                <option value="globalSettings_mil">Naut. miles</option>
+                <option value="globalSettings_km">Kilometer</option>
+                <option value="globalSettings_nautmil">Miles</option>
+                {{/select}}
+            </select>
         </div>
     </div>
     <div class="row">
@@ -27,7 +33,13 @@
             <label for="temperatureUnit">Unit for temperature</label>
         </div>
         <div class="col-12 col-sm-4">
-            <input type="text" name="temperatureUnit" tabindex="2" {{bindData "TEMPERATURE_UNIT"}} value={{TEMPERATURE_UNIT}} required />
+            <select name="temperatureUnit" tabindex="2" {{bindData "TEMPERATURE_UNIT"}}>
+                {{#select TEMPERATURE_UNIT}}
+                <option value="globalSettings_celsius">°C</option>
+                <option value="globalSettings_fahrenheit">°F</option>
+                <option value="globalSettings_kelvin">°K</option>
+                {{/select}}
+            </select>
         </div>
     </div>
     <div class="row">

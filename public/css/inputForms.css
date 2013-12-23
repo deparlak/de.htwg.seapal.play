@@ -89,9 +89,9 @@
     resize: none;
 }
 
-.form_globalSettings
+.form_globalSettings select
 {
-
+    width: 100%;
 }
 
 .no_padding
