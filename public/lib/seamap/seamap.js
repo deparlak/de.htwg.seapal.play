@@ -532,19 +532,15 @@
             var d = R * c;
 
             var result = Math.round(d * 1);
-            
-            if (result >= 10) {
-                return result;
-            }
 
             switch(globalSettings.DISTANCE_UNIT)
             {
                 case "globalSettings_mil":
-                    return (Math.round(d * 1760) / 1760).toFixed(2);
+                    return (Math.round(d * 1760) / 1760);
                 case "globalSettings_nautmil":
-                    return (Math.round(d * 2025.38276) / 2025.38276).toFixed(2);
+                    return (Math.round(d * 2025.38276) / 2025.38276);
                 default:                
-                    return (Math.round(d * 1000) / 1000).toFixed(2);
+                    return (Math.round(d * 1000) / 1000);
             }
         }
         
@@ -1886,11 +1882,11 @@
             switch(map.getGlobalSettings().DISTANCE_UNIT)
             {
                 case "globalSettings_mil":
-                    return dist + "mi";
+                    return dist.toFixed(2) + "mi";
                 case "globalSettings_nautmil":
-                    return dist + "nm";
+                    return dist.toFixed(2) + "nm";
                 default:                
-                    return dist + "km";             
+                    return dist.toFixed(2) + "km";             
             }
         }
         
@@ -2092,11 +2088,11 @@
             switch(map.getGlobalSettings().DISTANCE_UNIT)
             {
                 case "globalSettings_mil":
-                    return dist + "mi";
+                    return dist.toFixed(2) + "mi";
                 case "globalSettings_nautmil":
-                    return dist + "nm";
+                    return dist.toFixed(2) + "nm";
                 default:                
-                    return dist + "km";             
+                    return dist.toFixed(2) + "km";             
             }
         }
         
