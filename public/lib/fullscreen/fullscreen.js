@@ -48,7 +48,7 @@
             }
         }
         fullScreen.requestFullScreen = function(el) {
-            return (this.prefix === '') ? el.requestFullScreen() : el[this.prefix + 'RequestFullScreen']();
+            return (this.prefix === '') ? el.requestFullScreen() : el[this.prefix + 'RequestFullscreen']();
         }
         fullScreen.cancelFullScreen = function(el) {
             return (this.prefix === '') ? document.cancelFullScreen() : document[this.prefix + 'CancelFullScreen']();
