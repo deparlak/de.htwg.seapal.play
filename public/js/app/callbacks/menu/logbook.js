@@ -8,16 +8,66 @@
 $(document).ready(function() {
     var active = "#account";
     var waypoint_headingTo_template = Handlebars.compile($("#waypoint_headingTo_option").html());
-
     var isWaypointModalToBeOpened = false;
+    var states = {normal : 0, remove : 1};
+    var state = states.normal;
+    var removeElements = {};
 
+    /* calling initState will clear the list of items which shall be removed and set the state back to normal */
+    function initState(){
+        for (var i in removeElements) {
+            removeElements[i].removeClass('remove');
+        }
+        removeElements = {};
+        state = states.normal;
+    };
+    
+    function selectToRemove(self) {
+        if (self.hasClass('remove')) {
+            self.removeClass('remove');
+            delete removeElements[self.data('id')];
+        } else {
+            self.addClass('remove');
+            removeElements[self.data('id')] = self;
+        }
+    };
+    
+    function removeSelection() {
+        for (var i in removeElements) {
+            map.remove(active.substring(1, active.length), removeElements[i].data('id'));
+            removeElements[i].remove();
+        }
+        state = states.normal;
+    };
+    
+    menu.addCallback('leftclick', 'logbookRemove', function (self) {
+        $(active+"-footer").removeClass('visible').addClass('hidden');
+        $('#logbookRemove-footer').removeClass('hidden').addClass('visible');
+        state = states.remove;    
+    });
+    
+    menu.addCallback('leftclick', 'logbookRemoveOk', function (self) {
+        removeSelection();
+        state = states.normal;
+        $('#logbookRemove-footer').removeClass('visible').addClass('hidden');
+        $(active+"-footer").removeClass('hidden').addClass('visible');
+    });
+    
+    menu.addCallback('leftclick', 'logbookRemoveCancel', function (self) {
+        initState();
+        $('#logbookRemove-footer').removeClass('visible').addClass('hidden');
+        $(active+"-footer").removeClass('hidden').addClass('visible');
+    });
+    
     /* when we open logbook submenu, we have to visible the footer for the submenu */
     menu.addCallback('leftclick', 'icon-logbook', function (self) {
+        initState();
         $(active+"-footer").removeClass('hidden').addClass('visible'); 
     });
     
     /* when we swith one of the submenus */
     menu.addCallback('leftclick', 'logbook', function (self) {
+        initState();
         self.button('toggle');
         $('.active-logbook').removeClass('active-logbook').addClass('inactive-logbook');
         $(self.data('name')).removeClass('inactive-logbook').addClass('active-logbook');
@@ -25,6 +75,8 @@ $(document).ready(function() {
         $(active+"-footer").removeClass('visible').addClass('hidden');
         active = self.data('name');
         $(active+"-footer").removeClass('hidden').addClass('visible'); 
+        /* hide the remove footer */
+        $('#logbookRemove-footer').removeClass('visible').addClass('hidden');
     });
     
     menu.addCallback('leftclick', 'logbookCrewAdd', function (self) {
@@ -60,13 +112,18 @@ $(document).ready(function() {
     });
     
     menu.addCallback('leftclick', 'icon-notSelectedBoat', function (self) {
-        if(!map.checkTracking()) {
+        if(!map.checkTracking() && state == states.normal) {
             return;
         }
-        $('.icon-selectedBoat').removeClass('icon-selectedBoat').addClass('icon-notSelectedBoat');
-        self.removeClass('icon-notSelectedBoat').addClass('icon-selectedBoat');
-        map.selectBoat(self.data('id'));
-    });  
+        
+        if (state == states.normal && self.hasClass('icon-notSelectedBoat')) {
+            $('.icon-selectedBoat').removeClass('icon-selectedBoat').addClass('icon-notSelectedBoat');
+            self.removeClass('icon-notSelectedBoat').addClass('icon-selectedBoat');
+            map.selectBoat(self.data('id'));
+        } else if (state == states.remove) {
+            selectToRemove(self);
+        }
+    });
 
     menu.addCallback('rightclick', ['icon-notSelectedBoat', 'icon-selectedBoat'], function (self) {
         if(!map.checkTracking()) {

@@ -193,10 +193,18 @@
             throw("Cannot add Callback for the event '"+event+"', because this event does not exist.");
         };
         /* remove a route,mark,track,boat,... */
-        this.remove = function() {
-            
+        this.remove = function(type, id) {
+            console.log("TODO remove "+type+" "+id);
         };
-        
+        this.add = function(type, obj) {
+            console.log("TODO add "+type+" "+obj);
+        };
+        this.update = function(type, id, obj) {
+            console.log("TODO update "+type+" "+id+" "+obj);
+        };
+        this.get = function(type, id) {
+            console.log("TODO get "+type+" "+id);
+        };
 
         /* get the handle of the google map */
         this.getGoogleMapsHandle = function () {

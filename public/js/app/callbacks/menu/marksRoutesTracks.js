@@ -8,12 +8,12 @@
 $(document).ready(function() {    
     var lastSearch = {};
     var active = "#marks";
-    var states = {normal : 0, edit : 1, remove : 2};
+    var states = {normal : 0, remove : 1};
     var state = states.normal;
     var removeElements = {};
 
     /* calling initState will clear the list of items which shall be removed and set the state back to normal */
-    initState = function (){
+    function initState(){
         for (var i in removeElements) {
             removeElements[i].removeClass('remove');
         }
@@ -21,7 +21,7 @@ $(document).ready(function() {
         state = states.normal;
     };
     
-    selectToRemove = function (self) {
+    function selectToRemove (self) {
         if (self.hasClass('remove')) {
             self.removeClass('remove');
             delete removeElements[self.data('id')];
@@ -31,7 +31,7 @@ $(document).ready(function() {
         }
     };
     
-    removeSelection = function () {
+    function removeSelection() {
         for (var i in removeElements) {
             map.remove(active.substring(1, active.length), removeElements[i].data('id'));
             removeElements[i].remove();
@@ -39,7 +39,7 @@ $(document).ready(function() {
         state = states.normal;
     };
     
-    search = function(inElement, search) {
+    function search(inElement, search) {
         $(inElement+" li").each(function(index) {
             //does not match search criterium, so hide this element
             if (-1 == $(this).text().indexOf(search)) {
@@ -53,10 +53,6 @@ $(document).ready(function() {
     menu.addCallback('leftclick', 'icon-marksRoutesTracks', function (self) {
         initState();
         $('#menu-marksRoutesTracks-footer').removeClass('hidden').addClass('visible');
-    });
-    
-    menu.addCallback('leftclick', 'marksRoutesTracksEdit', function (self) {
-        state = states.edit;
     });
     
     menu.addCallback('leftclick', 'marksRoutesTracksRemoveOk', function (self) {
@@ -106,8 +102,6 @@ $(document).ready(function() {
         } else if (state == states.normal && self.hasClass('icon-notSelectedMark')) {
             self.removeClass('icon-notSelectedMark').addClass('icon-selectedMark');
             map.visibleMark(self.data('id'));
-        } else if (state == states.edit) {
-            console.log("TODO edit mark");
         } else if (state == states.remove) {
             selectToRemove(self);
         }
