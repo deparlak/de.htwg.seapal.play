@@ -312,7 +312,7 @@
         var globalSettings = {
             DISTANCE_UNIT       : "Naut-miles",
             TEMPERATURE_UNIT    : "°C",
-            TRACKING_DELAY      : 5000,
+            TRACKING_DELAY      : 5,
             HISTORY_TREND       : 1,
             CIRCLE_RADIUS       : 250
 
@@ -797,7 +797,8 @@
             if(!isTracking) { 
                 return;
             }
-            setTimeout(function(){handleTracking();}, globalSettings.TRACKING_DELAY);
+            var timeout = globalSettings.TRACKING_DELAY * 1000;
+            setTimeout(function(){handleTracking();}, timeout);
 
             addTrackMarker(currentPosition);
         }
