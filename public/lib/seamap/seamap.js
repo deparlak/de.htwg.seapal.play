@@ -487,8 +487,8 @@
         }
         /* calculates the distance from the center of the circle to the current position */
         function getDistanceFromCircle() {
-                    return calculateDistance(activeSecurityCircle.center.nb, activeSecurityCircle.center.ob,
-                                             currentPosition.nb, currentPosition.ob);
+            return calculateDistance(activeSecurityCircle.center.nb, activeSecurityCircle.center.ob,
+                                     currentPosition.nb, currentPosition.ob);
         }
         /* calculates the distance between two positions. Coordinates needed in decimal form! */
         function calculateDistance(lat1, lon1, lat2, lon2) {
@@ -501,6 +501,51 @@
             var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)); 
             var d = R * c;
             return Math.round(d*1000); // in meters
+        }
+
+        /**
+        * *********************************************************************************
+        * Calculates the distance in the unit given by the options between two coordinates.
+        * *********************************************************************************
+        */
+        this.distance = function(lat1,lon1,lat2,lon2) {
+            var R = null;
+
+            switch(globalSettings.DISTANCE_UNIT)
+            {
+                case "globalSettings_mil":
+                    R = 3958.8;
+                    break;
+                case "globalSettings_nautmil":
+                    R = 3440.04622;
+                    break;
+                default:                
+                    R = 6371;
+            }
+
+            var dLat = (lat2-lat1) * Math.PI / 180;
+            var dLon = (lon2-lon1) * Math.PI / 180; 
+            var a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+                Math.cos(lat1 * Math.PI / 180 ) * Math.cos(lat2 * Math.PI / 180 ) * 
+                Math.sin(dLon/2) * Math.sin(dLon/2); 
+            var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)); 
+            var d = R * c;
+
+            var result = Math.round(d * 1);
+            
+            if (result >= 10) {
+                return result;
+            }
+
+            switch(globalSettings.DISTANCE_UNIT)
+            {
+                case "globalSettings_mil":
+                    return (Math.round(d * 1760) / 1760).toFixed(2);
+                case "globalSettings_nautmil":
+                    return (Math.round(d * 2025.38276) / 2025.38276).toFixed(2);
+                default:                
+                    return (Math.round(d * 1000) / 1000).toFixed(2);
+            }
         }
         
         /**
@@ -1831,31 +1876,22 @@
 
             if( this.markers.length > 1 ) {
                 for( var i = 0; i < this.markers.length - 1; ++i ) {
-                    dist += this.distance(    this.markers[i].getPosition().lat(),
-                                             this.markers[i].getPosition().lng(),
-                                             this.markers[i + 1].getPosition().lat(),
-                                             this.markers[i + 1].getPosition().lng())
+                    dist += map.distance(this.markers[i].getPosition().lat(),
+                                     this.markers[i].getPosition().lng(),
+                                     this.markers[i + 1].getPosition().lat(),
+                                     this.markers[i + 1].getPosition().lng())
                 }
             }
 
-            return dist + "m";
-        }
-
-        /**
-        * *********************************************************************************
-        * Calculates the distance in meters between two GEO-coordinates (lat/lng).
-        * *********************************************************************************
-        */
-        this.distance = function(lat1,lon1,lat2,lon2) {
-            var R = 6371; // km (change this constant to get miles)
-            var dLat = (lat2-lat1) * Math.PI / 180;
-            var dLon = (lon2-lon1) * Math.PI / 180; 
-            var a = Math.sin(dLat/2) * Math.sin(dLat/2) +
-                Math.cos(lat1 * Math.PI / 180 ) * Math.cos(lat2 * Math.PI / 180 ) * 
-                Math.sin(dLon/2) * Math.sin(dLon/2); 
-            var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)); 
-            var d = R * c;
-            return Math.round(d*1000); // in meters
+            switch(map.getGlobalSettings().DISTANCE_UNIT)
+            {
+                case "globalSettings_mil":
+                    return dist + "mi";
+                case "globalSettings_nautmil":
+                    return dist + "nm";
+                default:                
+                    return dist + "km";             
+            }
         }
         
         /**
@@ -2046,31 +2082,22 @@
 
             if( this.markers.length > 1 ) {
                 for( var i = 0; i < this.markers.length - 1; ++i ) {
-                    dist += this.distance(    this.markers[i].getPosition().lat(),
-                                             this.markers[i].getPosition().lng(),
-                                             this.markers[i + 1].getPosition().lat(),
-                                             this.markers[i + 1].getPosition().lng())
+                    dist += map.distance(this.markers[i].getPosition().lat(),
+                                     this.markers[i].getPosition().lng(),
+                                     this.markers[i + 1].getPosition().lat(),
+                                     this.markers[i + 1].getPosition().lng())
                 }
             }
 
-            return dist + "m";
-        }
-
-        /**
-        * *********************************************************************************
-        * Calculates the distance in meters between two GEO-coordinates (lat/lng).
-        * *********************************************************************************
-        */
-        this.distance = function(lat1,lon1,lat2,lon2) {
-            var R = 6371; // km (change this constant to get miles)
-            var dLat = (lat2-lat1) * Math.PI / 180;
-            var dLon = (lon2-lon1) * Math.PI / 180; 
-            var a = Math.sin(dLat/2) * Math.sin(dLat/2) +
-                Math.cos(lat1 * Math.PI / 180 ) * Math.cos(lat2 * Math.PI / 180 ) * 
-                Math.sin(dLon/2) * Math.sin(dLon/2); 
-            var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)); 
-            var d = R * c;
-            return Math.round(d*1000); // in meters
+            switch(map.getGlobalSettings().DISTANCE_UNIT)
+            {
+                case "globalSettings_mil":
+                    return dist + "mi";
+                case "globalSettings_nautmil":
+                    return dist + "nm";
+                default:                
+                    return dist + "km";             
+            }
         }
         
         /**

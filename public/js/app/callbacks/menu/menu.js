@@ -69,7 +69,6 @@ $(document).ready(function() {
             $('#modal-form_globalSettings').submit(function() {
                 var boundData = Handlebars.getBoundData(settings);
                 map.setGlobalSettings(boundData);
-                console.log(map.getGlobalSettings());
                 $('#modal-form_globalSettings').modal('hide');
                 return false;
             });
