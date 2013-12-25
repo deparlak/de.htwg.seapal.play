@@ -138,6 +138,11 @@ $(document).ready(function() {
         $('#modal-form_track').modal('show');        
     });
 
+    menu.addCallback('rightclick', ['icon-notSelectedRoute', 'icon-selectedRoute'], function (self) {
+        menu.disableAutoClose();
+        $('#modal-form_route').modal('show');        
+    });
+
     menu.addCallback('rightclick', ['icon-notSelectedMark', 'icon-selectedMark'], function (self) {
         menu.disableAutoClose();
         $('#modal-form_marker').modal('show');
@@ -182,6 +187,11 @@ $(document).ready(function() {
         }
     );
     $('#modal-form_marker').on('hidden.bs.modal',
+        function() {
+            menu.enableAutoClose();
+        }
+    );    
+    $('#modal-form_route').on('hidden.bs.modal',
         function() {
             menu.enableAutoClose();
         }
