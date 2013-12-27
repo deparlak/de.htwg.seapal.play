@@ -261,7 +261,7 @@
         /* Checks if the tracking is enabled and displays a message when it is */
         this.checkTracking = function() {
             if(isTracking) {
-                callbacks[events.TRACKING_ACTIVE].fire("This option is disabled because you are currently tracking!");
+                callbacks[events.TRACKING_ACTIVE].fire({msg : "This option is disabled because you are currently tracking!"});
                 return false;
             }
             return true;
@@ -350,15 +350,16 @@
         var events = 
         {
             //TODO
-            CREATED_ROUTE   :  "CreatedRoute",
-            DELETED_ROUTE   :  "DeletedRoute",
-            FINISH_ROUTE    :  "FinishRouteRecording",
-            ADDED_MARK      :  "AddedMark",
-            DELETED_MARK    :  "DeletedMark",
-            NO_GEO_SUPPORT  :  "GeolocationNotSupported",
-            BOAT_POS_UPDATE :  "Boat position uodated",
-            CREATED_TRACK   :  "CreatedTrack",
-            TRACKING_ACTIVE :  "Tracking is active"
+            CREATED_ROUTE           :  "CreatedRoute",
+            DELETED_ROUTE           :  "DeletedRoute",
+            FINISH_ROUTE            :  "FinishRouteRecording",
+            ADDED_MARK              :  "AddedMark",
+            DELETED_MARK            :  "DeletedMark",
+            NO_GEO_SUPPORT          :  "GeolocationNotSupported",
+            BOAT_POS_UPDATE         :  "BoatPositionUpdated",
+            CREATED_TRACK           :  "CreatedTrack",
+            TRACKING_ACTIVE         :  "TrackingIsActive",
+            LEFT_SECURITY_CIRCLE    :  "LeftSecurityCircle"
         };
         
         var options = $.seamap.options;
@@ -747,7 +748,7 @@
                 navigator.geolocation.getCurrentPosition(handleBoatPosition, error_handling);
             } else {
                 if(!noGeo_flag) {
-                   callbacks[events.NO_GEO_SUPPORT].fire("Your PC doesn't support geolocation!");
+                   callbacks[events.NO_GEO_SUPPORT].fire({msg : "Your PC doesn't support geolocation!"});
                    noGeo_flag = true;
                 }
                 handleFakeBoatPositionUpdate();
@@ -770,7 +771,7 @@
             if(alarmsSettings.LEAVE_SECURITY_CIRCLE && activeSecurityCircle) {
                 var dist = getDistanceFromCircle();
                 if(dist > globalSettings.CIRCLE_RADIUS) {
-                    output.warning("You have left the security circle!");
+                    callbacks[events.LEFT_SECURITY_CIRCLE].fire({msg : "You have left the security circle!"});
                 }
             }
         }
@@ -1133,7 +1134,7 @@
         */
         function handleAddNewRoute() {
             if(isTracking) {
-                callbacks[events.TRACKING_ACTIVE].fire("This options is disabled because tracking is active!");
+                callbacks[events.TRACKING_ACTIVE].fire({msg : "This options is disabled because tracking is active!"});
                 return;
             }
             

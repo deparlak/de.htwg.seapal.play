@@ -64,6 +64,10 @@ $(document).ready(function() {
     });
 
     map.addCallback(events.TRACKING_ACTIVE, function (self) {
-        output.warning(self);
+        output.warning(self.msg);
+    });
+    
+    map.addCallback(events.LEFT_SECURITY_CIRCLE, function (self) {
+        output.warning(self.msg);
     });
 });
