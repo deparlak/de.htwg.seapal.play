@@ -59,22 +59,25 @@ $(document).ready(function() {
 
     menu.addCallback('leftclick', 'icon-alarms', function (self) {
         var settings = map.getAlarmsSettings();
-        var template = Handlebars.compile($('#alarms_Template').text());
+        var template = Handlebars.compile($("#alarms_Template").text());
         var html = template(settings);
-
+        var state = settings.LEAVE_SECURITY_CIRCLE;
         $('#alarmsInputForm').html(html);
         $('#modal-form_alarms').modal('show');
 
         if(!alreadySetAlarmsSettingsFlag) {
             alreadySetAlarmsSettingsFlag = true;
             $('#modal-form_alarms').submit(function() {
-                var boundData = Handlebars.getBoundData(settings);
-                console.log(boundData);
-                map.setAlarmsSettings(boundData);
                 $('#modal-form_alarms').modal('hide');
+                console.log(settings)
                 return false;
             });
-        }
+        }        
+
+        $('#alertSecurityCircle').click(function() {
+            settings.LEAVE_SECURITY_CIRCLE = !state;
+            map.setAlarmsSettings(map.getAlarmsSettings());
+        });
     });    
 
     menu.addCallback('leftclick', 'icon-settings', function (self) {
