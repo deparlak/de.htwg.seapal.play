@@ -7,7 +7,8 @@
 
 $(document).ready(function() {
 
-    var alreadySetFlag = false; // Checks whether the submit event is already captured by the specific method
+    var alreadySetGlobalSettingsFlag = false; // Checks whether the submit event is already captured by the specific method
+    var alreadySetAlarmsSettingsFlag = false; // Checks whether the submit event is already captured by the specific method
 
     /* on close of the menu, hide all menu-footers which are possible open. */
     menu.on('close', function () {
@@ -56,6 +57,26 @@ $(document).ready(function() {
         output.info("Add-ons are not supported in the web app. With Add-ons you can download for example offline maps to use the app without an internet connection.");
     });
 
+    menu.addCallback('leftclick', 'icon-alarms', function (self) {
+        var settings = map.getAlarmsSettings();
+        var template = Handlebars.compile($('#alarms_Template').text());
+        var html = template(settings);
+
+        $('#alarmsInputForm').html(html);
+        $('#modal-form_alarms').modal('show');
+
+        if(!alreadySetAlarmsSettingsFlag) {
+            alreadySetAlarmsSettingsFlag = true;
+            $('#modal-form_alarms').submit(function() {
+                var boundData = Handlebars.getBoundData(settings);
+                console.log(boundData);
+                map.setAlarmsSettings(boundData);
+                $('#modal-form_alarms').modal('hide');
+                return false;
+            });
+        }
+    });    
+
     menu.addCallback('leftclick', 'icon-settings', function (self) {
         var settings = map.getGlobalSettings();
         var template = Handlebars.compile($("#globalSettings_Template").text());
@@ -64,10 +85,10 @@ $(document).ready(function() {
         $('#globalSettingsInputForm').html(html);
         $('#modal-form_globalSettings').modal('show');
 
-        if(!alreadySetFlag) {
-            alreadySetFlag = true;
+        if(!alreadySetGlobalSettingsFlag) {
+            alreadySetGlobalSettingsFlag = true;
             $('#modal-form_globalSettings').submit(function() {
-                var boundData = Handlebars.getBoundData(settings);
+                var boundData = Handlebars.getBoundData(settings);                
                 map.setGlobalSettings(boundData);
                 $('#modal-form_globalSettings').modal('hide');
                 return false;

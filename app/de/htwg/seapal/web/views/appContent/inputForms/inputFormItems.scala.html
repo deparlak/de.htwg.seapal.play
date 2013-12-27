@@ -3,3 +3,84 @@
         <option value={{id}}>{{label}}</option>
     {{/each}}
 </script>
+
+<script type="text/x-handlebars" id="globalSettings_Template">
+    <div class="row">
+        <div class="centered col-12 col-sm-8">
+            <label for="distanceUnit">Unit for distance</label>
+        </div>
+        <div class="col-12 col-sm-4">
+            <select name="distanceUnit" tabindex="1" {{bindData "DISTANCE_UNIT"}}>
+                {{#select DISTANCE_UNIT}}
+                <option value="globalSettings_nautmil">Naut. miles</option>
+                <option value="globalSettings_km">Kilometer</option>
+                <option value="globalSettings_mil">Miles</option>
+                {{/select}}
+            </select>
+        </div>
+    </div>
+    <div class="row">
+        <div class="centered col-12 col-sm-8">
+            <label for="temperatureUnit">Unit for temperature</label>
+        </div>
+        <div class="col-12 col-sm-4">
+            <select name="temperatureUnit" tabindex="2" {{bindData "TEMPERATURE_UNIT"}}>
+                {{#select TEMPERATURE_UNIT}}
+                <option value="globalSettings_celsius">°C</option>
+                <option value="globalSettings_fahrenheit">°F</option>
+                <option value="globalSettings_kelvin">°K</option>
+                {{/select}}
+            </select>
+        </div>
+    </div>
+    <div class="row">
+        <div class="centered col-12 col-sm-8">
+            <label for="trackInteral">Track record interval [s]</label>
+        </div>
+        <div class="col-12 col-sm-4">
+            <input type="number" min="1" step="1" name="trackInteral" tabindex="3" {{bindData "TRACKING_DELAY"}} value={{TRACKING_DELAY}} required />
+        </div>
+    </div>
+    <div class="row">
+        <div class="centered col-12 col-sm-8">
+            <label for="historyTrend">History trend for dashboard [s]</label>
+        </div>
+        <div class="col-12 col-sm-4">
+            <input type="number" min="1" step="1" name="historyTrend" tabindex="4" {{bindData "HISTORY_TREND"}} value={{HISTORY_TREND}} required />
+        </div>
+    </div>
+    <div class="row">
+        <div class="centered col-12 col-sm-8">
+            <label for="circleRadius">Security circle radius [m]</label>
+        </div>
+        <div class="col-12 col-sm-4">
+            <input type="number" min="1" step="1" name="circleRadius" tabindex="5" {{bindData "CIRCLE_RADIUS"}} value={{CIRCLE_RADIUS}} required />
+        </div>
+    </div>
+    <div class="inputForm-footer">
+        <button type="submit" class="btn btn-primary">Save</button>
+        <button type="button" class="btn btn-danger" data-dismiss="modal">Abort</button>
+    </div>
+</script>
+
+<script type="text/x-handlebars" id="alarms_Template">
+    <div class="row">
+        <div class="centered col-12 col-sm-10">
+            <label for="onoffswitch">Enable leave security circle alarm</label>
+        </div>
+        <div class="col-12 col-sm-2">
+            <input type="checkbox" name="onoffswitch" tabindex="1" {{bindData "LEAVE_SECURITY_CIRCLE"}} {{bindAttr checked="LEAVE_SECURITY_CIRCLE"}} />
+            <!--<div class="onoffswitch">
+                <input type="checkbox" name="onoffswitch" class="onoffswitch-checkbox" id="myonoffswitch">
+                <label class="onoffswitch-label" for="myonoffswitch">
+                    <div class="onoffswitch-inner"></div>
+                    <div class="onoffswitch-switch"></div>
+                </label>
+            </div>-->
+        </div>
+    </div>
+    <div class="inputForm-footer">
+        <button type="submit" class="btn btn-primary">Save</button>
+        <button type="button" class="btn btn-danger" data-dismiss="modal">Abort</button>
+    </div>
+</script>

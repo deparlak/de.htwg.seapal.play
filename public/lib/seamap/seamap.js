@@ -306,12 +306,24 @@
             }
         }
 
+        /* Gets the global settings */
         this.getGlobalSettings = function() {
             return globalSettings;
         }
 
+        /* Sets the global settings */
         this.setGlobalSettings = function(settings) {
             globalSettings = settings;
+        }
+
+        /* Gets the settings for the alarms */
+        this.getAlarmsSettings = function() {
+            return alarmsSettings;
+        }
+
+        /* Sets the settings for the alarms */
+        this.setAlarmsSettings = function(settings) {
+            alarmsSettings = settings;
         }
 
         /* The security circle on the map */
@@ -327,8 +339,10 @@
 
         };
 
-        var distanceUnits = ["Miles", "Kilometer", "Naut-miles"];
-        var temperatureUnits = ["°C", "°F", "°K"];
+        /* The settings for the alarms */
+        var alarmsSettings = {
+            LEAVE_SECURITY_CIRCLE : true
+        }
         
         /* The callbacks list can be used to get notified about events. */
         var callbacks = {};
@@ -721,6 +735,7 @@
         */
         function startBoatAnimation(){
             get_location();
+            handleLeaveSecurityCircle();
             setTimeout(function(){startBoatAnimation();}, 5000);
         }
         /**
@@ -749,6 +764,18 @@
         }
 
         /**
+         * Handles what happens when security circle is left
+         */
+        function handleLeaveSecurityCircle() {
+            if(alarmsSettings.LEAVE_SECURITY_CIRCLE && activeSecurityCircle) {
+                var dist = getDistanceFromCircle();
+                if(dist > globalSettings.CIRCLE_RADIUS) {
+                    output.warning("You have left the security circle!");
+                }
+            }
+        }
+
+        /**
         * *********************************************************************************
         * Handles the boat position update.
         * *********************************************************************************
@@ -757,7 +784,7 @@
             currentPosition = new google.maps.LatLng(position.coords.latitude, position.coords.longitude);
             currentSpeed = position.coords.speed;
             currentCourse = position.coords.heading;
-            handleBoatPositionUpdate(currentPosition);
+            handleBoatPositionUpdate(currentPosition);            
         }
         /**
          * Handles the boat position with fake/generated geolocation data
