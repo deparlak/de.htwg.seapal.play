@@ -1,14 +1,15 @@
 package de.htwg.seapal.module;
 
 import com.google.inject.Provides;
+import com.google.inject.Singleton;
 import com.google.inject.name.Named;
 import com.google.inject.name.Names;
+import de.htwg.seapal.controller.impl.IMainController;
+import de.htwg.seapal.controller.impl.MainController;
 import de.htwg.seapal.database.*;
 import de.htwg.seapal.database.impl.*;
 import de.htwg.seapal.utils.logger.iml.WebLogger;
 import de.htwg.seapal.utils.logging.ILogger;
-import de.htwg.seapal.database.impl.AccountDatabase;
-import de.htwg.seapal.database.IAccountDatabase;
 import org.ektorp.CouchDbConnector;
 import org.ektorp.CouchDbInstance;
 import org.ektorp.impl.StdCouchDbConnector;
@@ -42,6 +43,8 @@ public class SeapalTestModule extends SeapalBaseTestModule {
 		bind(IMarkDatabase.class).to(MarkDatabase.class);
 		bind(String.class).annotatedWith(Names.named("databaseOfRace")).toInstance("seapal_race_db");
 		bind(IRaceDatabase.class).to(RaceDatabase.class);
+
+        bind(IMainController.class).to(MainController.class).in(Singleton.class);
 	}
 
     @Provides

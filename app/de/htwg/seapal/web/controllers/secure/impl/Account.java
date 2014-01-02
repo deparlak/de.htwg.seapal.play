@@ -16,14 +16,14 @@ public final class Account
     private long timeout;
 
     public Account() {
-        setId(UUID.randomUUID().toString());
+        super(UUID.randomUUID().toString());
         this.accountName = "";
         this.accountPassword = "";
         this.repeatedAccountPassword = "";
     }
 
     public Account(IAccount account) {
-        setId(account.getId());
+        super(account.getId());
         this.accountName = account.getAccountName();
         this.accountPassword = account.getAccountPassword();
         this.repeatedAccountPassword = account.getRepeatedAccountPassword();

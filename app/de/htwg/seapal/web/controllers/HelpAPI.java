@@ -74,15 +74,15 @@ public class HelpAPI
 
         IBoat boat = new Boat();
         boat.setAccount(owner);
-        boat.addCrewMember(crewMember1UUID);
-        boat.addCrewMember(crewMember2UUID);
+        // boat.addCrewMember(crewMember1UUID);
+        // boat.addCrewMember(crewMember2UUID);
         boatController.saveBoat(boat);
         dom.put("boat", Json.toJson(boatController.getBoat(boat.getUUID())));
 
         IMark mark = new Mark();
         mark.setAccount(owner);
-        mark.addCrewMember(crewMember1UUID);
-        mark.addCrewMember(crewMember2UUID);
+        // mark.addCrewMember(crewMember1UUID);
+        // mark.addCrewMember(crewMember2UUID);
         markController.saveMark(mark);
         dom.put("mark", Json.toJson(markController.getMark(mark.getUUID())));
 
@@ -93,22 +93,22 @@ public class HelpAPI
 
         IRoute route = new Route();
         route.setAccount(owner);
-        route.addCrewMember(crewMember1UUID);
-        route.addCrewMember(crewMember2UUID);
+        // route.addCrewMember(crewMember1UUID);
+        // route.addCrewMember(crewMember2UUID);
         routeController.saveRoute(route);
         dom.put("route", Json.toJson(routeController.getRoute(route.getUUID())));
 
         ITrip trip = new Trip();
         trip.setAccount(owner);
-        trip.addCrewMember(crewMember1UUID);
-        trip.addCrewMember(crewMember2UUID);
+        // trip.addCrewMember(crewMember1UUID);
+        // trip.addCrewMember(crewMember2UUID);
         tripController.saveTrip(trip);
         dom.put("trip", Json.toJson(tripController.getTrip(trip.getUUID())));
 
         IWaypoint waypoint = new Waypoint();
         waypoint.setAccount(owner);
-        waypoint.addCrewMember(crewMember1UUID);
-        waypoint.addCrewMember(crewMember2UUID);
+        // waypoint.addCrewMember(crewMember1UUID);
+        // waypoint.addCrewMember(crewMember2UUID);
         waypointController.saveWaypoint(waypoint);
         dom.put("waypoint", Json.toJson(waypointController.getWaypoint(waypoint.getUUID())));
 

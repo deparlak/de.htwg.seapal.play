@@ -11,6 +11,13 @@ GET           /app                                              de.htwg.seapal.w
 #GET		/trip/$tripId<[0-9a-fA-F\-]+>/waypoint		de.htwg.seapal.web.controllers.Application.waypoint_add(tripId: UUID)
 #GET		/waypoint/$waypointId<[0-9a-fA-F\-]+>		@de.htwg.seapal.web.controllers.Application.waypoint_show(waypointId: UUID)
 
+GET /api/$document<(boat|mark|person|route|trip|waypoint)>/$id<[0-9a-fA-F\-]+> @de.htwg.seapal.web.controllers.MainAPI.singleDocument(id: UUID, document: String)
+DELETE        /api/$document<(boat|mark|person|route|trip|waypoint)>/$id<[0-9a-fA-F\-]+>        @de.htwg.seapal.web.controllers.MainAPI.deleteDocument(id: UUID, document: String)
+GET        /api/$document<(boat|mark|person|route|trip|waypoint)>/$scope<(own|foreign|all)>        @de.htwg.seapal.web.controllers.MainAPI.getDocuments(document: String, scope: String)
+
+
+
+
 # Boats
 GET           /api/boat/$id<[0-9a-fA-F\-]+>        @de.htwg.seapal.web.controllers.BoatAPI.boatAsJson(id: UUID)
 GET           /api/boat        @de.htwg.seapal.web.controllers.BoatAPI.boatsAsJson()

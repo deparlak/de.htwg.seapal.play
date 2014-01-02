@@ -70,7 +70,6 @@ public class TripAPI extends Controller {
                 logger.info("TripAPI", "Trip created");
 				return created(response);
 			} else {
-                waypointController.updateCrew(trip.getUUID(), trip.getCrew());
 				logger.info("TripAPI", "Trip updated");
 				return ok(response);
 			}
