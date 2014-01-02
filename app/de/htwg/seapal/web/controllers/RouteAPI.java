@@ -52,7 +52,7 @@ public class RouteAPI
         } else {
             response.put("success", true);
             IRoute trip = filledForm.get();
-            trip.setOwner(session(IAccountController.AUTHN_COOKIE_KEY));
+            trip.setAccount(session(IAccountController.AUTHN_COOKIE_KEY));
             boolean created = controller.saveRoute(trip);
             if (created) {
                 logger.info("RouteAPI", "Route created");

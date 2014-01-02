@@ -52,7 +52,7 @@ public class MarkAPI
 			response.put("success", true);
             Mark mark = filledForm.get();
 
-            mark.setOwner(session(IAccountController.AUTHN_COOKIE_KEY));
+            mark.setAccount(session(IAccountController.AUTHN_COOKIE_KEY));
 
 			boolean created = controller.saveMark(mark);
             if(created) {

@@ -54,7 +54,7 @@ public class BoatAPI extends Controller {
 			response.put("success", true);
             Boat boat = filledForm.get();
 
-            boat.setOwner(session(IAccountController.AUTHN_COOKIE_KEY));
+            boat.setAccount(session(IAccountController.AUTHN_COOKIE_KEY));
 
 			boolean created = controller.saveBoat(boat);
             if(created) {
