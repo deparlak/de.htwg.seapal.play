@@ -2,8 +2,11 @@
    "_id": "_design/Person",
    "language": "coffeescript",
    "views": {
-       "by_account": {
-           "map": "(doc)->\n emit doc.owner, doc"
+       "own": {
+           "map": "(doc)->\n if doc? and doc.owner? and doc.owner.length? and doc.owner.length > 0\n  emit doc.owner, doc"
+       },
+       "singleDocument": {
+           "map": "(doc)->\n if doc? and doc.owner? and doc.owner.length? and doc.owner.length > 0 and doc._id?\n  emit doc.owner + doc._id, doc"
        }
    },
    "validate_doc_update": "(newDoc,oldDoc,userCtx)->\n if oldDoc? and !newDoc._deleted? and newDoc.owner isnt oldDoc.owner\n  throw forbidden: 'old and new user dont match'"

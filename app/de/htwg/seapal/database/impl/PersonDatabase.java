@@ -85,4 +85,17 @@ public class PersonDatabase
     public List<Person> queryView(final String viewName, final String key) {
         return super.queryView(viewName, key);
     }
+
+    @Override
+    public Person getAccount(final String email)
+            throws Exception {
+        List<Person> accounts = super.queryView("by_email", email);
+        if (accounts.size() > 1) {
+            throw new Exception("more than one account exists!");
+        } else if (accounts.size() == 0) {
+            return null;
+        } else {
+            return accounts.get(0);
+        }
+    }
 }

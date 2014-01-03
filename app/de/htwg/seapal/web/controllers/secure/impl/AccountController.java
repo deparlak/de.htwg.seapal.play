@@ -4,7 +4,7 @@ import com.google.inject.Inject;
 import de.htwg.seapal.database.IAccountDatabase;
 import de.htwg.seapal.utils.logging.ILogger;
 import de.htwg.seapal.utils.observer.Observable;
-import de.htwg.seapal.web.controllers.helpers.PasswordHash;
+import de.htwg.seapal.controller.impl.PasswordHash;
 import de.htwg.seapal.web.controllers.secure.IAccount;
 import de.htwg.seapal.web.controllers.secure.IAccountController;
 import play.data.Form;
@@ -129,6 +129,7 @@ public final class AccountController
             throws Exception {
         return db.getAccount(email) != null;
     }
+
     @Override
     public List<? extends IAccount> queryView(final String viewName, final String key) {
         return db.queryViews(viewName, key);

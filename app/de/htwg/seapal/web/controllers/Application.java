@@ -3,13 +3,14 @@ package de.htwg.seapal.web.controllers;
 import com.google.inject.Inject;
 import de.htwg.seapal.controller.ITripController;
 import de.htwg.seapal.controller.IWaypointController;
+import de.htwg.seapal.model.impl.Person;
 import de.htwg.seapal.utils.logging.ILogger;
 import de.htwg.seapal.web.controllers.helpers.Menus;
 import de.htwg.seapal.web.controllers.secure.impl.Account;
 import de.htwg.seapal.web.views.html.app;
+import de.htwg.seapal.web.views.html.appContent.forgottenPassword;
 import de.htwg.seapal.web.views.html.appContent.signInSeapal;
 import de.htwg.seapal.web.views.html.appContent.signUpSeapal;
-import de.htwg.seapal.web.views.html.appContent.forgottenPassword;
 import de.htwg.seapal.web.views.html.impressum;
 import de.htwg.seapal.web.views.html.index;
 import play.Routes;
@@ -44,7 +45,7 @@ public class Application
     }
 
     public static Result login() {
-        return ok(signInSeapal.render(DynamicForm.form(Account.class), routes.AccountAPI.login()));
+        return ok(signInSeapal.render(DynamicForm.form(Person.class), routes.AccountAPI.login()));
     }
 
     public static Result forgotten() {
@@ -52,7 +53,7 @@ public class Application
     }
 
     public static Result signup() {
-        return ok(signUpSeapal.render(DynamicForm.form(Account.class), routes.AccountAPI.signup()));
+        return ok(signUpSeapal.render(DynamicForm.form(Person.class), routes.AccountAPI.signup()));
     }
     /*
     @Security.Authenticated(AccountAPI.Secured.class)

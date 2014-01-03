@@ -1,7 +1,7 @@
 package de.htwg.seapal.web.controllers;
 
 import com.google.inject.Inject;
-import de.htwg.seapal.controller.impl.IMainController;
+import de.htwg.seapal.controller.IMainController;
 import de.htwg.seapal.model.IModel;
 import de.htwg.seapal.web.controllers.secure.IAccountController;
 import org.codehaus.jackson.JsonNode;

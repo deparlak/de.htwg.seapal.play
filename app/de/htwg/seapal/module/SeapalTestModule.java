@@ -4,7 +4,7 @@ import com.google.inject.Provides;
 import com.google.inject.Singleton;
 import com.google.inject.name.Named;
 import com.google.inject.name.Names;
-import de.htwg.seapal.controller.impl.IMainController;
+import de.htwg.seapal.controller.IMainController;
 import de.htwg.seapal.controller.impl.MainController;
 import de.htwg.seapal.database.*;
 import de.htwg.seapal.database.impl.*;
