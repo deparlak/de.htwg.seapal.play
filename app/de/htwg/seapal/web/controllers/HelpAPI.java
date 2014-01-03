@@ -2,6 +2,7 @@ package de.htwg.seapal.web.controllers;
 
 import com.google.inject.Inject;
 import de.htwg.seapal.controller.*;
+import de.htwg.seapal.controller.impl.PasswordHash;
 import de.htwg.seapal.model.*;
 import de.htwg.seapal.model.impl.*;
 import de.htwg.seapal.utils.logging.ILogger;
@@ -11,6 +12,8 @@ import play.libs.Json;
 import play.mvc.Controller;
 import play.mvc.Result;
 
+import java.security.NoSuchAlgorithmException;
+import java.security.spec.InvalidKeySpecException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -37,18 +40,23 @@ public class HelpAPI
     @Inject
     private ILogger logger;
 
-    public Result help() {
+    public Result help()
+            throws InvalidKeySpecException, NoSuchAlgorithmException {
         ObjectNode node = Json.newObject();
         Map<String, JsonNode> dom = new HashMap<>();
         Map<String, JsonNode> domACL = new HashMap<>();
 
         IPerson crewMember1 = new Person();
         crewMember1.setAccount(crewMember1.getUUID().toString());
+        crewMember1.setEmail("crewMember1@123.de");
+        crewMember1.setPassword(PasswordHash.createHash("test"));
         personController.savePerson(crewMember1);
         domACL.put("crewMember1", Json.toJson(personController.getPerson(crewMember1.getUUID())));
 
         IPerson crewMember2 = new Person();
         crewMember2.setAccount(crewMember2.getUUID().toString());
+        crewMember2.setEmail("crewMember2@123.de");
+        crewMember2.setPassword(PasswordHash.createHash("test"));
         personController.savePerson(crewMember2);
         domACL.put("crewMember2", Json.toJson(personController.getPerson(crewMember2.getUUID())));
 
@@ -58,7 +66,9 @@ public class HelpAPI
         IPerson account = new Person();
         account.setAccount(account.getUUID().toString());
         account.addFriend(crewMember1UUID);
-        account.addFriend(crewMember1UUID);
+        account.addFriend(crewMember2UUID);
+        account.setEmail("account@123.de");
+        account.setPassword(PasswordHash.createHash("test"));
         personController.savePerson(account);
         domACL.put("captain", Json.toJson(personController.getPerson(account.getUUID())));
 

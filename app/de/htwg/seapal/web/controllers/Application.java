@@ -91,11 +91,7 @@ public class Application
     public static Result javascriptRoutes() {
         response().setContentType("text/javascript");
         return ok(Routes.javascriptRouter("jsRoutes",
-                // Routes
-
-                // API
-                de.htwg.seapal.web.controllers.routes.javascript.BoatAPI.boatAsJson(), de.htwg.seapal.web.controllers.routes.javascript.BoatAPI.boatsAsJson(), de.htwg.seapal.web.controllers.routes.javascript.BoatAPI.deleteBoat(), de.htwg.seapal.web.controllers.routes.javascript.BoatAPI.addBoat(), de.htwg.seapal.web.controllers.routes.javascript.TripAPI.tripsAsJson(), de.htwg.seapal.web.controllers.routes.javascript.TripAPI.tripAsJson(), de.htwg.seapal.web.controllers.routes.javascript.TripAPI.allTripsAsJson(), de.htwg.seapal.web.controllers.routes.javascript.TripAPI.addTrip(), de.htwg.seapal.web.controllers.routes.javascript.WaypointAPI.addWaypoint(), de.htwg.seapal.web.controllers.routes.javascript.WaypointAPI.waypointAsJson(), de.htwg.seapal.web.controllers.routes.javascript.WaypointAPI.waypointsAsJson()
-                //de.htwg.seapal.web.controllers.routes.javascript.BoatPositionAPI.current(),
+                routes.javascript.MainAPI.singleDocument(), routes.javascript.MainAPI.deleteDocument(), routes.javascript.MainAPI.getDocuments(), routes.javascript.MainAPI.getByParent(), routes.javascript.MainAPI.createDocument()
         ));
     }
 }
