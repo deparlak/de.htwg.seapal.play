@@ -14,7 +14,7 @@ GET           /app                                                              
 GET           /api/$document<(boat|mark|person|route|trip|waypoint)>/$id<[0-9a-fA-F\-]+>        @de.htwg.seapal.web.controllers.MainAPI.singleDocument(id: UUID, document: String)
 DELETE        /api/$document<(boat|mark|person|route|trip|waypoint)>/$id<[0-9a-fA-F\-]+>        @de.htwg.seapal.web.controllers.MainAPI.deleteDocument(id: UUID, document: String)
 GET           /api/$document<(boat|mark|person|route|trip|waypoint)>/$scope<(own|foreign|all)>        @de.htwg.seapal.web.controllers.MainAPI.getDocuments(document: String, scope: String)
-GET           /api/$document<(boat|mark|route|trip|waypoint)>/byparent/$parent<(boat|track)>/$id<[0-9a-fA-F\-]+>        @de.htwg.seapal.web.controllers.MainAPI.getByParent(document: String, parent: String, id: UUID)
+GET           /api/$document<(trip|waypoint)>/byparent/$parent<(boat|track)>/$id<[0-9a-fA-F\-]+>        @de.htwg.seapal.web.controllers.MainAPI.getByParent(document: String, parent: String, id: UUID)
 POST          /api/$document<(boat|mark|route|trip|waypoint)> @de.htwg.seapal.web.controllers.MainAPI.createDocument(document: String)
 
 
