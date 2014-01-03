@@ -2,11 +2,14 @@
    "_id": "_design/Person",
    "language": "coffeescript",
    "views": {
-       "own": {
-           "map": "(doc)->\n if doc? and doc.owner? and doc.owner.length? and doc.owner.length > 0\n  emit doc.owner, doc"
+       "by_email": {
+           "map": "(doc)->\n emit doc.email, doc"
        },
-       "singleDocument": {
-           "map": "(doc)->\n if doc? and doc.owner? and doc.owner.length? and doc.owner.length > 0 and doc._id?\n  emit doc.owner + doc._id, doc"
+       "friends": {
+           "map": "(doc)->\n for friend in doc.friendList\n  emit doc._id, friend"
+       },
+       "resetToken": {
+           "map": "(doc)->\n ptrn = /^\\s*-?[0-9]{1,10}\\s*$/;\n if doc? and doc.resetToken? and ptrn.exec doc.resetToken and doc.resetToken != 0\n  emit doc.resetToken, doc\n"
        }
    },
    "validate_doc_update": "(newDoc,oldDoc,userCtx)->\n if oldDoc? and !newDoc._deleted? and newDoc.owner isnt oldDoc.owner\n  throw forbidden: 'old and new user dont match'"

@@ -3,15 +3,16 @@ package de.htwg.seapal.web.controllers;
 import com.google.inject.Inject;
 import de.htwg.seapal.controller.IMainController;
 import de.htwg.seapal.model.IModel;
+import de.htwg.seapal.model.ModelDocument;
+import de.htwg.seapal.model.impl.*;
 import de.htwg.seapal.web.controllers.secure.IAccountController;
 import org.codehaus.jackson.JsonNode;
+import play.data.Form;
 import play.libs.Json;
 import play.mvc.Controller;
 import play.mvc.Result;
 
-import java.util.Collection;
-import java.util.LinkedList;
-import java.util.UUID;
+import java.util.*;
 
 public final class MainAPI
         extends Controller {
@@ -21,6 +22,17 @@ public final class MainAPI
 
     @Inject
     private IMainController controller;
+
+    private Map<String, Form<? extends ModelDocument>> forms;
+
+    public MainAPI() {
+        forms = new HashMap<>();
+        forms.put("boat", Form.form(Boat.class));
+        forms.put("mark", Form.form(Mark.class));
+        forms.put("route", Form.form(Route.class));
+        forms.put("trip", Form.form(Trip.class));
+        forms.put("waypoint", Form.form(Waypoint.class));
+    }
 
     public Result singleDocument(final UUID id, final String document) {
 
@@ -46,5 +58,12 @@ public final class MainAPI
         }
 
         return ok(Json.toJson(list));
+    }
+    public Result getByParent(String document, String parent, UUID id) {
+        return ok(Json.toJson(controller.getByParent(document, parent, session(IAccountController.AUTHN_COOKIE_KEY), id)));
+    }
+
+    public Result createDocument(String document) {
+        return ok(controller.creatDocument(document, forms.get(document).bindFromRequest().get()));
     }
 }

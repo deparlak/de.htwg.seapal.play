@@ -1,9 +1,9 @@
 # Routes
 
 # Static pages
-GET           /                                                 de.htwg.seapal.web.controllers.Application.index()
-GET           /impressum                                        de.htwg.seapal.web.controllers.Application.impressum()
-GET           /app                                              de.htwg.seapal.web.controllers.Application.app()
+GET           /                                                                                                          de.htwg.seapal.web.controllers.Application.index()
+GET           /impressum                                                                                                 de.htwg.seapal.web.controllers.Application.impressum()
+GET           /app                                                                                                       de.htwg.seapal.web.controllers.Application.app()
 #GET		/trips										de.htwg.seapal.web.controllers.Application.trip_list(id: UUID = null)
 #GET		/boat/$boatId<[0-9a-fA-F\-]+>/trips			de.htwg.seapal.web.controllers.Application.trip_list(boatId: UUID)
 #GET		/boat/$boatId<[0-9a-fA-F\-]+>/trip  		de.htwg.seapal.web.controllers.Application.trip_add(boatId: UUID)
@@ -11,11 +11,11 @@ GET           /app                                              de.htwg.seapal.w
 #GET		/trip/$tripId<[0-9a-fA-F\-]+>/waypoint		de.htwg.seapal.web.controllers.Application.waypoint_add(tripId: UUID)
 #GET		/waypoint/$waypointId<[0-9a-fA-F\-]+>		@de.htwg.seapal.web.controllers.Application.waypoint_show(waypointId: UUID)
 
-GET /api/$document<(boat|mark|person|route|trip|waypoint)>/$id<[0-9a-fA-F\-]+> @de.htwg.seapal.web.controllers.MainAPI.singleDocument(id: UUID, document: String)
+GET           /api/$document<(boat|mark|person|route|trip|waypoint)>/$id<[0-9a-fA-F\-]+>        @de.htwg.seapal.web.controllers.MainAPI.singleDocument(id: UUID, document: String)
 DELETE        /api/$document<(boat|mark|person|route|trip|waypoint)>/$id<[0-9a-fA-F\-]+>        @de.htwg.seapal.web.controllers.MainAPI.deleteDocument(id: UUID, document: String)
-GET        /api/$document<(boat|mark|person|route|trip|waypoint)>/$scope<(own|foreign|all)>        @de.htwg.seapal.web.controllers.MainAPI.getDocuments(document: String, scope: String)
-
-
+GET           /api/$document<(boat|mark|person|route|trip|waypoint)>/$scope<(own|foreign|all)>        @de.htwg.seapal.web.controllers.MainAPI.getDocuments(document: String, scope: String)
+GET           /api/$document<(boat|mark|route|trip|waypoint)>/byparent/$parent<(boat|track)>/$id<[0-9a-fA-F\-]+>        @de.htwg.seapal.web.controllers.MainAPI.getByParent(document: String, parent: String, id: UUID)
+POST          /api/$document<(boat|mark|route|trip|waypoint)> @de.htwg.seapal.web.controllers.MainAPI.createDocument(document: String)
 
 
 # Boats
@@ -43,27 +43,27 @@ POST          /api/route        @de.htwg.seapal.web.controllers.RouteAPI.addRout
 DELETE        /api/route/$id<[0-9a-fA-F\-]+>        @de.htwg.seapal.web.controllers.RouteAPI.deleteRoute(id: UUID)
 
 # Marks
-GET           /api/mark       @de.htwg.seapal.web.controllers.MarkAPI.marksAsJson()
+GET           /api/mark        @de.htwg.seapal.web.controllers.MarkAPI.marksAsJson()
 POST          /api/mark        @de.htwg.seapal.web.controllers.MarkAPI.addMark()
 DELETE        /api/mark/$id<[0-9a-fA-F\-]+>        @de.htwg.seapal.web.controllers.MarkAPI.deleteMark(id: UUID)
 GET           /api/mark/$id<[0-9a-fA-F\-]+>        @de.htwg.seapal.web.controllers.MarkAPI.markAsJson(id: UUID)
 
 # authentication
-GET           /login                                            de.htwg.seapal.web.controllers.Application.login()
+GET           /login                                                                                                     de.htwg.seapal.web.controllers.Application.login()
 POST          /login        @de.htwg.seapal.web.controllers.AccountAPI.login()
-GET           /logout                                           de.htwg.seapal.web.controllers.AccountAPI.logout()
-GET           /signup                                           de.htwg.seapal.web.controllers.Application.signup()
+GET           /logout                                                                                                    de.htwg.seapal.web.controllers.AccountAPI.logout()
+GET           /signup                                                                                                    de.htwg.seapal.web.controllers.Application.signup()
 POST          /signup        @de.htwg.seapal.web.controllers.AccountAPI.signup()
 # reset PW
-GET           /forgottenForm                                    de.htwg.seapal.web.controllers.Application.forgotten()
+GET           /forgottenForm                                                                                             de.htwg.seapal.web.controllers.Application.forgotten()
 GET           /pwreset/$token<-?[0-9]{1,10}>        @de.htwg.seapal.web.controllers.AccountAPI.resetForm(token: Int)
 POST          /forgotten        @de.htwg.seapal.web.controllers.AccountAPI.requestNewPassword()
 POST          /reset        @de.htwg.seapal.web.controllers.AccountAPI.resetPassword()
 
 # Javascript routing
-GET           /assets/javascripts/routes                        de.htwg.seapal.web.controllers.Application.javascriptRoutes()
+GET           /assets/javascripts/routes                                                                                 de.htwg.seapal.web.controllers.Application.javascriptRoutes()
 
 # Map static resources from the /public folder to the /assets URL path
-GET           /assets/*file                                     controllers.Assets.at(path="/public", file)
+GET           /assets/*file                                                                                              controllers.Assets.at(path="/public", file)
 
-GET /help @de.htwg.seapal.web.controllers.HelpAPI.help()
+GET           /help        @de.htwg.seapal.web.controllers.HelpAPI.help()
