@@ -155,17 +155,11 @@
     */
     $.seamap = function(element){    
         /* add a callback function to get notified about actions */
-        this.addCallback = function (event, method) {
-            for(var actual in events) {
-                if(events[actual] === event) {
-                    if (!callbacks[event]) {
-                        callbacks[event] = $.Callbacks();
-                    }
-                    callbacks[event].add(method);
-                    return;
-                }
-            }
-            throw("Cannot add Callback for the event '"+event+"', because this event does not exist.");
+        this.addCallback = function (e, method) {
+            if (callbacks[e] === undefined) {
+				throw("Cannot add Callback for the event '"+e+"', because this event does not exist.");
+			}
+            callbacks[e].add(method);
         };
         /* remove a route,mark,track,boat,... */
         this.remove = function(type, id) {
@@ -243,11 +237,11 @@
         }
         /* hide the mark by id */
         this.hideMark = function (id) {
-            marks[id].onMap.setVisible(false);
+            mark[id].onMap.setVisible(false);
         };
         /* visible the mark by id */
         this.visibleMark = function (id) {
-            marks[id].onMap.setVisible(true);
+            mark[id].onMap.setVisible(true);
         };
         /* remove a mark with a specified id */
         this.removeMark = function (id) {
@@ -419,20 +413,20 @@
 
         // track
         var track = {};
-        var trackCounter = 1;
+        var trackCount = 1;
         var activeTrack = null;
 
         // routes
         var route = {};
-        var routeCounter = 1;
+        var routeCount = 1;
         var activeRoute = null;
 
         // distance
         var distanceroute = null;
         
-        // marks
-        var marks = {};
-        var marksCount = 1;
+        // mark
+        var mark = {};
+        var markCount = 1;
         var selectedMark = null;
         
         //temporary marker
@@ -452,6 +446,11 @@
         var destpath = new google.maps.Polyline(options.polyOptions);
 
         init();
+		
+		/* init callback list */
+		for(var key in event) {
+			callbacks[event[key]] = $.Callbacks();
+		}
 
         startBoatAnimation();
         
@@ -1114,8 +1113,8 @@
             hideCrosshairMarker();
 
             var newRoute = {}
-            newRoute.id = routeCounter.toString();
-            newRoute.label = "Route "+routeCounter;
+            newRoute.id = routeCount.toString();
+            newRoute.label = "Route "+routeCount;
             newRoute.detailed = "created on blabla..";
             newRoute.onMap = new $.seamap.route(newRoute.id, map, "ROUTE");
             newRoute.updated = true;
@@ -1154,7 +1153,7 @@
             if (null != position) {
                 addRouteMarker(position);
             }
-            routeCounter++;
+            routeCount++;
             callbacks[event.CREATED_ROUTE].fire(newRoute);
         }
                 
@@ -1255,8 +1254,8 @@
         */
         function handleAddNewTrack() {
             var newTrack = {};
-            newTrack.id = trackCounter.toString();
-            newTrack.label = "Track " + trackCounter;
+            newTrack.id = trackCount.toString();
+            newTrack.label = "Track " + trackCount;
             newTrack.detailed = "created on blabla..";
             newTrack.onMap = new $.seamap.track(newTrack.id, map, "TRACK");
             newTrack.updated = true;
@@ -1265,7 +1264,7 @@
   
             activateTrack(newTrack); 
             
-            trackCounter++;
+            trackCount++;
             callbacks[event.CREATED_TRACK].fire(newTrack);
         }
                 
@@ -1424,8 +1423,8 @@
         */
         function addNewMark(position, image) {
             var newMark = {}
-            newMark.id = marksCount.toString();
-            newMark.name = "Mark "+marksCount;
+            newMark.id = markCount.toString();
+            newMark.name = "Mark "+markCount;
 			newMark.lat = position.lat();
 			newMark.lng = position.lng();
 			
@@ -1469,8 +1468,8 @@
                 }, 1000);
             });
             
-            marks[marksCount.toString()] = newMark;
-            marksCount++;
+            mark[markCount.toString()] = newMark;
+            markCount++;
             callbacks[event.ADDED_MARK].fire(newMark);
         }
 
@@ -1580,9 +1579,9 @@
         function deleteSelectedMark() {
             if(selectedMark != null) {
                 selectedMark.onMap.setMap(null);
-                delete marks[selectedMark.id];
+                delete mark[selectedMark.id];
                 callbacks[event.DELETED_MARK].fire(selectedMark);
-                console.log(marks);
+                console.log(mark);
             }
         }
 
