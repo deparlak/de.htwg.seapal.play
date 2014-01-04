@@ -6,36 +6,28 @@
  */
  
 $(document).ready(function() {    
+	var a = 0;
+	var b = 99;
+
     window.seamapSync =
     {
-        downloadBoats : function (self, output) {
-
-        },
-        downloadTracks : function (self, output) {
-        
-        },
-        downloadRoutes : function (self, output) {
-        
-        },
-        downloadMarks : function (self, output) {
-        
-        },
-        
-        
-        uploadBoat : function (self) {
-        
-        },
-        uploadTrack : function (self) {
-        
-        },
-        uploadRoute : function (self) {
-            console.log("uploadRoute");
+        create : function (type, obj, id) {
+            console.log("create "+type);
             console.log("-----------------");
-            console.log(self);
+			console.log(id);
+            console.log(obj);
+			console.log(a);
+			a++;
             console.log("-----------------");
         },
-        uploadMark : function (self) {
-        
+        remove : function (type, obj, id) {
+            console.log("delete "+type);
+            console.log("-----------------");
+			console.log(id);
+            console.log(obj);
+			console.log(b);
+			b++;
+            console.log("-----------------");
         },
     };
 });

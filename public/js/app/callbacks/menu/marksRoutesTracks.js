@@ -7,7 +7,7 @@
  
 $(document).ready(function() {    
     var lastSearch = {};
-    var active = "#marks";
+    var active = "#mark";
     var states = {normal : 0, remove : 1};
     var state = states.normal;
     var removeElements = {};
@@ -33,7 +33,7 @@ $(document).ready(function() {
     
     function removeSelection() {
         for (var i in removeElements) {
-            map.remove(active.substring(1, active.length), removeElements[i].data('id'));
+            map.remove(removeElements[i].data('type'), removeElements[i].data('id'));
             removeElements[i].remove();
         }
         state = states.normal;

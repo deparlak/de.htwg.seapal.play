@@ -165,15 +165,8 @@
         /* the required list holds all names of the methods which has to be defined. */
         var syncRequiredMethods = 
         [
-        'downloadBoats',         //trigger download of boats
-        'downloadTracks',        //trigger download of tracks
-        'downloadRoutes',        //trigger download of routes
-        'downloadMarks',         //trigger download of marks
-        
-        'uploadBoat',           //trigger upload of boat
-        'uploadTrack',          //trigger upload of track
-        'uploadRoute',          //trigger upload of route
-        'uploadMark',           //trigger upload of mark
+        'create',		        //create a new object or update an existing object. The decision if the object has to be created or updated has to be placed in the create method.
+        'remove',        		//remove a object.
         ];
     
         /* add a callback function to get notified about actions */
@@ -213,7 +206,7 @@
         };
         /* get the events list */
         this.getEvents = function () {
-            return jQuery.extend(true, {}, events);
+            return jQuery.extend(true, {}, event);
         };
         /* set new route */
         this.setRoute = function () {            
@@ -225,7 +218,7 @@
             state = States.MARKER;
         };
         this.setImageMark = function(image) {
-            addImageMark(image);
+            addNewMark(currentPosition, image);
         };
         /* set a temporary mark */
         this.setTemporaryMark = function(position) {
@@ -258,7 +251,7 @@
         /* Checks if the tracking is enabled and displays a message when it is */
         this.checkTracking = function() {
             if(isTracking) {
-                callbacks[events.TRACKING_ACTIVE].fire({msg : "This option is disabled because you are currently tracking!"});
+                callbacks[event.TRACKING_ACTIVE].fire({msg : "This option is disabled because you are currently tracking!"});
                 return false;
             }
             return true;
@@ -344,21 +337,23 @@
         /* The callbacks list can be used to get notified about events. */
         var callbacks = {};
         /* All available events where a callback will be fired. */
-        var events = 
+        var event = 
         {
             //TODO
-            CREATED_ROUTE           :  "CreatedRoute",
-            DELETED_ROUTE           :  "DeletedRoute",
-            FINISH_ROUTE            :  "FinishRouteRecording",
-            ADDED_MARK              :  "AddedMark",
-            DELETED_MARK            :  "DeletedMark",
-            NO_GEO_SUPPORT          :  "GeolocationNotSupported",
-            BOAT_POS_UPDATE         :  "BoatPositionUpdated",
-            CREATED_TRACK           :  "CreatedTrack",
-            TRACKING_ACTIVE         :  "TrackingIsActive",
-            LEFT_SECURITY_CIRCLE    :  "LeftSecurityCircle"
+			LOADED_ROUTE			: 0,
+			LOADED_MARK				: 1,
+			LOADED_TRACK			: 2,
+            CREATED_ROUTE           : 3,
+            DELETED_ROUTE           : 4,
+            ADDED_MARK              : 5,
+            DELETED_MARK            : 6,
+            NO_GEO_SUPPORT          : 7,
+            BOAT_POS_UPDATE         : 8,
+            CREATED_TRACK           : 9,
+            TRACKING_ACTIVE         : 10,
+            LEFT_SECURITY_CIRCLE    : 11
         };
-        
+		        
         var options = $.seamap.options;
         var sync = $.seamap.sync;
     
@@ -692,7 +687,7 @@
                         break;
                         
                     case States.MARKER:
-                        addDefaultMark(event.latLng);
+                        addNewMark(event.latLng);
                         state = States.NORMAL;
                         break;
                 }
@@ -745,7 +740,7 @@
                 navigator.geolocation.getCurrentPosition(handleBoatPosition, error_handling);
             } else {
                 if(!noGeo_flag) {
-                   callbacks[events.NO_GEO_SUPPORT].fire({msg : "Your PC doesn't support geolocation!"});
+                   callbacks[event.NO_GEO_SUPPORT].fire({msg : "Your PC doesn't support geolocation!"});
                    noGeo_flag = true;
                 }
                 handleFakeBoatPositionUpdate();
@@ -768,7 +763,7 @@
             if(alarmsSettings.LEAVE_SECURITY_CIRCLE && activeSecurityCircle) {
                 var dist = getDistanceFromCircle();
                 if(dist > globalSettings.CIRCLE_RADIUS) {
-                    callbacks[events.LEFT_SECURITY_CIRCLE].fire({msg : "You have left the security circle!"});
+                    callbacks[event.LEFT_SECURITY_CIRCLE].fire({msg : "You have left the security circle!"});
                 }
             }
         }
@@ -847,7 +842,7 @@
          * Updates the boat icon on the map 
          */
         function handleBoatPositionUpdate(position) {            
-            callbacks[events.BOAT_POS_UPDATE].fire(getCurrentBoatInformation());
+            callbacks[event.BOAT_POS_UPDATE].fire(getCurrentBoatInformation());
             if(boatMarker == null){
                 boatMarker = new google.maps.Marker({
                     position: position,
@@ -1131,7 +1126,7 @@
         */
         function handleAddNewRoute() {
             if(isTracking) {
-                callbacks[events.TRACKING_ACTIVE].fire({msg : "This options is disabled because tracking is active!"});
+                callbacks[event.TRACKING_ACTIVE].fire({msg : "This options is disabled because tracking is active!"});
                 return;
             }
             
@@ -1158,7 +1153,6 @@
             /* remove method will check if we remove all markers, which cause a deletion of the route */
             remove = function() {
                 if (0 == activeRoute.onMap.markers.length) {
-                    callbacks[events.DELETED_ROUTE].fire(activeRoute);
                     deleteActiveRoute();
                 } else {
                     activate();
@@ -1181,7 +1175,7 @@
                 addRouteMarker(position);
             }
             routeCounter++;
-            callbacks[events.CREATED_ROUTE].fire([newRoute]);
+            callbacks[event.CREATED_ROUTE].fire(newRoute);
         }
                 
         /**
@@ -1216,6 +1210,7 @@
         */ 
         function deleteActiveRoute(){
             if (activeRoute != null) {
+                callbacks[event.DELETED_ROUTE].fire(activeRoute);
                 uploadRouteDeletion();
                 state = States.NORMAL;
                 activeRoute.onMap.hide();
@@ -1244,7 +1239,7 @@
         */
         function uploadRouteUpdate() {
             if (activeRoute != null && activeRoute.updated) {
-                sync.uploadRoute(activeRoute);
+                sync.create('route', activeRoute, activeRoute.id);
                 activeRoute.updated = false;
             }         
         }
@@ -1255,7 +1250,7 @@
         * *********************************************************************************
         */
         function uploadRouteDeletion() {
-            sync.uploadRoute("delete");      
+            sync.remove('route', activeRoute, activeRoute.id);      
         } 
         
         /**
@@ -1291,7 +1286,7 @@
             activateTrack(newTrack); 
             
             trackCounter++;
-            callbacks[events.CREATED_TRACK].fire([newTrack]);
+            callbacks[event.CREATED_TRACK].fire(newTrack);
         }
                 
         /**
@@ -1352,7 +1347,7 @@
         */
         function uploadTrackUpdate() {
             if (activeTrack != null && activeTrack.updated) {
-                sync.uploadTrack(activeTrack);
+                sync.create('track', activeTrack, activeTrack.id);
                 activeTrack.updated = false;
             }         
         }
@@ -1363,7 +1358,7 @@
         * *********************************************************************************
         */
         function uploadTrackDeletion() {
-            sync.uploadTrack("delete");      
+            sync.remove('track', activeTrack, activeTrack.id);      
         } 
         
         /**
@@ -1385,7 +1380,7 @@
         function handleAddMark() {
             hideContextMenu();
             hideCrosshairMarker();
-            addDefaultMark(crosshairMarker.getPosition());
+            addNewMark(crosshairMarker.getPosition());
         }
 
         /**
@@ -1444,83 +1439,61 @@
         * *********************************************************************************
         * Adds a simple marker to the given position and
         * bind the click-events to open its context menu.
+		* The marker can also have an image.
         * *********************************************************************************
         */
-        function addDefaultMark(position) {
-            var mark = {}
-            mark.id = marksCount.toString();
-            mark.label = "Mark "+marksCount;
-            mark.detailed = "created on blabla..";
-            mark.onMap = new google.maps.Marker({
+        function addNewMark(position, image) {
+            var newMark = {}
+            newMark.id = marksCount.toString();
+            newMark.name = "Mark "+marksCount;
+			newMark.lat = position.lat();
+			newMark.lng = position.lng();
+			
+			newMark.date = new Date().getTime();
+			if (image) {
+				newMark.image_thumb = image[0];
+				newMark.image_big = image[1];
+			}
+			
+            newMark.onMap = new google.maps.Marker({
                 map: map,
                 position: position,
-                icon: options.defaultOptions.markerOptions.image,
-                draggable: true
+                icon: (image) ? image[0] : options.defaultOptions.markerOptions.image,
+                draggable: (image) ? false : true
             });
 
-            google.maps.event.addListener(mark.onMap, 'rightclick', function(event) {
-                showContextMenu(event.latLng, ContextMenuTypes.DELETE_MARKER, mark);
+			if (image) {
+				google.maps.event.addListener(newMark.onMap, 'click', function(event) {
+					if(!supressClick) {
+						openFancybox(newMark.image_big, new Date(newMark.date).toLocaleString() + " / " + getCoordinatesAsString(newMark.lat, newMark.lng));
+					}
+				});
+			}
+			
+            google.maps.event.addListener(newMark.onMap, 'dragend', function(event) {
+				console.log("dragEnd");
+				console.log(event.latLng.lat());
+				console.log(event.latLng.lng());
             });
 
-            new LongPress(mark.onMap, 500);
-            google.maps.event.addListener(mark.onMap, 'longpress', function(event) {
+            google.maps.event.addListener(newMark.onMap, 'rightclick', function(event) {
+                showContextMenu(event.latLng, ContextMenuTypes.DELETE_MARKER, newMark);
+            });
+
+            new LongPress(newMark.onMap, 500);
+            google.maps.event.addListener(newMark.onMap, 'longpress', function(event) {
                 supressClick = true;
-                showContextMenu(event.latLng, ContextMenuTypes.DELETE_MARKER, mark);
+                showContextMenu(event.latLng, ContextMenuTypes.DELETE_MARKER, newMark);
                 setTimeout(function() {
                     supressClick = false;
                 }, 1000);
             });
             
-            marks[marksCount.toString()] = mark;
+            marks[marksCount.toString()] = newMark;
             marksCount++;
-            callbacks[events.ADDED_MARK].fire([mark]);
+            callbacks[event.ADDED_MARK].fire(newMark);
         }
 
-        /**
-        * *********************************************************************************
-        * Adds a image marker to the given position and
-        * bind the click-events to open its context menu.
-        * *********************************************************************************
-        */
-        function addImageMark(image) {
-            var mark = {}
-            mark.id = marksCount.toString();
-            mark.label = "Mark "+marksCount;
-            mark.detailed = getCurrentDateTime() + " / " + getCurrentCoordinatesAsString();
-            var position = currentPosition;
-            var thnail = image[0];
-            var picture = image[1];
-            var picture_detailed = mark.detailed;
-            mark.onMap = new google.maps.Marker({
-                map: map,
-                position: position,
-                icon: thnail,
-                draggable: false
-            });
-
-            google.maps.event.addListener(mark.onMap, 'click', function(event) {
-                if(!supressClick) {
-                    openFancybox(picture, picture_detailed);
-                }
-            });
-
-            google.maps.event.addListener(mark.onMap, 'rightclick', function(event) {
-                showContextMenu(event.latLng, ContextMenuTypes.DELETE_MARKER, mark);
-            });
-
-            new LongPress(mark.onMap, 500);
-            google.maps.event.addListener(mark.onMap, 'longpress', function(event) {
-                supressClick = true;
-                showContextMenu(event.latLng, ContextMenuTypes.DELETE_MARKER, mark);
-                setTimeout(function() {
-                    supressClick = false;
-                }, 1000);
-            });
-            
-            marks[marksCount.toString()] = mark;
-            marksCount++;
-            callbacks[events.ADDED_MARK].fire([mark]);
-        }
         /* Opens a fancybox with the image */
         function openFancybox(picture, text) {
             $.fancybox({
@@ -1557,9 +1530,9 @@
             obj.speed = currentSpeed != null ? kmhToKn(currentSpeed) : "-";
             obj.course = currentCourse != null ? currentCourse.toFixed(2) : "-";
             obj.pos = currentPosition;
-            obj.latStr = toLatLngString(obj.pos.nb, "lat");
-            obj.lngStr = toLatLngString(obj.pos.ob, "lng");
-            obj.html = "COG " + obj.course + "° SOG " + obj.speed + "kn <br/>" + getCurrentCoordinatesAsString();
+            obj.latStr = toLatLngString(obj.pos.lat(), "lat");
+            obj.lngStr = toLatLngString(obj.pos.lng(), "lng");
+            obj.html = "COG " + obj.course + "° SOG " + obj.speed + "kn <br/>" + getCoordinatesAsString(obj.pos.lat(), obj.pos.lng());
             return obj;
         }
         /* Converts kmh to knots */
@@ -1567,10 +1540,8 @@
             return (speed * KMH_TO_KNOTS).toFixed(4);
         }        
         /* Gets the current coordinates in a human readable format */
-        function getCurrentCoordinatesAsString() {
-            var north = currentPosition.nb;
-            var east = currentPosition.ob;
-            return toLatLngString(north, "lat") + " " + toLatLngString(east, "lng");
+        function getCoordinatesAsString(lat, lng) {
+            return toLatLngString(lat, "lat") + " " + toLatLngString(lng, "lng");
         }
         /* Gets the current coordinates in a human readable format array for use in the specific forms */
         function toLatLngArray(dms, type) {
@@ -1630,7 +1601,7 @@
             if(selectedMark != null) {
                 selectedMark.onMap.setMap(null);
                 delete marks[selectedMark.id];
-                callbacks[events.DELETED_MARK].fire(selectedMark);
+                callbacks[event.DELETED_MARK].fire(selectedMark);
                 console.log(marks);
             }
         }
