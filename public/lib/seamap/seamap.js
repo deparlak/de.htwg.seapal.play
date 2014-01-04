@@ -147,28 +147,13 @@
             }
         }
     };
-    
-    /**
-    * *************************************************************************************
-    * Methods which should be extended into this jequery plugin for synchronisation purpose.
-    * Look at the variable "syncRequiredMethods" which holds all required methods.
-    * *************************************************************************************
-    */
-    var sync = { };
-
+	
     /**
     * *************************************************************************************
     * The seamap object class
     * *************************************************************************************
     */
     $.seamap = function(element){    
-        /* the required list holds all names of the methods which has to be defined. */
-        var syncRequiredMethods = 
-        [
-        'create',		        //create a new object or update an existing object. The decision if the object has to be created or updated has to be placed in the create method.
-        'remove',        		//remove a object.
-        ];
-    
         /* add a callback function to get notified about actions */
         this.addCallback = function (event, method) {
             for(var actual in events) {
@@ -351,11 +336,12 @@
             BOAT_POS_UPDATE         : 8,
             CREATED_TRACK           : 9,
             TRACKING_ACTIVE         : 10,
-            LEFT_SECURITY_CIRCLE    : 11
+            LEFT_SECURITY_CIRCLE    : 11,
+			SERVER_CREATE			: 12,
+			SERVER_REMOVE			: 13,
         };
 		        
         var options = $.seamap.options;
-        var sync = $.seamap.sync;
     
         // The states of the plugin
         var States = {
@@ -465,12 +451,6 @@
         // set as destination path
         var destpath = new google.maps.Polyline(options.polyOptions);
 
-        //check if all required methods are defined.
-        for (var i in syncRequiredMethods) {
-            if (undefined === sync[syncRequiredMethods[i]]) {
-                throw("The plugin has to be extended with a method called: '"+syncRequiredMethods[i]+"'."); 
-            }
-        }
         init();
 
         startBoatAnimation();
@@ -1239,7 +1219,7 @@
         */
         function uploadRouteUpdate() {
             if (activeRoute != null && activeRoute.updated) {
-                sync.create('route', activeRoute, activeRoute.id);
+				callbacks[event.SERVER_CREATE].fire(activeRoute);
                 activeRoute.updated = false;
             }         
         }
@@ -1250,7 +1230,7 @@
         * *********************************************************************************
         */
         function uploadRouteDeletion() {
-            sync.remove('route', activeRoute, activeRoute.id);      
+			callbacks[event.SERVER_REMOVE].fire(activeRoute);
         } 
         
         /**
@@ -1274,7 +1254,7 @@
         * *********************************************************************************
         */
         function handleAddNewTrack() {
-            var newTrack = {}
+            var newTrack = {};
             newTrack.id = trackCounter.toString();
             newTrack.label = "Track " + trackCounter;
             newTrack.detailed = "created on blabla..";
@@ -1347,7 +1327,7 @@
         */
         function uploadTrackUpdate() {
             if (activeTrack != null && activeTrack.updated) {
-                sync.create('track', activeTrack, activeTrack.id);
+				callbacks[event.SERVER_CREATE].fire(activeTrack);
                 activeTrack.updated = false;
             }         
         }
@@ -1358,7 +1338,7 @@
         * *********************************************************************************
         */
         function uploadTrackDeletion() {
-            sync.remove('track', activeTrack, activeTrack.id);      
+			callbacks[event.SERVER_REMOVE].fire(activeTrack);
         } 
         
         /**
@@ -2118,8 +2098,7 @@
     };
     
     $.seamap.options = options;
-    $.seamap.sync = sync;
-    
+	
     /**
     * *********************************************************************************
     * Recognizes a long click / long touch
@@ -2159,16 +2138,11 @@
     };
 
     // extend jquery with our new fancy seamap plugin
-    $.fn.seamap = function( syncMethods, opts ) {        
-        //extend sync methods
-        if( typeof syncMethods === 'object') {
-            $.extend(sync, syncMethods);
-        }
+    $.fn.seamap = function( opts ) {        
         //extend options
         if( typeof opts === 'object') {
             $.extend(options, opts);
-        }
-        
+        }  
         return this.each(function () {
             $this = $(this);
         
