@@ -30,9 +30,6 @@
             center: new google.maps.LatLng(47.655, 9.205),
         },
         
-        // Stroke colors: [0] is used for the distance tool, [1..] are used for the routes
-        strokeColors : ['grey','red','blue','green','yellow','blueviolet','darkorange','magenta','black'],
-        
         // Default options for the marker
         defaultOptions : {
             polyOptions : {
@@ -75,7 +72,7 @@
         // Default options for the routing tool
         routeOptions : {
             polyOptions : {
-                strokeColor: '#000000',
+                strokeColor: 'blue',
                 strokeOpacity: 0.5,
                 strokeWeight: 3
             },
@@ -91,7 +88,7 @@
         // Default options for the tracking tool
         trackOptions : {
             polyOptions : {
-                strokeColor: '#000000',
+                strokeColor: 'green',
                 strokeOpacity: 0.5,
                 strokeWeight: 3
             },
@@ -107,7 +104,7 @@
         // Default options for the distance tool
         distanceOptions : {
             polyOptions : {
-                strokeColor: '#550000',
+                strokeColor: 'grey',
                 strokeOpacity: 0.5,
                 strokeWeight: 2
             },
@@ -240,7 +237,7 @@
         };
         /* visible the route by id */
         this.visibleRoute = function (id) {
-            activateRoute(routes[id]);
+            activateRoute(route[id]);
         };
         /* remove a route with a specified id */
         this.removeRoute = function (id) {
@@ -445,7 +442,7 @@
         var activeTrack = null;
 
         // routes
-        var routes = {};
+        var route = {};
         var routeCounter = 1;
         var activeRoute = null;
 
@@ -1141,21 +1138,21 @@
             hideContextMenu();
             hideCrosshairMarker();
 
-            var route = {}
-            route.id = routeCounter.toString();
-            route.label = "Route "+routeCounter;
-            route.detailed = "created on blabla..";
-            route.onMap = new $.seamap.route(route.id, map, "ROUTE");
-            route.updated = true;
+            var newRoute = {}
+            newRoute.id = routeCounter.toString();
+            newRoute.label = "Route "+routeCounter;
+            newRoute.detailed = "created on blabla..";
+            newRoute.onMap = new $.seamap.route(newRoute.id, map, "ROUTE");
+            newRoute.updated = true;
 
-            routes[route.id] = route;        
+            route[newRoute.id] = newRoute;        
   
-            activateRoute(route); 
+            activateRoute(newRoute); 
             
             /* activate the route if a markers will be clicked when the route is not selected. */
             activate = function() {
                 removeDistanceRoute();
-                activateRoute(route);
+                activateRoute(newRoute);
             }
             
             /* remove method will check if we remove all markers, which cause a deletion of the route */
@@ -1169,7 +1166,7 @@
             }
             
             update = function() {
-                route.updated = true;
+                newRoute.updated = true;
             }
             
             activeRoute.onMap.addEventListener("remove", remove);      
@@ -1184,7 +1181,7 @@
                 addRouteMarker(position);
             }
             routeCounter++;
-            callbacks[events.CREATED_ROUTE].fire([route]);
+            callbacks[events.CREATED_ROUTE].fire([newRoute]);
         }
                 
         /**
@@ -1222,7 +1219,7 @@
                 uploadRouteDeletion();
                 state = States.NORMAL;
                 activeRoute.onMap.hide();
-                delete routes[activeRoute.id];
+                delete route[activeRoute.id];
                 activeRoute = null;
             }
         }
@@ -1332,7 +1329,7 @@
                 uploadTrackDeletion();
                 state = States.NORMAL;
                 activeTrack.onMap.hide();
-                delete routes[activeTrack.id];
+                delete route[activeTrack.id];
                 activeTrack = null;
             }
         }
@@ -1715,7 +1712,6 @@
     $.seamap.route = function(newrouteid, newgooglemaps, type){
         this.id = newrouteid;
         this.googlemaps = newgooglemaps;
-        this.color = $.seamap.options.strokeColors[2];
         
         this.path = null;
         this.markers = [];
@@ -1735,9 +1731,6 @@
         } else {
             options = $.seamap.options.routeOptions;
         }
-        
-        // edit color
-        options.polyOptions.strokeColor = this.color;
             
         this.path = new google.maps.Polyline(options.polyOptions);
         this.path.setMap(this.googlemaps);
@@ -1959,7 +1952,6 @@
     $.seamap.track = function(newtrackid, newgooglemaps, type){
         this.id = newtrackid;
         this.googlemaps = newgooglemaps;
-        this.color = $.seamap.options.strokeColors[3];
         
         this.path = null;
         this.markers = [];
@@ -1973,10 +1965,7 @@
         };
         
         options = $.seamap.options.trackOptions;
-        
-        // edit color
-        options.polyOptions.strokeColor = this.color;
-            
+
         this.path = new google.maps.Polyline(options.polyOptions);
         this.path.setMap(this.googlemaps);
         
