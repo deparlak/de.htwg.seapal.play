@@ -1308,7 +1308,7 @@
         }
         /**
         * *********************************************************************************
-        * Hide the active route
+        * Hide the active track
         * *********************************************************************************
         */ 
         function hideActiveTrack() {
@@ -1321,7 +1321,7 @@
         }
         /**
         * *********************************************************************************
-        * Delete the active route
+        * Delete the active track
         * *********************************************************************************
         */ 
         function deleteActiveTrack(){
@@ -1329,7 +1329,7 @@
                 uploadTrackDeletion();
                 state = States.NORMAL;
                 activeTrack.onMap.hide();
-                delete route[activeTrack.id];
+                delete track[activeTrack.id];
                 activeTrack = null;
             }
         }
@@ -1347,7 +1347,7 @@
 
         /**
         * *********************************************************************************
-        * Check if the active route has some changes which should be uploaded.
+        * Check if the active track has some changes which should be uploaded.
         * *********************************************************************************
         */
         function uploadTrackUpdate() {
