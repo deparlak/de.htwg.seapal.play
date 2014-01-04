@@ -249,7 +249,7 @@
         };
         /* visible the track by id */
         this.visibleTrack = function (id) {
-            activateTrack(tracks[id]);
+            activateTrack(track[id]);
         };
         /* remove a track with a specified id */
         this.removeTrack = function (id) {
@@ -436,8 +436,8 @@
         // The id of the manoverboard marker
         var manoverboardMark = null;
 
-        // tracks
-        var tracks = {};
+        // track
+        var track = {};
         var trackCounter = 1;
         var activeTrack = null;
 
@@ -1279,19 +1279,19 @@
         * *********************************************************************************
         */
         function handleAddNewTrack() {
-            var track = {}
-            track.id = trackCounter.toString();
-            track.label = "Track " + trackCounter;
-            track.detailed = "created on blabla..";
-            track.onMap = new $.seamap.track(track.id, map, "TRACK");
-            track.updated = true;
+            var newTrack = {}
+            newTrack.id = trackCounter.toString();
+            newTrack.label = "Track " + trackCounter;
+            newTrack.detailed = "created on blabla..";
+            newTrack.onMap = new $.seamap.track(newTrack.id, map, "TRACK");
+            newTrack.updated = true;
 
-            tracks[track.id] = track;        
+            track[newTrack.id] = newTrack;        
   
-            activateTrack(track); 
+            activateTrack(newTrack); 
             
             trackCounter++;
-            callbacks[events.CREATED_TRACK].fire([track]);
+            callbacks[events.CREATED_TRACK].fire([newTrack]);
         }
                 
         /**
