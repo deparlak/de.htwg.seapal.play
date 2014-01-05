@@ -486,7 +486,9 @@
         
         // editing states
         var state = States.NORMAL;
-
+		// prevState will be used by distance tool to restore previous state after distance tool will be closed.
+		var prevState = state;
+		
         // context-menu/selection
         var contextMenuType = ContextMenuTypes.DEFAULT;
         var contextMenuVisible = false;
@@ -714,7 +716,7 @@
                         break;
                         
                     case States.DISTANCE:
-                        addRouteMarker(event.latLng);
+                        addDistanceMarker(event.latLng);
                         break;
                         
                     case States.MARKER:
@@ -1111,16 +1113,14 @@
             
             var obj = {}
 			obj.type = 'distance';
-			obj.id = "-1";
             obj.onMap = new $.seamap.route(obj, map);
-            data.route.active = obj;  
             distanceroute = obj;            
             position = crosshairMarker.getPosition();
             /* just add a route marker if a position was selected */
             if (null != position) {
-                data.route.active.onMap.addMarker(position);
+                distanceroute.onMap.addMarker(position);
             }
-            
+            prevState = state;
             state = States.DISTANCE;
         }
         
@@ -1132,9 +1132,7 @@
         function handleExitDistanceRouteCreation() {
             hideContextMenu();
             hideCrosshairMarker();
-            
-            state = States.NORMAL;
-            
+            state = prevState;
             removeDistanceRoute();
         }
         
@@ -1145,7 +1143,7 @@
         */
         function removeDistanceRoute() {
             if (distanceroute != null) {
-                distanceroute.onMap.removeFromMap();
+                distanceroute.onMap.remove();
                 distanceroute = null;
             }
         }
@@ -1310,11 +1308,19 @@
         function addRouteMarker(latLng) {
             hideContextMenu();
             hideCrosshairMarker();
-            
-            var newmarker = data.route.active.onMap.addMarker(latLng);
-            data.route.active.onMap.drawPath();
+            data.route.active.onMap.addMarker(latLng);
         }
 
+        /**
+        * *********************************************************************************
+        * Adds a new route marker to the active route.
+        * *********************************************************************************
+        */
+        function addDistanceMarker(latLng) {
+            hideContextMenu();
+            hideCrosshairMarker();
+            distanceroute.onMap.addMarker(latLng);
+        }
 
         /**
         * *********************************************************************************
@@ -1423,8 +1429,7 @@
         * *********************************************************************************
         */
         function addTrackMarker(latLng) {            
-            var newmarker = activeTrack.onMap.addMarker(latLng);
-            activeTrack.onMap.drawPath();
+            activeTrack.onMap.addMarker(latLng);
         }
         
         /**
@@ -1854,7 +1859,8 @@
             }
             
             this.notify("add");
-            
+			$this.drawPath();
+			
             return marker;
         }
 
@@ -1899,19 +1905,6 @@
         this.updateLabel = function() {
             if(this.label != null) this.label.setMap(null);
             if(this.markers.length != 0) this.addLabel();
-        }
-        
-        /**
-        * *********************************************************************************
-        * Removes a whole route from the map (with its paths, labels and markers).
-        * *********************************************************************************
-        */
-        this.removeFromMap = function() {
-            this.path.setMap(null);
-            this.label.setMap(null);
-            $.each(this.markers, function() {
-                this.setMap(null);
-            });
         }
 
         /**
