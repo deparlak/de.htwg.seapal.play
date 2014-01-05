@@ -36,6 +36,8 @@ $(document).ready(function() {
             map.remove(removeElements[i].data('type'), removeElements[i].data('id'));
             removeElements[i].remove();
         }
+		/* selection removed, go back to init state */
+        removeElements = {};
         state = states.normal;
     };
     

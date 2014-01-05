@@ -163,7 +163,21 @@
         };
         /* remove a route,mark,track,boat,... */
         this.remove = function(type, id) {
-            console.log("TODO remove "+type+" "+id);
+			/* check if the type exist */
+            if (undefined === data[type]) {
+				throw("Type "+type+" does not exist.");
+			}
+			/* check if the id exist */
+			if (undefined === data[type].list[id]) {
+				throw("There is no "+type+" with the id "+id);
+			}
+			/* check if a remove method is defined which has to be called */
+			if (undefined !== data[type].removeMethod) {
+				data[type].removeMethod(id);
+			}
+			/* remove the element now from the list */
+			callbacks[event.SERVER_REMOVE].fire(data[type].list[id]);
+			delete data[type].list[id];
         };
         this.add = function(type, obj) {
             console.log("TODO add "+type+" "+obj);
@@ -243,10 +257,6 @@
         /* visible the mark by id */
         this.visibleMark = function (id) {
             data.mark.list[id].onMap = getOnMapMark(data.mark.list[id]);
-        };
-        /* remove a mark with a specified id */
-        this.removeMark = function (id) {
-            console.log("TODO: remove mark");
         };
         /* get distance */
         this.getDistance = function () {
@@ -416,16 +426,26 @@
 		
 		var data = {
 			mark : {
-				list : [],
+				list : {},
 				count : 1,
 				active : null
 			},
 			route : {
-				list : [],
+				list : {},
 				count : 1,
 				active : null
 			}
 		};
+		
+		/* define the remove method for the mark */
+		data.mark.removeMethod = function(id) {
+			if (data.mark.active && data.mark.active.id == id) {
+				data.mark.active = null;
+			}
+			if (data.mark.list[id].onMap) {
+				data.mark.list[id].onMap.setMap(null);
+			}
+		}		
 
 		
         // track
@@ -1492,9 +1512,11 @@
 				});
 			}
 			/* marker get dragged */
-            google.maps.event.addListener(onMap, 'dragend', function(event) {
-				marker.lat = event.latLng.lat();
-				marker.lng = event.latLng.lng();
+            google.maps.event.addListener(onMap, 'dragend', function(e) {
+				marker.lat = e.latLng.lat();
+				marker.lng = e.latLng.lng();
+				/* update mark on server */
+				callbacks[event.SERVER_CREATE].fire(marker);
             });
 			/* show menu on rightclick to marker */
             google.maps.event.addListener(onMap, 'rightclick', function(event) {
