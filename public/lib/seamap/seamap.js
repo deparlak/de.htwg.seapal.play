@@ -69,8 +69,8 @@
             }
         },
         
-        // Default options for the routing tool
-        routeOptions : {
+        // Default options for a route
+        route : {
             polyOptions : {
                 strokeColor: 'blue',
                 strokeOpacity: 0.5,
@@ -85,8 +85,8 @@
             }
         },
 
-        // Default options for the tracking tool
-        trackOptions : {
+        // Default options for a track
+        track : {
             polyOptions : {
                 strokeColor: 'green',
                 strokeOpacity: 0.5,
@@ -101,8 +101,8 @@
             }
         },
         
-        // Default options for the distance tool
-        distanceOptions : {
+        // Default options for a distance measurement
+        distance : {
             polyOptions : {
                 strokeColor: 'grey',
                 strokeOpacity: 0.5,
@@ -118,7 +118,7 @@
         },
         
         // Default options for the tracked boat
-        boatOptions : {
+        boat : {
             markerOptions : {
                 crosshairShape : {
                     coords:[0,0,0,0],
@@ -879,8 +879,8 @@
                     position: position,
                     map: map,
                     title:"boat",
-                    shape: options.boatOptions.markerOptions.crosshairShape,
-                    icon:  options.boatOptions.markerOptions.image
+                    shape: options.boat.markerOptions.crosshairShape,
+                    icon:  options.boat.markerOptions.image
                 });
             }else{
                 boatMarker.setPosition(position);
@@ -1109,11 +1109,12 @@
             hideContextMenu();
             hideCrosshairMarker();
             
-            var distance = {}
-            distance.id = "-1";
-            distance.onMap = new $.seamap.route("-1", map, "DISTANCE");
-            data.route.active = distance;  
-            distanceroute = distance;            
+            var obj = {}
+			obj.type = 'distance';
+			obj.id = "-1";
+            obj.onMap = new $.seamap.route(obj, map);
+            data.route.active = obj;  
+            distanceroute = obj;            
             position = crosshairMarker.getPosition();
             /* just add a route marker if a position was selected */
             if (null != position) {
@@ -1164,15 +1165,15 @@
             hideContextMenu();
             hideCrosshairMarker();
 
-            var newRoute = {}
-			newRoute.type = 'route';
-            newRoute.id = data.route.count.toString();
-            newRoute.name = "Route "+data.route.count;
-            newRoute.updated = true;
+            var obj = {}
+			obj.type = 'route';
+            obj.id = data.route.count.toString();
+            obj.name = "Route "+data.route.count;
+            obj.updated = true;
 
-			newRoute.onMap = getOnMapRoute(newRoute);
-            data.route.list[newRoute.id] = newRoute;        
-            activateRoute(newRoute); 
+			obj.onMap = getOnMapRoute(obj);
+            data.route.list[obj.id] = obj;        
+            activateRoute(obj); 
   
             position = crosshairMarker.getPosition();
             /* just add a route marker if a position was selected */
@@ -1180,7 +1181,7 @@
                 addRouteMarker(position);
             }
             data.route.count++;
-            callbacks[event.CREATED_ROUTE].fire(newRoute);
+            callbacks[event.CREATED_ROUTE].fire(obj);
         }
 
         /**
@@ -1189,7 +1190,7 @@
         * *********************************************************************************
         */
 		function getOnMapRoute(route) {
-			var onMap = new $.seamap.route(route.id, map, "ROUTE");
+			var onMap = new $.seamap.route(route, map);
 		            
             /* activate the route if a markers will be clicked when the route is not selected. */
             activate = function() {
@@ -1322,15 +1323,16 @@
         * *********************************************************************************
         */
         function handleAddNewTrack() {
-            var newTrack = {};
-            newTrack.id = trackCount.toString();
-            newTrack.name = "Track " + trackCount;
-            newTrack.onMap = getOnMapTrack(newTrack);
-            newTrack.updated = true;
-            track[newTrack.id] = newTrack;        
-            activateTrack(newTrack); 
+            var obj = {};
+			obj.type = 'track';
+            obj.id = trackCount.toString();
+            obj.name = "Track " + trackCount;
+            obj.onMap = getOnMapTrack(obj);
+            obj.updated = true;
+            track[obj.id] = obj;        
+            activateTrack(obj); 
             trackCount++;
-            callbacks[event.CREATED_TRACK].fire(newTrack);
+            callbacks[event.CREATED_TRACK].fire(obj);
         }
 		
         /**
@@ -1339,7 +1341,7 @@
         * *********************************************************************************
         */
 		function getOnMapTrack(track) {
-			var onMap = new $.seamap.track(track.id, map, "TRACK");
+			var onMap = new $.seamap.route(track, map);
 			return onMap;
 		}
                 
@@ -1746,14 +1748,13 @@
     * The route object class 
     * *************************************************************************************
     */
-    $.seamap.route = function(newrouteid, newgooglemaps, type){
-        this.id = newrouteid;
+    $.seamap.route = function(obj, newgooglemaps){
         this.googlemaps = newgooglemaps;
-        
         this.path = null;
         this.markers = [];
         this.label = null;
-        this.notinteractive = false;
+        this.notinteractive = (obj.type == 'track') ? true : false;
+		options = $.seamap.options[obj.type];
         
         // internal data
         var eventListener = {
@@ -1763,23 +1764,9 @@
             click : []
         };
         
-        if(type === "DISTANCE") {
-            options = $.seamap.options.distanceOptions;
-        } else {
-            options = $.seamap.options.routeOptions;
-        }
-            
         this.path = new google.maps.Polyline(options.polyOptions);
         this.path.setMap(this.googlemaps);
         
-        /**
-        * *********************************************************************************
-        * Sets the route as not interactive.
-        * *********************************************************************************
-        */        
-        this.setNotInteractive = function() {
-            this.notinteractive = true;
-        }
         /**
         * *********************************************************************************
         * remove the route
@@ -1839,9 +1826,7 @@
             
             // adds or updates the label
             if(this.label == null) {
-                if (!this.notinteractive) {
-                    this.addLabel();
-                }
+                this.addLabel();
             } else {
                 this.updateLabel();
             }
@@ -1946,208 +1931,6 @@
         /**
         * *********************************************************************************
         * Gets the total distance text of the route. Format example: 1234m
-        * *********************************************************************************
-        */
-        this.getTotalDistanceText = function() {
-            var dist = 0;
-
-            if( this.markers.length > 1 ) {
-                for( var i = 0; i < this.markers.length - 1; ++i ) {
-                    dist += map.distance(this.markers[i].getPosition().lat(),
-                                     this.markers[i].getPosition().lng(),
-                                     this.markers[i + 1].getPosition().lat(),
-                                     this.markers[i + 1].getPosition().lng())
-                }
-            }
-
-            switch(map.getGlobalSettings().DISTANCE_UNIT)
-            {
-                case "globalSettings_mil":
-                    return dist.toFixed(2) + "mi";
-                case "globalSettings_nautmil":
-                    return dist.toFixed(2) + "nm";
-                default:                
-                    return dist.toFixed(2) + "km";             
-            }
-        }
-        
-        /**
-        * *********************************************************************************
-        * Adds an event listener with the given type and function.
-        * *********************************************************************************
-        */
-        this.addEventListener = function(type, fn) {
-            eventListener[type][ eventListener[type].length ] = fn;
-        }
-                
-        /**
-        * *********************************************************************************
-        * Calls the event listener functions, to notify the observers.
-        * *********************************************************************************
-        */
-        this.notify = function(type) {
-            var that = this;
-            $.each(eventListener[type], function(){
-                this.call(that, 0);
-            });
-        }
-    };
-
-    /**
-    * *************************************************************************************
-    * The track object class 
-    * *************************************************************************************
-    */
-    $.seamap.track = function(newtrackid, newgooglemaps, type){
-        this.id = newtrackid;
-        this.googlemaps = newgooglemaps;
-        
-        this.path = null;
-        this.markers = [];
-        this.label = null;
-        this.notinteractive = false;
-        
-        // internal data
-        var eventListener = {
-            add : [],
-            remove : []
-        };
-        
-        options = $.seamap.options.trackOptions;
-
-        this.path = new google.maps.Polyline(options.polyOptions);
-        this.path.setMap(this.googlemaps);
-        
-        /**
-        * *********************************************************************************
-        * hide the track
-        * *********************************************************************************
-        */        
-        this.hide = function () {
-            if(this.label != null) this.label.setMap(null);
-            this.path.setVisible(false);
-            $.each(this.markers, function(){
-                this.setVisible(false);
-            });
-        }
-        /**
-        * *********************************************************************************
-        * visible the track
-        * *********************************************************************************
-        */        
-        this.visible = function () {
-            this.updateLabel();
-            this.path.setVisible(true);
-            $.each(this.markers, function(){
-                this.setVisible(true);
-            });
-        }
-        
-        /**
-        * *********************************************************************************
-        * Adds a new track marker to the given position.
-        * *********************************************************************************
-        */
-        this.addMarker = function(position) {
-            var $this = this;
-
-            // create marker
-            var marker = new google.maps.Marker({
-                map: this.googlemaps,
-                position: position,
-                icon: options.markerOptions.image,
-                shadow: options.markerOptions.shadow,
-                animation: google.maps.Animation.DROP,
-                draggable: false,
-                id: this.markers.length 
-            });
-            this.markers[this.markers.length] = marker;
-            
-            // adds or updates the label
-            if(this.label == null) {
-                this.addLabel();
-            } else {
-                this.updateLabel();
-            }
-            
-            this.notify("add");
-            
-            return marker;
-        }
-
-        /**
-        * *********************************************************************************
-        * Removes a marker from the track.
-        * *********************************************************************************
-        */
-        this.removeMarker = function($marker) {
-            $marker.setMap(null);
-            this.markers = $.grep(this.markers, function(mark) {
-                return mark != $marker;
-            });
-            
-            var i = 0;
-            $.each(this.markers, function(){
-                this.id = i++;
-            });
-            this.drawPath();
-            this.updateLabel();
-            
-            this.notify("remove");
-        }
-        
-        /**
-        * *********************************************************************************
-        * Adds a label to the last marker.
-        * *********************************************************************************
-        */
-        this.addLabel = function() {        
-            this.label = new Label({map: this.googlemaps });
-            this.label.bindTo('position', this.markers[this.markers.length-1], 'position');
-            $(this.label.span_).css({"margin-left":"15px","padding":"7px","box-shadow":"0px 0px 3px #666","z-index":99999,"color":this.color});
-            this.label.set('text', this.getTotalDistanceText());
-        }
-        
-        /**
-        * *********************************************************************************
-        * Updates the the label (removes the old and adds a new one).
-        * *********************************************************************************
-        */
-        this.updateLabel = function() {
-            if(this.label != null) this.label.setMap(null);
-            if(this.markers.length != 0) this.addLabel();
-        }
-        
-        /**
-        * *********************************************************************************
-        * Removes a whole track from the map (with its paths, labels and markers).
-        * *********************************************************************************
-        */
-        this.removeFromMap = function() {
-            this.path.setMap(null);
-            this.label.setMap(null);
-            $.each(this.markers, function() {
-                this.setMap(null);
-            });
-        }
-
-        /**
-        * *********************************************************************************
-        * Draws a track by conntecting all track markers in the given order.
-        * *********************************************************************************
-        */
-        this.drawPath = function() {
-            var newPath = new Array();
-            for (var i = 0; i < this.markers.length; ++i) {
-                newPath[i] = this.markers[i].getPosition();
-            }
-
-            this.path.setPath(newPath);
-        }
-        
-        /**
-        * *********************************************************************************
-        * Gets the total distance text of the track. Format example: 1234m
         * *********************************************************************************
         */
         this.getTotalDistanceText = function() {
