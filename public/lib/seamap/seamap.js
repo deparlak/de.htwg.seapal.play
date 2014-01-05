@@ -472,7 +472,6 @@
 				data.route.list[id].onMap.remove();
 			}
 		};
-
 		
         // track
         var track = {};
