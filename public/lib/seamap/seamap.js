@@ -184,6 +184,7 @@
 			callbacks[event.SERVER_REMOVE].fire(data[type].list[id]);
 			delete data[type].list[id];
         };
+		/* add a route,mark,track,boat,... */
         this.add = function(type, obj) {
             console.log("TODO add "+type+" "+obj);
         };
@@ -194,7 +195,22 @@
 			dataParameterCheck(type, id, null);
 			return data[type].list[id];
         };
-
+        this.visible = function(type, id) {
+			dataParameterCheck(type, id, null);
+			/* check if a visible method is not defined which has to be called */
+			if (undefined === data[type].visibleMethod) {
+				throw("Cannot call visible for objects of the type "+type);
+			}
+			data[type].visibleMethod(id);
+        };
+        this.hide = function(type, id) {
+			dataParameterCheck(type, id, null);
+			/* check if a hide method is not defined which has to be called */
+			if (undefined === data[type].hideMethod) {
+				throw("Cannot call hide for objects of the type "+type);
+			}
+			data[type].hideMethod(id);
+        };
         /* get the handle of the google map */
         this.getGoogleMapsHandle = function () {
             return map;
@@ -223,30 +239,6 @@
         this.setTemporaryMark = function(position) {
             handleSetTemporaryMark(position);
         };
-        /* hide the route by id */
-        this.hideRoute = function (id) {
-            hideActiveRoute();
-        };
-        /* visible the route by id */
-        this.visibleRoute = function (id) {
-            activateRoute(data.route.list[id]);
-        };
-        /* remove a route with a specified id */
-        this.removeRoute = function (id) {
-            console.log("TODO: remove route");
-        };
-        /* hide the track by id */
-        this.hideTrack = function (id) {
-            hideActiveTrack();
-        };
-        /* visible the track by id */
-        this.visibleTrack = function (id) {
-            activateTrack(data.track.list[id]);
-        };
-        /* remove a track with a specified id */
-        this.removeTrack = function (id) {
-            console.log("TODO: remove track");
-        };
         /* Checks if the tracking is enabled and displays a message when it is */
         this.checkTracking = function() {
             if(isTracking) {
@@ -255,15 +247,6 @@
             }
             return true;
         }
-        /* hide the mark by id */
-        this.hideMark = function (id) {
-            data.mark.list[id].onMap.setMap(null);
-			data.mark.list[id].onMap = null;
-        };
-        /* visible the mark by id */
-        this.visibleMark = function (id) {
-            data.mark.list[id].onMap = getOnMapMark(data.mark.list[id]);
-        };
         /* get distance */
         this.getDistance = function () {
             handleAddNewDistanceRoute();
@@ -280,6 +263,7 @@
         };
         /* select a boat */
         this.selectBoat = function(id) {
+			dataParameterCheck('boat', id, null);
             console.log("Selected boat "+id);
         };
 
@@ -427,10 +411,13 @@
         
         // The id of the manoverboard marker
         var manoverboardMark = null;
-
-		var types = ['mark'];
 		
 		var data = {
+			boat : {
+				list : {},
+				count : 1,
+				active : null
+			},		
 			mark : {
 				list : {},
 				count : 1,
@@ -477,6 +464,64 @@
 				data.route.list[id].onMap.remove();
 			}
 		};
+		
+		/* define the remove method for the track */
+		data.track.removeMethod = function(id) {
+			/* check if the track is active */
+			if (data.track.active && data.track.active.id == id) {
+				data.track.active = null;
+				if (state == States.TRACK) {
+					state = States.NORMAL;
+				}
+			}
+			/* check if the track is visible on the map. The track can
+			   be not the active track but still have a reference on the map (so it's only hidden)
+			   Because of this we have to check here if the track is "onMap" 
+			*/
+			if (data.track.list[id].onMap) {
+				data.track.list[id].onMap.remove();
+			}
+		};
+		
+		/* define the visible method for a route */
+		data.route.visibleMethod = activateRoute;
+		
+		/* define the visible method for a route */
+		data.route.hideMethod = function(id) {
+			if (!data.route.active || data.route.active.id != id) {
+				throw("Illegal call of data.route.hideMethod, beacause only the active route can be hidden.");
+			}
+			/* hide the active route now */
+			hideActiveRoute();
+		};
+		
+		/* define the visible method for a track */
+		data.track.visibleMethod = activateTrack;
+		
+		/* define the visible method for a track */
+		data.track.hideMethod = function(id) {
+			if (!data.track.active || data.track.active.id != id) {
+				throw("Illegal call of data.track.hideMethod, beacause only the active track can be hidden.");
+			}
+			/* hide the active route now */
+			hideActiveTrack();
+		};	
+
+		/* define the visible method for a mark */
+		data.mark.visibleMethod	 = function(id){
+			if (!data.mark.list[id].onMap) {
+				data.mark.list[id].onMap = getOnMapMark(data.mark.list[id]);
+			}
+		};
+		
+		/* define a hide method for a mark */
+		data.mark.hideMethod = function(id){
+			if (null != data.mark.list[id].onMap) {
+				data.mark.list[id].onMap.setMap(null);
+				data.mark.list[id].onMap = null;
+			}
+		};
+		
         // distance
         var distanceroute = null;
         
@@ -1170,7 +1215,7 @@
 
 			obj.onMap = getOnMapRoute(obj);
             data.route.list[obj.id] = obj;        
-            activateRoute(obj); 
+            activateRoute(obj.id); 
   
             position = crosshairMarker.getPosition();
             /* just add a route marker if a position was selected */
@@ -1192,7 +1237,7 @@
             /* activate the route if a markers will be clicked when the route is not selected. */
             activate = function() {
                 removeDistanceRoute();
-                activateRoute(route);
+                activateRoute(route.id);
             }
             
             /* remove method will check if we remove all markers, which cause a deletion of the route */
@@ -1207,7 +1252,7 @@
             /* if the route was updated, the updated flag will be set to sync the route with the server */
             update = function() {
                 removeDistanceRoute();
-                activateRoute(route);
+                activateRoute(route.id);
                 route.updated = true;
             }
             
@@ -1225,14 +1270,14 @@
         * Activates the route, so that it is also visible in the sidebar.
         * *********************************************************************************
         */
-        function activateRoute(route) {
+        function activateRoute(id) {
 			/* if this route is already active we do not have to hide the route */
-            if (data.route.active && data.route.active.id != route.id) {
+            if (data.route.active && data.route.active.id != data.route.list[id]) {
 				hideActiveRoute();
 			}
             /* important that state will be set here, because hideActiveRoute() will set the state to NORMAL */
             state = States.ROUTE;
-            data.route.active = route;
+            data.route.active = data.route.list[id];
             data.route.active.onMap.visible();
         }
         /**
@@ -1335,7 +1380,7 @@
             obj.onMap = getOnMapTrack(obj);
             obj.updated = true;
             data.track.list[obj.id] = obj;        
-            activateTrack(obj); 
+            activateTrack(obj.id); 
             data.track.count++;
             callbacks[event.CREATED_TRACK].fire(obj);
         }
@@ -1355,11 +1400,11 @@
         * Activates the route, so that it is also visible in the sidebar.
         * *********************************************************************************
         */
-        function activateTrack(track) {
+        function activateTrack(id) {
             hideActiveTrack();
             /* important that state will be set here, because hideActiveRoute() will set the state to NORMAL */
             state = States.TRACK;
-            data.track.active = track;
+            data.track.active = data.track.list[id];
             data.track.active.onMap.visible();
         }
         /**

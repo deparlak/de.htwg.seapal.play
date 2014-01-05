@@ -100,10 +100,10 @@ $(document).ready(function() {
     menu.addCallback('leftclick', ['icon-selectedMark', 'icon-notSelectedMark'], function (self) {
         if (state == states.normal && self.hasClass('icon-selectedMark')) {
             self.removeClass('icon-selectedMark').addClass('icon-notSelectedMark');
-            map.hideMark(self.data('id'));
+            map.hide(self.data('type'), self.data('id'));
         } else if (state == states.normal && self.hasClass('icon-notSelectedMark')) {
             self.removeClass('icon-notSelectedMark').addClass('icon-selectedMark');
-            map.visibleMark(self.data('id'));
+            map.visible(self.data('type'), self.data('id'));
         } else if (state == states.remove) {
             selectToRemove(self);
         }
@@ -116,11 +116,11 @@ $(document).ready(function() {
         }
         if (state == states.normal && self.hasClass('icon-selectedRoute')) {
             self.removeClass('icon-selectedRoute').addClass('icon-notSelectedRoute');
-            map.hideRoute(self.data('id'));
+            map.hide(self.data('type'), self.data('id'));
         } else if (state == states.normal && self.hasClass('icon-notSelectedRoute')) {
             $('.icon-selectedRoute').removeClass('icon-selectedRoute').addClass('icon-notSelectedRoute');
             self.removeClass('icon-notSelectedRoute').addClass('icon-selectedRoute');
-            map.visibleRoute(self.data('id'));
+            map.visible(self.data('type'), self.data('id'));
         } else if (state == states.remove) {
             selectToRemove(self);
         }
@@ -133,11 +133,11 @@ $(document).ready(function() {
         }
         if (state == states.normal && self.hasClass('icon-selectedTrack')) {
             self.removeClass('icon-selectedTrack').addClass('icon-notSelectedTrack');
-            map.hideTrack(self.data('id'));
+            map.hide(self.data('type'), self.data('id'));
         } else if (state == states.normal && self.hasClass('icon-notSelectedTrack')) {
             $('.icon-selectedTrack').removeClass('icon-selectedTrack').addClass('icon-notSelectedTrack');
             self.removeClass('icon-notSelectedTrack').addClass('icon-selectedTrack');
-            map.visibleTrack(self.data('id'));
+            map.visible(self.data('type'), self.data('id'));
         } else if (state == states.remove) {
             selectToRemove(self);
         }
