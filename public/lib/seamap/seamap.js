@@ -175,7 +175,6 @@
         /* remove a route,mark,track,boat,... */
         this.remove = function(type, id) {
 			dataParameterCheck(type, id, null);
-		
 			/* check if a remove method is defined which has to be called */
 			if (undefined !== data[type].removeMethod) {
 				data[type].removeMethod(id);
@@ -184,17 +183,20 @@
 			callbacks[event.SERVER_REMOVE].fire(data[type].list[id]);
 			delete data[type].list[id];
         };
-		/* add a route,mark,track,boat,... */
-        this.add = function(type, obj) {
-            console.log("TODO add "+type+" "+obj);
+		/* set a route,mark,track,boat,... */
+        this.set = function(type, obj) {
+			/* if the obj has no id, but a _id (=serverID) than it was loaded from 
+			the server and has to be just added and not uploaded again */
+			if (!obj.id && obj._id) {
+				obj
+			}
         };
-        this.update = function(type, id, obj) {
-            console.log("TODO update "+type+" "+id+" "+obj);
-        };
+		/* return a copy of the obj with the given type and id */
         this.get = function(type, id) {
 			dataParameterCheck(type, id, null);
 			return data[type].list[id];
         };
+		/* visible the object with the given type and id */
         this.visible = function(type, id) {
 			dataParameterCheck(type, id, null);
 			/* check if a visible method is not defined which has to be called */
@@ -203,6 +205,7 @@
 			}
 			data[type].visibleMethod(id);
         };
+		/* hide the object with the given type and id */
         this.hide = function(type, id) {
 			dataParameterCheck(type, id, null);
 			/* check if a hide method is not defined which has to be called */
@@ -264,6 +267,7 @@
         /* select a boat */
         this.selectBoat = function(id) {
 			dataParameterCheck('boat', id, null);
+			data.boat.active = data.boat.list[id];
             console.log("Selected boat "+id);
         };
 
@@ -1211,7 +1215,7 @@
 			obj.type = 'route';
             obj.id = data.route.count.toString();
             obj.name = "Route "+data.route.count;
-            obj.updated = true;
+            obj.update = true;
 
 			obj.onMap = getOnMapRoute(obj);
             data.route.list[obj.id] = obj;        
@@ -1253,7 +1257,7 @@
             update = function() {
                 removeDistanceRoute();
                 activateRoute(route.id);
-                route.updated = true;
+                route.update = true;
             }
             
             onMap.addEventListener("remove", remove);      
@@ -1272,7 +1276,7 @@
         */
         function activateRoute(id) {
 			/* if this route is already active we do not have to hide the route */
-            if (data.route.active && data.route.active.id != data.route.list[id]) {
+            if (data.route.active && data.route.active.id != data.route.list[id].id) {
 				hideActiveRoute();
 			}
             /* important that state will be set here, because hideActiveRoute() will set the state to NORMAL */
@@ -1329,9 +1333,9 @@
         * *********************************************************************************
         */
         function uploadRouteUpdate() {
-            if (data.route.active != null && data.route.active.updated) {
+            if (data.route.active != null && data.route.active.update) {
 				callbacks[event.SERVER_CREATE].fire(data.route.active);
-                data.route.active.updated = false;
+                data.route.active.update = false;
             }         
         }
         
@@ -1378,7 +1382,7 @@
             obj.id = data.track.count.toString();
             obj.name = "Track " + data.track.count;
             obj.onMap = getOnMapTrack(obj);
-            obj.updated = true;
+            obj.update = true;
             data.track.list[obj.id] = obj;        
             activateTrack(obj.id); 
             data.track.count++;
@@ -1452,9 +1456,9 @@
         * *********************************************************************************
         */
         function uploadTrackUpdate() {
-            if (data.track.active != null && data.track.active.updated) {
+            if (data.track.active != null && data.track.active.update) {
 				callbacks[event.SERVER_CREATE].fire(data.track.active);
-                data.track.active.updated = false;
+                data.track.active.update = false;
             }         
         }
         
