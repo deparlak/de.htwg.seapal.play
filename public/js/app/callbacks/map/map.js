@@ -63,8 +63,18 @@ $(document).ready(function() {
         });
     });
 	/* this callback will be called when a mark was added */
-    map.addCallback(events.ADDED_MARK, function (self) {
+    map.addCallback(events.CREATED_MARK, function (self) {
         $("#marks").append(templateCreatedMark(self));
+    });
+	
+	/* this callback will be called when a mark was deleted */
+    map.addCallback(events.DELETED_MARK, function (self) {
+        $("#marks li a").each(function() {
+            /* delete only the element with the specific id */
+            if ($(this).data('id') == self.id ) {
+                $(this).remove();
+            }
+        });
     });
 	
 	/* this callback will be called if GEO location is not supported */
@@ -76,16 +86,6 @@ $(document).ready(function() {
     /* this callback will be called when the boat position changed */
     map.addCallback(events.BOAT_POS_UPDATE, function (self) {
         $('#infoBar').html(self.html);
-    });
-
-	/* this callback will be called when a mark was deleted */
-    map.addCallback(events.DELETED_MARK, function (self) {
-        $("#marks li a").each(function() {
-            /* delete only the element with the specific id */
-            if ($(this).data('id') == self.id ) {
-                $(this).remove();
-            }
-        });
     });
 	
 	/* this callback will be called if an action was executed which is not allowed on active tracking */

@@ -209,7 +209,7 @@
         };
         /* visible the route by id */
         this.visibleRoute = function (id) {
-            activateRoute(route[id]);
+            activateRoute(data.route.list[id]);
         };
         /* remove a route with a specified id */
         this.removeRoute = function (id) {
@@ -237,11 +237,12 @@
         }
         /* hide the mark by id */
         this.hideMark = function (id) {
-            mark[id].onMap.setVisible(false);
+            data.mark.list[id].onMap.setMap(null);
+			data.mark.list[id].onMap = null;
         };
         /* visible the mark by id */
         this.visibleMark = function (id) {
-            mark[id].onMap.setVisible(true);
+            data.mark.list[id].onMap = getOnMapMark(data.mark.list[id]);
         };
         /* remove a mark with a specified id */
         this.removeMark = function (id) {
@@ -324,7 +325,7 @@
 			LOADED_TRACK			: 2,
             CREATED_ROUTE           : 3,
             DELETED_ROUTE           : 4,
-            ADDED_MARK              : 5,
+            CREATED_MARK            : 5,
             DELETED_MARK            : 6,
             NO_GEO_SUPPORT          : 7,
             BOAT_POS_UPDATE         : 8,
@@ -411,23 +412,29 @@
         // The id of the manoverboard marker
         var manoverboardMark = null;
 
+		var types = ['mark'];
+		
+		var data = {
+			mark : {
+				list : [],
+				count : 1,
+				active : null
+			},
+			route : {
+				list : [],
+				count : 1,
+				active : null
+			}
+		};
+
+		
         // track
         var track = {};
         var trackCount = 1;
         var activeTrack = null;
 
-        // routes
-        var route = {};
-        var routeCount = 1;
-        var activeRoute = null;
-
         // distance
         var distanceroute = null;
-        
-        // mark
-        var mark = {};
-        var markCount = 1;
-        var selectedMark = null;
         
         //temporary marker
         var temporaryMarker = null;
@@ -762,7 +769,7 @@
          * Handles the boat position with fake/generated geolocation data
          */
         function handleFakeBoatPositionUpdate() {
-            if(isTracking && activeRoute != null) {
+            if(isTracking && data.route.active != null) {
                 fakeTrackingRoutePositionUpdate(generatedTrackingRoute);
             } else {
                 fakeTrackingRoutePositionUpdate(defaultRoute);
@@ -841,13 +848,13 @@
         * *********************************************************************************
         */
         this.startTracking = function() {
-            if(activeRoute == null) {
+            if(data.route.active == null) {
                 return false;
             }
 
             if(isSimulating) {
                 fakeRoutePointer = 0;
-                generateFakeTrackingRoute(activeRoute);
+                generateFakeTrackingRoute(data.route.active);
             }
 
             isTracking = true;
@@ -899,9 +906,9 @@
         }
         /* Removes the person overboard mark */
         function removeManOverboardMark() {
-            selectedMark = manoverboardMark;
+            data.mark.active = manoverboardMark;
             deleteSelectedMark();
-            selectedMark = null;
+            data.mark.active = null;
             manoverboardMark = null;
         }
 
@@ -934,7 +941,7 @@
         */
         function showContextMenu(latLng, type, marker) {
             contextMenuVisible = true;
-            selectedMark = marker;
+            data.mark.active = marker;
             showContextMenuInternal(latLng, type, marker);
         }
         
@@ -1060,12 +1067,12 @@
             var distance = {}
             distance.id = "-1";
             distance.onMap = new $.seamap.route("-1", map, "DISTANCE");
-            activeRoute = distance;  
+            data.route.active = distance;  
             distanceroute = distance;            
             position = crosshairMarker.getPosition();
             /* just add a route marker if a position was selected */
             if (null != position) {
-                activeRoute.onMap.addMarker(position);
+                data.route.active.onMap.addMarker(position);
             }
             
             state = States.DISTANCE;
@@ -1113,49 +1120,62 @@
             hideCrosshairMarker();
 
             var newRoute = {}
-            newRoute.id = routeCount.toString();
-            newRoute.label = "Route "+routeCount;
-            newRoute.detailed = "created on blabla..";
-            newRoute.onMap = new $.seamap.route(newRoute.id, map, "ROUTE");
+			newRoute.type = 'route';
+            newRoute.id = data.route.count.toString();
+            newRoute.name = "Route "+data.route.count;
             newRoute.updated = true;
 
-            route[newRoute.id] = newRoute;        
-  
+			newRoute.onMap = getOnMapRoute(newRoute);
+            data.route.list[newRoute.id] = newRoute;        
             activateRoute(newRoute); 
-            
-            /* activate the route if a markers will be clicked when the route is not selected. */
-            activate = function() {
-                removeDistanceRoute();
-                activateRoute(newRoute);
-            }
-            
-            /* remove method will check if we remove all markers, which cause a deletion of the route */
-            remove = function() {
-                if (0 == activeRoute.onMap.markers.length) {
-                    deleteActiveRoute();
-                } else {
-                    activate();
-                }
-            }
-            
-            update = function() {
-                newRoute.updated = true;
-            }
-            
-            activeRoute.onMap.addEventListener("remove", remove);      
-            activeRoute.onMap.addEventListener("click", activate);
-            activeRoute.onMap.addEventListener("add", update);
-            activeRoute.onMap.addEventListener("drag", update);  
-            activeRoute.onMap.addEventListener("remove", update);  
-
+  
             position = crosshairMarker.getPosition();
             /* just add a route marker if a position was selected */
             if (null != position) {
                 addRouteMarker(position);
             }
-            routeCount++;
+            data.route.count++;
             callbacks[event.CREATED_ROUTE].fire(newRoute);
         }
+
+        /**
+        * *********************************************************************************
+        * Place an existing mark on the map and return the handle
+        * *********************************************************************************
+        */
+		function getOnMapRoute(route) {
+			var onMap = new $.seamap.route(route.id, map, "ROUTE");
+		            
+            /* activate the route if a markers will be clicked when the route is not selected. */
+            activate = function() {
+                removeDistanceRoute();
+                activateRoute(route);
+            }
+            
+            /* remove method will check if we remove all markers, which cause a deletion of the route */
+            remove = function() {
+                if (0 == onMap.markers.length) {
+                    deleteActiveRoute();
+                } else {
+                    activate();
+                }
+            }
+			
+            /* if the route was updated, the updated flag will be set to sync the route with the server */
+            update = function() {
+                removeDistanceRoute();
+                activateRoute(route);
+                route.updated = true;
+            }
+            
+            onMap.addEventListener("remove", remove);      
+            onMap.addEventListener("click", activate);
+            onMap.addEventListener("add", update);
+            onMap.addEventListener("drag", update);  
+            onMap.addEventListener("remove", update);  
+			
+			return onMap;
+		}
                 
         /**
         * *********************************************************************************
@@ -1163,11 +1183,14 @@
         * *********************************************************************************
         */
         function activateRoute(route) {
-            hideActiveRoute();
+			/* if this route is already active we do not have to hide the route */
+            if (data.route.active && data.route.active.id != route.id) {
+				hideActiveRoute();
+			}
             /* important that state will be set here, because hideActiveRoute() will set the state to NORMAL */
             state = States.ROUTE;
-            activeRoute = route;
-            activeRoute.onMap.visible();
+            data.route.active = route;
+            data.route.active.onMap.visible();
         }
         /**
         * *********************************************************************************
@@ -1175,11 +1198,11 @@
         * *********************************************************************************
         */ 
         function hideActiveRoute(){
-            if (activeRoute != null) {
+            if (data.route.active != null) {
                 uploadRouteUpdate();
                 state = States.NORMAL;
-                activeRoute.onMap.hide();
-                activeRoute = null;
+                data.route.active.onMap.hide();
+                data.route.active = null;
             }
         }
         /**
@@ -1188,13 +1211,14 @@
         * *********************************************************************************
         */ 
         function deleteActiveRoute(){
-            if (activeRoute != null) {
-                callbacks[event.DELETED_ROUTE].fire(activeRoute);
+            if (data.route.active != null) {
+                callbacks[event.DELETED_ROUTE].fire(data.route.active);
+				callbacks[event.SERVER_REMOVE].fire(data.route.active);
                 uploadRouteDeletion();
                 state = States.NORMAL;
-                activeRoute.onMap.hide();
-                delete route[activeRoute.id];
-                activeRoute = null;
+                data.route.active.onMap.hide();
+                delete data.route.list[data.route.active.id];
+                data.route.active = null;
             }
         }
         
@@ -1217,9 +1241,9 @@
         * *********************************************************************************
         */
         function uploadRouteUpdate() {
-            if (activeRoute != null && activeRoute.updated) {
-				callbacks[event.SERVER_CREATE].fire(activeRoute);
-                activeRoute.updated = false;
+            if (data.route.active != null && data.route.active.updated) {
+				callbacks[event.SERVER_CREATE].fire(data.route.active);
+                data.route.active.updated = false;
             }         
         }
         
@@ -1229,7 +1253,7 @@
         * *********************************************************************************
         */
         function uploadRouteDeletion() {
-			callbacks[event.SERVER_REMOVE].fire(activeRoute);
+			callbacks[event.SERVER_REMOVE].fire(data.route.active);
         } 
         
         /**
@@ -1241,8 +1265,8 @@
             hideContextMenu();
             hideCrosshairMarker();
             
-            var newmarker = activeRoute.onMap.addMarker(latLng);
-            activeRoute.onMap.drawPath();
+            var newmarker = data.route.active.onMap.addMarker(latLng);
+            data.route.active.onMap.drawPath();
         }
 
 
@@ -1255,18 +1279,24 @@
         function handleAddNewTrack() {
             var newTrack = {};
             newTrack.id = trackCount.toString();
-            newTrack.label = "Track " + trackCount;
-            newTrack.detailed = "created on blabla..";
-            newTrack.onMap = new $.seamap.track(newTrack.id, map, "TRACK");
+            newTrack.name = "Track " + trackCount;
+            newTrack.onMap = getOnMapTrack(newTrack);
             newTrack.updated = true;
-
             track[newTrack.id] = newTrack;        
-  
             activateTrack(newTrack); 
-            
             trackCount++;
             callbacks[event.CREATED_TRACK].fire(newTrack);
         }
+		
+        /**
+        * *********************************************************************************
+        * Place an existing track on the map and return the handle
+        * *********************************************************************************
+        */
+		function getOnMapTrack(track) {
+			var onMap = new $.seamap.track(track.id, map, "TRACK");
+			return onMap;
+		}
                 
         /**
         * *********************************************************************************
@@ -1423,56 +1453,65 @@
         */
         function addNewMark(position, image) {
             var newMark = {}
-            newMark.id = markCount.toString();
-            newMark.name = "Mark "+markCount;
+			newMark.type = 'mark';
+            newMark.id = data.mark.count.toString();
+            newMark.name = "Mark "+data.mark.count;
 			newMark.lat = position.lat();
 			newMark.lng = position.lng();
-			
 			newMark.date = new Date().getTime();
 			if (image) {
 				newMark.image_thumb = image[0];
 				newMark.image_big = image[1];
 			}
+            newMark.onMap = getOnMapMark(newMark);
 			
-            newMark.onMap = new google.maps.Marker({
-                map: map,
-                position: position,
-                icon: (image) ? image[0] : options.defaultOptions.markerOptions.image,
-                draggable: (image) ? false : true
-            });
+            data.mark.list[data.mark.count.toString()] = newMark;
+            data.mark.count++;
+            callbacks[event.SERVER_CREATE].fire(newMark);
+            callbacks[event.CREATED_MARK].fire(newMark);
+        }
 
-			if (image) {
-				google.maps.event.addListener(newMark.onMap, 'click', function(event) {
+        /**
+        * *********************************************************************************
+        * Place an existing mark on the map and return the handle
+        * *********************************************************************************
+        */
+		function getOnMapMark(marker) {
+			var onMap = new google.maps.Marker({
+                map: map,
+                position: new google.maps.LatLng(marker.lat, marker.lng),
+                icon: (marker.image_thumb) ? marker.image_thumb : options.defaultOptions.markerOptions.image,
+                draggable: (marker.image_thumb) ? false : true
+            });
+			/* check if the marker has a image */
+			if (marker.image_thumb) {
+				google.maps.event.addListener(onMap, 'click', function(event) {
 					if(!supressClick) {
-						openFancybox(newMark.image_big, new Date(newMark.date).toLocaleString() + " / " + getCoordinatesAsString(newMark.lat, newMark.lng));
+						openFancybox(marker.image_big, new Date(marker.date).toLocaleString() + " / " + getCoordinatesAsString(marker.lat, marker.lng));
 					}
 				});
 			}
-			
-            google.maps.event.addListener(newMark.onMap, 'dragend', function(event) {
-				console.log("dragEnd");
-				console.log(event.latLng.lat());
-				console.log(event.latLng.lng());
+			/* marker get dragged */
+            google.maps.event.addListener(onMap, 'dragend', function(event) {
+				marker.lat = event.latLng.lat();
+				marker.lng = event.latLng.lng();
             });
-
-            google.maps.event.addListener(newMark.onMap, 'rightclick', function(event) {
-                showContextMenu(event.latLng, ContextMenuTypes.DELETE_MARKER, newMark);
+			/* show menu on rightclick to marker */
+            google.maps.event.addListener(onMap, 'rightclick', function(event) {
+                showContextMenu(event.latLng, ContextMenuTypes.DELETE_MARKER, marker);
             });
-
-            new LongPress(newMark.onMap, 500);
-            google.maps.event.addListener(newMark.onMap, 'longpress', function(event) {
+			/* show menu on longpress (rightclick not available on mobile devices) */
+            new LongPress(onMap, 500);
+            google.maps.event.addListener(onMap, 'longpress', function(event) {
                 supressClick = true;
-                showContextMenu(event.latLng, ContextMenuTypes.DELETE_MARKER, newMark);
+                showContextMenu(event.latLng, ContextMenuTypes.DELETE_MARKER, marker);
                 setTimeout(function() {
                     supressClick = false;
                 }, 1000);
             });
-            
-            mark[markCount.toString()] = newMark;
-            markCount++;
-            callbacks[event.ADDED_MARK].fire(newMark);
-        }
-
+			return onMap;
+		}
+		
         /* Opens a fancybox with the image */
         function openFancybox(picture, text) {
             $.fancybox({
@@ -1577,11 +1616,12 @@
         * *********************************************************************************
         */
         function deleteSelectedMark() {
-            if(selectedMark != null) {
-                selectedMark.onMap.setMap(null);
-                delete mark[selectedMark.id];
-                callbacks[event.DELETED_MARK].fire(selectedMark);
-                console.log(mark);
+            if(data.mark.active != null) {
+                data.mark.active.onMap.setMap(null);
+                callbacks[event.SERVER_REMOVE].fire(data.mark.active);
+				callbacks[event.DELETED_MARK].fire(data.mark.active);
+                delete data.mark.list[data.mark.active.id];
+				data.mark.active = null;
             }
         }
 
@@ -1591,7 +1631,7 @@
         * *********************************************************************************
         */
         function editSelectedMark() {
-            if(selectedMark != null) {
+            if(data.mark.active != null) {
                 $('#modal-form_marker').modal('show');
             }
         }
