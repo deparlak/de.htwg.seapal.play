@@ -154,6 +154,17 @@
     * *************************************************************************************
     */
     $.seamap = function(element){    
+		function dataParameterCheck(type, id, obj) {
+			/* check if the type exist */
+            if (undefined === data[type]) {
+				throw("Type "+type+" does not exist.");
+			}
+			/* check if the id exist */
+			if (undefined === data[type].list[id]) {
+				throw("There is no "+type+" with the id "+id);
+			}
+		}
+	
         /* add a callback function to get notified about actions */
         this.addCallback = function (e, method) {
             if (callbacks[e] === undefined) {
@@ -163,14 +174,8 @@
         };
         /* remove a route,mark,track,boat,... */
         this.remove = function(type, id) {
-			/* check if the type exist */
-            if (undefined === data[type]) {
-				throw("Type "+type+" does not exist.");
-			}
-			/* check if the id exist */
-			if (undefined === data[type].list[id]) {
-				throw("There is no "+type+" with the id "+id);
-			}
+			dataParameterCheck(type, id, null);
+		
 			/* check if a remove method is defined which has to be called */
 			if (undefined !== data[type].removeMethod) {
 				data[type].removeMethod(id);
@@ -186,7 +191,8 @@
             console.log("TODO update "+type+" "+id+" "+obj);
         };
         this.get = function(type, id) {
-            console.log("TODO get "+type+" "+id);
+			dataParameterCheck(type, id, null);
+			return data[type].list[id];
         };
 
         /* get the handle of the google map */
@@ -439,13 +445,33 @@
 		
 		/* define the remove method for the mark */
 		data.mark.removeMethod = function(id) {
+			/* check if this marker is active */
 			if (data.mark.active && data.mark.active.id == id) {
 				data.mark.active = null;
 			}
+			/* check if the marker is visible on the map */
 			if (data.mark.list[id].onMap) {
 				data.mark.list[id].onMap.setMap(null);
 			}
-		}		
+		};		
+		
+		/* define the remove method for the route */
+		data.route.removeMethod = function(id) {
+			/* check if the route is active */
+			if (data.route.active && data.route.active.id == id) {
+				data.route.active = null;
+				if (state == States.ROUTE) {
+					state = States.NORMAL;
+				}
+			}
+			/* check if the route is visible on the map. The route can
+			   be not the active route but still have a reference on the map (so it's only hidden)
+			   Because of this we have to check here if the route is "onMap" 
+			*/
+			if (data.route.list[id].onMap) {
+				data.route.list[id].onMap.remove();
+			}
+		};
 
 		
         // track
@@ -1754,6 +1780,18 @@
         */        
         this.setNotInteractive = function() {
             this.notinteractive = true;
+        }
+        /**
+        * *********************************************************************************
+        * remove the route
+        * *********************************************************************************
+        */        
+        this.remove = function () {
+            if(this.label != null) this.label.setMap(null);
+            this.path.setMap(null);
+            $.each(this.markers, function(){
+                this.setMap(null);
+            });
         }
         /**
         * *********************************************************************************
