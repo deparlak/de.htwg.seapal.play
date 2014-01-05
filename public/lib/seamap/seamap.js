@@ -241,7 +241,7 @@
         };
         /* visible the track by id */
         this.visibleTrack = function (id) {
-            activateTrack(track[id]);
+            activateTrack(data.track.list[id]);
         };
         /* remove a track with a specified id */
         this.removeTrack = function (id) {
@@ -440,6 +440,11 @@
 				list : {},
 				count : 1,
 				active : null
+			},
+			track : {
+				list : {},
+				count : 1,
+				active : null
 			}
 		};
 		
@@ -472,12 +477,6 @@
 				data.route.list[id].onMap.remove();
 			}
 		};
-		
-        // track
-        var track = {};
-        var trackCount = 1;
-        var activeTrack = null;
-
         // distance
         var distanceroute = null;
         
@@ -1331,13 +1330,13 @@
         function handleAddNewTrack() {
             var obj = {};
 			obj.type = 'track';
-            obj.id = trackCount.toString();
-            obj.name = "Track " + trackCount;
+            obj.id = data.track.count.toString();
+            obj.name = "Track " + data.track.count;
             obj.onMap = getOnMapTrack(obj);
             obj.updated = true;
-            track[obj.id] = obj;        
+            data.track.list[obj.id] = obj;        
             activateTrack(obj); 
-            trackCount++;
+            data.track.count++;
             callbacks[event.CREATED_TRACK].fire(obj);
         }
 		
@@ -1360,8 +1359,8 @@
             hideActiveTrack();
             /* important that state will be set here, because hideActiveRoute() will set the state to NORMAL */
             state = States.TRACK;
-            activeTrack = track;
-            activeTrack.onMap.visible();
+            data.track.active = track;
+            data.track.active.onMap.visible();
         }
         /**
         * *********************************************************************************
@@ -1369,11 +1368,11 @@
         * *********************************************************************************
         */ 
         function hideActiveTrack() {
-            if (activeTrack != null) {
+            if (data.track.active != null) {
                 uploadTrackUpdate();
                 state = States.NORMAL;
-                activeTrack.onMap.hide();
-                activeTrack = null;
+                data.track.active.onMap.hide();
+                data.track.active = null;
             }
         }
         /**
@@ -1382,12 +1381,12 @@
         * *********************************************************************************
         */ 
         function deleteActiveTrack(){
-            if (activeTrack != null) {
+            if (data.track.active != null) {
                 uploadTrackDeletion();
                 state = States.NORMAL;
-                activeTrack.onMap.hide();
-                delete track[activeTrack.id];
-                activeTrack = null;
+                data.track.active.onMap.hide();
+                delete data.track.list[data.track.active.id];
+                data.track.active = null;
             }
         }
         
@@ -1408,9 +1407,9 @@
         * *********************************************************************************
         */
         function uploadTrackUpdate() {
-            if (activeTrack != null && activeTrack.updated) {
-				callbacks[event.SERVER_CREATE].fire(activeTrack);
-                activeTrack.updated = false;
+            if (data.track.active != null && data.track.active.updated) {
+				callbacks[event.SERVER_CREATE].fire(data.track.active);
+                data.track.active.updated = false;
             }         
         }
         
@@ -1420,7 +1419,7 @@
         * *********************************************************************************
         */
         function uploadTrackDeletion() {
-			callbacks[event.SERVER_REMOVE].fire(activeTrack);
+			callbacks[event.SERVER_REMOVE].fire(data.track.active);
         } 
         
         /**
@@ -1429,7 +1428,7 @@
         * *********************************************************************************
         */
         function addTrackMarker(latLng) {            
-            activeTrack.onMap.addMarker(latLng);
+            data.track.active.onMap.addMarker(latLng);
         }
         
         /**
