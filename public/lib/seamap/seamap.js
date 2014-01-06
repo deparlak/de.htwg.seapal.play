@@ -154,16 +154,35 @@
     * *************************************************************************************
     */
     $.seamap = function(element){    
-		function dataParameterCheck(type, id, obj) {
+		function checkType(type) {
 			/* check if the type exist */
             if (undefined === data[type]) {
 				throw("Type "+type+" does not exist.");
 			}
+		};
+		
+		function checkId(type, id) {
 			/* check if the id exist */
 			if (undefined === data[type].list[id]) {
 				throw("There is no "+type+" with the id "+id);
 			}
-		}
+		};
+		
+		function checkObject(type, obj) {
+			for (var key in data[type].template) {
+				/* the id do not have to be in the object, because a object with no id will be created new */
+				if ('id' == key) continue;
+				/* other keys should exist. */
+				if (obj[key] === undefined) {
+					throw("Object is not valid. Checkout the template for "+type);
+				}
+			}
+		};
+	
+		function dataParameterCheck(type, id, obj) {
+			checkType(type);
+			checkId(type, id);
+		};
 	
         /* add a callback function to get notified about actions */
         this.addCallback = function (e, method) {
@@ -185,16 +204,64 @@
         };
 		/* set a route,mark,track,boat,... */
         this.set = function(type, obj) {
-			/* if the obj has no id, but a _id (=serverID) than it was loaded from 
+			checkType(type);
+			obj.update = false;
+			/* if the obj has no client id, but a server _id than it was loaded from 
 			the server and has to be just added and not uploaded again */
-			if (!obj.id && obj._id) {
-				obj
+			if ((!obj.id || obj.id == null) && obj._id != null) {
+				/* check if all attributes are in the obj */
+				checkObject(type, obj);
+				/* get an id for the obj */
+				obj.id = data[type].count.toString();
+				/* copy to the given type list */
+				data[type].list[obj.id] = obj;
+				/* increment the obj count */
+				data[type].count++;
+			/* else there is no _id from the server and none from the client, so this
+			   obj was created but not now insert to the client storage */
+			} else if (obj.id == null && obj._id == null) {
+				/* check if all attributes are in the obj */
+				checkObject(type, obj);
+				/* set to update the obj */
+				obj.update = true;
+				/* get an id for the obj */
+				obj.id = data[type].count.toString();
+			/* else the obj has already a client id, so we just have to update it */
+			} else if (obj.id != null) {
+				/* check if all attributes are in the obj, is not required because we update only 
+				   the objects which are required to update */
+				//checkObject(type, obj);
+				/* but we have to check if the id exist */
+				checkId(type, obj.id);
+				/* ok the id exist so let's update the available attributes */
+				for (var key in data[type].template) {
+					if (obj[key] !== undefined) {
+						data[type].list[obj.id][key] = obj[key];
+					}
+				}
+				/* set to update the obj */
+				obj.update = true;
 			}
+			/* check if obj should be uploaded to the server */
+			if (obj.update) {
+				callbacks[event.SERVER_CREATE].fire(obj);
+				obj.update = false;
+			}
+			console.log(data[type].list);
         };
 		/* return a copy of the obj with the given type and id */
         this.get = function(type, id) {
 			dataParameterCheck(type, id, null);
 			return data[type].list[id];
+        };
+		/* return a copy of the template for the given type */
+        this.getTemplate = function(type) {
+			checkType(type);
+			/* check if a visible method is not defined which has to be called */
+			if (undefined === data[type].template) {
+				throw("There is no template available for the type "+type);
+			}
+			return data[type].template;
         };
 		/* visible the object with the given type and id */
         this.visible = function(type, id) {
@@ -416,6 +483,32 @@
         // The id of the manoverboard marker
         var manoverboardMark = null;
 		
+		var templateMark = 
+		{
+			"id"			: null,
+			"name" 			: "defaultBoat",
+			"lat"			: 0.0,
+			"note" 			: "",
+			"date" 			: 0,
+			"lng"			: 0.0,
+			"image_big" 	: null,
+			"image_thumb" 	: null,
+			"_id"			: null,
+			"_rev" 			: null,
+			"owner" 		: null,
+		};
+		
+		var templateRoute =
+		{
+			"name" 			: "",
+			"date" 			: 0,
+			"marks" 		: [],
+			"distance" 		: 0.0,
+			"_id" 			: null,
+			"_rev" 			: null,
+			"owner" 		: null
+		};
+		
 		var data = {
 			boat : {
 				list : {},
@@ -423,11 +516,13 @@
 				active : null
 			},		
 			mark : {
+				template : templateMark,
 				list : {},
 				count : 1,
 				active : null
 			},
 			route : {
+				template : templateRoute,
 				list : {},
 				count : 1,
 				active : null
@@ -1213,6 +1308,7 @@
 
             var obj = {}
 			obj.type = 'route';
+			obj.date = new Date().getTime();
             obj.id = data.route.count.toString();
             obj.name = "Route "+data.route.count;
             obj.update = true;
@@ -1380,6 +1476,7 @@
             var obj = {};
 			obj.type = 'track';
             obj.id = data.track.count.toString();
+			obj.date = new Date().getTime();
             obj.name = "Track " + data.track.count;
             obj.onMap = getOnMapTrack(obj);
             obj.update = true;
