@@ -7,8 +7,10 @@ import de.htwg.seapal.model._IRace;
 import de.htwg.seapal.model.impl._Race;
 import de.htwg.seapal.utils.logging.ILogger;
 import org.ektorp.CouchDbConnector;
+import org.ektorp.DocumentNotFoundException;
 import org.ektorp.support.CouchDbRepositorySupport;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
@@ -53,8 +55,12 @@ public class RaceDatabase extends CouchDbRepositorySupport<_Race> implements IRa
 
 	@Override
 	public _IRace get(UUID id) {
-		return get(id.toString());
-	}
+        try {
+            return get(id.toString());
+        } catch (DocumentNotFoundException e) {
+            return null;
+        }
+    }
 
 	@Override
 	public List<_IRace> loadAll() {
@@ -75,11 +81,10 @@ public class RaceDatabase extends CouchDbRepositorySupport<_Race> implements IRa
 	}
     @Override
     public List<? extends _IRace> queryViews(final String viewName, final String key) {
-        return super.queryView(viewName, key);
-    }
-
-    @Override
-    public List<_Race> queryView(final String viewName, final String key) {
-        return super.queryView(viewName, key);
+        try {
+            return super.queryView(viewName, key);
+        } catch (DocumentNotFoundException e) {
+            return new ArrayList<>();
+        }
     }
 }

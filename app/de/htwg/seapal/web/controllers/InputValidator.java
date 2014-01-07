@@ -11,36 +11,22 @@ public class InputValidator {
 
 	private static final Pattern EMAIL_PATTERN = Pattern.compile("^[_A-Za-z0-9-\\+]+(\\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$");
 
-	public static enum Error {
-		INVALID_EMAIL,
-		PASSWORDS_DIFFER,
-		INVALID_LENGTH,
-		NONE
-	}
-
-	public static final String[] Error_Messages  = new String[]{
-		"Please enter a valid email adress!",
-		"The passwords you've entered differ!",
-		"The password you've entered is to short. Use at least " + MIN_LENGTH + " characters!"
-	};
-
 	/**
 	 * Validates the form input
 	 *
 	 * @param account The account form to be validated
 	 * @return Error code that could be used with the corresponding error message from Error_Messages
 	 */
-	public static Error validate(IPerson account) {
+	public static String validate(IPerson account) {
 		if (!validate_eMail(account.getEmail())) {
-			return Error.INVALID_EMAIL;
+			return "Please enter a valid email adress!";
 		}
-		if (!checkPasswords(account)) {
-			return Error.PASSWORDS_DIFFER;
-		}
+
 		if(!checkLength(account.getPassword())) {
-			return Error.INVALID_LENGTH;
+			return "The password you've entered is to short. Use at least " + MIN_LENGTH + " characters!";
 		}
-		return Error.NONE;
+
+		return null;
 	}
 
 	/**
@@ -71,6 +57,6 @@ public class InputValidator {
      * @return true if password of correct length
      */
     private static boolean checkLength(String password) {
-    	return MIN_LENGTH <= password.length();
+    	return password.length() >= MIN_LENGTH;
     }
 }

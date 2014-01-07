@@ -27,8 +27,8 @@ public class SeapalTestModule extends SeapalBaseTestModule {
 	}
 
 	private void configureDatabases() {
-        bind(String.class).annotatedWith(Names.named("databaseOfAccount")).toInstance("seapal_account_db");
-        bind(IAccountDatabase.class).to(AccountDatabase.class);
+        // bind(String.class).annotatedWith(Names.named("databaseOfAccount")).toInstance("seapal_account_db");
+        //bind(IAccountDatabase.class).to(AccountDatabase.class);
         bind(String.class).annotatedWith(Names.named("databaseOfPerson")).toInstance("seapal_person_db");
         bind(IPersonDatabase.class).to(PersonDatabase.class);
         bind(String.class).annotatedWith(Names.named("databaseOfBoat")).toInstance("seapal_boats_db");
@@ -47,11 +47,12 @@ public class SeapalTestModule extends SeapalBaseTestModule {
         bind(IMainController.class).to(MainController.class).in(Singleton.class);
 	}
 
+    /*
     @Provides
     @Named("accountCouchDbConnector")
     CouchDbConnector getAccountStdCouchDbConnector(@Named("databaseOfAccount") String databaseName, CouchDbInstance couchDbInstance) {
         return new StdCouchDbConnector(databaseName, couchDbInstance);
-    }
+    }*/
 
     @Provides
     @Named("personCouchDbConnector")
