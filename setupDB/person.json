@@ -6,7 +6,10 @@
            "map": "(doc)->\n emit doc.email, doc"
        },
        "friends": {
-           "map": "(doc)->\n for friend in doc.friendList\n  emit doc._id, friend"
+           "map": "(doc)->\n for friend in doc.friendList\n  emit friend, doc._id"
+       },
+       "this": {
+           "map": "(doc)->\n emit doc._id, doc"
        },
        "resetToken": {
            "map": "(doc)->\n ptrn = /^\\s*-?[0-9]{1,10}\\s*$/;\n if doc? and doc.resetToken? and ptrn.exec doc.resetToken and doc.resetToken != 0\n  emit doc.resetToken, doc\n"

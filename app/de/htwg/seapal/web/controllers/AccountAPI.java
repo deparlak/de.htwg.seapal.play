@@ -2,12 +2,11 @@ package de.htwg.seapal.web.controllers;
 
 import com.google.inject.Inject;
 import de.htwg.seapal.controller.IPersonController;
+import de.htwg.seapal.controller.impl.PasswordHash;
 import de.htwg.seapal.model.IPerson;
 import de.htwg.seapal.model.impl.Person;
 import de.htwg.seapal.utils.logging.ILogger;
 import de.htwg.seapal.web.controllers.helpers.Menus;
-import de.htwg.seapal.controller.impl.PasswordHash;
-import de.htwg.seapal.web.controllers.secure.IAccountController;
 import de.htwg.seapal.web.views.html.appContent.reset;
 import de.htwg.seapal.web.views.html.appContent.signInSeapal;
 import de.htwg.seapal.web.views.html.appContent.signUpSeapal;
@@ -46,12 +45,7 @@ public class AccountAPI
 
         ObjectNode response = Json.newObject();
         IPerson account = filledForm.get();
-        boolean exists = true;
-        try {
-            exists = controller.accountExists(account.getEmail());
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        boolean exists = controller.accountExists(account.getEmail());
 
         if (filledForm.hasErrors() || exists) {
             response.put("success", false);
@@ -64,9 +58,9 @@ public class AccountAPI
         } else {
             try {
 
-                InputValidator.Error result = InputValidator.validate(account);
-                if(result != InputValidator.Error.NONE) {
-                    flash("errors", InputValidator.Error_Messages[result.ordinal()]);
+                String error = InputValidator.validate(account);
+                if(error != null) {
+                    flash("errors", error);
                     return badRequest(signUpSeapal.render(filledForm, routes.AccountAPI.signup()));
                 }
 
@@ -78,7 +72,7 @@ public class AccountAPI
                 e.printStackTrace();
             }
             session().clear();
-            session(IAccountController.AUTHN_COOKIE_KEY, filledForm.get().getUUID().toString());
+            session(IPersonController.AUTHN_COOKIE_KEY, filledForm.get().getUUID().toString());
             return redirect(routes.Application.app());
         }
     }
@@ -95,7 +89,7 @@ public class AccountAPI
 
             if (!filledForm.hasErrors() && account != null) {
                 session().clear();
-                session(IAccountController.AUTHN_COOKIE_KEY, account.getUUID().toString());
+                session(IPersonController.AUTHN_COOKIE_KEY, account.getUUID().toString());
                 flash("success", "You've been logged in");
                 return redirect(routes.Application.app());
             }
@@ -185,9 +179,9 @@ public class AccountAPI
             return resetForm(Integer.parseInt(token));
         }
 
-        InputValidator.Error result = InputValidator.validate(account);
-        if(result != InputValidator.Error.NONE) {
-            flash("errors", InputValidator.Error_Messages[result.ordinal()]);
+        String error = InputValidator.validate(account);
+        if(error != null) {
+            flash("errors", error);
             return resetForm(Integer.parseInt(token));
         }
 
@@ -204,7 +198,7 @@ public class AccountAPI
         }
         controller.savePerson(account);
 
-        session(IAccountController.AUTHN_COOKIE_KEY, account.getUUID().toString());
+        session(IPersonController.AUTHN_COOKIE_KEY, account.getUUID().toString());
         flash("success", "You have successfully changed your password");
 
         return resetForm(Integer.parseInt(token));
@@ -215,7 +209,7 @@ public class AccountAPI
 
         @Override
         public String getUsername(Context ctx) {
-            return ctx.session().get(IAccountController.AUTHN_COOKIE_KEY);
+            return ctx.session().get(IPersonController.AUTHN_COOKIE_KEY);
         }
 
         @Override
@@ -229,7 +223,7 @@ public class AccountAPI
 
         @Override
         public String getUsername(Context ctx) {
-            return ctx.session().get(IAccountController.AUTHN_COOKIE_KEY);
+            return ctx.session().get(IPersonController.AUTHN_COOKIE_KEY);
         }
 
         @Override
