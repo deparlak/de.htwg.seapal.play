@@ -199,7 +199,7 @@
 				data[type].removeMethod(id);
 			}
 			/* remove the element now from the list */
-			callbacks[event.SERVER_REMOVE].fire(data[type].list[id]);
+			dataCallback([event.SERVER_REMOVE], data[type].list[id]);
 			delete data[type].list[id];
         };
 		/* set a route,mark,track,boat,... */
@@ -244,7 +244,7 @@
 			}
 			/* check if obj should be uploaded to the server */
 			if (obj.update) {
-				callbacks[event.SERVER_CREATE].fire(obj);
+				dataCallback([event.SERVER_CREATE], obj);
 				obj.update = false;
 			}
 			console.log(data[type].list);
@@ -485,6 +485,7 @@
 		
 		var templateMark = 
 		{
+			"type"			: "mark",
 			"id"			: null,
 			"name" 			: "defaultBoat",
 			"lat"			: 0.0,
@@ -500,6 +501,7 @@
 		
 		var templateRoute =
 		{
+			"type"			: "route",
 			"name" 			: "",
 			"date" 			: 0,
 			"marks" 		: [],
@@ -508,6 +510,25 @@
 			"_rev" 			: null,
 			"owner" 		: null
 		};
+		
+		/* 
+		   return a copy of a obj with the specified type and id to all event listeners.
+		   There will be no type and id check, because this method will be
+		   used only internally where the type/id should be valid used.
+		   Using the dataCallback make sure that the user cannot change the object, because
+		   sending the original object would make it possible for the user.
+		*/
+		var dataCallback = function(events, obj) {		
+			var copy = {};
+			/* copy only the template fields */
+			for (var key in data[obj.type].template) {
+				copy[key] = data[obj.type].list[obj.id][key];
+			}
+			/* send copy to all event listeners */
+			for (var e in events) {
+				callbacks[events[e]].fire(copy);
+			}
+		};		
 		
 		var data = {
 			boat : {
@@ -1323,7 +1344,7 @@
                 addRouteMarker(position);
             }
             data.route.count++;
-            callbacks[event.CREATED_ROUTE].fire(obj);
+            dataCallback([event.CREATED_ROUTE], obj);
         }
 
         /**
@@ -1400,8 +1421,7 @@
         */ 
         function deleteActiveRoute(){
             if (data.route.active != null) {
-                callbacks[event.DELETED_ROUTE].fire(data.route.active);
-				callbacks[event.SERVER_REMOVE].fire(data.route.active);
+                dataCallback([event.DELETED_ROUTE, event.SERVER_REMOVE], data.route.active);
                 uploadRouteDeletion();
                 state = States.NORMAL;
                 data.route.active.onMap.hide();
@@ -1430,7 +1450,7 @@
         */
         function uploadRouteUpdate() {
             if (data.route.active != null && data.route.active.update) {
-				callbacks[event.SERVER_CREATE].fire(data.route.active);
+				dataCallback([event.SERVER_CREATE], data.route.active);
                 data.route.active.update = false;
             }         
         }
@@ -1441,7 +1461,7 @@
         * *********************************************************************************
         */
         function uploadRouteDeletion() {
-			callbacks[event.SERVER_REMOVE].fire(data.route.active);
+			dataCallback([event.SERVER_REMOVE], data.route.active);
         } 
         
         /**
@@ -1483,7 +1503,7 @@
             data.track.list[obj.id] = obj;        
             activateTrack(obj.id); 
             data.track.count++;
-            callbacks[event.CREATED_TRACK].fire(obj);
+            dataCallback([event.CREATED_TRACK], obj);
         }
 		
         /**
@@ -1554,7 +1574,7 @@
         */
         function uploadTrackUpdate() {
             if (data.track.active != null && data.track.active.update) {
-				callbacks[event.SERVER_CREATE].fire(data.track.active);
+				dataCallback([event.SERVER_CREATE], data.track.active);
                 data.track.active.update = false;
             }         
         }
@@ -1565,7 +1585,7 @@
         * *********************************************************************************
         */
         function uploadTrackDeletion() {
-			callbacks[event.SERVER_REMOVE].fire(data.track.active);
+			dataCallback([event.SERVER_REMOVE], data.track.active);
         } 
         
         /**
@@ -1664,8 +1684,7 @@
 			
             data.mark.list[data.mark.count.toString()] = newMark;
             data.mark.count++;
-            callbacks[event.SERVER_CREATE].fire(newMark);
-            callbacks[event.CREATED_MARK].fire(newMark);
+            dataCallback([event.SERVER_CREATE, event.CREATED_MARK], newMark);
         }
 
         /**
@@ -1693,7 +1712,7 @@
 				marker.lat = e.latLng.lat();
 				marker.lng = e.latLng.lng();
 				/* update mark on server */
-				callbacks[event.SERVER_CREATE].fire(marker);
+				dataCallback([event.SERVER_CREATE], marker);
             });
 			/* show menu on rightclick to marker */
             google.maps.event.addListener(onMap, 'rightclick', function(event) {
@@ -1817,8 +1836,7 @@
         function deleteSelectedMark() {
             if(data.mark.active != null) {
                 data.mark.active.onMap.setMap(null);
-                callbacks[event.SERVER_REMOVE].fire(data.mark.active);
-				callbacks[event.DELETED_MARK].fire(data.mark.active);
+                dataCallback([event.SERVER_REMOVE, event.DELETED_MARK], data.mark.active);
                 delete data.mark.list[data.mark.active.id];
 				data.mark.active = null;
             }

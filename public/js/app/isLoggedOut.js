@@ -28,5 +28,29 @@ $(document).ready(function() {
 		console.log(a);
 		a++;
 		console.log("-----------------");
+		
+        /* request to server for login */
+        request = $.ajax({
+            url         : "api/"+self.type,
+            type        : "post",
+            contentType : "application/json",
+            data        : JSON.stringify(self),
+        });
+
+        /* callback handler that will be called on success */
+        request.done(function (response, textStatus, jqXHR){
+			console.log(response);
+			console.log(textStatus);
+			console.log(jqXHR);
+			console.log("success");
+        });
+
+        /* callback handler that will be called on failure */
+        request.fail(function (jqXHR, textStatus, errorThrown){
+			console.log(jqXHR);
+			console.log(textStatus);
+			console.log(errorThrown);
+			console.log("error");
+        });
     });
 });
