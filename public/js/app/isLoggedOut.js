@@ -28,7 +28,7 @@ $(document).ready(function() {
 		console.log(a);
 		a++;
 		console.log("-----------------");
-		
+		self.id = null;
         /* request to server for login */
         request = $.ajax({
             url         : "api/"+self.type,

@@ -261,7 +261,7 @@
 			if (undefined === data[type].template) {
 				throw("There is no template available for the type "+type);
 			}
-			return data[type].template;
+			return jQuery.extend(true, {}, data[type].template);
         };
 		/* visible the object with the given type and id */
         this.visible = function(type, id) {
@@ -496,12 +496,13 @@
 			"image_thumb" 	: null,
 			"_id"			: null,
 			"_rev" 			: null,
-			"owner" 		: null,
+			"owner" 		: null
 		};
 		
 		var templateRoute =
 		{
 			"type"			: "route",
+			"id"			: null,
 			"name" 			: "",
 			"date" 			: 0,
 			"marks" 		: [],
@@ -511,6 +512,8 @@
 			"owner" 		: null
 		};
 		
+		var self = this;
+		
 		/* 
 		   return a copy of a obj with the specified type and id to all event listeners.
 		   There will be no type and id check, because this method will be
@@ -519,13 +522,16 @@
 		   sending the original object would make it possible for the user.
 		*/
 		var dataCallback = function(events, obj) {		
-			var copy = {};
-			/* copy only the template fields */
-			for (var key in data[obj.type].template) {
-				copy[key] = data[obj.type].list[obj.id][key];
-			}
-			/* send copy to all event listeners */
+			/* 
+				send copy to all event listeners.
+				Each listener get its own copy
+			*/
 			for (var e in events) {
+				var copy = {};
+				/* copy only the template fields */
+				for (var key in data[obj.type].template) {
+					copy[key] = data[obj.type].list[obj.id][key];
+				}
 				callbacks[events[e]].fire(copy);
 			}
 		};		
@@ -1327,14 +1333,13 @@
             hideContextMenu();
             hideCrosshairMarker();
 
-            var obj = {}
-			obj.type = 'route';
+            var obj = self.getTemplate('route');
 			obj.date = new Date().getTime();
             obj.id = data.route.count.toString();
             obj.name = "Route "+data.route.count;
             obj.update = true;
-
 			obj.onMap = getOnMapRoute(obj);
+			
             data.route.list[obj.id] = obj;        
             activateRoute(obj.id); 
   
@@ -1366,7 +1371,7 @@
                 if (0 == onMap.markers.length) {
                     deleteActiveRoute();
                 } else {
-                    activate();
+                    update();
                 }
             }
 			
@@ -1381,7 +1386,6 @@
             onMap.addEventListener("click", activate);
             onMap.addEventListener("add", update);
             onMap.addEventListener("drag", update);  
-            onMap.addEventListener("remove", update);  
 			
 			return onMap;
 		}
@@ -1422,7 +1426,6 @@
         function deleteActiveRoute(){
             if (data.route.active != null) {
                 dataCallback([event.DELETED_ROUTE, event.SERVER_REMOVE], data.route.active);
-                uploadRouteDeletion();
                 state = States.NORMAL;
                 data.route.active.onMap.hide();
                 delete data.route.list[data.route.active.id];
@@ -1457,15 +1460,6 @@
         
         /**
         * *********************************************************************************
-        * Check if the active route has ever been uploaded and so has to be deleted on the server.
-        * *********************************************************************************
-        */
-        function uploadRouteDeletion() {
-			dataCallback([event.SERVER_REMOVE], data.route.active);
-        } 
-        
-        /**
-        * *********************************************************************************
         * Adds a new route marker to the active route.
         * *********************************************************************************
         */
@@ -1493,8 +1487,7 @@
         * *********************************************************************************
         */
         function handleAddNewTrack() {
-            var obj = {};
-			obj.type = 'track';
+            var obj = self.getTemplate('track');;
             obj.id = data.track.count.toString();
 			obj.date = new Date().getTime();
             obj.name = "Track " + data.track.count;
@@ -1669,22 +1662,21 @@
         * *********************************************************************************
         */
         function addNewMark(position, image) {
-            var newMark = {}
-			newMark.type = 'mark';
-            newMark.id = data.mark.count.toString();
-            newMark.name = "Mark "+data.mark.count;
-			newMark.lat = position.lat();
-			newMark.lng = position.lng();
-			newMark.date = new Date().getTime();
+            var obj = self.getTemplate('mark');
+            obj.id = data.mark.count.toString();
+            obj.name = "Mark "+data.mark.count;
+			obj.lat = position.lat();
+			obj.lng = position.lng();
+			obj.date = new Date().getTime();
 			if (image) {
-				newMark.image_thumb = image[0];
-				newMark.image_big = image[1];
+				obj.image_thumb = image[0];
+				obj.image_big = image[1];
 			}
-            newMark.onMap = getOnMapMark(newMark);
+            obj.onMap = getOnMapMark(obj);
 			
-            data.mark.list[data.mark.count.toString()] = newMark;
+            data.mark.list[obj.id] = obj;
             data.mark.count++;
-            dataCallback([event.SERVER_CREATE, event.CREATED_MARK], newMark);
+            dataCallback([event.SERVER_CREATE, event.CREATED_MARK], obj);
         }
 
         /**
@@ -1923,7 +1915,7 @@
         this.label = null;
         this.notinteractive = (obj.type == 'track') ? true : false;
 		options = $.seamap.options[obj.type];
-        
+        		
         // internal data
         var eventListener = {
             add : [],
@@ -1932,6 +1924,11 @@
             click : []
         };
         
+		/* if the have some markers, than create them on the map */
+		for (var i in obj.marks) {
+			this.addMarker(new google.maps.LatLng(obj.marks[i].lat, obj.marks[i].lng));
+		}
+		
         this.path = new google.maps.Polyline(options.polyOptions);
         this.path.setMap(this.googlemaps);
         
@@ -1991,6 +1988,7 @@
                 id: this.markers.length 
             });
             this.markers[this.markers.length] = marker;
+			obj.marks[obj.marks.length] = {lat : position.nb, lng : position.ob};
             
             // adds or updates the label
             if(this.label == null) {
@@ -2001,13 +1999,15 @@
 
             // Add event listeners for the interactive mode
             if(!this.notinteractive) {
-                google.maps.event.addListener(marker, 'drag', function() {
+                google.maps.event.addListener(marker, 'drag', function(event) {
+					obj.marks[marker.id] = {lat : event.latLng.lat(), lng : event.latLng.lng()};
                     $this.drawPath();
                     $this.updateLabel();
                     $this.notify("drag");
                 });
     
                 google.maps.event.addListener(marker, 'rightclick', function(event) {
+					obj.marks.splice(marker.id, 1);
                     $this.removeMarker(marker);
                 });
                 
