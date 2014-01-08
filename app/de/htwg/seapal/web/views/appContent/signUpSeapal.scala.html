@@ -1,4 +1,4 @@
-@(form: Form[de.htwg.seapal.web.controllers.secure.impl.Account], link: play.api.mvc.Call)
+@(form: Form[de.htwg.seapal.model.impl.Person], link: play.api.mvc.Call)
 <!DOCTYPE HTML>
 <html>
     <head>
@@ -25,9 +25,9 @@
                 </div>
             }
             @helper.form(link, 'class -> "form-signInSeapal") {
-                <input type="text" class="form-control" placeholder="Choose your Username" required autofocus>
-                <input type="text" class="form-control" name="accountName" placeholder="Enter your Email" required autofocus>
-                <input type="password" class="form-control" name="accountPassword" placeholder="Choose your Password" required>
+                <!--input type="text" class="form-control" name="accountName" placeholder="Choose your Username" required autofocus-->
+                <input type="text" class="form-control" name="email" placeholder="Enter your Email" required autofocus>
+                <input type="password" class="form-control" name="password" placeholder="Choose your Password" required>
                 <input type="password" class="form-control" name="repeatedAccountPassword" placeholder="Confirm your Password" required>
                 <button class="btn btn-lg btn-success btn-block" type="submit">
                     Sign Up for Seapal

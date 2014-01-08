@@ -2,11 +2,11 @@
    "_id": "_design/Route",
    "language": "coffeescript",
    "views": {
-       "routesAsJson": {
-           "map": "(doc)->\n emit doc.accountName, doc"
+       "own": {
+           "map": "(doc)->\n if doc? and doc.owner? and doc.owner.length? and doc.owner.length > 0\n  emit doc.owner, doc"
        },
-       "routeAsJson": {
-           "map": "(doc)->\n emit doc.accountName, doc"
+       "singleDocument": {
+           "map": "(doc)->\n if doc? and doc.owner? and doc.owner.length? and doc.owner.length > 0 and doc._id?\n  emit doc.owner + doc._id, doc"
        }
    },
    "validate_doc_update": "(newDoc,oldDoc,userCtx)->\n if oldDoc? and !newDoc._deleted? and newDoc.owner isnt oldDoc.owner\n  throw forbidden: 'old and new user dont match'"

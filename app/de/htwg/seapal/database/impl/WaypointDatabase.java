@@ -7,8 +7,10 @@ import de.htwg.seapal.model.IWaypoint;
 import de.htwg.seapal.model.impl.Waypoint;
 import de.htwg.seapal.utils.logging.ILogger;
 import org.ektorp.CouchDbConnector;
+import org.ektorp.DocumentNotFoundException;
 import org.ektorp.support.CouchDbRepositorySupport;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
@@ -54,8 +56,12 @@ public class WaypointDatabase extends CouchDbRepositorySupport<Waypoint> impleme
 
 	@Override
 	public Waypoint get(UUID id) {
-		return get(id.toString());
-	}
+        try {
+            return get(id.toString());
+        } catch (DocumentNotFoundException e) {
+            return null;
+        }
+    }
 
 	@Override
 	public List<IWaypoint> loadAll() {
@@ -76,6 +82,10 @@ public class WaypointDatabase extends CouchDbRepositorySupport<Waypoint> impleme
 	}
     @Override
     public List<? extends IWaypoint> queryViews(final String viewName, final String key) {
-        return super.queryView(viewName, key);
+        try {
+            return super.queryView(viewName, key);
+        } catch (DocumentNotFoundException e) {
+            return new ArrayList<>();
+        }
     }
 }

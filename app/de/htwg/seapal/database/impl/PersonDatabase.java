@@ -7,8 +7,10 @@ import de.htwg.seapal.model.IPerson;
 import de.htwg.seapal.model.impl.Person;
 import de.htwg.seapal.utils.logging.ILogger;
 import org.ektorp.CouchDbConnector;
+import org.ektorp.DocumentNotFoundException;
 import org.ektorp.support.CouchDbRepositorySupport;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
@@ -56,7 +58,11 @@ public class PersonDatabase
 
     @Override
     public IPerson get(UUID id) {
-        return get(id.toString());
+        try {
+            return get(id.toString());
+        } catch (DocumentNotFoundException e) {
+            return null;
+        }
     }
 
     @Override
@@ -78,11 +84,23 @@ public class PersonDatabase
     }
     @Override
     public List<? extends IPerson> queryViews(final String viewName, final String key) {
-        return super.queryView(viewName, key);
+        try {
+            return super.queryView(viewName, key);
+        } catch (DocumentNotFoundException e) {
+            return new ArrayList<>();
+        }
     }
 
     @Override
-    public List<Person> queryView(final String viewName, final String key) {
-        return super.queryView(viewName, key);
+    public Person getAccount(final String email)
+            throws Exception {
+        List<Person> accounts = super.queryView("by_email", email);
+        if (accounts.size() > 1) {
+            throw new Exception("more than one account exists!");
+        } else if (accounts.size() == 0) {
+            return null;
+        } else {
+            return accounts.get(0);
+        }
     }
 }

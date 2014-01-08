@@ -16,6 +16,6 @@ $(document).ready(function() {
     output.before(function() { menu.closeMenu() });
     output.before(function() { tools.closeMenu() });
     
-    $("#map_canvas").seamap(seamapSync);
+    $("#map_canvas").seamap();
     map = $('#map_canvas').data('seamap');
 });

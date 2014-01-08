@@ -6,36 +6,27 @@
  */
  
 $(document).ready(function() {    
-    window.seamapSync =
-    {
-        downloadBoats : function (self, output) {
+    events = map.getEvents();
+	var a = 0;
+	var b = 99;
+	
+	/* this callback will be called if marks where loaded from the server */
+    map.addCallback(events.SERVER_REMOVE, function (self) {
+		console.log("delete "+self.type);
+		console.log("-----------------");
+		console.log(self);
+		console.log(b);
+		b++;
+		console.log("-----------------");
+    });
 
-        },
-        downloadTracks : function (self, output) {
-        
-        },
-        downloadRoutes : function (self, output) {
-        
-        },
-        downloadMarks : function (self, output) {
-        
-        },
-        
-        
-        uploadBoat : function (self) {
-        
-        },
-        uploadTrack : function (self) {
-        
-        },
-        uploadRoute : function (self) {
-            console.log("uploadRoute");
-            console.log("-----------------");
-            console.log(self);
-            console.log("-----------------");
-        },
-        uploadMark : function (self) {
-        
-        },
-    };
+	/* this callback will be called if marks where loaded from the server */
+    map.addCallback(events.SERVER_CREATE, function (self) {
+		console.log("create "+self.type);
+		console.log("-----------------");
+		console.log(self);
+		console.log(a);
+		a++;
+		console.log("-----------------");
+    });
 });

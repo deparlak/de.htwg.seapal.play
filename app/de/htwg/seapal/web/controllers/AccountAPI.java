@@ -1,14 +1,12 @@
 package de.htwg.seapal.web.controllers;
 
 import com.google.inject.Inject;
-import com.typesafe.plugin.MailerAPI;
-import com.typesafe.plugin.MailerPlugin;
+import de.htwg.seapal.controller.IPersonController;
+import de.htwg.seapal.controller.impl.PasswordHash;
+import de.htwg.seapal.model.IPerson;
+import de.htwg.seapal.model.impl.Person;
 import de.htwg.seapal.utils.logging.ILogger;
 import de.htwg.seapal.web.controllers.helpers.Menus;
-import de.htwg.seapal.web.controllers.helpers.PasswordHash;
-import de.htwg.seapal.web.controllers.secure.IAccount;
-import de.htwg.seapal.web.controllers.secure.IAccountController;
-import de.htwg.seapal.web.controllers.secure.impl.Account;
 import de.htwg.seapal.web.views.html.appContent.reset;
 import de.htwg.seapal.web.views.html.appContent.signInSeapal;
 import de.htwg.seapal.web.views.html.appContent.signUpSeapal;
@@ -34,25 +32,20 @@ public class AccountAPI
 
     private static final long TIMEOUT = 60 * 60 * 1000;
 
-    static Form<Account> form = Form.form(Account.class);
+    static Form<Person> form = Form.form(Person.class);
 
     @Inject
-    private IAccountController controller;
+    private IPersonController controller;
 
     @Inject
     private ILogger logger;
 
     public Result signup() {
-        Form<Account> filledForm = form.bindFromRequest();
+        Form<Person> filledForm = form.bindFromRequest();
 
         ObjectNode response = Json.newObject();
-        IAccount account = filledForm.get();
-        boolean exists = true;
-        try {
-            exists = controller.accountExists(account.getAccountName());
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        IPerson account = filledForm.get();
+        boolean exists = controller.accountExists(account.getEmail());
 
         if (filledForm.hasErrors() || exists) {
             response.put("success", false);
@@ -65,38 +58,38 @@ public class AccountAPI
         } else {
             try {
 
-                InputValidator.Error result = InputValidator.validate(account);
-                if(result != InputValidator.Error.NONE) {
-                    flash("errors", InputValidator.Error_Messages[result.ordinal()]);
+                String error = InputValidator.validate(account);
+                if(error != null) {
+                    flash("errors", error);
                     return badRequest(signUpSeapal.render(filledForm, routes.AccountAPI.signup()));
                 }
 
-                account.setAccountPassword(PasswordHash.createHash(account.getAccountPassword()));
-                controller.saveAccount(account);
+                account.setPassword(PasswordHash.createHash(account.getPassword()));
+                controller.savePerson(account);
             } catch (InvalidKeySpecException e) {
                 e.printStackTrace();
             } catch (NoSuchAlgorithmException e) {
                 e.printStackTrace();
             }
             session().clear();
-            session(IAccountController.AUTHN_COOKIE_KEY, filledForm.get().getUUID().toString());
+            session(IPersonController.AUTHN_COOKIE_KEY, filledForm.get().getUUID().toString());
             return redirect(routes.Application.app());
         }
     }
 
     public Result login() {
-        Form<Account> filledForm = DynamicForm.form(Account.class).bindFromRequest();
+        Form<Person> filledForm = DynamicForm.form(Person.class).bindFromRequest();
 
 
         ObjectNode response = Json.newObject();
-        IAccount account = null;
+        IPerson account = null;
 
         try {
-            account = controller.authenticate(filledForm);
+            account = controller.authenticate(filledForm.get());
 
             if (!filledForm.hasErrors() && account != null) {
                 session().clear();
-                session(IAccountController.AUTHN_COOKIE_KEY, account.getUUID().toString());
+                session(IPersonController.AUTHN_COOKIE_KEY, account.getUUID().toString());
                 flash("success", "You've been logged in");
                 return redirect(routes.Application.app());
             }
@@ -120,10 +113,10 @@ public class AccountAPI
     }
 
     public Result requestNewPassword() {
-        Form<Account> filledForm = form.bindFromRequest();
+        Form<Person> filledForm = form.bindFromRequest();
 
-        IAccount account = filledForm.get();
-        List<? extends IAccount> list = controller.queryView("by_email", account.getAccountName());
+        IPerson account = filledForm.get();
+        List<? extends IPerson> list = controller.queryView("by_email", account.getEmail());
 
         if (list.size() == 0) {
             flash("errors", "Account does not exist");
@@ -143,7 +136,7 @@ public class AccountAPI
 
         account.setResetTimeout(System.currentTimeMillis() + TIMEOUT);
 
-        controller.saveAccount(account);
+        controller.savePerson(account);
 
         /*MailerAPI mail = play.Play.application().plugin(MailerPlugin.class).email();
         mail.setSubject("request for password change");
@@ -167,7 +160,7 @@ public class AccountAPI
 
         logger.error("Token", token);
 
-        List<? extends IAccount> list = controller.queryView("resetToken", token);
+        List<? extends IPerson> list = controller.queryView("resetToken", token);
 
         logger.error("size", Integer.toString(list.size()));
 
@@ -179,16 +172,16 @@ public class AccountAPI
             return resetForm(Integer.parseInt(token));
         }
 
-        IAccount account = list.get(0);
+        IPerson account = list.get(0);
 
         if (account.getResetTimeout() < System.currentTimeMillis()) {
             flash("errors", "Reset token expired. Please request a new token by clicking on I forgot my password!");
             return resetForm(Integer.parseInt(token));
         }
 
-        InputValidator.Error result = InputValidator.validate(form.get("accountPassword")[0], form.get("repeatedAccountPassword")[0]);
-        if(result != InputValidator.Error.NONE) {
-            flash("errors", InputValidator.Error_Messages[result.ordinal()]);
+        String error = InputValidator.validate(account);
+        if(error != null) {
+            flash("errors", error);
             return resetForm(Integer.parseInt(token));
         }
 
@@ -197,15 +190,17 @@ public class AccountAPI
         account.setResetTimeout(0);
 
         try {
-            account.setAccountPassword(PasswordHash.createHash(form.get("accountPassword")[0]));
+            account.setPassword(PasswordHash.createHash(form.get("password")[0]));
         } catch (NoSuchAlgorithmException e) {
             e.printStackTrace();
         } catch (InvalidKeySpecException e) {
             e.printStackTrace();
         }
-        controller.saveAccount(account);
-        
+        controller.savePerson(account);
+
+        session(IPersonController.AUTHN_COOKIE_KEY, account.getUUID().toString());
         flash("success", "You have successfully changed your password");
+
         return resetForm(Integer.parseInt(token));
     }
 
@@ -214,7 +209,7 @@ public class AccountAPI
 
         @Override
         public String getUsername(Context ctx) {
-            return ctx.session().get(IAccountController.AUTHN_COOKIE_KEY);
+            return ctx.session().get(IPersonController.AUTHN_COOKIE_KEY);
         }
 
         @Override
@@ -228,7 +223,7 @@ public class AccountAPI
 
         @Override
         public String getUsername(Context ctx) {
-            return ctx.session().get(IAccountController.AUTHN_COOKIE_KEY);
+            return ctx.session().get(IPersonController.AUTHN_COOKIE_KEY);
         }
 
         @Override

@@ -1,9 +1,0 @@
-{
-  "_id": "_design/Account",
-  "language": "coffeescript",
-  "views": {
-    "by_email": {
-      "map": "(doc)->\n emit doc.accountName, doc"
-    }
-  }
-}

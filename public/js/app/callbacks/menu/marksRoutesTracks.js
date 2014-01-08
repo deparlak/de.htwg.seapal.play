@@ -7,7 +7,7 @@
  
 $(document).ready(function() {    
     var lastSearch = {};
-    var active = "#marks";
+    var active = "#mark";
     var states = {normal : 0, remove : 1};
     var state = states.normal;
     var removeElements = {};
@@ -33,9 +33,11 @@ $(document).ready(function() {
     
     function removeSelection() {
         for (var i in removeElements) {
-            map.remove(active.substring(1, active.length), removeElements[i].data('id'));
+            map.remove(removeElements[i].data('type'), removeElements[i].data('id'));
             removeElements[i].remove();
         }
+		/* selection removed, go back to init state */
+        removeElements = {};
         state = states.normal;
     };
     
@@ -98,10 +100,10 @@ $(document).ready(function() {
     menu.addCallback('leftclick', ['icon-selectedMark', 'icon-notSelectedMark'], function (self) {
         if (state == states.normal && self.hasClass('icon-selectedMark')) {
             self.removeClass('icon-selectedMark').addClass('icon-notSelectedMark');
-            map.hideMark(self.data('id'));
+            map.hide(self.data('type'), self.data('id'));
         } else if (state == states.normal && self.hasClass('icon-notSelectedMark')) {
             self.removeClass('icon-notSelectedMark').addClass('icon-selectedMark');
-            map.visibleMark(self.data('id'));
+            map.visible(self.data('type'), self.data('id'));
         } else if (state == states.remove) {
             selectToRemove(self);
         }
@@ -114,11 +116,11 @@ $(document).ready(function() {
         }
         if (state == states.normal && self.hasClass('icon-selectedRoute')) {
             self.removeClass('icon-selectedRoute').addClass('icon-notSelectedRoute');
-            map.hideRoute(self.data('id'));
+            map.hide(self.data('type'), self.data('id'));
         } else if (state == states.normal && self.hasClass('icon-notSelectedRoute')) {
             $('.icon-selectedRoute').removeClass('icon-selectedRoute').addClass('icon-notSelectedRoute');
             self.removeClass('icon-notSelectedRoute').addClass('icon-selectedRoute');
-            map.visibleRoute(self.data('id'));
+            map.visible(self.data('type'), self.data('id'));
         } else if (state == states.remove) {
             selectToRemove(self);
         }
@@ -131,11 +133,11 @@ $(document).ready(function() {
         }
         if (state == states.normal && self.hasClass('icon-selectedTrack')) {
             self.removeClass('icon-selectedTrack').addClass('icon-notSelectedTrack');
-            map.hideTrack(self.data('id'));
+            map.hide(self.data('type'), self.data('id'));
         } else if (state == states.normal && self.hasClass('icon-notSelectedTrack')) {
             $('.icon-selectedTrack').removeClass('icon-selectedTrack').addClass('icon-notSelectedTrack');
             self.removeClass('icon-notSelectedTrack').addClass('icon-selectedTrack');
-            map.visibleTrack(self.data('id'));
+            map.visible(self.data('type'), self.data('id'));
         } else if (state == states.remove) {
             selectToRemove(self);
         }

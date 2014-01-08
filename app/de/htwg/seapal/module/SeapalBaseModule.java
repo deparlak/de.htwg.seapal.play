@@ -7,8 +7,6 @@ import com.google.inject.name.Named;
 import com.google.inject.name.Names;
 import de.htwg.seapal.controller.*;
 import de.htwg.seapal.controller.impl.*;
-import de.htwg.seapal.web.controllers.secure.IAccountController;
-import de.htwg.seapal.web.controllers.secure.impl.AccountController;
 import org.ektorp.CouchDbInstance;
 import org.ektorp.http.HttpClient;
 import org.ektorp.http.StdHttpClient;
@@ -28,7 +26,7 @@ public abstract class SeapalBaseModule
     }
 
     private void configureControllers() {
-        bind(IAccountController.class).to(AccountController.class).in(Singleton.class);
+        // bind(IAccountController.class).to(AccountController.class).in(Singleton.class);
         bind(IBoatController.class).to(BoatController.class).in(Singleton.class);
         bind(ITripController.class).to(TripController.class).in(Singleton.class);
         bind(IWaypointController.class).to(WaypointController.class).in(Singleton.class);

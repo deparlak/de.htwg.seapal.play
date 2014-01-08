@@ -1,14 +1,15 @@
 package de.htwg.seapal.module;
 
 import com.google.inject.Provides;
+import com.google.inject.Singleton;
 import com.google.inject.name.Named;
 import com.google.inject.name.Names;
+import de.htwg.seapal.controller.IMainController;
+import de.htwg.seapal.controller.impl.MainController;
 import de.htwg.seapal.database.*;
 import de.htwg.seapal.database.impl.*;
 import de.htwg.seapal.utils.logger.iml.WebLogger;
 import de.htwg.seapal.utils.logging.ILogger;
-import de.htwg.seapal.database.impl.AccountDatabase;
-import de.htwg.seapal.database.IAccountDatabase;
 import org.ektorp.CouchDbConnector;
 import org.ektorp.CouchDbInstance;
 import org.ektorp.impl.StdCouchDbConnector;
@@ -26,8 +27,8 @@ public class SeapalTestModule extends SeapalBaseTestModule {
 	}
 
 	private void configureDatabases() {
-        bind(String.class).annotatedWith(Names.named("databaseOfAccount")).toInstance("seapal_account_db");
-        bind(IAccountDatabase.class).to(AccountDatabase.class);
+        // bind(String.class).annotatedWith(Names.named("databaseOfAccount")).toInstance("seapal_account_db");
+        //bind(IAccountDatabase.class).to(AccountDatabase.class);
         bind(String.class).annotatedWith(Names.named("databaseOfPerson")).toInstance("seapal_person_db");
         bind(IPersonDatabase.class).to(PersonDatabase.class);
         bind(String.class).annotatedWith(Names.named("databaseOfBoat")).toInstance("seapal_boats_db");
@@ -42,13 +43,16 @@ public class SeapalTestModule extends SeapalBaseTestModule {
 		bind(IMarkDatabase.class).to(MarkDatabase.class);
 		bind(String.class).annotatedWith(Names.named("databaseOfRace")).toInstance("seapal_race_db");
 		bind(IRaceDatabase.class).to(RaceDatabase.class);
+
+        bind(IMainController.class).to(MainController.class).in(Singleton.class);
 	}
 
+    /*
     @Provides
     @Named("accountCouchDbConnector")
     CouchDbConnector getAccountStdCouchDbConnector(@Named("databaseOfAccount") String databaseName, CouchDbInstance couchDbInstance) {
         return new StdCouchDbConnector(databaseName, couchDbInstance);
-    }
+    }*/
 
     @Provides
     @Named("personCouchDbConnector")
