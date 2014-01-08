@@ -95,7 +95,7 @@
             markerOptions : {
                 image : new google.maps.MarkerImage(
                     "/assets/images/circle.png",
-                    new google.maps.Size(20, 20),
+                    new google.maps.Size(1, 1),
                     new google.maps.Point(0,0),
                     new google.maps.Point(10, 10))
             }
@@ -487,11 +487,11 @@
 		{
 			"type"			: "mark",
 			"id"			: null,
-			"name" 			: "defaultBoat",
-			"lat"			: 0.0,
-			"note" 			: "",
-			"date" 			: 0,
-			"lng"			: 0.0,
+			"name" 			: null,
+			"note" 			: null,
+			"date" 			: null,
+			"lat"			: null,
+			"lng"			: null,
 			"image_big" 	: null,
 			"image_thumb" 	: null,
 			"_id"			: null,
@@ -499,19 +499,91 @@
 			"owner" 		: null
 		};
 		
+		var templateWaypoint = 
+		{
+			"type"			: "waypoint",
+			"id"			: null,
+			"name" 			: null,
+			"note" 			: null,
+			"date" 			: null,
+			"lat"			: null,
+			"lng"			: null,
+			"image_big" 	: null,
+			"image_thumb" 	: null,
+            "btm"           : null,
+            "dtm"           : null,
+            "cog"           : null,
+            "sog"           : null,
+            "headedFor"     : null,
+            "maneuver"      : null,
+            "foresail"      : null,
+            "mainsail"      : null,
+            "trip"          : null,
+            "boat"          : null,
+			"_id"			: null,
+			"_rev" 			: null,
+			"owner" 		: null
+		};
+        
 		var templateRoute =
 		{
 			"type"			: "route",
 			"id"			: null,
-			"name" 			: "",
-			"date" 			: 0,
+			"name" 			: null,
+			"date" 			: null,
 			"marks" 		: [],
-			"distance" 		: 0.0,
+			"distance" 		: null,
 			"_id" 			: null,
 			"_rev" 			: null,
 			"owner" 		: null
 		};
-		
+        
+        var templateTrack =
+		{
+			"type"			: "track",
+			"id"			: null,
+			"name" 			: null,
+			"date" 			: null,
+			"marks" 		: [],
+			"distance" 		: null,
+			"_id" 			: null,
+			"_rev" 			: null,
+			"owner" 		: null
+		};
+        
+        var templateBoat =
+		{
+			"type"			        : "boat",
+			"id"			        : null,
+            "boatName"              : null,
+            "registerNr"            : null,
+            "sailSign"              : null,
+            "homePort"              : null,
+            "yachtclub"             : null,
+            "insurance"             : null,
+            "callSign"              : null,
+            "boatType"              : null,
+            "constructor"           : null,
+            "length"                : null,
+            "width"                 : null,
+            "draft"                 : null,
+            "mastHeight"            : null,
+            "displacement"          : null,
+            "rigging"               : null,
+            "yearOfConstruction"    : null,
+            "motor"                 : null,
+            "tankSize"              : null,
+            "wasteWaterTankSize"    : null,
+            "freshWaterTankSize"    : null,
+            "mainSailSize"          : null,
+            "genuaSize"             : null,
+            "spiSize"               : null,
+            "_id"                   : null,
+            "_rev"                  : null,
+            "owner"                 : null
+		};	
+
+        /* save the self reference, because this cannot used in each context for the seamap */
 		var self = this;
 		
 		/* 
@@ -538,6 +610,7 @@
 		
 		var data = {
 			boat : {
+                template : templateBoat,
 				list : {},
 				count : 1,
 				active : null
@@ -555,6 +628,7 @@
 				active : null
 			},
 			track : {
+                template : templateTrack,
 				list : {},
 				count : 1,
 				active : null
@@ -703,7 +777,6 @@
                 center: currentPosition,
                 radius: globalSettings.CIRCLE_RADIUS
             };
-
             activeSecurityCircle = new google.maps.Circle(circleOptions);
         }
         /* calculates the distance from the center of the circle to the current position */
@@ -980,7 +1053,7 @@
             currentPosition = new google.maps.LatLng(position.coords.latitude, position.coords.longitude);
             currentSpeed = position.coords.speed;
             currentCourse = position.coords.heading;
-            handleBoatPositionUpdate(currentPosition);            
+            handleBoatPositionUpdate(currentPosition);           
         }
         /**
          * Handles the boat position with fake/generated geolocation data
@@ -999,10 +1072,10 @@
             var len = 5;
             var result = new Array();
             var tmp = new Array();
-            var j = 0;            
+            var j = 0;         
             for (var i = 1; i <= route.onMap.markers.length; i++) {
-                tmp[0] = route.onMap.markers[i - 1].position.nb;
-                tmp[1] = route.onMap.markers[i - 1].position.ob;
+                tmp[0] = route.onMap.markers[i - 1].getPosition().lat();
+                tmp[1] = route.onMap.markers[i - 1].getPosition().lng();
                 result[j] = tmp;
                 tmp = new Array();
                 j++;
@@ -1011,12 +1084,12 @@
                     generatedTrackingRoute = result;
                     return;
                 }
-                var lngKoeff = (route.onMap.markers[i].position.nb - route.onMap.markers[i - 1].position.nb) / len;
-                var latKoeff = (route.onMap.markers[i].position.ob - route.onMap.markers[i - 1].position.ob) / len;
+                var lngKoeff = (route.onMap.markers[i].getPosition().lat() - route.onMap.markers[i - 1].getPosition().lat()) / len;
+                var latKoeff = (route.onMap.markers[i].getPosition().lng() - route.onMap.markers[i - 1].getPosition().lng()) / len;
 
                 for (var k = 1; k < len; k++) {
-                    tmp[0] = route.onMap.markers[i - 1].position.nb + (k * lngKoeff);
-                    tmp[1] = route.onMap.markers[i - 1].position.ob + (k * latKoeff);
+                    tmp[0] = route.onMap.markers[i - 1].getPosition().lat() + (k * lngKoeff);
+                    tmp[1] = route.onMap.markers[i - 1].getPosition().lng() + (k * latKoeff);
                     result[j] = tmp;
                     tmp = new Array();
                     j++;
@@ -1030,13 +1103,11 @@
             if(fakeRoutePointer >= routeArray.length) {
                 fakeRoutePointer = 0;
             }
-
             currentPosition = new google.maps.LatLng(routeArray[fakeRoutePointer][0],
                                                      routeArray[fakeRoutePointer][1]);
             
             currentSpeed = (Math.random() * 15);
             currentCourse = Math.floor(Math.random() * 360);
-            
             fakeRoutePointer++;
             handleBoatPositionUpdate(currentPosition);
         }
@@ -1976,7 +2047,11 @@
         */
         this.addMarker = function(position) {
             var $this = this;
-
+            // check if the position did not changed, so we do not safe this position.
+            if (1 < obj.marks.length && position.b == obj.marks[obj.marks.length - 2] && position.d == obj.marks[obj.marks.length - 1]) {
+                return null;
+            }
+            
             // create marker
             var marker = new google.maps.Marker({
                 map: this.googlemaps,
@@ -1988,7 +2063,9 @@
                 id: this.markers.length 
             });
             this.markers[this.markers.length] = marker;
-			obj.marks[obj.marks.length] = {lat : position.nb, lng : position.ob};
+            /* save lat and after that lng coordinate */
+			obj.marks[obj.marks.length] = position.b;
+            obj.marks[obj.marks.length] = position.d;
             
             // adds or updates the label
             if(this.label == null) {
@@ -2000,14 +2077,16 @@
             // Add event listeners for the interactive mode
             if(!this.notinteractive) {
                 google.maps.event.addListener(marker, 'drag', function(event) {
-					obj.marks[marker.id] = {lat : event.latLng.lat(), lng : event.latLng.lng()};
+                    /* add the coordinates to the marks array. Marks and coordinates will be together in one array */
+					obj.marks[marker.id * 2] = event.latLng.lat()
+                    obj.marks[(marker.id * 2) + 1] = event.latLng.lng();
                     $this.drawPath();
                     $this.updateLabel();
                     $this.notify("drag");
                 });
     
                 google.maps.event.addListener(marker, 'rightclick', function(event) {
-					obj.marks.splice(marker.id, 1);
+					obj.marks.splice(marker.id * 2, 2);
                     $this.removeMarker(marker);
                 });
                 
