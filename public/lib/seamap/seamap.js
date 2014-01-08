@@ -781,8 +781,8 @@
         }
         /* calculates the distance from the center of the circle to the current position */
         function getDistanceFromCircle() {
-            return calculateDistance(activeSecurityCircle.center.nb, activeSecurityCircle.center.ob,
-                                     currentPosition.nb, currentPosition.ob);
+            return calculateDistance(activeSecurityCircle.center.b, activeSecurityCircle.center.d,
+                                     currentPosition.b, currentPosition.d);
         }
         /* calculates the distance between two positions. Coordinates needed in decimal form! */
         function calculateDistance(lat1, lon1, lat2, lon2) {
