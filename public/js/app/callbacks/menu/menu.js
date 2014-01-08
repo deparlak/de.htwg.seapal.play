@@ -69,7 +69,6 @@ $(document).ready(function() {
             alreadySetAlarmsSettingsFlag = true;
             $('#modal-form_alarms').submit(function() {
                 $('#modal-form_alarms').modal('hide');
-                console.log(settings)
                 return false;
             });
         }        

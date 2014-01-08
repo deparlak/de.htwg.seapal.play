@@ -341,7 +341,7 @@
 
         /* The settings for the alarms */
         var alarmsSettings = {
-            LEAVE_SECURITY_CIRCLE : true
+            LEAVE_SECURITY_CIRCLE : false
         }
         
         /* The callbacks list can be used to get notified about events. */
