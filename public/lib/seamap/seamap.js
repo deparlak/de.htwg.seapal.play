@@ -95,7 +95,7 @@
             markerOptions : {
                 image : new google.maps.MarkerImage(
                     "/assets/images/circle.png",
-                    new google.maps.Size(20, 20),
+                    new google.maps.Size(1, 1),
                     new google.maps.Point(0,0),
                     new google.maps.Point(10, 10))
             }
@@ -199,7 +199,7 @@
 				data[type].removeMethod(id);
 			}
 			/* remove the element now from the list */
-			callbacks[event.SERVER_REMOVE].fire(data[type].list[id]);
+			dataCallback([event.SERVER_REMOVE], data[type].list[id]);
 			delete data[type].list[id];
         };
 		/* set a route,mark,track,boat,... */
@@ -244,7 +244,7 @@
 			}
 			/* check if obj should be uploaded to the server */
 			if (obj.update) {
-				callbacks[event.SERVER_CREATE].fire(obj);
+				dataCallback([event.SERVER_CREATE], obj);
 				obj.update = false;
 			}
 			console.log(data[type].list);
@@ -261,7 +261,7 @@
 			if (undefined === data[type].template) {
 				throw("There is no template available for the type "+type);
 			}
-			return data[type].template;
+			return jQuery.extend(true, {}, data[type].template);
         };
 		/* visible the object with the given type and id */
         this.visible = function(type, id) {
@@ -485,32 +485,132 @@
 		
 		var templateMark = 
 		{
+			"type"			: "mark",
 			"id"			: null,
-			"name" 			: "defaultBoat",
-			"lat"			: 0.0,
-			"note" 			: "",
-			"date" 			: 0,
-			"lng"			: 0.0,
+			"name" 			: null,
+			"note" 			: null,
+			"date" 			: null,
+			"lat"			: null,
+			"lng"			: null,
 			"image_big" 	: null,
 			"image_thumb" 	: null,
 			"_id"			: null,
 			"_rev" 			: null,
-			"owner" 		: null,
+			"owner" 		: null
 		};
 		
+		var templateWaypoint = 
+		{
+			"type"			: "waypoint",
+			"id"			: null,
+			"name" 			: null,
+			"note" 			: null,
+			"date" 			: null,
+			"lat"			: null,
+			"lng"			: null,
+			"image_big" 	: null,
+			"image_thumb" 	: null,
+            "btm"           : null,
+            "dtm"           : null,
+            "cog"           : null,
+            "sog"           : null,
+            "headedFor"     : null,
+            "maneuver"      : null,
+            "foresail"      : null,
+            "mainsail"      : null,
+            "trip"          : null,
+            "boat"          : null,
+			"_id"			: null,
+			"_rev" 			: null,
+			"owner" 		: null
+		};
+        
 		var templateRoute =
 		{
-			"name" 			: "",
-			"date" 			: 0,
+			"type"			: "route",
+			"id"			: null,
+			"name" 			: null,
+			"date" 			: null,
 			"marks" 		: [],
-			"distance" 		: 0.0,
+			"distance" 		: null,
 			"_id" 			: null,
 			"_rev" 			: null,
 			"owner" 		: null
 		};
+        
+        var templateTrack =
+		{
+			"type"			: "track",
+			"id"			: null,
+			"name" 			: null,
+			"date" 			: null,
+			"marks" 		: [],
+			"distance" 		: null,
+			"_id" 			: null,
+			"_rev" 			: null,
+			"owner" 		: null
+		};
+        
+        var templateBoat =
+		{
+			"type"			        : "boat",
+			"id"			        : null,
+            "boatName"              : null,
+            "registerNr"            : null,
+            "sailSign"              : null,
+            "homePort"              : null,
+            "yachtclub"             : null,
+            "insurance"             : null,
+            "callSign"              : null,
+            "boatType"              : null,
+            "constructor"           : null,
+            "length"                : null,
+            "width"                 : null,
+            "draft"                 : null,
+            "mastHeight"            : null,
+            "displacement"          : null,
+            "rigging"               : null,
+            "yearOfConstruction"    : null,
+            "motor"                 : null,
+            "tankSize"              : null,
+            "wasteWaterTankSize"    : null,
+            "freshWaterTankSize"    : null,
+            "mainSailSize"          : null,
+            "genuaSize"             : null,
+            "spiSize"               : null,
+            "_id"                   : null,
+            "_rev"                  : null,
+            "owner"                 : null
+		};	
+
+        /* save the self reference, because this cannot used in each context for the seamap */
+		var self = this;
+		
+		/* 
+		   return a copy of a obj with the specified type and id to all event listeners.
+		   There will be no type and id check, because this method will be
+		   used only internally where the type/id should be valid used.
+		   Using the dataCallback make sure that the user cannot change the object, because
+		   sending the original object would make it possible for the user.
+		*/
+		var dataCallback = function(events, obj) {		
+			/* 
+				send copy to all event listeners.
+				Each listener get its own copy
+			*/
+			for (var e in events) {
+				var copy = {};
+				/* copy only the template fields */
+				for (var key in data[obj.type].template) {
+					copy[key] = data[obj.type].list[obj.id][key];
+				}
+				callbacks[events[e]].fire(copy);
+			}
+		};		
 		
 		var data = {
 			boat : {
+                template : templateBoat,
 				list : {},
 				count : 1,
 				active : null
@@ -528,6 +628,7 @@
 				active : null
 			},
 			track : {
+                template : templateTrack,
 				list : {},
 				count : 1,
 				active : null
@@ -676,13 +777,12 @@
                 center: currentPosition,
                 radius: globalSettings.CIRCLE_RADIUS
             };
-
             activeSecurityCircle = new google.maps.Circle(circleOptions);
         }
         /* calculates the distance from the center of the circle to the current position */
         function getDistanceFromCircle() {
-            return calculateDistance(activeSecurityCircle.center.nb, activeSecurityCircle.center.ob,
-                                     currentPosition.nb, currentPosition.ob);
+            return calculateDistance(activeSecurityCircle.center.b, activeSecurityCircle.center.d,
+                                     currentPosition.b, currentPosition.d);
         }
         /* calculates the distance between two positions. Coordinates needed in decimal form! */
         function calculateDistance(lat1, lon1, lat2, lon2) {
@@ -953,7 +1053,7 @@
             currentPosition = new google.maps.LatLng(position.coords.latitude, position.coords.longitude);
             currentSpeed = position.coords.speed;
             currentCourse = position.coords.heading;
-            handleBoatPositionUpdate(currentPosition);            
+            handleBoatPositionUpdate(currentPosition);           
         }
         /**
          * Handles the boat position with fake/generated geolocation data
@@ -972,10 +1072,10 @@
             var len = 5;
             var result = new Array();
             var tmp = new Array();
-            var j = 0;            
+            var j = 0;         
             for (var i = 1; i <= route.onMap.markers.length; i++) {
-                tmp[0] = route.onMap.markers[i - 1].position.nb;
-                tmp[1] = route.onMap.markers[i - 1].position.ob;
+                tmp[0] = route.onMap.markers[i - 1].getPosition().lat();
+                tmp[1] = route.onMap.markers[i - 1].getPosition().lng();
                 result[j] = tmp;
                 tmp = new Array();
                 j++;
@@ -984,12 +1084,12 @@
                     generatedTrackingRoute = result;
                     return;
                 }
-                var lngKoeff = (route.onMap.markers[i].position.nb - route.onMap.markers[i - 1].position.nb) / len;
-                var latKoeff = (route.onMap.markers[i].position.ob - route.onMap.markers[i - 1].position.ob) / len;
+                var lngKoeff = (route.onMap.markers[i].getPosition().lat() - route.onMap.markers[i - 1].getPosition().lat()) / len;
+                var latKoeff = (route.onMap.markers[i].getPosition().lng() - route.onMap.markers[i - 1].getPosition().lng()) / len;
 
                 for (var k = 1; k < len; k++) {
-                    tmp[0] = route.onMap.markers[i - 1].position.nb + (k * lngKoeff);
-                    tmp[1] = route.onMap.markers[i - 1].position.ob + (k * latKoeff);
+                    tmp[0] = route.onMap.markers[i - 1].getPosition().lat() + (k * lngKoeff);
+                    tmp[1] = route.onMap.markers[i - 1].getPosition().lng() + (k * latKoeff);
                     result[j] = tmp;
                     tmp = new Array();
                     j++;
@@ -1003,13 +1103,11 @@
             if(fakeRoutePointer >= routeArray.length) {
                 fakeRoutePointer = 0;
             }
-
             currentPosition = new google.maps.LatLng(routeArray[fakeRoutePointer][0],
                                                      routeArray[fakeRoutePointer][1]);
             
             currentSpeed = (Math.random() * 15);
             currentCourse = Math.floor(Math.random() * 360);
-            
             fakeRoutePointer++;
             handleBoatPositionUpdate(currentPosition);
         }
@@ -1306,14 +1404,13 @@
             hideContextMenu();
             hideCrosshairMarker();
 
-            var obj = {}
-			obj.type = 'route';
+            var obj = self.getTemplate('route');
 			obj.date = new Date().getTime();
             obj.id = data.route.count.toString();
             obj.name = "Route "+data.route.count;
             obj.update = true;
-
 			obj.onMap = getOnMapRoute(obj);
+			
             data.route.list[obj.id] = obj;        
             activateRoute(obj.id); 
   
@@ -1323,7 +1420,7 @@
                 addRouteMarker(position);
             }
             data.route.count++;
-            callbacks[event.CREATED_ROUTE].fire(obj);
+            dataCallback([event.CREATED_ROUTE], obj);
         }
 
         /**
@@ -1345,7 +1442,7 @@
                 if (0 == onMap.markers.length) {
                     deleteActiveRoute();
                 } else {
-                    activate();
+                    update();
                 }
             }
 			
@@ -1360,7 +1457,6 @@
             onMap.addEventListener("click", activate);
             onMap.addEventListener("add", update);
             onMap.addEventListener("drag", update);  
-            onMap.addEventListener("remove", update);  
 			
 			return onMap;
 		}
@@ -1400,9 +1496,7 @@
         */ 
         function deleteActiveRoute(){
             if (data.route.active != null) {
-                callbacks[event.DELETED_ROUTE].fire(data.route.active);
-				callbacks[event.SERVER_REMOVE].fire(data.route.active);
-                uploadRouteDeletion();
+                dataCallback([event.DELETED_ROUTE, event.SERVER_REMOVE], data.route.active);
                 state = States.NORMAL;
                 data.route.active.onMap.hide();
                 delete data.route.list[data.route.active.id];
@@ -1430,19 +1524,10 @@
         */
         function uploadRouteUpdate() {
             if (data.route.active != null && data.route.active.update) {
-				callbacks[event.SERVER_CREATE].fire(data.route.active);
+				dataCallback([event.SERVER_CREATE], data.route.active);
                 data.route.active.update = false;
             }         
         }
-        
-        /**
-        * *********************************************************************************
-        * Check if the active route has ever been uploaded and so has to be deleted on the server.
-        * *********************************************************************************
-        */
-        function uploadRouteDeletion() {
-			callbacks[event.SERVER_REMOVE].fire(data.route.active);
-        } 
         
         /**
         * *********************************************************************************
@@ -1473,8 +1558,7 @@
         * *********************************************************************************
         */
         function handleAddNewTrack() {
-            var obj = {};
-			obj.type = 'track';
+            var obj = self.getTemplate('track');;
             obj.id = data.track.count.toString();
 			obj.date = new Date().getTime();
             obj.name = "Track " + data.track.count;
@@ -1483,7 +1567,7 @@
             data.track.list[obj.id] = obj;        
             activateTrack(obj.id); 
             data.track.count++;
-            callbacks[event.CREATED_TRACK].fire(obj);
+            dataCallback([event.CREATED_TRACK], obj);
         }
 		
         /**
@@ -1554,7 +1638,7 @@
         */
         function uploadTrackUpdate() {
             if (data.track.active != null && data.track.active.update) {
-				callbacks[event.SERVER_CREATE].fire(data.track.active);
+				dataCallback([event.SERVER_CREATE], data.track.active);
                 data.track.active.update = false;
             }         
         }
@@ -1565,7 +1649,7 @@
         * *********************************************************************************
         */
         function uploadTrackDeletion() {
-			callbacks[event.SERVER_REMOVE].fire(data.track.active);
+			dataCallback([event.SERVER_REMOVE], data.track.active);
         } 
         
         /**
@@ -1649,23 +1733,21 @@
         * *********************************************************************************
         */
         function addNewMark(position, image) {
-            var newMark = {}
-			newMark.type = 'mark';
-            newMark.id = data.mark.count.toString();
-            newMark.name = "Mark "+data.mark.count;
-			newMark.lat = position.lat();
-			newMark.lng = position.lng();
-			newMark.date = new Date().getTime();
+            var obj = self.getTemplate('mark');
+            obj.id = data.mark.count.toString();
+            obj.name = "Mark "+data.mark.count;
+			obj.lat = position.lat();
+			obj.lng = position.lng();
+			obj.date = new Date().getTime();
 			if (image) {
-				newMark.image_thumb = image[0];
-				newMark.image_big = image[1];
+				obj.image_thumb = image[0];
+				obj.image_big = image[1];
 			}
-            newMark.onMap = getOnMapMark(newMark);
+            obj.onMap = getOnMapMark(obj);
 			
-            data.mark.list[data.mark.count.toString()] = newMark;
+            data.mark.list[obj.id] = obj;
             data.mark.count++;
-            callbacks[event.SERVER_CREATE].fire(newMark);
-            callbacks[event.CREATED_MARK].fire(newMark);
+            dataCallback([event.SERVER_CREATE, event.CREATED_MARK], obj);
         }
 
         /**
@@ -1693,7 +1775,7 @@
 				marker.lat = e.latLng.lat();
 				marker.lng = e.latLng.lng();
 				/* update mark on server */
-				callbacks[event.SERVER_CREATE].fire(marker);
+				dataCallback([event.SERVER_CREATE], marker);
             });
 			/* show menu on rightclick to marker */
             google.maps.event.addListener(onMap, 'rightclick', function(event) {
@@ -1817,8 +1899,7 @@
         function deleteSelectedMark() {
             if(data.mark.active != null) {
                 data.mark.active.onMap.setMap(null);
-                callbacks[event.SERVER_REMOVE].fire(data.mark.active);
-				callbacks[event.DELETED_MARK].fire(data.mark.active);
+                dataCallback([event.SERVER_REMOVE, event.DELETED_MARK], data.mark.active);
                 delete data.mark.list[data.mark.active.id];
 				data.mark.active = null;
             }
@@ -1905,7 +1986,7 @@
         this.label = null;
         this.notinteractive = (obj.type == 'track') ? true : false;
 		options = $.seamap.options[obj.type];
-        
+        		
         // internal data
         var eventListener = {
             add : [],
@@ -1914,6 +1995,11 @@
             click : []
         };
         
+		/* if the have some markers, than create them on the map */
+		for (var i in obj.marks) {
+			this.addMarker(new google.maps.LatLng(obj.marks[i].lat, obj.marks[i].lng));
+		}
+		
         this.path = new google.maps.Polyline(options.polyOptions);
         this.path.setMap(this.googlemaps);
         
@@ -1961,7 +2047,11 @@
         */
         this.addMarker = function(position) {
             var $this = this;
-
+            // check if the position did not changed, so we do not safe this position.
+            if (1 < obj.marks.length && position.b == obj.marks[obj.marks.length - 2] && position.d == obj.marks[obj.marks.length - 1]) {
+                return null;
+            }
+            
             // create marker
             var marker = new google.maps.Marker({
                 map: this.googlemaps,
@@ -1973,6 +2063,9 @@
                 id: this.markers.length 
             });
             this.markers[this.markers.length] = marker;
+            /* save lat and after that lng coordinate */
+			obj.marks[obj.marks.length] = position.b;
+            obj.marks[obj.marks.length] = position.d;
             
             // adds or updates the label
             if(this.label == null) {
@@ -1983,13 +2076,17 @@
 
             // Add event listeners for the interactive mode
             if(!this.notinteractive) {
-                google.maps.event.addListener(marker, 'drag', function() {
+                google.maps.event.addListener(marker, 'drag', function(event) {
+                    /* add the coordinates to the marks array. Marks and coordinates will be together in one array */
+					obj.marks[marker.id * 2] = event.latLng.lat()
+                    obj.marks[(marker.id * 2) + 1] = event.latLng.lng();
                     $this.drawPath();
                     $this.updateLabel();
                     $this.notify("drag");
                 });
     
                 google.maps.event.addListener(marker, 'rightclick', function(event) {
+					obj.marks.splice(marker.id * 2, 2);
                     $this.removeMarker(marker);
                 });
                 
