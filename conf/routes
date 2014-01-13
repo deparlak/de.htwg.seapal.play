@@ -34,4 +34,4 @@ GET           /assets/*file                                                     
 
 GET           /help        @de.htwg.seapal.web.controllers.HelpAPI.help()
 GET           /openID/auth                                                                              de.htwg.seapal.web.controllers.AccountAPI.auth()
-GET           /openID/verify                                                                            de.htwg.seapal.web.controllers.AccountAPI.verify()
+GET           /openID/verify                                                                            @de.htwg.seapal.web.controllers.AccountAPI.verify()

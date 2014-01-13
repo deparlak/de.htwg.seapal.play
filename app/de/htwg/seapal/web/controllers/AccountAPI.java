@@ -10,7 +10,6 @@ import de.htwg.seapal.web.controllers.helpers.Menus;
 import de.htwg.seapal.web.views.html.appContent.reset;
 import de.htwg.seapal.web.views.html.appContent.signInSeapal;
 import de.htwg.seapal.web.views.html.appContent.signUpSeapal;
-import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.node.ObjectNode;
 import play.data.DynamicForm;
 import play.data.Form;
@@ -253,10 +252,17 @@ public class AccountAPI
         return redirect(redirectUrl.get());
     }
 
-    public static Result verify() {
+    public Result verify() {
         F.Promise<OpenID.UserInfo> userInfoPromise = OpenID.verifiedId();
         OpenID.UserInfo userInfo = userInfoPromise.get();
-        JsonNode json = Json.toJson(userInfo.attributes);
-        return ok(json);
+        IPerson person = controller.googleLogin(userInfo.attributes, userInfo.id);
+        if (person == null) {
+            flash("errors", "Google Login Failed");
+            return badRequest(signInSeapal.render(null, routes.AccountAPI.login()));
+        }
+
+        session().clear();
+        session(IPersonController.AUTHN_COOKIE_KEY, person.getId());
+        return redirect(routes.Application.app());
     }
 }

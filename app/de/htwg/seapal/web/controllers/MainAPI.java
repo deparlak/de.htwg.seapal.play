@@ -24,15 +24,15 @@ public final class MainAPI
     @Inject
     private IMainController controller;
 
-    private Map<String, Form<? extends ModelDocument>> forms;
+    private Map<String, Class<? extends ModelDocument>> forms;
 
     public MainAPI() {
         forms = new HashMap<>();
-        forms.put("boat", Form.form(Boat.class));
-        forms.put("mark", Form.form(Mark.class));
-        forms.put("route", Form.form(Route.class));
-        forms.put("trip", Form.form(Trip.class));
-        forms.put("waypoint", Form.form(Waypoint.class));
+        forms.put("boat", Boat.class);
+        forms.put("mark", Mark.class);
+        forms.put("route", Route.class);
+        forms.put("trip", Trip.class);
+        forms.put("waypoint", Waypoint.class);
     }
 
     @play.mvc.Security.Authenticated(AccountAPI.SecuredAPI.class)
@@ -78,7 +78,13 @@ public final class MainAPI
     @play.mvc.Security.Authenticated(AccountAPI.SecuredAPI.class)
     public Result createDocument(String document) {
         try {
-            ModelDocument doc = forms.get(document).bindFromRequest().get();
+            Class<? extends ModelDocument> cla = forms.get(document);
+            PatchedForm<? extends ModelDocument> form = new PatchedForm<>(cla);
+            Form<? extends  ModelDocument> form2 = form.bindFromRequest();
+            if (form2.hasErrors()) {
+                return internalServerError(form2.errorsAsJson());
+            }
+            ModelDocument doc = form2.get();
             doc.setAccount(session(IPersonController.AUTHN_COOKIE_KEY));
             return ok(Json.toJson(controller.creatDocument(document, doc)));
         } catch (NullPointerException e) {
