@@ -1354,6 +1354,7 @@
             
             var obj = {}
 			obj.type = 'distance';
+            obj.marks = [];
             obj.onMap = new $.seamap.route(obj, map);
             distanceroute = obj;            
             position = crosshairMarker.getPosition();
