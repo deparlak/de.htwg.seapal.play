@@ -1182,8 +1182,6 @@
             var mark = {}
             var position = currentPosition;
             mark.id = "POB";
-            mark.label = "Person overboard";
-            mark.detailed = "created on blabla..";
             mark.onMap = new google.maps.Marker({
                 map: map,
                 position: position,

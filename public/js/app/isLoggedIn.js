@@ -18,13 +18,11 @@ $(document).ready(function() {
 
 	/* this callback will be called if marks where loaded from the server */
     map.addCallback(events.SERVER_CREATE, function (self) {
-		self.id = null;
         console.log("create "+self.type);
 		console.log("-----------------");
 		console.log(self);
 		console.log("-----------------");
 
-        window.obj = self;
         /* request to server for login */
         request = $.ajax({
             url         : "api/"+self.type,
@@ -35,10 +33,11 @@ $(document).ready(function() {
 
         /* callback handler that will be called on success */
         request.done(function (response, textStatus, jqXHR){
-			console.log(response);
-			console.log(textStatus);
-			console.log(jqXHR);
-			console.log("success");
+			console.log(response._rev);
+            console.log(self);
+            self._rev = response._rev;
+            self._id = response._id;
+			//map.set(self.type, self);
         });
 
         /* callback handler that will be called on failure */
