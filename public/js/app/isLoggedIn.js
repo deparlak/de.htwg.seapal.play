@@ -22,7 +22,7 @@ $(document).ready(function() {
 		console.log("-----------------");
 		console.log(self);
 		console.log("-----------------");
-
+        self.id = null;
         /* request to server for login */
         request = $.ajax({
             url         : "api/"+self.type,

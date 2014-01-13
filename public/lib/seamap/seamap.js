@@ -299,11 +299,19 @@
         };
         /* set new mark */
         this.setMark = function () {
-            /* set state to marker to set the marker on the next map action */
-            state = States.MARKER;
+            if (isTracking) {
+                addNewWaypoint();
+            } else {
+                /* set state to marker to set the marker on the next map action */
+                state = States.MARKER;
+            }
         };
         this.setImageMark = function(image) {
-            addNewMark(currentPosition, image);
+            if (isTracking) {
+                addNewWaypoint(image);
+            } else {
+                addNewMark(currentPosition, image);
+            }
         };
         /* set a temporary mark */
         this.setTemporaryMark = function(position) {
@@ -405,6 +413,7 @@
             LEFT_SECURITY_CIRCLE    : 11,
 			SERVER_CREATE			: 12,
 			SERVER_REMOVE			: 13,
+            CREATED_WAYPOINT        : 14,
         };
 		        
         var options = $.seamap.options;
@@ -617,6 +626,12 @@
 			},		
 			mark : {
 				template : templateMark,
+				list : {},
+				count : 1,
+				active : null
+			},
+			waypoint : {
+				template : templateWaypoint,
 				list : {},
 				count : 1,
 				active : null
@@ -1748,6 +1763,34 @@
             data.mark.count++;
             dataCallback([event.SERVER_CREATE, event.CREATED_MARK], obj);
         }
+        
+        /**
+        * *********************************************************************************
+        * Adds a waypoint to the given position and
+        * bind the click-events to open its context menu.
+		* The waypoint can also have an image.
+        * *********************************************************************************
+        */
+        function addNewWaypoint(image) {
+            var boat = getCurrentBoatInformation();
+            var obj = self.getTemplate('waypoint');
+            obj.id = data.waypoint.count.toString();
+            obj.name = "Waypoint "+data.waypoint.count;
+			obj.lat = position.lat();
+			obj.lng = position.lng();
+            obj.cog = boat.course;
+            obj.sog = boat.speed;
+			obj.date = new Date().getTime();
+			if (image) {
+				obj.image_thumb = image[0];
+				obj.image_big = image[1];
+			}
+            obj.onMap = getOnMapMark(obj);
+			
+            data.waypoint.list[obj.id] = obj;
+            data.waypoint.count++;
+            dataCallback([event.SERVER_CREATE, event.CREATED_WAYPOINT], obj);
+        }
 
         /**
         * *********************************************************************************
@@ -1759,7 +1802,7 @@
                 map: map,
                 position: new google.maps.LatLng(marker.lat, marker.lng),
                 icon: (marker.image_thumb) ? marker.image_thumb : options.defaultOptions.markerOptions.image,
-                draggable: (marker.image_thumb) ? false : true
+                draggable: (marker.image_thumb || marker.type == 'waypoint') ? false : true
             });
 			/* check if the marker has a image */
 			if (marker.image_thumb) {
