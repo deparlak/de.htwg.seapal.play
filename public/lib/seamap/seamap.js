@@ -205,49 +205,30 @@
 		/* set a route,mark,track,boat,... */
         this.set = function(type, obj) {
 			checkType(type);
-			obj.update = false;
-			/* if the obj has no client id, but a server _id than it was loaded from 
-			the server and has to be just added and not uploaded again */
-			if ((!obj.id || obj.id == null) && obj._id != null) {
-				/* check if all attributes are in the obj */
-				checkObject(type, obj);
-				/* get an id for the obj */
-				obj.id = data[type].count.toString();
-				/* copy to the given type list */
-				data[type].list[obj.id] = obj;
-				/* increment the obj count */
-				data[type].count++;
-			/* else there is no _id from the server and none from the client, so this
-			   obj was created but not now insert to the client storage */
-			} else if (obj.id == null && obj._id == null) {
-				/* check if all attributes are in the obj */
-				checkObject(type, obj);
-				/* set to update the obj */
-				obj.update = true;
-				/* get an id for the obj */
-				obj.id = data[type].count.toString();
-			/* else the obj has already a client id, so we just have to update it */
-			} else if (obj.id != null) {
-				/* check if all attributes are in the obj, is not required because we update only 
-				   the objects which are required to update */
-				//checkObject(type, obj);
-				/* but we have to check if the id exist */
-				checkId(type, obj.id);
-				/* ok the id exist so let's update the available attributes */
-				for (var key in data[type].template) {
-					if (obj[key] !== undefined) {
-						data[type].list[obj.id][key] = obj[key];
-					}
-				}
-				/* set to update the obj */
-				obj.update = true;
-			}
-			/* check if obj should be uploaded to the server */
-			if (obj.update) {
-				dataCallback([event.SERVER_CREATE], obj);
-				obj.update = false;
-			}
-			console.log(data[type].list);
+
+            /* create a new object and copy all items from the parameter obj to it */
+            newObject = self.getTemplate(type);        
+            for (var key in data[type].template) {
+                if (obj[key] !== undefined) {
+                    newObject[key] = obj[key];
+                }
+            }
+            
+            /* if there is no client id, but a server id the object just has to be added */
+            if (newObject.id == null && newObject._id == null && newObject._rev == null) {
+                console.log("added");
+                newObject.id = data[type].count.toString();
+                data[type].list[newObject.id] = newObject;
+                data[type].count++;
+                dataCallback([event.SERVER_CREATE], newObject);
+            /* if the object already exist, go to the entry and update all entry's */
+            } else if (newObject.id != null){
+                console.log("updated");
+                checkId(type, newObject.id);
+                data[type].list[newObject.id] = newObject;
+            } else {
+                throw("Not expected case in map.set(..)");
+            }
         };
 		/* return a copy of the obj with the given type and id */
         this.get = function(type, id) {

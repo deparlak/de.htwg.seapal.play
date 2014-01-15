@@ -8,6 +8,29 @@
 $(document).ready(function() {    
     events = map.getEvents();
 	
+    /* startup code initialise objects from the server */
+    request = $.ajax({
+        url         : "api/mark/own",
+        type        : "get",
+        contentType : "application/json",
+    });
+
+    /* callback handler that will be called on success */
+    request.done(function (response, textStatus, jqXHR){
+        console.log(jqXHR);
+        console.log(textStatus);
+        console.log(response);
+        console.log("success");
+    });
+
+    /* callback handler that will be called on failure */
+    request.fail(function (jqXHR, textStatus, errorThrown){
+        console.log(jqXHR);
+        console.log(textStatus);
+        console.log(errorThrown);
+        console.log("error");
+    });
+    
 	/* this callback will be called if marks where loaded from the server */
     map.addCallback(events.SERVER_REMOVE, function (self) {
 		console.log("delete "+self.type);
@@ -22,8 +45,13 @@ $(document).ready(function() {
 		console.log("-----------------");
 		console.log(self);
 		console.log("-----------------");
+        /* 
+            we set the id which will be used by the client as a handle for the object to null, 
+            because the server will interpret an 'id' as a '_id'.
+        */
+        var objectId = self.id;
         self.id = null;
-        /* request to server for login */
+        /* post to server */
         request = $.ajax({
             url         : "api/"+self.type,
             type        : "post",
@@ -33,11 +61,10 @@ $(document).ready(function() {
 
         /* callback handler that will be called on success */
         request.done(function (response, textStatus, jqXHR){
-			console.log(response._rev);
-            console.log(self);
-            self._rev = response._rev;
-            self._id = response._id;
-			//map.set(self.type, self);
+            /* restore the object id and set the response object to the map storage (because the _rev and _id changed). */
+			response.id = objectId;
+            response.type = self.type;
+			map.set(self.type, response);
         });
 
         /* callback handler that will be called on failure */
