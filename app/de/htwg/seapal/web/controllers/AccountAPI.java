@@ -62,7 +62,7 @@ public class AccountAPI
             try {
 
                 String error = InputValidator.validate(account);
-                if(error != null) {
+                if (error != null) {
                     flash("errors", error);
                     return badRequest(signUpSeapal.render(filledForm, routes.AccountAPI.signup()));
                 }
@@ -141,12 +141,14 @@ public class AccountAPI
 
         controller.savePerson(account);
 
-        /*MailerAPI mail = play.Play.application().plugin(MailerPlugin.class).email();
-        mail.setSubject("request for password change");
-        logger.error("AccountName", account.getAccountName());
-        mail.addRecipient("John Doe <" + account.getAccountName() + ">");
-        mail.addFrom("seapalweb@gmail.com");
-        mail.send("To Reset your password, click the following link: http://localhost:9000/pwreset/" + token);*/
+        /*
+            MailerAPI mail = play.Play.application().plugin(MailerPlugin.class).email();
+            mail.setSubject("request for password change");
+            logger.error("AccountName", account.getAccountName());
+            mail.addRecipient("John Doe <" + account.getAccountName() + ">");
+            mail.addFrom("seapalweb@gmail.com");
+            mail.send("To Reset your password, click the following link: http://localhost:9000/pwreset/" + token);
+        */
         System.out.println("http://localhost:9000/pwreset/" + token);
         flash("success", "You have received an email with a link to reset your password!");
         return redirect(routes.Application.forgotten());
@@ -183,7 +185,7 @@ public class AccountAPI
         }
 
         String error = InputValidator.validate(account);
-        if(error != null) {
+        if (error != null) {
             flash("errors", error);
             return resetForm(Integer.parseInt(token));
         }
@@ -232,13 +234,12 @@ public class AccountAPI
         @Override
         public Result onUnauthorized(Context ctx) {
             ObjectNode response = Json.newObject();
-            response.put("error","unauthorized");
+            response.put("error", "unauthorized");
 
             return unauthorized(response);
         }
     }
 
-    ////// OpenID
     public static Result auth() {
         String providerUrl = "https://www.google.com/accounts/o8/id";
         String returnToUrl = "http://localhost:9000/openID/verify";
