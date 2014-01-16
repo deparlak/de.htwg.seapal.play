@@ -75,8 +75,6 @@ public class HelpAPI
         nodeInner.putAll(domACL);
         dom.put("captainAndCrew", nodeInner);
 
-
-
         String owner = account.getUUID().toString();
 
         IBoat boat = new Boat();
