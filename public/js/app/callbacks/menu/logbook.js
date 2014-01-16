@@ -86,6 +86,7 @@ $(document).ready(function() {
     menu.addCallback('leftclick', 'logbookBoatsAdd', function (self) {
         console.log("TODO addBoat");
         boat = map.getTemplate('boat');
+        boat.boatName = "My Example boat.";
         map.set('boat', boat);
     });
     

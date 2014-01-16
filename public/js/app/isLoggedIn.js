@@ -10,7 +10,7 @@ $(document).ready(function() {
 	
     /* startup code initialise objects from the server */
     request = $.ajax({
-        url         : "api/boat/own",
+        url         : "api/mark/own",
         type        : "get",
         contentType : "application/json",
     });

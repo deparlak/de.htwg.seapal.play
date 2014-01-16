@@ -11,6 +11,7 @@ $(document).ready(function() {
     var templateLoadedRoute = Handlebars.compile($("#template-loadedRoute").html());
     var templateLoadedTrack = Handlebars.compile($("#template-loadedTrack").html());
     var templateLoadedMark = Handlebars.compile($("#template-loadedMark").html());
+    var templateLoadedBoat = Handlebars.compile($("#template-loadedBoat").html());
     
 	var templateCreatedRoute = Handlebars.compile($("#template-createdRoute").html());
     var templateCreatedTrack = Handlebars.compile($("#template-createdTrack").html());
@@ -24,6 +25,8 @@ $(document).ready(function() {
             $("#tracks").append(templateLoadedTrack(self));
         } else if (self.type == 'mark') {
             $("#marks").append(templateLoadedMark(self));
+        } else if (self.type == 'boat') {
+            $("#logbook-boats").append(templateLoadedBoat(self));
         }
     });
 	
