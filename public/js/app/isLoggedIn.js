@@ -20,8 +20,10 @@ $(document).ready(function() {
         console.log(jqXHR);
         console.log(textStatus);
         console.log(response);
-        return;
+
         for (var i in response) {
+            response[i].image_big = null;
+            response[i].image_thumb = null;
             map.set('mark', response[i]);
         }
         console.log("success");
@@ -48,8 +50,7 @@ $(document).ready(function() {
         /* post to server */
         request = $.ajax({
             url         : "api/"+self.type+"/"+self._id,
-            type        : "delete",
-            contentType : "application/json",
+            type        : "delete"
         });
 
         /* callback handler that will be called on success */
