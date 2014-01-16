@@ -60,16 +60,15 @@ public class HelpAPI
         personController.savePerson(crewMember2);
         domACL.put("crewMember2", Json.toJson(personController.getPerson(crewMember2.getUUID())));
 
-        String crewMember1UUID = crewMember1.getUUID().toString();
-        String crewMember2UUID = crewMember2.getUUID().toString();
-
         IPerson account = new Person();
         account.setAccount(account.getUUID().toString());
-        account.addFriend(crewMember1UUID);
-        account.addFriend(crewMember2UUID);
+        account.addFriend(crewMember1);
+        crewMember1.addFriend(account);
+        account.addFriend(crewMember2);
         account.setEmail("account@123.de");
         account.setPassword(PasswordHash.createHash("test"));
         personController.savePerson(account);
+
         domACL.put("captain", Json.toJson(personController.getPerson(account.getUUID())));
 
         ObjectNode nodeInner  = Json.newObject();
@@ -81,9 +80,16 @@ public class HelpAPI
         String owner = account.getUUID().toString();
 
         IBoat boat = new Boat();
+        boat.setBoatName("boat1");
         boat.setAccount(owner);
         boatController.saveBoat(boat);
         dom.put("boat", Json.toJson(boatController.getBoat(boat.getUUID())));
+
+        IBoat boat2 = new Boat();
+        boat2.setBoatName("boat2");
+        boat2.setAccount(crewMember1.getUUID().toString());
+        boatController.saveBoat(boat2);
+        dom.put("boat2", Json.toJson(boatController.getBoat(boat2.getUUID())));
 
         IMark mark = new Mark();
         mark.setAccount(owner);
