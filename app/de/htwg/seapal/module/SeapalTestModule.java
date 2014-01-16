@@ -31,9 +31,9 @@ public class SeapalTestModule extends SeapalBaseTestModule {
         //bind(IAccountDatabase.class).to(AccountDatabase.class);
         bind(String.class).annotatedWith(Names.named("databaseOfPerson")).toInstance("seapal_person_db");
         bind(IPersonDatabase.class).to(PersonDatabase.class);
-        bind(String.class).annotatedWith(Names.named("databaseOfBoat")).toInstance("seapal_boats_db");
+        bind(String.class).annotatedWith(Names.named("databaseOfBoat")).toInstance("seapal_boat_db");
 		bind(IBoatDatabase.class).to(BoatDatabase.class);
-		bind(String.class).annotatedWith(Names.named("databaseOfTrip")).toInstance("seapal_trips_db");
+		bind(String.class).annotatedWith(Names.named("databaseOfTrip")).toInstance("seapal_trip_db");
 		bind(ITripDatabase.class).to(TripDatabase.class);
 		bind(String.class).annotatedWith(Names.named("databaseOfWaypoint")).toInstance("seapal_waypoint_db");
 		bind(IWaypointDatabase.class).to(WaypointDatabase.class);
