@@ -84,6 +84,12 @@ public final class MainAPI
                 return internalServerError(form2.errorsAsJson());
             }
             ModelDocument doc = form2.get();
+            if (document.equals("mark")) {
+                Mark mark = (Mark) doc;
+                mark.setLongitude(Double.valueOf(form2.data().get("lng")));
+                mark.setLatitude(Double.valueOf(form2.data().get("lat")));
+            }
+
             doc.setAccount(session(IPersonController.AUTHN_COOKIE_KEY));
             return ok(Json.toJson(controller.creatDocument(document, doc)));
         } catch (NullPointerException e) {
