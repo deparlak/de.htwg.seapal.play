@@ -16,19 +16,15 @@ $(document).ready(function() {
     var templateCreatedTrack = Handlebars.compile($("#template-createdTrack").html());
     var templateCreatedMark = Handlebars.compile($("#template-createdMark").html());
 	
-	/* this callback will be called if routes where loaded from the server */
-    map.addCallback(events.LOADED_ROUTE, function (self) {
-        $("#routes").append(templateLoadedRoute(self));
-    });
-	
-	/* this callback will be called if tracks where loaded from the server */
-    map.addCallback(events.LOADED_TRACK, function (self) {
-        $("#tracks").append(templateLoadedTrack(self));
-    });
-	
-	/* this callback will be called if marks where loaded from the server */
-    map.addCallback(events.LOADED_MARK, function (self) {
-        $("#marks").append(templateLoadedMark(self));
+	/* this callback will be called if an object was loaded from the server */
+    map.addCallback([events.LOADED_FROM_SERVER, events.ADDED_FROM_CLIENT], function (self) {
+        if (self.type == 'route') {
+            $("#routes").append(templateLoadedRoute(self));
+        } else if (self.type == 'track') {
+            $("#tracks").append(templateLoadedTrack(self));
+        } else if (self.type == 'mark') {
+            $("#marks").append(templateLoadedMark(self));
+        }
     });
 	
 	/* this callback will be called when a new route was created */

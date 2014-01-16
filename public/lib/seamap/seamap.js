@@ -186,6 +186,12 @@
 	
         /* add a callback function to get notified about actions */
         this.addCallback = function (e, method) {
+            if (Array.isArray(e)) {
+                for (var i in e) {
+                    this.addCallback(e[i], method);
+                }
+                return;
+            }
             if (callbacks[e] === undefined) {
 				throw("Cannot add Callback for the event '"+e+"', because this event does not exist.");
 			}
@@ -194,7 +200,10 @@
         /* remove a route,mark,track,boat,... */
         this.remove = function(type, id) {
 			dataParameterCheck(type, id, null);
-			/* check if a remove method is defined which has to be called */
+			/* check if a remove method is defined which has to be called. 
+               A remove method can be defined for example a mark which has to
+               be removed from the map if it is still visible or a route.
+            */
 			if (undefined !== data[type].removeMethod) {
 				data[type].removeMethod(id);
 			}
@@ -215,17 +224,24 @@
             }
             
             /* if there is no client id, but a server id the object just has to be added */
-            if (newObject.id == null && newObject._id == null && newObject._rev == null) {
-                console.log("added");
+            if ((!newObject.id || newObject.id == null) && newObject._id != null && newObject._rev != null) {
+                console.log("loaded from server");
                 newObject.id = data[type].count.toString();
                 data[type].list[newObject.id] = newObject;
                 data[type].count++;
-                dataCallback([event.SERVER_CREATE], newObject);
+                dataCallback([event.LOADED_FROM_SERVER], newObject);
             /* if the object already exist, go to the entry and update all entry's */
             } else if (newObject.id != null){
                 console.log("updated");
                 checkId(type, newObject.id);
+                delete data[type].list[newObject.id];
                 data[type].list[newObject.id] = newObject;
+            } else if (newObject.id == null && newObject._id == null && newObject._rev == null) {
+                console.log("added from client");
+                newObject.id = data[type].count.toString();
+                data[type].list[newObject.id] = newObject;
+                data[type].count++;
+                dataCallback([event.ADDED_FROM_CLIENT, event.SERVER_CREATE], newObject);
             } else {
                 throw("Not expected case in map.set(..)");
             }
@@ -380,9 +396,8 @@
         var event = 
         {
             //TODO
-			LOADED_ROUTE			: 0,
-			LOADED_MARK				: 1,
-			LOADED_TRACK			: 2,
+			LOADED_FROM_SERVER      : 0,
+            ADDED_FROM_CLIENT       : 1,
             CREATED_ROUTE           : 3,
             DELETED_ROUTE           : 4,
             CREATED_MARK            : 5,

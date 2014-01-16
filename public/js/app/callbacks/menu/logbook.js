@@ -85,6 +85,8 @@ $(document).ready(function() {
    
     menu.addCallback('leftclick', 'logbookBoatsAdd', function (self) {
         console.log("TODO addBoat");
+        boat = map.getTemplate('boat');
+        map.set('boat', boat);
     });
     
     menu.addCallback('leftclick', 'icon-signInSeapal', function (self) {

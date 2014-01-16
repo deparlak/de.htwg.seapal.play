@@ -10,7 +10,7 @@ $(document).ready(function() {
 	
     /* startup code initialise objects from the server */
     request = $.ajax({
-        url         : "api/mark/own",
+        url         : "api/boat/own",
         type        : "get",
         contentType : "application/json",
     });
@@ -20,6 +20,10 @@ $(document).ready(function() {
         console.log(jqXHR);
         console.log(textStatus);
         console.log(response);
+        return;
+        for (var i in response) {
+            map.set('mark', response[i]);
+        }
         console.log("success");
     });
 
@@ -37,6 +41,29 @@ $(document).ready(function() {
 		console.log("-----------------");
 		console.log(self);
 		console.log("-----------------");
+        /* 
+            if there is no _id from the server, this object wasn't yet uploaded, so we can't delete it.
+        */
+        if (null == self._id) return;
+        /* post to server */
+        request = $.ajax({
+            url         : "api/"+self.type+"/"+self._id,
+            type        : "delete",
+            contentType : "application/json",
+        });
+
+        /* callback handler that will be called on success */
+        request.done(function (response, textStatus, jqXHR){
+            console.log("delete success");
+        });
+
+        /* callback handler that will be called on failure */
+        request.fail(function (jqXHR, textStatus, errorThrown){
+			console.log(jqXHR);
+			console.log(textStatus);
+			console.log(errorThrown);
+			console.log("error");
+        });
     });
 
 	/* this callback will be called if marks where loaded from the server */

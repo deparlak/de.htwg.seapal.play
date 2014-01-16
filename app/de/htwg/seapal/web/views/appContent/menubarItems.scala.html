@@ -1,32 +1,25 @@
 <script id='template-createdRoute' type='text/x-handlebars-template'>
-        <li><a class='menu-icon icon-selectedRoute action' data-id={{id}} data-type='route'>{{name}}</a></li>
+    <li><a class='menu-icon icon-selectedRoute action' data-id={{id}} data-type='route'>{{name}}</a></li>
 </script>
 
 <script id='template-createdTrack' type='text/x-handlebars-template'>
-        <li><a class='menu-icon icon-selectedTrack action' data-id={{id}} data-type='track'>{{name}}</a></li>
+    <li><a class='menu-icon icon-selectedTrack action' data-id={{id}} data-type='track'>{{name}}</a></li>
 </script>
 
 <script id='template-createdMark' type='text/x-handlebars-template'>
-        <li><a class='menu-icon icon-selectedMark action' data-id={{id}} data-type='mark'>{{name}}</a></li>
+    <li><a class='menu-icon icon-selectedMark action' data-id={{id}} data-type='mark'>{{name}}</a></li>
 </script>
 
-
 <script id='template-loadedRoute' type='text/x-handlebars-template'>
-    {{#each this}}
-        <li><a class='menu-icon icon-notSelectedRoute action' data-id={{id}} data-type='route'>{{name}}</a></li>
-    {{/each}}
+    <li><a class='menu-icon icon-notSelectedRoute action' data-id={{id}} data-type='route'>{{name}}</a></li>
 </script>
 
 <script id='template-loadedTrack' type='text/x-handlebars-template'>
-    {{#each this}}
-        <li><a class='menu-icon icon-notSelectedTrack action' data-id={{id}} data-type='track'>{{name}}</a></li>
-    {{/each}}
+    <li><a class='menu-icon icon-notSelectedTrack action' data-id={{id}} data-type='track'>{{name}}</a></li>
 </script>
 
 <script id='template-loadedMark' type='text/x-handlebars-template'>
-    {{#each this}}
-        <li><a class='menu-icon icon-notSelectedMark action' data-id={{id}} data-type='mark'>{{name}}</a></li>
-    {{/each}}
+    <li><a class='menu-icon icon-notSelectedMark action' data-id={{id}} data-type='mark'>{{name}}</a></li>
 </script>
 
 <script id='template-SearchPlaces' type='text/x-handlebars-template'>   
