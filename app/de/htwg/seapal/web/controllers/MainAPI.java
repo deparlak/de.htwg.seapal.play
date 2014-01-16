@@ -79,8 +79,7 @@ public final class MainAPI
     public Result createDocument(String document) {
         try {
             Class<? extends ModelDocument> cla = forms.get(document);
-            PatchedForm<? extends ModelDocument> form = new PatchedForm<>(cla);
-            Form<? extends  ModelDocument> form2 = form.bindFromRequest();
+            Form<? extends ModelDocument> form2 = new Form<>(cla).bindFromRequest();
             if (form2.hasErrors()) {
                 return internalServerError(form2.errorsAsJson());
             }
