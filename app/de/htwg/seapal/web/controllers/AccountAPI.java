@@ -84,7 +84,6 @@ public class AccountAPI
         Form<Person> filledForm = DynamicForm.form(Person.class).bindFromRequest();
 
 
-        ObjectNode response = Json.newObject();
         IPerson account = null;
 
         try {
@@ -100,6 +99,7 @@ public class AccountAPI
             e.printStackTrace();
         }
 
+        ObjectNode response = Json.newObject();
         response.put("success", false);
         response.put("errors", filledForm.errorsAsJson());
         if (account == null) {
