@@ -34,7 +34,7 @@ $(document).ready(function() {
     
     function removeSelection() {
         for (var i in removeElements) {
-            map.remove(active.substring(1, active.length), removeElements[i].data('id'));
+            map.remove(removeElements[i].data('type'), removeElements[i].data('id'));
             removeElements[i].remove();
         }
         state = states.normal;

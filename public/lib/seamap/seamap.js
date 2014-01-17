@@ -2062,6 +2062,7 @@
         this.label = null;
         this.notinteractive = (obj.type == 'track') ? true : false;
 		options = $.seamap.options[obj.type];
+        init = false;
         		
         // internal data
         var eventListener = {
@@ -2080,11 +2081,21 @@
         * *********************************************************************************
         */        
         this.remove = function () {
-            if(this.label != null) this.label.setMap(null);
-            this.path.setMap(null);
+            if(this.label != null) {
+                this.label.setMap(null);
+                this.label = null;
+            }
+            if(this.path != null) {
+                this.path.setMap(null);
+                this.path = null;
+            }
             $.each(this.markers, function(){
                 this.setMap(null);
             });
+            if (this.markers) {
+                delete this.markers;
+                this.markers = [];
+            }
         }
         /**
         * *********************************************************************************
@@ -2092,8 +2103,8 @@
         * *********************************************************************************
         */        
         this.hide = function () {
-            //this.remove();
-            //return;
+            this.remove();
+            return;
             if(this.label != null) this.label.setMap(null);
             this.path.setVisible(false);
             $.each(this.markers, function(){
@@ -2106,18 +2117,25 @@
         * *********************************************************************************
         */        
         this.visible = function () {
-          /*  var tmp = obj.marks;
-            obj.marks = [];
-         	 At the end of all initial 
-            for (var i=0, l=tmp.length; i<l; i+=2) {
-                this.addMarker(new google.maps.LatLng(tmp[i], tmp[i + 1]));
+            /* check if no elements are on the map, so we have to set them back to map */
+            if (0 == this.markers.length && 0 < obj.marks.length) {
+                if(this.path == null) {
+                    this.path = new google.maps.Polyline(options.polyOptions);
+                    this.path.setMap(this.googlemaps);
+                }
+                tmp = obj.marks.splice(0, obj.marks.length);
+                init = true;
+                for (var i=0, l=tmp.length; i<l; i+=2) {
+                    this.addMarker(new google.maps.LatLng(tmp[i], tmp[i + 1]));
+                }
+                init = false;
+            } else {
+                $.each(this.markers, function(){
+                    this.setVisible(true);
+                });
             }
-            return;*/
             this.updateLabel();
             this.path.setVisible(true);
-            $.each(this.markers, function(){
-                this.setVisible(true);
-            });
         }
         
         /**
@@ -2179,8 +2197,9 @@
                     $this.notify("click");
                 });
             }
-            
-            this.notify("add");
+            if (!init) {
+                this.notify("add");
+            }
 			$this.drawPath();
 			
             return marker;
