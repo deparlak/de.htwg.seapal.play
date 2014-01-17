@@ -215,37 +215,42 @@
         this.set = function(type, obj) {
 			checkType(type);
 
-            /* create a new object and copy all items from the parameter obj to it */
-            newObject = self.getTemplate(type);        
-            for (var key in data[type].template) {
-                if (obj[key] !== undefined) {
-                    newObject[key] = obj[key];
-                }
-            }
-            
             /* if there is no client id, but a server id the object just has to be added */
-            if ((!newObject.id || newObject.id == null) && newObject._id != null && newObject._rev != null) {
+            if ((!obj.id || obj.id == null) && obj._id != null && obj._rev != null) {
                 console.log("loaded from server");
-                newObject.id = data[type].count.toString();
-                data[type].list[newObject.id] = newObject;
+                newObj = self.getTemplate(type);
+                newObj.id = data[type].count.toString();
+                data[type].list[newObj.id] = newObj;
                 data[type].count++;
-                dataCallback([event.LOADED_FROM_SERVER], newObject);
+                copyObjAttr(type, newObj, obj);
+                dataCallback([event.LOADED_FROM_SERVER], newObj);
             /* if the object already exist, go to the entry and update all entry's */
-            } else if (newObject.id != null){
+            } else if (obj.id != null){
                 console.log("updated");
-                checkId(type, newObject.id);
-                delete data[type].list[newObject.id];
-                data[type].list[newObject.id] = newObject;
-            } else if (newObject.id == null && newObject._id == null && newObject._rev == null) {
+                checkId(type, obj.id);
+                copyObjAttr(type, data[type].list[obj.id], obj);
+            } else if (obj.id == null && obj._id == null && obj._rev == null) {
                 console.log("added from client");
-                newObject.id = data[type].count.toString();
-                data[type].list[newObject.id] = newObject;
+                newObj = self.getTemplate(type);
+                newObj.id = data[type].count.toString();
+                data.route.list[newObj.id] = newObj;
                 data[type].count++;
-                dataCallback([event.ADDED_FROM_CLIENT, event.SERVER_CREATE], newObject);
+                copyObjAttr(type, newObj, obj);
+                dataCallback([event.ADDED_FROM_CLIENT, event.SERVER_CREATE], newObj);
             } else {
                 throw("Not expected case in map.set(..)");
             }
         };
+        
+        /* helper method to copy only the elements to a obj */
+        function copyObjAttr(type, dest, src) {
+            for (var key in data[type].template) {
+                if (src[key] !== undefined) {
+                    dest[key] = src[key];
+                }
+            }
+        };
+        
 		/* return a copy of the obj with the given type and id */
         this.get = function(type, id) {
 			dataParameterCheck(type, id, null);
@@ -792,8 +797,8 @@
         }
         /* calculates the distance from the center of the circle to the current position */
         function getDistanceFromCircle() {
-            return calculateDistance(activeSecurityCircle.center.b, activeSecurityCircle.center.d,
-                                     currentPosition.b, currentPosition.d);
+            return calculateDistance(activeSecurityCircle.center.lat(), activeSecurityCircle.center.lng(),
+                                     currentPosition.lat(), currentPosition.lng());
         }
         /* calculates the distance between two positions. Coordinates needed in decimal form! */
         function calculateDistance(lat1, lon1, lat2, lon2) {
@@ -1484,6 +1489,9 @@
             /* important that state will be set here, because hideActiveRoute() will set the state to NORMAL */
             state = States.ROUTE;
             data.route.active = data.route.list[id];
+            if (!data.route.active.onMap || null == data.route.active.onMap) {
+                data.route.active.onMap = getOnMapRoute(data.route.active);
+            }
             data.route.active.onMap.visible();
         }
         /**
@@ -1592,7 +1600,7 @@
                 
         /**
         * *********************************************************************************
-        * Activates the route, so that it is also visible in the sidebar.
+        * Activates the track, so that it is also visible in the sidebar.
         * *********************************************************************************
         */
         function activateTrack(id) {
@@ -1600,6 +1608,9 @@
             /* important that state will be set here, because hideActiveRoute() will set the state to NORMAL */
             state = States.TRACK;
             data.track.active = data.track.list[id];
+            if (!data.track.active.onMap || null == data.track.active.onMap) {
+                data.track.active.onMap = getOnMapTrack(data.track.active);
+            } 
             data.track.active.onMap.visible();
         }
         /**
@@ -2032,12 +2043,7 @@
             drag : [],
             click : []
         };
-        
-		/* if the have some markers, than create them on the map */
-		for (var i in obj.marks) {
-			this.addMarker(new google.maps.LatLng(obj.marks[i].lat, obj.marks[i].lng));
-		}
-		
+        	
         this.path = new google.maps.Polyline(options.polyOptions);
         this.path.setMap(this.googlemaps);
         
@@ -2059,6 +2065,8 @@
         * *********************************************************************************
         */        
         this.hide = function () {
+            //this.remove();
+            //return;
             if(this.label != null) this.label.setMap(null);
             this.path.setVisible(false);
             $.each(this.markers, function(){
@@ -2071,6 +2079,13 @@
         * *********************************************************************************
         */        
         this.visible = function () {
+          /*  var tmp = obj.marks;
+            obj.marks = [];
+         	 At the end of all initial 
+            for (var i=0, l=tmp.length; i<l; i+=2) {
+                this.addMarker(new google.maps.LatLng(tmp[i], tmp[i + 1]));
+            }
+            return;*/
             this.updateLabel();
             this.path.setVisible(true);
             $.each(this.markers, function(){
@@ -2086,7 +2101,7 @@
         this.addMarker = function(position) {
             var $this = this;
             // check if the position did not changed, so we do not safe this position.
-            if (1 < obj.marks.length && position.b == obj.marks[obj.marks.length - 2] && position.d == obj.marks[obj.marks.length - 1]) {
+            if (1 < obj.marks.length && position.lat() == obj.marks[obj.marks.length - 2] && position.lng() == obj.marks[obj.marks.length - 1]) {
                 return null;
             }
             
@@ -2102,8 +2117,8 @@
             });
             this.markers[this.markers.length] = marker;
             /* save lat and after that lng coordinate */
-			obj.marks[obj.marks.length] = position.b;
-            obj.marks[obj.marks.length] = position.d;
+			obj.marks[obj.marks.length] = position.lat();
+            obj.marks[obj.marks.length] = position.lng();
             
             // adds or updates the label
             if(this.label == null) {
@@ -2143,7 +2158,7 @@
 			
             return marker;
         }
-
+        
         /**
         * *********************************************************************************
         * Removes a marker from the route.
