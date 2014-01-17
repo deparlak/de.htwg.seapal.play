@@ -233,7 +233,7 @@
                 console.log("added from client");
                 newObj = self.getTemplate(type);
                 newObj.id = data[type].count.toString();
-                data.route.list[newObj.id] = newObj;
+                data[type].list[newObj.id] = newObj;
                 data[type].count++;
                 copyObjAttr(type, newObj, obj);
                 dataCallback([event.ADDED_FROM_CLIENT, event.SERVER_CREATE], newObj);
@@ -245,7 +245,7 @@
         /* helper method to copy only the elements to a obj */
         function copyObjAttr(type, dest, src) {
             for (var key in data[type].template) {
-                if (src[key] !== undefined) {
+                if (src[key] !== undefined && null != src[key]) {
                     dest[key] = src[key];
                 }
             }

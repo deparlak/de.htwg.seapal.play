@@ -28,6 +28,10 @@ $(document).ready(function() {
         response.route.map( function(item) { 
             map.set('route', item);
         });
+        
+        response.boat.map( function(item) { 
+            map.set('boat', item);
+        });
     });
 
     /* callback handler that will be called on failure */
