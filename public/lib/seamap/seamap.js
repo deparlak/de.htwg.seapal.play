@@ -1208,10 +1208,10 @@
         }
         /* Removes the person overboard mark */
         function removeManOverboardMark() {
-            data.mark.active = manoverboardMark;
-            deleteSelectedMark();
-            data.mark.active = null;
-            manoverboardMark = null;
+            if (null != manoverboardMark) {
+                manoverboardMark.onMap.setMap(null);
+                manoverboardMark = null;
+            }
         }
 
         /**
