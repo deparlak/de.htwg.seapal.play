@@ -129,6 +129,9 @@ $(document).ready(function() {
     });
 
     menu.addCallback('rightclick', ['icon-notSelectedBoat', 'icon-selectedBoat'], function (self) {
+        console.log(self.data());
+        console.log("Get Object from map by type + id");
+        console.log(map.get(self.data('type'), self.data('id')));
         if(!map.checkTracking()) {
             return;
         }
