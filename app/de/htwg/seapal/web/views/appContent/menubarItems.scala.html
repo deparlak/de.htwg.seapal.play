@@ -69,10 +69,10 @@
         </li>
     {{else}} {{#if status.OK}}
         {{#each SearchPlaces}}
-            <li><a class='tools-icon icon-searchedPlace action' data-lat={{geometry.location.b}} data-lng={{geometry.location.d}}>{{cutStringLength name}}</a></li>
+            <li><a class='tools-icon icon-searchedPlace action' data-lat={{getLat geometry}} data-lng={{getLng geometry}}>{{cutStringLength name}}</a></li>
         {{/each}}
         {{#each SearchCoordinates}}
-            <li><a class='tools-icon icon-searchedCoordinate action' data-lat={{geometry.location.b}} data-lng={{geometry.location.d}}>{{cutStringLength formatted_address}}</a></li>
+            <li><a class='tools-icon icon-searchedCoordinate action' data-lat={{getLat geometry}} data-lng={{getLng geometry}}>{{cutStringLength formatted_address}}</a></li>
         {{/each}}
     {{else}}
         <li class='heading'>

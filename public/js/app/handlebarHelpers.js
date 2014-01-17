@@ -33,4 +33,12 @@ $(document).ready(function() {
         $el.find('[value=' + value + ']').attr({'selected':'selected'});
         return $el.html();
     });
+    
+    Handlebars.registerHelper('getLat', function( geometry ){
+        return geometry.location.lat();
+    });
+
+    Handlebars.registerHelper('getLng', function( geometry ){
+        return geometry.location.lng();
+    });
 });

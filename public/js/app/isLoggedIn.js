@@ -10,23 +10,24 @@ $(document).ready(function() {
 	
     /* startup code initialise objects from the server */
     request = $.ajax({
-        url         : "api/mark/own",
+        url         : "api/all/own",
         type        : "get",
         contentType : "application/json",
     });
 
     /* callback handler that will be called on success */
     request.done(function (response, textStatus, jqXHR){
-        console.log(jqXHR);
-        console.log(textStatus);
         console.log(response);
 
-        for (var i in response) {
-            response[i].image_big = null;
-            response[i].image_thumb = null;
-            map.set('mark', response[i]);
-        }
-        console.log("success");
+        response.mark.map( function(item) { 
+            item.image_big = null;
+            item.image_thumb = null;
+            map.set('mark', item);
+        });
+
+        response.route.map( function(item) { 
+            map.set('route', item);
+        });
     });
 
     /* callback handler that will be called on failure */
@@ -92,7 +93,9 @@ $(document).ready(function() {
             /* restore the object id and set the response object to the map storage (because the _rev and _id changed). */
 			response.id = objectId;
             response.type = self.type;
-			map.set(self.type, response);
+            response.image_big = null;
+            response.image_thumb = null;
+			//map.set(self.type, response);
         });
 
         /* callback handler that will be called on failure */
