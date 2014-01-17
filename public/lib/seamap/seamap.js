@@ -493,6 +493,29 @@
         // The id of the manoverboard marker
         var manoverboardMark = null;
 		
+        
+        var templateAccount =
+        {
+            "type"                : "account",
+            "id"                  : null,
+            "birth"               : null,
+            "city"                : null,
+            "country"             : null,
+            "email"               : null,
+            "first_name"          : null,
+            "friend_list"         : [],
+            "last_name"           : null,
+            "mobile"              : null,
+            "nationality"         : null,
+            "postcode"            : null,
+            "received_requests"   : [],
+            "registration"        : null,
+            "sent_requests"       : null,
+            "street"              : null,
+            "telephone"           : null,
+        };
+        
+        
 		var templateMark = 
 		{
 			"type"			: "mark",
@@ -619,6 +642,10 @@
 		};		
 		
 		var data = {
+            account : {
+                template : templateAccount,
+				active : null
+			},	
 			boat : {
                 template : templateBoat,
 				list : {},
