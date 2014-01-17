@@ -51,14 +51,14 @@ public class HelpAPI
         crewMember1.setEmail("crewMember1@123.de");
         crewMember1.setPassword(PasswordHash.createHash("test"));
         personController.savePerson(crewMember1);
-        domACL.put("crewMember1", Json.toJson(personController.getPerson(crewMember1.getUUID())));
+        domACL.put("crewMember1", Json.toJson(new PublicPerson(personController.getPerson(crewMember1.getUUID()))));
 
         IPerson crewMember2 = new Person();
         crewMember2.setAccount(crewMember2.getUUID().toString());
         crewMember2.setEmail("crewMember2@123.de");
         crewMember2.setPassword(PasswordHash.createHash("test"));
         personController.savePerson(crewMember2);
-        domACL.put("crewMember2", Json.toJson(personController.getPerson(crewMember2.getUUID())));
+        domACL.put("crewMember2", Json.toJson(new PublicPerson(personController.getPerson(crewMember2.getUUID()))));
 
         IPerson account = new Person();
         account.setAccount(account.getUUID().toString());
@@ -69,7 +69,7 @@ public class HelpAPI
         account.setPassword(PasswordHash.createHash("test"));
         personController.savePerson(account);
 
-        domACL.put("captain", Json.toJson(personController.getPerson(account.getUUID())));
+        domACL.put("captain", Json.toJson(new PublicPerson(personController.getPerson(account.getUUID()))));
 
         ObjectNode nodeInner  = Json.newObject();
         nodeInner.putAll(domACL);

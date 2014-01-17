@@ -3,16 +3,18 @@ package de.htwg.seapal.web.controllers;
 import com.google.inject.Inject;
 import de.htwg.seapal.controller.IMainController;
 import de.htwg.seapal.controller.IPersonController;
-import de.htwg.seapal.model.IModel;
 import de.htwg.seapal.model.ModelDocument;
 import de.htwg.seapal.model.impl.*;
 import org.codehaus.jackson.JsonNode;
+import org.codehaus.jackson.node.ObjectNode;
 import play.data.Form;
 import play.libs.Json;
 import play.mvc.Controller;
 import play.mvc.Result;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
 
 public final class MainAPI
         extends Controller {
@@ -36,14 +38,31 @@ public final class MainAPI
     }
 
     @play.mvc.Security.Authenticated(AccountAPI.SecuredAPI.class)
-    public Result singleDocument(final UUID id, final String document) {
+    public Result all(String scope) {
+        String session = session(IPersonController.AUTHN_COOKIE_KEY);
 
-        return ok(Json.toJson(controller.getSingleDocument(session(IPersonController.AUTHN_COOKIE_KEY), id, document)));
+        ObjectNode node = Json.newObject();
+        node.put("account", Json.toJson(controller.account(session)));
+
+        for (String type: forms.keySet()) {
+            node.put(type, Json.toJson(controller.getDocuments(type, session, scope)));
+        }
+
+        return ok(node);
+    }
+
+    @play.mvc.Security.Authenticated(AccountAPI.SecuredAPI.class)
+    public Result singleDocument(final UUID id, final String document) {
+        String session = session(IPersonController.AUTHN_COOKIE_KEY);
+
+        return ok(Json.toJson(controller.getSingleDocument(session, id, document)));
     }
 
     @play.mvc.Security.Authenticated(AccountAPI.SecuredAPI.class)
     public Result deleteDocument(final UUID id, final String document) {
-        if (controller.deleteDocument(session(IPersonController.AUTHN_COOKIE_KEY), id, document)) {
+        String session = session(IPersonController.AUTHN_COOKIE_KEY);
+
+        if (controller.deleteDocument(session, id, document)) {
             return ok(success);
         } else {
             return unauthorized(fail);
@@ -52,24 +71,17 @@ public final class MainAPI
 
     @play.mvc.Security.Authenticated(AccountAPI.SecuredAPI.class)
     public Result getDocuments(String document, String scope) {
-        Collection<IModel> list = new LinkedList<>();
         String session = session(IPersonController.AUTHN_COOKIE_KEY);
 
-        if (scope.equals("all") || scope.equals("own")) {
-            list.addAll(controller.getOwnDocuments(document, session));
-        }
-
-        if (scope.equals("all") || scope.equals("foreign")) {
-            list.addAll(controller.getForeignDocuments(document, session));
-        }
-
-        return ok(Json.toJson(list));
+        return ok(Json.toJson(controller.getDocuments(document, session, scope)));
     }
 
     @play.mvc.Security.Authenticated(AccountAPI.SecuredAPI.class)
     public Result getByParent(String document, String parent, UUID id) {
+        String session = session(IPersonController.AUTHN_COOKIE_KEY);
+
         try {
-            return ok(Json.toJson(controller.getByParent(document, parent, session(IPersonController.AUTHN_COOKIE_KEY), id)));
+            return ok(Json.toJson(controller.getByParent(document, parent, session, id)));
         } catch (NullPointerException e) {
             return internalServerError(EMPTY);
         }

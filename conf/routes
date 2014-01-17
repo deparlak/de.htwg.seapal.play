@@ -13,6 +13,7 @@ POST          /api/$document<(boat|mark|route|trip|waypoint)>        @de.htwg.se
 GET           /api/account        @de.htwg.seapal.web.controllers.MainAPI.ownAccount()
 GET           /api/account/$id<[0-9a-fA-F\-]+>        @de.htwg.seapal.web.controllers.MainAPI.account(id: UUID)
 GET           /api/sendFriendRequest/$id<[0-9a-fA-F\-]+>        @de.htwg.seapal.web.controllers.MainAPI.sendFriendRequest(id: UUID)
+GET           /api/all/$scope<(own|foreign|all)>        @de.htwg.seapal.web.controllers.MainAPI.all(scope: String)
 
 # authentication
 GET           /login                                                                                    de.htwg.seapal.web.controllers.Application.login()
@@ -34,4 +35,4 @@ GET           /assets/*file                                                     
 
 GET           /help        @de.htwg.seapal.web.controllers.HelpAPI.help()
 GET           /openID/auth                                                                              de.htwg.seapal.web.controllers.AccountAPI.auth()
-GET           /openID/verify                                                                            @de.htwg.seapal.web.controllers.AccountAPI.verify()
+GET           /openID/verify        @de.htwg.seapal.web.controllers.AccountAPI.verify()
