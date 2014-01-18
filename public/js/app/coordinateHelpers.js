@@ -24,7 +24,6 @@ $(document).ready(function() {
         function LatLngToDecimal(string) {
             var obj = {};
             if (24 != string.length) {
-                console.log(string.length)
                 obj.error = "Lat Lng input has a not correct length.";
                 return obj;
             }
@@ -135,7 +134,6 @@ $(document).ready(function() {
                 deg = "0" + deg;
             }
         }
-        console.log("Here I am");
         return deg + '°' + tmp[1] + "' " + tmp[2];
     }
     
