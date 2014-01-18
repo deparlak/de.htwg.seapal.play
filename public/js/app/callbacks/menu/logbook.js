@@ -6,6 +6,7 @@
  */
 
 $(document).ready(function() {
+
     var active = "#account";
     var waypoint_headingTo_template = Handlebars.compile($("#waypoint_headingTo_option").html());
     var isWaypointModalToBeOpened = false;
@@ -79,12 +80,42 @@ $(document).ready(function() {
         $('#logbookRemove-footer').removeClass('visible').addClass('hidden');
     });
    
+    /* START-------------------------- boats ------------------------------- */
+    var tmpBoat;
+
     menu.addCallback('leftclick', 'logbookBoatsAdd', function (self) {
-        console.log("TODO addBoat");
-        boat = map.getTemplate('boat');
-        boat.boatName = "My Example boat.";
-        map.set('boat', boat);
+        tmpBoat = map.getTemplate('boat');
+        openBoatModal();
     });
+
+    menu.addCallback('rightclick', ['icon-notSelectedBoat', 'icon-selectedBoat'], function (self) {
+        console.log(self.data());
+        console.log("Get Object from map by type + id");
+        console.log(map.get(self.data('type'), self.data('id')));
+        if(!map.checkTracking()) {
+            return;
+        }
+        menu.disableAutoClose();
+        tmpBoat = map.get(self.data('type'), self.data('id'));
+        openBoatModal();
+    });
+
+    $('#modal-form_boat').submit(function() {
+        var boundData = Handlebars.getBoundData(tmpBoat);        
+        console.log(boundData);        
+        map.set('boat', boundData);
+        $('#modal-form_boat').modal('hide');
+        return false;
+    });
+
+    function openBoatModal() {
+        var template = Handlebars.compile($("#boats_Template").text());
+        var html = template(tmpBoat);
+
+        $('#boatInputForm').html(html);
+        $('#modal-form_boat').modal('show');
+    }
+    /* END---------------------------- boats ------------------------------- */
     
     menu.addCallback('leftclick', 'icon-signInSeapal', function (self) {
         if(!map.checkTracking()) {
@@ -122,17 +153,6 @@ $(document).ready(function() {
         } else if (state == states.remove) {
             selectToRemove(self);
         }
-    });
-
-    menu.addCallback('rightclick', ['icon-notSelectedBoat', 'icon-selectedBoat'], function (self) {
-        console.log(self.data());
-        console.log("Get Object from map by type + id");
-        console.log(map.get(self.data('type'), self.data('id')));
-        if(!map.checkTracking()) {
-            return;
-        }
-        menu.disableAutoClose();
-        $('#modal-form_boat').modal('show');
     });
 
     menu.addCallback('rightclick', ['icon-notSelectedTrack', 'icon-selectedTrack'], function (self) {
