@@ -169,7 +169,6 @@ $(document).ready(function() {
         var obj = coord.LatLngToDecimal(marker.position);
         
         if (obj.error) {
-            console.log("asdasdsad");
             return obj;
         }
 
