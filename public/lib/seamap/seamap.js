@@ -234,7 +234,7 @@
                 if (null != obj._id && obj.id != obj._id) {
                     data[type].list["_id"] = data[type].list[obj.id]["id"];
                 }
-                dataCallback([event.UPDATED_FROM_CLIENT], newObj);
+                dataCallback([event.UPDATED_FROM_CLIENT], obj);
             } else if (obj.id == null && obj._id == null && obj._rev == null) {
                 console.log("added from client");
                 newObj = self.getTemplate(type);
