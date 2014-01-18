@@ -254,16 +254,21 @@ public class AccountAPI
     }
 
     public Result verify() {
-        F.Promise<OpenID.UserInfo> userInfoPromise = OpenID.verifiedId();
-        OpenID.UserInfo userInfo = userInfoPromise.get();
-        IPerson person = controller.googleLogin(userInfo.attributes, userInfo.id);
-        if (person == null) {
-            flash("errors", "Google Login Failed");
+        try {
+            F.Promise<OpenID.UserInfo> userInfoPromise = OpenID.verifiedId();
+            OpenID.UserInfo userInfo = userInfoPromise.get();
+            IPerson person = controller.googleLogin(userInfo.attributes, userInfo.id);
+            if (person == null) {
+                flash("errors", "Login Failed");
+                return badRequest(signInSeapal.render(null, routes.AccountAPI.login()));
+            }
+
+            session().clear();
+            session(IPersonController.AUTHN_COOKIE_KEY, person.getId());
+            return redirect(routes.Application.app());
+        } catch (Exception e) {
+            flash("errors", "Login Failed");
             return badRequest(signInSeapal.render(null, routes.AccountAPI.login()));
         }
-
-        session().clear();
-        session(IPersonController.AUTHN_COOKIE_KEY, person.getId());
-        return redirect(routes.Application.app());
     }
 }
