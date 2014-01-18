@@ -32,7 +32,10 @@ $(document).ready(function() {
 	
 	/* this callback will be called if an object was updated by a user */
     map.addCallback([events.UPDATED_FROM_CLIENT], function (self) {
-        $("#"+self.type+self.id).text(self.name);
+        console.log("UPDATED_FROM_CLIENT in map.js");
+        console.log(self);
+        console.log($("#"+self.type+self.id));
+        $("#"+self.type+self.id).text("UPDATED_FROM_CLIENT");
     });
     
 	/* this callback will be called when a new route was created */
