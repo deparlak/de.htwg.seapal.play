@@ -99,7 +99,7 @@ $(document).ready(function() {
             response.type = self.type;
             response.image_big = null;
             response.image_thumb = null;
-			//map.set(self.type, response);
+			map.set(self.type, response);
         });
 
         /* callback handler that will be called on failure */

@@ -209,6 +209,7 @@
 			}
 			/* remove the element now from the list */
 			dataCallback([event.SERVER_REMOVE], data[type].list[id]);
+            delete data[type].list[data[type].list[id]["_id"]];
 			delete data[type].list[id];
         };
 		/* set a route,mark,track,boat,... */
@@ -229,6 +230,11 @@
                 console.log("updated");
                 checkId(type, obj.id);
                 copyObjAttr(type, data[type].list[obj.id], obj);
+                /* create another reference to the object, so that the object is accessible through the id and the _id.*/
+                if (null != obj._id && obj.id != obj._id) {
+                    data[type].list["_id"] = data[type].list[obj.id]["id"];
+                }
+                
             } else if (obj.id == null && obj._id == null && obj._rev == null) {
                 console.log("added from client");
                 newObj = self.getTemplate(type);
@@ -688,6 +694,7 @@
 			if (data.mark.list[id].onMap) {
 				data.mark.list[id].onMap.setMap(null);
 			}
+			dataCallback([event.DELETED_MARK], data.mark.list[id]);
 		};		
 		
 		/* define the remove method for the route */
@@ -706,6 +713,7 @@
 			if (data.route.list[id].onMap) {
 				data.route.list[id].onMap.remove();
 			}
+			dataCallback([event.DELETED_ROUTE], data.route.list[id]);
 		};
 		
 		/* define the remove method for the track */
@@ -724,6 +732,7 @@
 			if (data.track.list[id].onMap) {
 				data.track.list[id].onMap.remove();
 			}
+            dataCallback([event.DELETED_TRACK], data.track.list[id]);
 		};
 		
 		/* define the visible method for a route */
@@ -1541,11 +1550,7 @@
         */ 
         function deleteActiveRoute(){
             if (data.route.active != null) {
-                dataCallback([event.DELETED_ROUTE, event.SERVER_REMOVE], data.route.active);
-                state = States.NORMAL;
-                data.route.active.onMap.hide();
-                delete data.route.list[data.route.active.id];
-                data.route.active = null;
+                self.remove('route', data.route.active.id);
             }
         }
         
@@ -1660,11 +1665,7 @@
         */ 
         function deleteActiveTrack(){
             if (data.track.active != null) {
-                uploadTrackDeletion();
-                state = States.NORMAL;
-                data.track.active.onMap.hide();
-                delete data.track.list[data.track.active.id];
-                data.track.active = null;
+                self.remove('track', data.track.active.id);
             }
         }
         
@@ -1690,15 +1691,6 @@
                 data.track.active.update = false;
             }         
         }
-        
-        /**
-        * *********************************************************************************
-        * Check if the active route has ever been uploaded and so has to be deleted on the server.
-        * *********************************************************************************
-        */
-        function uploadTrackDeletion() {
-			dataCallback([event.SERVER_REMOVE], data.track.active);
-        } 
         
         /**
         * *********************************************************************************
@@ -1974,10 +1966,7 @@
         */
         function deleteSelectedMark() {
             if(data.mark.active != null) {
-                data.mark.active.onMap.setMap(null);
-                dataCallback([event.SERVER_REMOVE, event.DELETED_MARK], data.mark.active);
-                delete data.mark.list[data.mark.active.id];
-				data.mark.active = null;
+                self.remove('mark', data.mark.active.id);
             }
         }
 
