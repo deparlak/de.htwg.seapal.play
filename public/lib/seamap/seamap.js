@@ -619,7 +619,7 @@
             "spiSize"               : 0,
             "_id"                   : null,
             "_rev"                  : null,
-            "owner"                 : ""
+            "owner"                 : null
 		};	
 
         /* save the self reference, because this cannot used in each context for the seamap */
