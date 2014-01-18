@@ -132,9 +132,13 @@ $(document).ready(function() {
 
     $('#modal-form_marker').submit(function() {
         var boundData = Handlebars.getBoundData(tmpMark);
-        setToVal(boundData);
+        var res = setToVal(boundData);
 
-        //console.log(actMark);
+        if (res.error) {
+            output.warning(res.error);
+            $('#modal-form_marker').modal('hide');
+            return false;
+        }
 
         map.set('mark', actMark);
         $('#modal-form_marker').modal('hide');
@@ -170,6 +174,11 @@ $(document).ready(function() {
                                         marker.position.substring(10,12) + "." +
                                         marker.position.substring(12,14) + "' " +
                                         marker.position.substring(14,15));
+        console.log(obj);
+        if (obj.error) {
+            console.log("asdasdsad");
+            return obj;
+        }
         actMark.lat = obj.lat;
         actMark.lng = obj.lon;
     }
