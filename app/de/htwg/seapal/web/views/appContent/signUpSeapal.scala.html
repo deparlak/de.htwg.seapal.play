@@ -14,32 +14,31 @@
         <script src="http://code.jquery.com/jquery-latest.js"></script>
         <script src="@routes.Assets.at("lib/bootstrap/js/bootstrap.min.js")"></script>
         <script type="text/javascript" src="@routes.Assets.at("lib/modalOutput/modalOutput.js")"></script>
-    </head>
+ <script type='text/javascript' src="@routes.Assets.at("validate_signup.js")"></script>
+
+ </head>
 
     <body>
         <div class="account-wall">
             <img class="profile-img" src="@routes.Assets.at("images/seapal_launcher.png")" alt="Seapal">
+            <div class="error-message">
             @if(flash.contains("errors")) {
-                <div class="error-message">
                     <p>@flash.get("errors")</p>
-                </div>
             }
-            @helper.form(link, 'class -> "form-signInSeapal") {
+            </div>
+            @helper.form(link, 'class -> "form-signInSeapal", 'name -> "register") {
                 <!--input type="text" class="form-control" name="accountName" placeholder="Choose your Username" required autofocus-->
-                <input type="text" class="form-control" name="email" placeholder="Enter your Email" required autofocus>
-                <input type="password" class="form-control" name="password" placeholder="Choose your Password" required>
-                <input type="password" class="form-control" name="repeatedAccountPassword" placeholder="Confirm your Password" required>
-                <button class="btn btn-lg btn-success btn-block" type="submit">
-                    Sign Up for Seapal
-                </button>
+                <input type="email" class="form-control" name="email" placeholder="Enter your Email" required autofocus>
+                <input type="password" class="form-control" name="password" id="password" placeholder="Choose your Password" required>
+                <input type="password" class="form-control" name="cpass" id="cpass" placeholder="Confirm your Password" required>
+                <input class="btn btn-lg btn-success btn-block" type="submit" value="Sign Up for Seapal">
                 <a href="#" class="pull-right need-help" onclick="javascript:new modalOutput('modal', 'modal-title', 'modal-body').info('Your password must contain at least eight characters.<br/>A valid email looks like (eg.): john-doe&#64;email.com');">
-                    Need help?
+                Need help?
                 </a>
                 <span class="clearfix"></span>
             }<div class="message-link"><a href="@de.htwg.seapal.web.controllers.routes.AccountAPI.auth()">
-            Google Login</a></div></div>
+        Google Login</a></div></div>
     </body>
-
     <footer>
         @appContent.footer()
     </footer>
