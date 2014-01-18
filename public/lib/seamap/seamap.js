@@ -934,7 +934,6 @@
 
             $this.on("click", "#addMark", handleAddMark);
             $this.on("click", "#deleteMark", handleDeleteMark);
-            $this.on("click", "#editMark", handleEditMark);
             $this.on("click", "#addNewRoute", handleAddNewRoute);
             $this.on("click", "#exitRouteCreation", handleExitRouteCreation);
             $this.on("click", "#setAsDestination", handleSetAsDestination);
@@ -1377,7 +1376,6 @@
                     break;
                 case ContextMenuTypes.DELETE_MARKER:
                     ctx += '<button id="deleteMark" type="button" class="btn"><i class="icon-map-marker"></i> Delete Mark</button>';
-                    ctx += '<button id="editMark" type="button" class="btn"><i class="icon-map-marker"></i> Edit Mark</button>';
                     break;
             }
             ctx += '</div>'
@@ -1723,16 +1721,6 @@
             deleteSelectedMark();
             hideContextMenu();
         }
-
-        /**
-        * *********************************************************************************
-        * Handler function for editing a mark. Also hides the context menu.
-        * *********************************************************************************
-        */
-        function handleEditMark() {
-            editSelectedMark();
-            hideContextMenu();
-        }
         
         /**
         * *********************************************************************************
@@ -1968,17 +1956,6 @@
         function deleteSelectedMark() {
             if(data.mark.active != null) {
                 self.remove('mark', data.mark.active.id);
-            }
-        }
-
-        /**
-        * *********************************************************************************
-        * Edit the selected mark.
-        * *********************************************************************************
-        */
-        function editSelectedMark() {
-            if(data.mark.active != null) {
-                $('#modal-form_marker').modal('show');
             }
         }
 

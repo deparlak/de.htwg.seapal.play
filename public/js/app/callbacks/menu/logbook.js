@@ -160,7 +160,6 @@ $(document).ready(function() {
         //marker.lat = getLat(tmpMark);
         //marker.lng = getLng(tmpMark);
     }
-
     /* END---------------------------- marker ------------------------------- */
     
     menu.addCallback('leftclick', 'icon-signInSeapal', function (self) {
