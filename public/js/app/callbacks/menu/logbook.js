@@ -147,14 +147,13 @@ $(document).ready(function() {
 
     function createModal(object) {
         actMark = object;
-        console.log(actMark);
         getFromVal(actMark);
 
         var template = Handlebars.compile($("#marker_Template").text());
         var html = template(tmpMark);
 
         $('#markerInputForm').html(html);
-        $(":input").inputmask();        
+        $('#handlebar-id-position').inputmask({mask: "99°99.99' c 999°99.99' d", clearMaskOnLostFocus : false, clearIncomplete : false, autoUnmask : true });
         menu.disableAutoClose();
         $('#modal-form_marker').modal('show');
     }
@@ -166,21 +165,17 @@ $(document).ready(function() {
 
     function setToVal(marker) {
         actMark.name = marker.name;
-        var obj = coord.LatLngToDecimal(marker.position.substring(0,2) + "°" + 
-                                        marker.position.substring(2,4) + "." +
-                                        marker.position.substring(4,6) + "' " +
-                                        marker.position.substring(6,7) + " " +
-                                        marker.position.substring(7,10) + "°" + 
-                                        marker.position.substring(10,12) + "." +
-                                        marker.position.substring(12,14) + "' " +
-                                        marker.position.substring(14,15));
-        console.log(obj);
+        console.log(marker.position);
+        var obj = coord.LatLngToDecimal(marker.position);
+        
         if (obj.error) {
             console.log("asdasdsad");
             return obj;
         }
+
         actMark.lat = obj.lat;
         actMark.lng = obj.lon;
+        return obj;
     }
     /* END---------------------------- marker ------------------------------- */
     
