@@ -13,6 +13,7 @@ $(document).ready(function() {
     var states = {normal : 0, remove : 1};
     var state = states.normal;
     var removeElements = {};
+    var coord = new coordinateHelpers();
 
     /* calling initState will clear the list of items which shall be removed and set the state back to normal */
     function initState(){
@@ -89,9 +90,6 @@ $(document).ready(function() {
     });
 
     menu.addCallback('rightclick', ['icon-notSelectedBoat', 'icon-selectedBoat'], function (self) {
-        console.log(self.data());
-        console.log("Get Object from map by type + id");
-        console.log(map.get(self.data('type'), self.data('id')));
         if(!map.checkTracking()) {
             return;
         }
@@ -102,7 +100,6 @@ $(document).ready(function() {
 
     $('#modal-form_boat').submit(function() {
         var boundData = Handlebars.getBoundData(tmpBoat);
-        console.log(boundData);
         map.set('boat', boundData);
         $('#modal-form_boat').modal('hide');
         return false;
@@ -125,8 +122,27 @@ $(document).ready(function() {
 
     var actMark;
 
+    map.addCallback(events.EDIT_MARK, function (self) {
+        createModal(self);
+    });
+
     menu.addCallback('rightclick', ['icon-notSelectedMark', 'icon-selectedMark'], function (self) {
-        actMark = map.get(self.data('type'), self.data('id'));
+        createModal(map.get(self.data('type'), self.data('id')));
+    });    
+
+    $('#modal-form_marker').submit(function() {
+        var boundData = Handlebars.getBoundData(tmpMark);
+        setToVal(boundData);
+
+        //console.log(actMark);
+
+        map.set('mark', actMark);
+        $('#modal-form_marker').modal('hide');
+        return false;
+    });
+
+    function createModal(object) {
+        actMark = object;
         console.log(actMark);
         getFromVal(actMark);
 
@@ -137,28 +153,25 @@ $(document).ready(function() {
         $(":input").inputmask();
         menu.disableAutoClose();
         $('#modal-form_marker').modal('show');
-    });
-
-    $('#modal-form_marker').submit(function() {
-        var boundData = Handlebars.getBoundData(tmpMark);
-        setToVal(boundData);
-
-        console.log(actMark);
-
-        map.set('mark', actMark);
-        $('#modal-form_marker').modal('hide');
-        return false;
-    });
+    }
 
     function getFromVal(marker) {
         tmpMark.name = marker.name;
-        //tmpMark.position = convert(lat,lng);
+        tmpMark.position = coord.getCoordinatesAsString(actMark.lat, actMark.lng);
     }
 
     function setToVal(marker) {
         actMark.name = marker.name;
-        //marker.lat = getLat(tmpMark);
-        //marker.lng = getLng(tmpMark);
+        var obj = coord.LatLngToDecimal(marker.position.substring(0,2) + "°" + 
+                                        marker.position.substring(2,4) + "." +
+                                        marker.position.substring(4,6) + "' " +
+                                        marker.position.substring(6,7) + " " +
+                                        marker.position.substring(7,10) + "°" + 
+                                        marker.position.substring(10,12) + "." +
+                                        marker.position.substring(12,14) + "' " +
+                                        marker.position.substring(14,15));
+        actMark.lat = obj.lat;
+        actMark.lng = obj.lon;
     }
     /* END---------------------------- marker ------------------------------- */
     

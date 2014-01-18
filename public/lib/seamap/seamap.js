@@ -528,7 +528,6 @@
 			"type"			: "mark",
 			"id"			: null,
 			"name" 			: null,
-			"note" 			: null,
 			"date" 			: null,
 			"lat"			: null,
 			"lng"			: null,
@@ -595,7 +594,7 @@
 		{
 			"type"			        : "boat",
 			"id"			        : null,
-            "boatName"              : "Titanic auf hoher see",
+            "boatName"              : "Titanic",
             "registerNr"            : "",
             "sailSign"              : "",
             "homePort"              : "",
