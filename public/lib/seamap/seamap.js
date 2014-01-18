@@ -421,6 +421,7 @@
 			SERVER_CREATE			: 12,
 			SERVER_REMOVE			: 13,
             CREATED_WAYPOINT        : 14,
+            EDIT_MARK               : 15,
         };
 		        
         var options = $.seamap.options;
@@ -594,7 +595,7 @@
 		{
 			"type"			        : "boat",
 			"id"			        : null,
-            "boatName"              : "Titanic",
+            "boatName"              : "Titanic auf hoher see",
             "registerNr"            : "",
             "sailSign"              : "",
             "homePort"              : "",
@@ -620,7 +621,7 @@
             "_id"                   : null,
             "_rev"                  : null,
             "owner"                 : null
-		};	
+		};
 
         /* save the self reference, because this cannot used in each context for the seamap */
 		var self = this;
@@ -1729,7 +1730,7 @@
         * *********************************************************************************
         */
         function handleEditMark() {
-            editSelectedMark();
+            dataCallback([event.EDIT_MARK], data.mark.active);
             hideContextMenu();
         }
         
@@ -1967,17 +1968,6 @@
         function deleteSelectedMark() {
             if(data.mark.active != null) {
                 self.remove('mark', data.mark.active.id);
-            }
-        }
-
-        /**
-        * *********************************************************************************
-        * Edit the selected mark.
-        * *********************************************************************************
-        */
-        function editSelectedMark() {
-            if(data.mark.active != null) {
-                $('#modal-form_marker').modal('show');
             }
         }
 
