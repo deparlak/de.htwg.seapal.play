@@ -96,4 +96,10 @@ $(document).ready(function() {
     map.addCallback(events.LEFT_SECURITY_CIRCLE, function (self) {
         output.warning(self.msg);
     });
+    
+	/* this callback will be called if an object was loaded from the server */
+    map.addCallback(events.EDIT_MARK, function (self) {
+        console.log("EDIT this mark");
+        console.log(self);
+    });
 });
