@@ -78,10 +78,6 @@ $(document).ready(function() {
         /* hide the remove footer */
         $('#logbookRemove-footer').removeClass('visible').addClass('hidden');
     });
-    
-    menu.addCallback('leftclick', 'logbookCrewAdd', function (self) {
-        console.log("TODO addCrew");
-    });
    
     menu.addCallback('leftclick', 'logbookBoatsAdd', function (self) {
         console.log("TODO addBoat");
@@ -141,7 +137,7 @@ $(document).ready(function() {
 
     menu.addCallback('rightclick', ['icon-notSelectedTrack', 'icon-selectedTrack'], function (self) {
         menu.disableAutoClose();
-        $('#modal-form_track').modal('show');        
+        $('#modal-form_track').modal('show');
     });
 
     menu.addCallback('rightclick', ['icon-notSelectedRoute', 'icon-selectedRoute'], function (self) {

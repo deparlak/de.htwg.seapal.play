@@ -23,4 +23,3 @@ curl -X PUT http://$USERNAME:$PASSWORD@$HOST/seapal_route_db/_design/Route -d @r
 curl -X PUT http://$USERNAME:$PASSWORD@$HOST/seapal_trip_db/_design/Trip -d @trips.json
 curl -X PUT http://$USERNAME:$PASSWORD@$HOST/seapal_waypoint_db/_design/Waypoint -d @waypoint.json
 curl -X PUT http://$USERNAME:$PASSWORD@$HOST/seapal_person_db/_design/Person -d @person.json
-
