@@ -150,7 +150,7 @@ $(document).ready(function() {
         var html = template(tmpMark);
 
         $('#markerInputForm').html(html);
-        $('#marker_latlng').inputmask('Regex', { regex: "[a-zA-Z0-9._%-]+@[a-zA-Z0-9-]+\\.[a-zA-Z]{2,4}" });
+        $(":input").inputmask();        
         menu.disableAutoClose();
         $('#modal-form_marker').modal('show');
     }
