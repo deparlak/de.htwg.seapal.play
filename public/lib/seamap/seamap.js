@@ -220,7 +220,7 @@
             if ((!obj.id || obj.id == null) && obj._id != null && obj._rev != null) {
                 console.log("loaded from server");
                 newObj = self.getTemplate(type);
-                newObj.id = data[type].count.toString();
+                newObj.id = obj._id;
                 data[type].list[newObj.id] = newObj;
                 data[type].count++;
                 copyObjAttr(type, newObj, obj);
@@ -234,7 +234,7 @@
                 if (null != obj._id && obj.id != obj._id) {
                     data[type].list["_id"] = data[type].list[obj.id]["id"];
                 }
-                
+                dataCallback([event.UPDATED_FROM_CLIENT], newObj);
             } else if (obj.id == null && obj._id == null && obj._rev == null) {
                 console.log("added from client");
                 newObj = self.getTemplate(type);
@@ -409,6 +409,7 @@
             //TODO
 			LOADED_FROM_SERVER      : 0,
             ADDED_FROM_CLIENT       : 1,
+            UPDATED_FROM_CLIENT     : 2,
             CREATED_ROUTE           : 3,
             DELETED_ROUTE           : 4,
             CREATED_MARK            : 5,

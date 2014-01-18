@@ -30,6 +30,11 @@ $(document).ready(function() {
         }
     });
 	
+	/* this callback will be called if an object was updated by a user */
+    map.addCallback([events.UPDATED_FROM_CLIENT], function (self) {
+        $("#"+self.type+self.id).text(self.name);
+    });
+    
 	/* this callback will be called when a new route was created */
     map.addCallback(events.CREATED_ROUTE, function (self) {
         $("#routes li a").each(function() {
