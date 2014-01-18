@@ -101,8 +101,8 @@ $(document).ready(function() {
     });
 
     $('#modal-form_boat').submit(function() {
-        var boundData = Handlebars.getBoundData(tmpBoat);        
-        console.log(boundData);        
+        var boundData = Handlebars.getBoundData(tmpBoat);
+        console.log(boundData);
         map.set('boat', boundData);
         $('#modal-form_boat').modal('hide');
         return false;
@@ -116,6 +116,52 @@ $(document).ready(function() {
         $('#modal-form_boat').modal('show');
     }
     /* END---------------------------- boats ------------------------------- */
+
+    /* START-------------------------- marker ------------------------------- */
+    var tmpMark = {
+        "name"          : null,
+        "position"      : null
+    };
+
+    var actMark;
+
+    menu.addCallback('rightclick', ['icon-notSelectedMark', 'icon-selectedMark'], function (self) {
+        actMark = map.get(self.data('type'), self.data('id'));
+        console.log(actMark);
+        getFromVal(actMark);
+
+        var template = Handlebars.compile($("#marker_Template").text());
+        var html = template(tmpMark);
+
+        $('#markerInputForm').html(html);
+        $(":input").inputmask();
+        menu.disableAutoClose();
+        $('#modal-form_marker').modal('show');
+    });
+
+    $('#modal-form_marker').submit(function() {
+        var boundData = Handlebars.getBoundData(tmpMark);
+        setToVal(boundData);
+
+        console.log(actMark);
+
+        map.set('mark', actMark);
+        $('#modal-form_marker').modal('hide');
+        return false;
+    });
+
+    function getFromVal(marker) {
+        tmpMark.name = marker.name;
+        //tmpMark.position = convert(lat,lng);
+    }
+
+    function setToVal(marker) {
+        actMark.name = marker.name;
+        //marker.lat = getLat(tmpMark);
+        //marker.lng = getLng(tmpMark);
+    }
+
+    /* END---------------------------- marker ------------------------------- */
     
     menu.addCallback('leftclick', 'icon-signInSeapal', function (self) {
         if(!map.checkTracking()) {
@@ -163,11 +209,6 @@ $(document).ready(function() {
     menu.addCallback('rightclick', ['icon-notSelectedRoute', 'icon-selectedRoute'], function (self) {
         menu.disableAutoClose();
         $('#modal-form_route').modal('show');        
-    });
-
-    menu.addCallback('rightclick', ['icon-notSelectedMark', 'icon-selectedMark'], function (self) {
-        menu.disableAutoClose();
-        $('#modal-form_marker').modal('show');
     });
 
     /**
