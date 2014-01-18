@@ -7,4 +7,8 @@
  
 $(document).ready(function() {    
 
+	menu.addCallback('leftclick', 'logbookCrewAdd', function (self) {
+        output.warning("You are not logged in!");
+    });
+
 });

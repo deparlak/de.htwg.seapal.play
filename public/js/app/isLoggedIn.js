@@ -28,6 +28,10 @@ $(document).ready(function() {
         response.route.map( function(item) { 
             map.set('route', item);
         });
+        
+        response.boat.map( function(item) { 
+            map.set('boat', item);
+        });
     });
 
     /* callback handler that will be called on failure */
@@ -36,6 +40,16 @@ $(document).ready(function() {
         console.log(textStatus);
         console.log(errorThrown);
         console.log("error");
+    });
+
+    /* callback for adding a crew member */
+    menu.addCallback('leftclick', 'logbookCrewAdd', function (self) {
+        $('#modal-form_addCrewman').modal('show');
+        $('#modal-form_addCrewman').submit(function() {
+            console.log("TODO send Crew invitation");            
+            $('#modal-form_addCrewman').modal('hide');
+            return false;
+        });        
     });
     
 	/* this callback will be called if marks where loaded from the server */
@@ -95,7 +109,7 @@ $(document).ready(function() {
             response.type = self.type;
             response.image_big = null;
             response.image_thumb = null;
-			//map.set(self.type, response);
+			map.set(self.type, response);
         });
 
         /* callback handler that will be called on failure */

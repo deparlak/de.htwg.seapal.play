@@ -209,6 +209,7 @@
 			}
 			/* remove the element now from the list */
 			dataCallback([event.SERVER_REMOVE], data[type].list[id]);
+            delete data[type].list[data[type].list[id]["_id"]];
 			delete data[type].list[id];
         };
 		/* set a route,mark,track,boat,... */
@@ -229,11 +230,16 @@
                 console.log("updated");
                 checkId(type, obj.id);
                 copyObjAttr(type, data[type].list[obj.id], obj);
+                /* create another reference to the object, so that the object is accessible through the id and the _id.*/
+                if (null != obj._id && obj.id != obj._id) {
+                    data[type].list["_id"] = data[type].list[obj.id]["id"];
+                }
+                
             } else if (obj.id == null && obj._id == null && obj._rev == null) {
                 console.log("added from client");
                 newObj = self.getTemplate(type);
                 newObj.id = data[type].count.toString();
-                data.route.list[newObj.id] = newObj;
+                data[type].list[newObj.id] = newObj;
                 data[type].count++;
                 copyObjAttr(type, newObj, obj);
                 dataCallback([event.ADDED_FROM_CLIENT, event.SERVER_CREATE], newObj);
@@ -245,7 +251,7 @@
         /* helper method to copy only the elements to a obj */
         function copyObjAttr(type, dest, src) {
             for (var key in data[type].template) {
-                if (src[key] !== undefined) {
+                if (src[key] !== undefined && null != src[key]) {
                     dest[key] = src[key];
                 }
             }
@@ -493,6 +499,29 @@
         // The id of the manoverboard marker
         var manoverboardMark = null;
 		
+        
+        var templateAccount =
+        {
+            "type"                : "account",
+            "id"                  : null,
+            "birth"               : null,
+            "city"                : null,
+            "country"             : null,
+            "email"               : null,
+            "first_name"          : null,
+            "friend_list"         : [],
+            "last_name"           : null,
+            "mobile"              : null,
+            "nationality"         : null,
+            "postcode"            : null,
+            "received_requests"   : [],
+            "registration"        : null,
+            "sent_requests"       : null,
+            "street"              : null,
+            "telephone"           : null,
+        };
+        
+        
 		var templateMark = 
 		{
 			"type"			: "mark",
@@ -565,29 +594,29 @@
 		{
 			"type"			        : "boat",
 			"id"			        : null,
-            "boatName"              : null,
-            "registerNr"            : null,
-            "sailSign"              : null,
-            "homePort"              : null,
-            "yachtclub"             : null,
-            "insurance"             : null,
-            "callSign"              : null,
-            "boatType"              : null,
-            "constructor"           : null,
-            "length"                : null,
-            "width"                 : null,
-            "draft"                 : null,
-            "mastHeight"            : null,
-            "displacement"          : null,
-            "rigging"               : null,
-            "yearOfConstruction"    : null,
-            "motor"                 : null,
-            "tankSize"              : null,
-            "wasteWaterTankSize"    : null,
-            "freshWaterTankSize"    : null,
-            "mainSailSize"          : null,
-            "genuaSize"             : null,
-            "spiSize"               : null,
+            "boatName"              : "Titanic",
+            "registerNr"            : "",
+            "sailSign"              : "",
+            "homePort"              : "",
+            "yachtclub"             : "",
+            "insurance"             : "",
+            "callSign"              : "",
+            "boatType"              : "",
+            "constructor"           : "David",
+            "length"                : 0,
+            "width"                 : 0,
+            "draft"                 : 0,
+            "mastHeight"            : 0,
+            "displacement"          : 0,
+            "rigging"               : "",
+            "yearOfConstruction"    : 1900,
+            "motor"                 : "",
+            "tankSize"              : 0,
+            "wasteWaterTankSize"    : 0,
+            "freshWaterTankSize"    : 0,
+            "mainSailSize"          : 0,
+            "genuaSize"             : 0,
+            "spiSize"               : 0,
             "_id"                   : null,
             "_rev"                  : null,
             "owner"                 : null
@@ -619,6 +648,10 @@
 		};		
 		
 		var data = {
+            account : {
+                template : templateAccount,
+				active : null
+			},	
 			boat : {
                 template : templateBoat,
 				list : {},
@@ -661,6 +694,7 @@
 			if (data.mark.list[id].onMap) {
 				data.mark.list[id].onMap.setMap(null);
 			}
+			dataCallback([event.DELETED_MARK], data.mark.list[id]);
 		};		
 		
 		/* define the remove method for the route */
@@ -679,6 +713,7 @@
 			if (data.route.list[id].onMap) {
 				data.route.list[id].onMap.remove();
 			}
+			dataCallback([event.DELETED_ROUTE], data.route.list[id]);
 		};
 		
 		/* define the remove method for the track */
@@ -697,6 +732,7 @@
 			if (data.track.list[id].onMap) {
 				data.track.list[id].onMap.remove();
 			}
+            dataCallback([event.DELETED_TRACK], data.track.list[id]);
 		};
 		
 		/* define the visible method for a route */
@@ -1514,11 +1550,7 @@
         */ 
         function deleteActiveRoute(){
             if (data.route.active != null) {
-                dataCallback([event.DELETED_ROUTE, event.SERVER_REMOVE], data.route.active);
-                state = States.NORMAL;
-                data.route.active.onMap.hide();
-                delete data.route.list[data.route.active.id];
-                data.route.active = null;
+                self.remove('route', data.route.active.id);
             }
         }
         
@@ -1633,11 +1665,7 @@
         */ 
         function deleteActiveTrack(){
             if (data.track.active != null) {
-                uploadTrackDeletion();
-                state = States.NORMAL;
-                data.track.active.onMap.hide();
-                delete data.track.list[data.track.active.id];
-                data.track.active = null;
+                self.remove('track', data.track.active.id);
             }
         }
         
@@ -1663,15 +1691,6 @@
                 data.track.active.update = false;
             }         
         }
-        
-        /**
-        * *********************************************************************************
-        * Check if the active route has ever been uploaded and so has to be deleted on the server.
-        * *********************************************************************************
-        */
-        function uploadTrackDeletion() {
-			dataCallback([event.SERVER_REMOVE], data.track.active);
-        } 
         
         /**
         * *********************************************************************************
@@ -1947,10 +1966,7 @@
         */
         function deleteSelectedMark() {
             if(data.mark.active != null) {
-                data.mark.active.onMap.setMap(null);
-                dataCallback([event.SERVER_REMOVE, event.DELETED_MARK], data.mark.active);
-                delete data.mark.list[data.mark.active.id];
-				data.mark.active = null;
+                self.remove('mark', data.mark.active.id);
             }
         }
 
@@ -2035,6 +2051,7 @@
         this.label = null;
         this.notinteractive = (obj.type == 'track') ? true : false;
 		options = $.seamap.options[obj.type];
+        init = false;
         		
         // internal data
         var eventListener = {
@@ -2053,11 +2070,21 @@
         * *********************************************************************************
         */        
         this.remove = function () {
-            if(this.label != null) this.label.setMap(null);
-            this.path.setMap(null);
+            if(this.label != null) {
+                this.label.setMap(null);
+                this.label = null;
+            }
+            if(this.path != null) {
+                this.path.setMap(null);
+                this.path = null;
+            }
             $.each(this.markers, function(){
                 this.setMap(null);
             });
+            if (this.markers) {
+                delete this.markers;
+                this.markers = [];
+            }
         }
         /**
         * *********************************************************************************
@@ -2065,8 +2092,8 @@
         * *********************************************************************************
         */        
         this.hide = function () {
-            //this.remove();
-            //return;
+            this.remove();
+            return;
             if(this.label != null) this.label.setMap(null);
             this.path.setVisible(false);
             $.each(this.markers, function(){
@@ -2079,18 +2106,25 @@
         * *********************************************************************************
         */        
         this.visible = function () {
-          /*  var tmp = obj.marks;
-            obj.marks = [];
-         	 At the end of all initial 
-            for (var i=0, l=tmp.length; i<l; i+=2) {
-                this.addMarker(new google.maps.LatLng(tmp[i], tmp[i + 1]));
+            /* check if no elements are on the map, so we have to set them back to map */
+            if (0 == this.markers.length && 0 < obj.marks.length) {
+                if(this.path == null) {
+                    this.path = new google.maps.Polyline(options.polyOptions);
+                    this.path.setMap(this.googlemaps);
+                }
+                tmp = obj.marks.splice(0, obj.marks.length);
+                init = true;
+                for (var i=0, l=tmp.length; i<l; i+=2) {
+                    this.addMarker(new google.maps.LatLng(tmp[i], tmp[i + 1]));
+                }
+                init = false;
+            } else {
+                $.each(this.markers, function(){
+                    this.setVisible(true);
+                });
             }
-            return;*/
             this.updateLabel();
             this.path.setVisible(true);
-            $.each(this.markers, function(){
-                this.setVisible(true);
-            });
         }
         
         /**
@@ -2152,8 +2186,9 @@
                     $this.notify("click");
                 });
             }
-            
-            this.notify("add");
+            if (!init) {
+                this.notify("add");
+            }
 			$this.drawPath();
 			
             return marker;

@@ -7,7 +7,7 @@
  
 $(document).ready(function() {    
     var lastSearch = {};
-    var active = "#mark";
+    var active = "#marks";
     var states = {normal : 0, remove : 1};
     var state = states.normal;
     var removeElements = {};

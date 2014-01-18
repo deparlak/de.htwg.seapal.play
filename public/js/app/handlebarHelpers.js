@@ -12,6 +12,11 @@ $(document).ready(function() {
 
     Handlebars.getBoundData = function(obj) {
         for ( property in obj ) {
+            /* if there is no handlebar */
+            if (null == document.getElementById('handlebar-id-'+property)) {
+                continue;
+            }
+            
             if ($('#handlebar-id-'+property).attr('type') == 'number') {
                 obj[property] = parseInt($('#handlebar-id-'+property).val());
             } else {
