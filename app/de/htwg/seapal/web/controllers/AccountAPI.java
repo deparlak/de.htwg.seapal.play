@@ -4,6 +4,7 @@ import com.google.inject.Inject;
 import de.htwg.seapal.controller.IAccountController;
 import de.htwg.seapal.model.IAccount;
 import de.htwg.seapal.model.impl.Account;
+import de.htwg.seapal.model.impl.SignupAccount;
 import de.htwg.seapal.utils.logging.ILogger;
 import de.htwg.seapal.web.controllers.helpers.Menus;
 import de.htwg.seapal.web.views.html.appContent.signInSeapal;
@@ -20,10 +21,7 @@ import play.mvc.Result;
 import play.mvc.Security;
 import play.mvc.With;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
+import java.util.*;
 import java.util.regex.Pattern;
 
 @With(Menus.class)
@@ -41,7 +39,7 @@ public class AccountAPI
     @Inject
     private ILogger logger;
 
-    private static String validate(IAccount account) {
+    private static String validate(SignupAccount account) {
         if (!EMAIL_PATTERN.matcher(account.getEmail()).matches()) {
             return "Please enter a valid email adress!";
         }
@@ -58,7 +56,7 @@ public class AccountAPI
      * @return
      */
     public Result signup() {
-        Form<Account> filledForm = form.bindFromRequest();
+        Form<SignupAccount> filledForm = DynamicForm.form(SignupAccount.class).bindFromRequest();
         ObjectNode response = Json.newObject();
         if (filledForm.hasErrors()) {
             response.put("success", false);
@@ -66,7 +64,7 @@ public class AccountAPI
             return badRequest(signUpSeapal.render(filledForm, routes.AccountAPI.signup()));
         }
 
-        Account account = filledForm.get();
+        SignupAccount account = filledForm.get();
         if (controller.accountExists(account.getEmail())) {
             response.put("success", false);
             flash("errors", "Account already exists");
@@ -79,12 +77,13 @@ public class AccountAPI
             return badRequest(signUpSeapal.render(filledForm, routes.AccountAPI.signup()));
         }
 
-        if (!controller.saveAccount(account, true)) {
+        UUID uuid = controller.saveAccount(account, true);
+        if (uuid == null) {
             return internalServerError("Could not save account<br>This problem will be reported");
         }
 
         session().clear();
-        session(IAccountController.AUTHN_COOKIE_KEY, account.getUUID().toString());
+        session(IAccountController.AUTHN_COOKIE_KEY, uuid.toString());
         return redirect(routes.Application.app());
     }
 
@@ -182,9 +181,8 @@ public class AccountAPI
             return Application.resetForm(Integer.parseInt(token));
         }
 
-        String error = validate(account);
-        if (error != null) {
-            flash("errors", error);
+        if (form.get("password")[0].length() > MIN_LENGTH) {
+            flash("errors", "password too short");
             return Application.resetForm(Integer.parseInt(token));
         }
 
