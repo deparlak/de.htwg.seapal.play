@@ -44,10 +44,18 @@
     </div>
     <div class="row">
         <div class="centered col-12 col-sm-8">
+            <label for="waypointDelay">Waypoint record interval [min]</label>
+        </div>
+        <div class="col-12 col-sm-4">
+            <input type="number" min="1" step="1" name="waypointDelay" tabindex="4" {{bindData "WAYPOINT_DELAY"}} value={{WAYPOINT_DELAY}} required />
+        </div>
+    </div>
+    <div class="row">
+        <div class="centered col-12 col-sm-8">
             <label for="historyTrend">History trend for dashboard [s]</label>
         </div>
         <div class="col-12 col-sm-4">
-            <input type="number" min="1" step="1" name="historyTrend" tabindex="4" {{bindData "HISTORY_TREND"}} value={{HISTORY_TREND}} required />
+            <input type="number" min="1" step="1" name="historyTrend" tabindex="5" {{bindData "HISTORY_TREND"}} value={{HISTORY_TREND}} required />
         </div>
     </div>
     <div class="row">
@@ -55,7 +63,7 @@
             <label for="circleRadius">Security circle radius [m]</label>
         </div>
         <div class="col-12 col-sm-4">
-            <input type="number" min="1" step="1" name="circleRadius" tabindex="5" {{bindData "CIRCLE_RADIUS"}} value={{CIRCLE_RADIUS}} required />
+            <input type="number" min="1" step="1" name="circleRadius" tabindex="6" {{bindData "CIRCLE_RADIUS"}} value={{CIRCLE_RADIUS}} required />
         </div>
     </div>
     <div class="inputForm-footer">
@@ -287,6 +295,78 @@
     <br>
     <div class="inputForm-footer">
         <button type="submit" class="btn btn-primary">Save</button>
+        <button type="button" class="btn btn-danger" data-dismiss="modal">Abort</button>
+    </div>
+</script>
+
+/* -------------------------------- track template -------------------------------- */
+<script type="text/x-handlebars" id ="track_Template">
+    <div class="row">
+        <div class="col-12 col-sm-1 font-light">
+            <label for="track_title">Titel</label>
+        </div>
+        <div class="col-12 col-sm-5 font-light">
+            <input type="text" name="track_title" tabindex="1" required {{bindData "name"}} value="{{name}}" />
+        </div>
+        <div class="col-12 col-sm-1 font-light">
+            <label for="track_skipper">Skipper</label>
+        </div>
+        <div class="col-12 col-sm-5 font-light">
+            <input type="text" name="track_skipper" tabindex="2" required {{bindData "skipper"}} value="{{skipper}}" />
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-12 col-sm-1 font-light">
+            <label for="track_startDestination">From</label>
+        </div>
+        <div class="col-12 col-sm-5 font-light">
+            <input type="text" name="track_startDestination" tabindex="4" required {{bindData "from"}} value="{{from}}" />
+        </div>
+        <div class="col-12 col-sm-1 font-light">
+            <label for="track_endDestination">To</label>
+        </div>
+        <div class="col-12 col-sm-5 font-light">
+            <input type="text" name="track_endDestination" tabindex="5" required {{bindData "to"}} value="{{to}}" />
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-12 col-sm-1 font-light">
+            <label for="track_startDate">Start</label>
+        </div>
+        <div class="col-12 col-sm-3 font-light">
+            <input type="text" class="datepicker" data-date-format="dd.mm.yy" name="track_startDate" tabindex="6" readonly required {{bindData "startDate"}} value="{{dateToString startDate}}" />
+        </div>
+        <div class="col-12 col-sm-1 font-light">
+            <label for="track_endDate">End</label>
+        </div>
+        <div class="col-12 col-sm-3 font-light">
+            <input type="text" class="datepicker" data-date-format="dd.mm.yy" name="track_endDate" tabindex="7" readonly {{bindData "endDate"}} value="{{dateToString endDate}}" />
+        </div>
+        <div class="col-12 col-sm-1 font-light">
+            <label for="track_duration">Duration</label>
+        </div>
+        <div class="col-12 col-sm-3 font-light">
+            <input type="text" name="track_dauration" tabindex="8" {{bindData "duration"}} value="{{duration}}" />
+        </div>
+    </div>
+    <div class="row"><br></div>
+    <div class="row">
+        <div class="col-12 col-sm-1 font-light">
+            <label for="track_crew">Crew</label>
+        </div>
+        <div class="col-12 col-sm-5 font-light">                            
+            <textarea name="track_crew" rows="10" tabindex="9" {{bindData "crew"}} value="{{crew}}" ></textarea>
+        </div>
+        <div class="col-12 col-sm-1 font-light">
+            <label for="track_notes">Notes</label>
+        </div>
+        <div class="col-12 col-sm-5 font-light">                            
+            <textarea name="track_notes" rows="10" tabindex="10" {{bindData "notes"}} value="{{notes}}"></textarea>
+        </div>
+    </div>
+    <div class="inputForm-footer">
+        <button type="submit" class="btn btn-primary">Save</button>
+        <button type="button" id="open_waypoint_modal" class="btn btn-info">See waypoints</button>
         <button type="button" class="btn btn-danger" data-dismiss="modal">Abort</button>
     </div>
 </script>
