@@ -368,7 +368,17 @@
 			data.boat.active = data.boat.list[id];
             console.log("Selected boat "+id);
         };
-
+        /* get a list with all waypoints from a specific track */
+        this.getWaypoints = function (trackId) {
+            dataParameterCheck('track', trackId, null);
+            var list = [];
+            /* copy only the template fields */
+            for (var wp in data.waypoint.list) {
+                list[list.length] = self.get('waypoint', wp.id);
+            }
+			return list;
+        };
+        
         /* Toggles the security circle */
         this.toggleSecurityCircle = function() {            
             if (activeSecurityCircle == null) {
@@ -1634,7 +1644,7 @@
         function handleAddNewTrack() {
             var obj = self.getTemplate('track');;
             obj.id = data.track.count.toString();
-			obj.date = new Date().getTime();
+			obj.startDate = new Date().getTime();
             obj.name = "Track " + data.track.count;
             obj.onMap = getOnMapTrack(obj);
             obj.update = true;
