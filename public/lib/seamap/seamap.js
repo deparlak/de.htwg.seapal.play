@@ -622,7 +622,7 @@
             "skipper"       : "",
             "duration"      : "",
             "endDate"       : "",
-            "crew"          : "",
+            "crewMembers"   : "",
             "notes"         : "",
 			"_id" 			: null,
 			"_rev" 			: null,
