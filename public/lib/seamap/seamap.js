@@ -582,13 +582,20 @@
 		{
 			"type"			: "track",
 			"id"			: null,
-			"name" 			: null,
-			"date" 			: null,
+			"name" 			: "",
+			"startDate" 	: "",
 			"marks" 		: [],
-			"distance" 		: null,
-			"_id" 			: null,
-			"_rev" 			: null,
-			"owner" 		: null
+			"distance" 		: "",
+            "from"          : "",
+            "to"            : "",
+            "skipper"       : "",
+            "duration"      : "",
+            "endDate"       : "",
+            "crew"          : "",
+            "notes"         : "",
+			"_id" 			: "",
+			"_rev" 			: "",
+			"owner" 		: ""
 		};
         
         var templateBoat =
