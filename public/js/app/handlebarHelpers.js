@@ -21,7 +21,11 @@ $(document).ready(function() {
                 obj[property] = parseInt($('#handlebar-id-'+property).val());
             } else {
                 obj[property] = $('#handlebar-id-'+property).val();
-            }            
+            }
+
+            if ($('#handlebar-id-'+property).hasClass('datepicker')) {
+                obj[property] = stringToDate($('#handlebar-id-'+property).val());
+            }
         }
         return obj;
     };
