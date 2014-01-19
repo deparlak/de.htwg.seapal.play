@@ -58,14 +58,13 @@ $(document).ready(function() {
         
         /* post to server */
         request = $.ajax({
-            url         : "/api/sendFriendRequestMail",
+            url         : "/api/sendFriendRequestMail/"+$('#email_addCrewman').val(),
             type        : "get",
-            data        : $('#email_addCrewman').val()
         });
 
         /* callback handler that will be called on success */
         request.done(function (response, textStatus, jqXHR){
-            console.log("sendFriendRequestMail success");
+            output.info("Friend request send");
         });
 
         /* callback handler that will be called on failure */
