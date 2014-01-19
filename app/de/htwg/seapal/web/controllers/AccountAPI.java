@@ -123,10 +123,10 @@ public class AccountAPI
         return badRequest(signInSeapal.render(filledForm, routes.AccountAPI.login()));
     }
 
-    public static Result logout() {
+    public Result logout() {
         session().clear();
         flash("success", "You've been logged out");
-        return redirect(routes.Application.app());
+        return redirect(routes.Application.index());
     }
 
     public Result requestNewPassword() {
@@ -210,15 +210,15 @@ public class AccountAPI
 
         try {
             account.setPassword(PasswordHash.createHash(form.get("password")[0]));
-        } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
+            controller.saveAccount(account);
+            session(IAccountController.AUTHN_COOKIE_KEY, account.getUUID().toString());
+            flash("success", "You have successfully changed your password");
         } catch (InvalidKeySpecException e) {
             e.printStackTrace();
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
         }
-        controller.saveAccount(account);
 
-        session(IAccountController.AUTHN_COOKIE_KEY, account.getUUID().toString());
-        flash("success", "You have successfully changed your password");
 
         return resetForm(Integer.parseInt(token));
     }
@@ -270,7 +270,7 @@ public class AccountAPI
     public Result verify() {
         String[] modes = request().queryString().get("openid.mode");
         if (modes != null) {
-            for (String mode: modes) {
+            for (String mode : modes) {
                 if (mode.equals("cancel")) {
                     flash("errors", "Login Failed");
                     return badRequest(signInSeapal.render(null, routes.AccountAPI.login()));
