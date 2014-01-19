@@ -63,7 +63,7 @@ $(document).ready(function() {
 
         /* callback handler that will be called on success */
         request.done(function (response, textStatus, jqXHR){
-            console.log("sendFriendRequestMail success");
+            output.info("Friend request send");
         });
 
         /* callback handler that will be called on failure */
