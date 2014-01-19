@@ -57,9 +57,8 @@ $(document).ready(function() {
         
         /* post to server */
         request = $.ajax({
-            url         : "/api/sendFriendRequestMail",
+            url         : "/api/sendFriendRequestMail/"+$('#email_addCrewman').val(),
             type        : "get",
-            data        : $('#email_addCrewman').val()
         });
 
         /* callback handler that will be called on success */
