@@ -636,7 +636,7 @@
 		{
 			"type"			        : "boat",
 			"id"			        : null,
-            "boatName"              : "",
+            "name"                  : "",
             "registerNr"            : "",
             "sailSign"              : "",
             "homePort"              : "",
