@@ -182,8 +182,7 @@ $(document).ready(function() {
     /* START-------------------------- route ------------------------------- */
     var tmpRoute;
 
-    menu.addCallback('rightclick', ['icon-notSelectedRoute', 'icon-selectedRoute'], function (self) {
-        console.log(new Date().getTime());
+    menu.addCallback('rightclick', ['icon-notSelectedRoute', 'icon-selectedRoute'], function (self) {        
         tmpRoute = map.get(self.data('type'), self.data('id'));
         var template = Handlebars.compile($("#route_Template").text());
         var html = template(tmpRoute);
@@ -289,27 +288,32 @@ $(document).ready(function() {
             if(!isWaypointModalToBeOpened) {
                 menu.enableAutoClose();
             }
+            $('#trackInputForm').html("");
         }
     );
     $('#modal-form_waypoint').on('hidden.bs.modal',
         function() {
             isWaypointModalToBeOpened = false;
             menu.enableAutoClose();
+            $('#waypointInputForm').html("");
         }
     );
     $('#modal-form_marker').on('hidden.bs.modal',
         function() {
             menu.enableAutoClose();
+            $('#markerInputForm').html("");
         }
     );    
     $('#modal-form_route').on('hidden.bs.modal',
         function() {
             menu.enableAutoClose();
+            $('#routeInputForm').html("");
         }
     );
     $('#modal-form_boat').on('hidden.bs.modal',
         function() {
             menu.enableAutoClose();
+            $('#boatInputForm').html("");
         }
     );
 });
