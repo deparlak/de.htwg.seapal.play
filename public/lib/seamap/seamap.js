@@ -229,12 +229,16 @@
             } else if (obj.id != null){
                 console.log("updated");
                 checkId(type, obj.id);
-                copyObjAttr(type, data[type].list[obj.id], obj);
+                var modified = copyObjAttr(type, data[type].list[obj.id], obj);
                 /* create another reference to the object, so that the object is accessible through the id and the _id.*/
                 if (null != obj._id && obj.id != obj._id) {
                     data[type].list["_id"] = data[type].list[obj.id]["id"];
                 }
-                dataCallback([event.UPDATED_FROM_CLIENT], obj);
+                /* copyObjAttr check if the object was modified. if so we fire a callback to sync with the server and tell the client listeners */
+                if (modified) {
+                    /* check if more changed than the _id and _rev */
+                    dataCallback([event.UPDATED_FROM_CLIENT, event.SERVER_CREATE], obj);
+                }
             } else if (obj.id == null && obj._id == null && obj._rev == null) {
                 console.log("added from client");
                 newObj = self.getTemplate(type);
@@ -250,17 +254,28 @@
         
         /* helper method to copy only the elements to a obj */
         function copyObjAttr(type, dest, src) {
+            var modified = false;
             for (var key in data[type].template) {
-                if (src[key] !== undefined && null != src[key]) {
+                /* check if the src has the key and if the src and dest attribute differ */
+                if ((src[key] !== undefined && null != src[key])
+                  &&(src[key] != dest[key])){
                     dest[key] = src[key];
+                    /* if not _rev and _id was changed, the object was modified */
+                    modified = (key != '_id' && key != '_rev' && key != 'owner') ? true : false;
                 }
             }
+            return modified;
         };
         
 		/* return a copy of the obj with the given type and id */
         this.get = function(type, id) {
 			dataParameterCheck(type, id, null);
-			return data[type].list[id];
+            var copy = {};
+            /* copy only the template fields */
+            for (var key in data[type].template) {
+                copy[key] = data[type].list[id][key];
+            }
+			return copy;
         };
 		/* return a copy of the template for the given type */
         this.getTemplate = function(type) {
@@ -328,7 +343,7 @@
         /* Checks if the tracking is enabled and displays a message when it is */
         this.checkTracking = function() {
             if(isTracking) {
-                callbacks[event.TRACKING_ACTIVE].fire({msg : "This option is disabled because you are currently tracking!"});
+                callbacks[event.ERROR].fire({msg : "This option is disabled because you are currently tracking!"});
                 return false;
             }
             return true;
@@ -417,12 +432,18 @@
             NO_GEO_SUPPORT          : 7,
             BOAT_POS_UPDATE         : 8,
             CREATED_TRACK           : 9,
-            TRACKING_ACTIVE         : 10,
-            LEFT_SECURITY_CIRCLE    : 11,
-			SERVER_CREATE			: 12,
-			SERVER_REMOVE			: 13,
-            CREATED_WAYPOINT        : 14,
-            EDIT_MARK               : 15,
+            
+            ERROR                   : 10,
+            WARNING                 : 11,
+            INFO                    : 12,
+            
+            LEFT_SECURITY_CIRCLE    : 13,
+			SERVER_CREATE			: 14,
+			SERVER_REMOVE			: 15,
+            CREATED_WAYPOINT        : 16,
+            EDIT_MARK               : 17,
+            
+            
         };
 		        
         var options = $.seamap.options;
@@ -647,12 +668,7 @@
 				Each listener get its own copy
 			*/
 			for (var e in events) {
-				var copy = {};
-				/* copy only the template fields */
-				for (var key in data[obj.type].template) {
-					copy[key] = data[obj.type].list[obj.id][key];
-				}
-				callbacks[events[e]].fire(copy);
+				callbacks[events[e]].fire(self.get(obj.type, obj.id));
 			}
 		};		
 		
@@ -1197,7 +1213,13 @@
         * *********************************************************************************
         */
         this.startTracking = function() {
-            if(data.route.active == null) {
+            if (data.route.active == null) {
+                callbacks[event.WARNING].fire({msg : "No Route for tracking selected! Please select a Route."});
+                return false;
+            }
+            
+            if (data.boat.active == null) {
+                callbacks[event.WARNING].fire({msg : "No Boat for tracking selected! Please select a Boat from the logbook."});
                 return false;
             }
 
@@ -1457,7 +1479,7 @@
         */
         function handleAddNewRoute() {
             if(isTracking) {
-                callbacks[event.TRACKING_ACTIVE].fire({msg : "This options is disabled because tracking is active!"});
+                callbacks[event.ERROR].fire({msg : "This options is disabled because tracking is active!"});
                 return;
             }
             
