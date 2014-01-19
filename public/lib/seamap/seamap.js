@@ -220,7 +220,7 @@
             if ((!obj.id || obj.id == null) && obj._id != null && obj._rev != null) {
                 console.log("loaded from server");
                 newObj = self.getTemplate(type);
-                newObj.id = data[type].count.toString();
+                newObj.id = obj._id;
                 data[type].list[newObj.id] = newObj;
                 data[type].count++;
                 copyObjAttr(type, newObj, obj);
@@ -234,7 +234,7 @@
                 if (null != obj._id && obj.id != obj._id) {
                     data[type].list["_id"] = data[type].list[obj.id]["id"];
                 }
-                
+                dataCallback([event.UPDATED_FROM_CLIENT], obj);
             } else if (obj.id == null && obj._id == null && obj._rev == null) {
                 console.log("added from client");
                 newObj = self.getTemplate(type);
@@ -409,6 +409,7 @@
             //TODO
 			LOADED_FROM_SERVER      : 0,
             ADDED_FROM_CLIENT       : 1,
+            UPDATED_FROM_CLIENT     : 2,
             CREATED_ROUTE           : 3,
             DELETED_ROUTE           : 4,
             CREATED_MARK            : 5,
@@ -421,6 +422,7 @@
 			SERVER_CREATE			: 12,
 			SERVER_REMOVE			: 13,
             CREATED_WAYPOINT        : 14,
+            EDIT_MARK               : 15,
         };
 		        
         var options = $.seamap.options;
@@ -527,7 +529,6 @@
 			"type"			: "mark",
 			"id"			: null,
 			"name" 			: null,
-			"note" 			: null,
 			"date" 			: null,
 			"lat"			: null,
 			"lng"			: null,
@@ -602,7 +603,8 @@
             "insurance"             : "",
             "callSign"              : "",
             "boatType"              : "",
-            "constructor"           : "David",
+            "boatConstructor"       : "David",
+            "boatOwner"             : "",
             "length"                : 0,
             "width"                 : 0,
             "draft"                 : 0,
@@ -620,7 +622,7 @@
             "_id"                   : null,
             "_rev"                  : null,
             "owner"                 : null
-		};	
+		};
 
         /* save the self reference, because this cannot used in each context for the seamap */
 		var self = this;
@@ -1729,7 +1731,7 @@
         * *********************************************************************************
         */
         function handleEditMark() {
-            editSelectedMark();
+            dataCallback([event.EDIT_MARK], data.mark.active);
             hideContextMenu();
         }
         
@@ -1967,17 +1969,6 @@
         function deleteSelectedMark() {
             if(data.mark.active != null) {
                 self.remove('mark', data.mark.active.id);
-            }
-        }
-
-        /**
-        * *********************************************************************************
-        * Edit the selected mark.
-        * *********************************************************************************
-        */
-        function editSelectedMark() {
-            if(data.mark.active != null) {
-                $('#modal-form_marker').modal('show');
             }
         }
 

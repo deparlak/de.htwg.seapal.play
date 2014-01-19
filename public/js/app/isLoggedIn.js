@@ -45,13 +45,15 @@ $(document).ready(function() {
     /* callback for adding a crew member */
     menu.addCallback('leftclick', 'logbookCrewAdd', function (self) {
         $('#modal-form_addCrewman').modal('show');
-        $('#modal-form_addCrewman').submit(function() {
-            console.log("TODO send Crew invitation");            
-            $('#modal-form_addCrewman').modal('hide');
-            return false;
-        });        
     });
-    
+
+    /* on click of button to sent the friend request */
+    $('#modal-form_addCrewman').submit(function() {
+        console.log("TODO check for valid email and /api/sendFriendRequest");            
+        $('#modal-form_addCrewman').modal('hide');
+        return false;
+    });
+        
 	/* this callback will be called if marks where loaded from the server */
     map.addCallback(events.SERVER_REMOVE, function (self) {
 		console.log("delete "+self.type);

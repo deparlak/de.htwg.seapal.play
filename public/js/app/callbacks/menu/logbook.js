@@ -13,6 +13,7 @@ $(document).ready(function() {
     var states = {normal : 0, remove : 1};
     var state = states.normal;
     var removeElements = {};
+    var coord = new coordinateHelpers();
 
     /* calling initState will clear the list of items which shall be removed and set the state back to normal */
     function initState(){
@@ -89,9 +90,6 @@ $(document).ready(function() {
     });
 
     menu.addCallback('rightclick', ['icon-notSelectedBoat', 'icon-selectedBoat'], function (self) {
-        console.log(self.data());
-        console.log("Get Object from map by type + id");
-        console.log(map.get(self.data('type'), self.data('id')));
         if(!map.checkTracking()) {
             return;
         }
@@ -101,8 +99,7 @@ $(document).ready(function() {
     });
 
     $('#modal-form_boat').submit(function() {
-        var boundData = Handlebars.getBoundData(tmpBoat);        
-        console.log(boundData);        
+        var boundData = Handlebars.getBoundData(tmpBoat);
         map.set('boat', boundData);
         $('#modal-form_boat').modal('hide');
         return false;
@@ -116,6 +113,70 @@ $(document).ready(function() {
         $('#modal-form_boat').modal('show');
     }
     /* END---------------------------- boats ------------------------------- */
+
+    /* START-------------------------- marker ------------------------------- */
+    var tmpMark = {
+        "name"          : null,
+        "position"      : null
+    };
+
+    var actMark;
+
+    map.addCallback(events.EDIT_MARK, function (self) {
+        createModal(self);
+    });
+
+    menu.addCallback('rightclick', ['icon-notSelectedMark', 'icon-selectedMark'], function (self) {
+        createModal(map.get(self.data('type'), self.data('id')));
+    });    
+
+    $('#modal-form_marker').submit(function() {
+        var boundData = Handlebars.getBoundData(tmpMark);
+        var res = setToVal(boundData);
+
+        if (res.error) {
+            output.warning(res.error);
+            $('#modal-form_marker').modal('hide');
+            return false;
+        }
+
+        map.set('mark', actMark);
+        $('#modal-form_marker').modal('hide');
+        return false;
+    });
+
+    function createModal(object) {
+        actMark = object;
+        getFromVal(actMark);
+
+        var template = Handlebars.compile($("#marker_Template").text());
+        var html = template(tmpMark);
+
+        $('#markerInputForm').html(html);
+        $('#handlebar-id-position').inputmask({mask: "99°99.99' c 999°99.99' d", clearMaskOnLostFocus : false, clearIncomplete : false, autoUnmask : true });
+        menu.disableAutoClose();
+        $('#modal-form_marker').modal('show');
+    }
+
+    function getFromVal(marker) {
+        tmpMark.name = marker.name;
+        tmpMark.position = coord.getCoordinatesAsString(actMark.lat, actMark.lng);
+    }
+
+    function setToVal(marker) {
+        actMark.name = marker.name;
+        console.log(marker.position);
+        var obj = coord.LatLngToDecimal(marker.position);
+        
+        if (obj.error) {
+            return obj;
+        }
+
+        actMark.lat = obj.lat;
+        actMark.lng = obj.lon;
+        return obj;
+    }
+    /* END---------------------------- marker ------------------------------- */
     
     menu.addCallback('leftclick', 'icon-signInSeapal', function (self) {
         if(!map.checkTracking()) {
@@ -163,11 +224,6 @@ $(document).ready(function() {
     menu.addCallback('rightclick', ['icon-notSelectedRoute', 'icon-selectedRoute'], function (self) {
         menu.disableAutoClose();
         $('#modal-form_route').modal('show');        
-    });
-
-    menu.addCallback('rightclick', ['icon-notSelectedMark', 'icon-selectedMark'], function (self) {
-        menu.disableAutoClose();
-        $('#modal-form_marker').modal('show');
     });
 
     /**

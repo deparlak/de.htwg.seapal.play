@@ -78,10 +78,63 @@ $(document).ready(function() {
             }  
             return obj;
         }
-        
+
+        /* Gets the current coordinates in a human readable format */
+        function getCoordinatesAsString(lat, lng) {
+            return toLatLngString(lat, "lat") + " " + toLatLngString(lng, "lng");
+        }
+                
         return {
-            LatLngToDecimal  :   LatLngToDecimal
+            LatLngToDecimal  :   LatLngToDecimal,
+            getCoordinatesAsString : getCoordinatesAsString
         };
+    }
+    /* Gets the current coordinates in a human readable format array for use in the specific forms */
+    function toLatLngArray(dms, type) {
+        var sign = 1, Abs=0;
+        var days, minutes, direction;
+        var result = new Array();
+
+        if(dms < 0) {
+            sign = -1;
+        }
+
+        Abs = Math.abs( Math.round(dms * 1000000.));
+        days = Math.floor(Abs / 1000000);
+        minutes = (((Abs/1000000) - days) * 60).toFixed(2);
+        days = days * sign;
+
+        if(type == 'lat') {
+            direction = days<0 ? 'S' : 'N';
+        }
+
+        if(type == 'lng') {
+            direction = days<0 ? 'W' : 'E';
+        }
+
+        result[0] = (days * sign);
+        result[1] = minutes;
+        result[2] = direction;
+        
+        return result;
+    }
+    /* Gets the current coordinates in a human readable format in a complete string*/
+    function toLatLngString(dms, type) {
+        var tmp = toLatLngArray(dms, type);
+        var deg = tmp[0].toString();
+
+        if(type == 'lat') {
+            if(deg.length == 1) {
+                deg = "0" + deg;
+            }
+        } else if(type == 'lng') {
+            if(deg.length == 1) {
+                deg = "00" + deg;
+            } else if(deg.length == 2) {
+                deg = "0" + deg;
+            }
+        }
+        return deg + '°' + tmp[1] + "' " + tmp[2];
     }
     
     window.coordinateHelpers = coordinateHelpers;

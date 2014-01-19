@@ -7,45 +7,7 @@
                 <h4 class="modal-title">Edit marker</h4>
             </div>
             <div class="inputForm-content">
-            	<form class="form_global form_waypoint">
-                    <div class="row">
-                        <div class="some_left_padding col-12 col-sm-1">
-                            <label for="marker_titel">Titel</label>
-                        </div>
-                        <div class="no_padding col-12 col-sm-3">
-                            <input type="text" name="marker_titel" tabindex="1" required />
-                        </div>
-                        <div class="some_left_padding col-12 col-sm-1">
-                            <label for="marker_posN">N</label>
-                        </div>
-                        <div class="no_padding coords_row col-12 col-sm-1">
-                            <input type="text" name="marker_posN" tabindex="2" required />
-                        </div>
-                        <div class="no_padding coords_row col-12 col-sm-1">
-                            <input type="text" name="marker_posN_Min" tabindex="3" required />
-                        </div>
-                        <div class="no_padding coords_row col-12 col-sm-1">
-                            <input type="text" name="marker_posN_Sec" tabindex="4" required />
-                        </div>
-                        <div class="some_left_padding col-12 col-sm-1">
-                            <label for="marker_posE">E</label>
-                        </div>
-                        <div class="no_padding coords_row col-12 col-sm-1">
-                            <input type="text" name="marker_posE" tabindex="5" required />
-                        </div>
-                        <div class="no_padding coords_row col-12 col-sm-1">
-                            <input type="text" name="marker_posE_Min" tabindex="6" required />
-                        </div>
-                        <div class="no_padding coords_row col-12 col-sm-1">
-                            <input type="text" name="marker_posE_Sec" tabindex="7" required />
-                        </div>
-                    </div>
-                    <br>
-                    <div class="inputForm-footer">
-                        <button type="submit" class="btn btn-primary">Save</button>
-                        <button type="button" class="btn btn-danger" data-dismiss="modal">Abort</button>
-                    </div>
-                </form>
+            	<form class="form_global form_waypoint" id="markerInputForm"></form>
             </div>
         </div><!-- /.modal-content -->
     </div><!-- /.modal-dialog -->
