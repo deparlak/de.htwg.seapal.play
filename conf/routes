@@ -12,7 +12,7 @@ GET           /api/$document<(trip|waypoint)>/byparent/$parent<(boat|trip)>/$id<
 POST          /api/$document<(boat|mark|route|trip|waypoint|person)>        @de.htwg.seapal.web.controllers.MainAPI.createDocument(document: String)
 GET           /api/account        @de.htwg.seapal.web.controllers.AccountAPI.account()
 GET           /api/sendFriendRequest/$id<[0-9a-fA-F\-]+>        @de.htwg.seapal.web.controllers.MainAPI.sendFriendRequest(id: UUID)
-GET           /api/sendFriendRequestMail/$mail<[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}>        @de.htwg.seapal.web.controllers.MainAPI.sendFriendRequestMail(mail: String)
+GET           /api/sendFriendRequestMail/:mail        @de.htwg.seapal.web.controllers.MainAPI.sendFriendRequestMail(mail: String)
 GET           /api/all/$scope<(own|foreign|all)>        @de.htwg.seapal.web.controllers.MainAPI.all(scope: String)
 
 # authentication
