@@ -64,7 +64,6 @@ public class HelpAPI
         account.setAccount(account.getUUID().toString());
         account.addFriend(crewMember1);
         crewMember1.addFriend(account);
-        account.addFriend(crewMember2);
         account.setEmail("account@123.de");
         account.setPassword(PasswordHash.createHash("test"));
         AccountController.saveAccount(account);

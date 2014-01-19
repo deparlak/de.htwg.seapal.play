@@ -99,6 +99,7 @@ public final class MainAPI
         try {
             Class<? extends ModelDocument> cla = forms.get(document);
             Form<? extends ModelDocument> form2 = new Form<>(cla).bindFromRequest();
+
             if (form2.hasErrors()) {
                 return internalServerError(form2.errorsAsJson());
             }

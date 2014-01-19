@@ -71,7 +71,6 @@ public class AccountAPI
 
             return badRequest(signUpSeapal.render(filledForm, routes.AccountAPI.signup()));
         } else {
-            IAccount account1 = new Account();
             try {
 
                 String error = validate(account);
@@ -80,8 +79,8 @@ public class AccountAPI
                     return badRequest(signUpSeapal.render(filledForm, routes.AccountAPI.signup()));
                 }
 
-                account1.setPassword(PasswordHash.createHash(account.getPassword()));
-                controller.saveAccount(account1);
+                account.setPassword(PasswordHash.createHash(account.getPassword()));
+                controller.saveAccount(account);
             } catch (InvalidKeySpecException e) {
                 e.printStackTrace();
             } catch (NoSuchAlgorithmException e) {
@@ -90,7 +89,7 @@ public class AccountAPI
 
 
             session().clear();
-            session(IAccountController.AUTHN_COOKIE_KEY, account1.getUUID().toString());
+            session(IAccountController.AUTHN_COOKIE_KEY, account.getUUID().toString());
             return redirect(routes.Application.app());
         }
     }
