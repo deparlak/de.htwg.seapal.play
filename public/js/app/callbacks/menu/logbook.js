@@ -316,10 +316,4 @@ $(document).ready(function() {
             $('#boatInputForm').html("");
         }
     );
-    $('#modal-form_addCrewman').on('hidden.bs.modal',
-        function() {
-            menu.enableAutoClose();
-            $('#modal-form_addCrewman').html("");
-        }
-    );
 });

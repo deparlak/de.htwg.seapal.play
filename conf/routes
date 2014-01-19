@@ -18,7 +18,7 @@ GET           /api/all/$scope<(own|foreign|all)>        @de.htwg.seapal.web.cont
 # authentication
 GET           /login                                                                                    de.htwg.seapal.web.controllers.Application.login()
 POST          /login        @de.htwg.seapal.web.controllers.AccountAPI.login()
-GET           /logout                                                                                   @de.htwg.seapal.web.controllers.AccountAPI.logout()
+GET           /logout                                                                                   de.htwg.seapal.web.controllers.AccountAPI.logout()
 GET           /signup                                                                                   de.htwg.seapal.web.controllers.Application.signup()
 POST          /signup        @de.htwg.seapal.web.controllers.AccountAPI.signup()
 # reset PW

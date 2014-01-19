@@ -109,6 +109,6 @@ $(document).ready(function() {
     
 	/* this callback will be called if an info occurred */
     map.addCallback(events.INFO, function (self) {
-        output.INFO(self.msg);
+        output.info(self.msg);
     });
 });
