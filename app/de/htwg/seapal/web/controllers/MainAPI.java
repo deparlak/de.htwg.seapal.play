@@ -43,11 +43,21 @@ public final class MainAPI
     }
 
     @play.mvc.Security.Authenticated(AccountAPI.SecuredAPI.class)
+    public Result abortFriendRequest(UUID id) {
+        try {
+            controller.abortRequest(session(IAccountController.AUTHN_COOKIE_KEY), id);
+            return ok(Json.toJson(true));
+        } catch (NullPointerException e) {
+            return internalServerError(EMPTY);
+        }
+    }
+
+    @play.mvc.Security.Authenticated(AccountAPI.SecuredAPI.class)
     public Result all(String scope) {
         String session = session(IAccountController.AUTHN_COOKIE_KEY);
 
         ObjectNode node = Json.newObject();
-        node.put("person_info", Json.toJson(accountController.getPerson(UUID.fromString(session))));
+        node.put("person_info", Json.toJson(controller.getDocuments("person", session, scope)));
 
         node.put("account_info", Json.toJson(accountController.getInternalInfo(session)));
 

@@ -13,6 +13,7 @@ POST          /api/$document<(boat|mark|route|trip|waypoint|person)>        @de.
 GET           /api/account        @de.htwg.seapal.web.controllers.AccountAPI.account()
 GET           /api/sendFriendRequest/$id<[0-9a-fA-F\-]+>        @de.htwg.seapal.web.controllers.MainAPI.sendFriendRequest(id: UUID)
 GET           /api/sendFriendRequestMail/:mail        @de.htwg.seapal.web.controllers.MainAPI.sendFriendRequestMail(mail: String)
+GET           /api/abortFriendRequest/$id<[0-9a-fA-F\-]+>        @de.htwg.seapal.web.controllers.MainAPI.abortFriendRequest(id: UUID)
 GET           /api/all/$scope<(own|foreign|all)>        @de.htwg.seapal.web.controllers.MainAPI.all(scope: String)
 
 # authentication
@@ -23,7 +24,7 @@ GET           /signup                                                           
 POST          /signup        @de.htwg.seapal.web.controllers.AccountAPI.signup()
 # reset PW
 GET           /forgottenForm                                                                            de.htwg.seapal.web.controllers.Application.forgotten()
-GET           /pwreset/$token<-?[0-9]{1,10}>        @de.htwg.seapal.web.controllers.AccountAPI.resetForm(token: Int)
+GET           /pwreset/$token<-?[0-9]{1,10}>        de.htwg.seapal.web.controllers.Application.resetForm(token: Int)
 POST          /forgotten        @de.htwg.seapal.web.controllers.AccountAPI.requestNewPassword()
 POST          /reset        @de.htwg.seapal.web.controllers.AccountAPI.resetPassword()
 
@@ -34,5 +35,5 @@ GET           /assets/javascripts/routes                                        
 GET           /assets/*file                                                                             controllers.Assets.at(path="/public", file)
 
 GET           /help        @de.htwg.seapal.web.controllers.HelpAPI.help()
-GET           /openID/auth                                                                              de.htwg.seapal.web.controllers.AccountAPI.auth()
+GET           /openID/auth                                                                              @de.htwg.seapal.web.controllers.AccountAPI.auth()
 GET           /openID/verify        @de.htwg.seapal.web.controllers.AccountAPI.verify()
