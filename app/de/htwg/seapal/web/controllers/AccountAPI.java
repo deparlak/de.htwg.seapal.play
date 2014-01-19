@@ -32,8 +32,7 @@ public class AccountAPI
         extends Controller {
 
     private static final long TIMEOUT = 60 * 60 * 1000;
-
-    static Form<Account> form = Form.form(Account.class);
+    private static Form<Account> form = Form.form(Account.class);
     private static final Pattern EMAIL_PATTERN = Pattern.compile("^[_A-Za-z0-9-\\+]+(\\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$");
     private static final int MIN_LENGTH = 8;
 
@@ -53,6 +52,19 @@ public class AccountAPI
         }
 
         return null;
+    }
+
+    public static Result auth() {
+        String providerUrl = "https://www.google.com/accounts/o8/id";
+        String returnToUrl = "http://localhost:9000/openID/verify";
+
+        Map<String, String> attributes = new HashMap<>();
+        attributes.put("Email", "http://schema.openid.net/contact/email");
+        attributes.put("FirstName", "http://schema.openid.net/namePerson/first");
+        attributes.put("LastName", "http://schema.openid.net/namePerson/last");
+
+        F.Promise<String> redirectUrl = OpenID.redirectURL(providerUrl, returnToUrl, attributes);
+        return redirect(redirectUrl.get());
     }
 
     public Result signup() {
@@ -77,62 +89,50 @@ public class AccountAPI
             return badRequest(signUpSeapal.render(filledForm, routes.AccountAPI.signup()));
         }
 
-        if (controller.saveAccount(account, true)) {
-            session().clear();
-            session(IAccountController.AUTHN_COOKIE_KEY, account.getUUID().toString());
-            return redirect(routes.Application.app());
+        if (!controller.saveAccount(account, true)) {
+            return internalServerError("Could not save account<br>This problem will be reported");
         }
 
-        // saving gone wrong
-        return internalServerError("Could not save account%nThis problem will be reported");
+        session().clear();
+        session(IAccountController.AUTHN_COOKIE_KEY, account.getUUID().toString());
+        return redirect(routes.Application.app());
     }
 
     public Result login() {
         Form<Account> filledForm = DynamicForm.form(Account.class).bindFromRequest();
-
-        IAccount account = null;
-
-        try {
-            account = controller.authenticate(filledForm.get());
-
-            if (!filledForm.hasErrors() && account != null) {
-                session().clear();
-                session(IAccountController.AUTHN_COOKIE_KEY, account.getUUID().toString());
-                flash("success", "You've been logged in");
-                return redirect(routes.Application.app());
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
         ObjectNode response = Json.newObject();
-        response.put("success", false);
-        response.put("errors", filledForm.errorsAsJson());
-        if (account == null) {
-            flash("errors", "Wrong username or password");
+        if (filledForm.hasErrors()) {
+            response.put("success", false);
+            response.put("errors", filledForm.errorsAsJson());
+            return badRequest(signUpSeapal.render(filledForm, routes.AccountAPI.login()));
         }
 
-        return badRequest(signInSeapal.render(filledForm, routes.AccountAPI.login()));
+        IAccount account = controller.authenticate(filledForm.get());
+
+        if (account == null) {
+            response.put("success", false);
+            response.put("errors", "Authentication failed");
+            return badRequest(signUpSeapal.render(filledForm, routes.AccountAPI.login()));
+        }
+
+        session().clear();
+        session(IAccountController.AUTHN_COOKIE_KEY, account.getUUID().toString());
+        flash("success", "You've been logged in");
+        return redirect(routes.Application.app());
     }
 
     public Result requestNewPassword() {
         Form<Account> filledForm = form.bindFromRequest();
 
         IAccount account = filledForm.get();
-        List<? extends IAccount> list = controller.queryView("by_email", account.getEmail());
+        account = controller.getByMail(account.getEmail());
 
-        if (list.size() == 0) {
-            flash("errors", "Account does not exist");
-            return redirect(routes.Application.forgotten());
-        } else if (list.size() > 1) {
+        if (account == null) {
             flash("errors", "An internal error occured. Please try again!");
             return redirect(routes.Application.forgotten());
         }
 
-        account = list.get(0);
-
         Random rand = new Random(System.currentTimeMillis());
-
         int token = rand.nextInt(); // TODO: check if regex ^\s*-?[0-9]{1,10}\s*$ matches all possible return values of Random.nextInt()
 
         account.setResetToken(Integer.toString(token));
@@ -203,52 +203,6 @@ public class AccountAPI
         return resetForm(Integer.parseInt(token));
     }
 
-    public static class Secured
-            extends Security.Authenticator {
-
-        @Override
-        public String getUsername(Context ctx) {
-            return ctx.session().get(IAccountController.AUTHN_COOKIE_KEY);
-        }
-
-        @Override
-        public Result onUnauthorized(Context ctx) {
-            return redirect(routes.Application.login());
-        }
-
-    }
-
-    public static class SecuredAPI
-            extends Security.Authenticator {
-
-        @Override
-        public String getUsername(Context ctx) {
-            return ctx.session().get(IAccountController.AUTHN_COOKIE_KEY);
-        }
-
-        @Override
-        public Result onUnauthorized(Context ctx) {
-            ObjectNode response = Json.newObject();
-            response.put("error", "unauthorized");
-
-            return unauthorized(response);
-        }
-
-    }
-
-    public static Result auth() {
-        String providerUrl = "https://www.google.com/accounts/o8/id";
-        String returnToUrl = "http://localhost:9000/openID/verify";
-
-        Map<String, String> attributes = new HashMap<>();
-        attributes.put("Email", "http://schema.openid.net/contact/email");
-        attributes.put("FirstName", "http://schema.openid.net/namePerson/first");
-        attributes.put("LastName", "http://schema.openid.net/namePerson/last");
-
-        F.Promise<String> redirectUrl = OpenID.redirectURL(providerUrl, returnToUrl, attributes);
-        return redirect(redirectUrl.get());
-    }
-
     public Result verify() {
         String[] modes = request().queryString().get("openid.mode");
         if (modes != null) {
@@ -285,5 +239,38 @@ public class AccountAPI
         String session = session(IAccountController.AUTHN_COOKIE_KEY);
 
         return ok(Json.toJson(controller.getInternalInfo(session)));
+    }
+
+    public static class Secured
+            extends Security.Authenticator {
+
+        @Override
+        public String getUsername(Context ctx) {
+            return ctx.session().get(IAccountController.AUTHN_COOKIE_KEY);
+        }
+
+        @Override
+        public Result onUnauthorized(Context ctx) {
+            return redirect(routes.Application.login());
+        }
+
+    }
+
+    public static class SecuredAPI
+            extends Security.Authenticator {
+
+        @Override
+        public String getUsername(Context ctx) {
+            return ctx.session().get(IAccountController.AUTHN_COOKIE_KEY);
+        }
+
+        @Override
+        public Result onUnauthorized(Context ctx) {
+            ObjectNode response = Json.newObject();
+            response.put("error", "unauthorized");
+
+            return unauthorized(response);
+        }
+
     }
 }
