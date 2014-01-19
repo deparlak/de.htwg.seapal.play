@@ -183,6 +183,7 @@ $(document).ready(function() {
     var tmpRoute;
 
     menu.addCallback('rightclick', ['icon-notSelectedRoute', 'icon-selectedRoute'], function (self) {
+        console.log(new Date().getTime());
         tmpRoute = map.get(self.data('type'), self.data('id'));
         var template = Handlebars.compile($("#route_Template").text());
         var html = template(tmpRoute);
@@ -213,8 +214,7 @@ $(document).ready(function() {
 
         $('#trackInputForm').html(html);
 
-        $('#open_waypoint_modal').on('click',
-            function() {
+        $('#open_waypoint_modal').on('click', function() {
                 if(!map.checkTracking()) {
                     $('#modal-form_track').modal('hide');
                     return;
@@ -237,7 +237,7 @@ $(document).ready(function() {
     $('#modal-form_track').submit(function() {
         var boundData = Handlebars.getBoundData(tmpTrack);
         console.log(boundData);
-        //map.set(self.data('type'), boundData);
+        map.set('track', boundData);
         $('#modal-form_track').modal('hide');
         return false;
     });

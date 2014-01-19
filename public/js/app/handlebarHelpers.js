@@ -46,4 +46,13 @@ $(document).ready(function() {
     Handlebars.registerHelper('getLng', function( geometry ){
         return geometry.location.lng();
     });
+
+    Handlebars.registerHelper('dateToString', function(date) {
+        var tmp = new Date(date);
+        return tmp.toLocaleDateString("de-DE");
+    });
+
+    function stringToDate(string) {
+        return new Date(string.substring(6,10), string.substring(3,5) -1, string.substring(0,2)).getTime();
+    }
 });
