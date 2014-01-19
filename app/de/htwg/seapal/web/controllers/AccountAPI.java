@@ -6,7 +6,6 @@ import de.htwg.seapal.model.IAccount;
 import de.htwg.seapal.model.impl.Account;
 import de.htwg.seapal.utils.logging.ILogger;
 import de.htwg.seapal.web.controllers.helpers.Menus;
-import de.htwg.seapal.web.views.html.appContent.reset;
 import de.htwg.seapal.web.views.html.appContent.signInSeapal;
 import de.htwg.seapal.web.views.html.appContent.signUpSeapal;
 import org.codehaus.jackson.node.ObjectNode;
@@ -54,19 +53,10 @@ public class AccountAPI
         return null;
     }
 
-    public static Result auth() {
-        String providerUrl = "https://www.google.com/accounts/o8/id";
-        String returnToUrl = "http://localhost:9000/openID/verify";
-
-        Map<String, String> attributes = new HashMap<>();
-        attributes.put("Email", "http://schema.openid.net/contact/email");
-        attributes.put("FirstName", "http://schema.openid.net/namePerson/first");
-        attributes.put("LastName", "http://schema.openid.net/namePerson/last");
-
-        F.Promise<String> redirectUrl = OpenID.redirectURL(providerUrl, returnToUrl, attributes);
-        return redirect(redirectUrl.get());
-    }
-
+    /**
+     * Method signup gets called, when the user clicks the 'create new account' button on the signup page.
+     * @return
+     */
     public Result signup() {
         Form<Account> filledForm = form.bindFromRequest();
         ObjectNode response = Json.newObject();
@@ -98,13 +88,17 @@ public class AccountAPI
         return redirect(routes.Application.app());
     }
 
+    /**
+     * Method signup gets called, when the user clicks the 'sign in' button on the login page.
+     * @return
+     */
     public Result login() {
         Form<Account> filledForm = DynamicForm.form(Account.class).bindFromRequest();
         ObjectNode response = Json.newObject();
         if (filledForm.hasErrors()) {
             response.put("success", false);
             response.put("errors", filledForm.errorsAsJson());
-            return badRequest(signUpSeapal.render(filledForm, routes.AccountAPI.login()));
+            return badRequest(signInSeapal.render(filledForm, routes.AccountAPI.login()));
         }
 
         IAccount account = controller.authenticate(filledForm.get());
@@ -112,7 +106,7 @@ public class AccountAPI
         if (account == null) {
             response.put("success", false);
             response.put("errors", "Authentication failed");
-            return badRequest(signUpSeapal.render(filledForm, routes.AccountAPI.login()));
+            return badRequest(signInSeapal.render(filledForm, routes.AccountAPI.login()));
         }
 
         session().clear();
@@ -121,6 +115,10 @@ public class AccountAPI
         return redirect(routes.Application.app());
     }
 
+    /**
+     * this method gets called, when the user clicks the 'send link to reset password' on the request new password page.
+     * @return
+     */
     public Result requestNewPassword() {
         Form<Account> filledForm = form.bindFromRequest();
 
@@ -154,10 +152,10 @@ public class AccountAPI
         return redirect(routes.Application.forgotten());
     }
 
-    public Result resetForm(int token) {
-        return ok(reset.render(token));
-    }
-
+    /**
+     * this route gets called when the user actually entered his new password
+     * @return
+     */
     public Result resetPassword() {
         Map<String, String[]> form = request().body().asFormUrlEncoded();
 
@@ -171,23 +169,23 @@ public class AccountAPI
 
         if (list.size() == 0) {
             flash("errors", "Account does not/no longer exist!");
-            return resetForm(Integer.parseInt(token));
+            return Application.resetForm(Integer.parseInt(token));
         } else if (list.size() > 1) {
             flash("errors", "Too many equal reset tokens, Please request a new token by clicking on I forgot my password!");
-            return resetForm(Integer.parseInt(token));
+            return Application.resetForm(Integer.parseInt(token));
         }
 
         IAccount account = list.get(0);
 
         if (account.getResetTimeout() < System.currentTimeMillis()) {
             flash("errors", "Reset token expired. Please request a new token by clicking on I forgot my password!");
-            return resetForm(Integer.parseInt(token));
+            return Application.resetForm(Integer.parseInt(token));
         }
 
         String error = validate(account);
         if (error != null) {
             flash("errors", error);
-            return resetForm(Integer.parseInt(token));
+            return Application.resetForm(Integer.parseInt(token));
         }
 
         account.setResetToken("0");
@@ -200,9 +198,29 @@ public class AccountAPI
         flash("success", "You have successfully changed your password");
 
 
-        return resetForm(Integer.parseInt(token));
+        return Application.resetForm(Integer.parseInt(token));
     }
 
+    /**
+     * this route redirects the user to the Google servers for OpenID authentication
+     * @return
+     */
+    public Result auth() {
+        String providerUrl = "https://www.google.com/accounts/o8/id";
+        String returnToUrl = routes.AccountAPI.verify().absoluteURL(request());
+
+        Map<String, String> attributes = new HashMap<>();
+        attributes.put(IAccountController.KEY_EMAIL, "http://schema.openid.net/contact/email");
+        attributes.put(IAccountController.KEY_FIRST_NAME, "http://schema.openid.net/namePerson/first");
+        attributes.put(IAccountController.KEY_LAST_NAME, "http://schema.openid.net/namePerson/last");
+
+        return redirect(OpenID.redirectURL(providerUrl, returnToUrl, attributes).get());
+    }
+
+    /**
+     * this route handles the OpenID authN request, when the user gets redirected back from Google servers to us.
+     * @return
+     */
     public Result verify() {
         String[] modes = request().queryString().get("openid.mode");
         if (modes != null) {
@@ -216,6 +234,7 @@ public class AccountAPI
 
         F.Promise<OpenID.UserInfo> userInfoPromise = OpenID.verifiedId();
         OpenID.UserInfo userInfo = userInfoPromise.get();
+
         IAccount person = controller.googleLogin(userInfo.attributes, userInfo.id);
         if (person == null) {
             flash("errors", "Login Failed");
@@ -227,6 +246,10 @@ public class AccountAPI
         return redirect(routes.Application.app());
     }
 
+    /**
+     * logout route, clear session cookie.
+     * @return
+     */
     @play.mvc.Security.Authenticated(AccountAPI.Secured.class)
     public Result logout() {
         session().clear();
@@ -234,6 +257,10 @@ public class AccountAPI
         return redirect(routes.Application.index());
     }
 
+    /**
+     * retrieve account data (id, friendlists)
+     * @return
+     */
     @play.mvc.Security.Authenticated(AccountAPI.SecuredAPI.class)
     public Result account() {
         String session = session(IAccountController.AUTHN_COOKIE_KEY);
