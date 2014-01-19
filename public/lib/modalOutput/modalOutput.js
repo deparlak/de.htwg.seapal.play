@@ -14,9 +14,9 @@
         },  
         error : function (msg) {
             this.beforeCallbacks.fire();
-            title.html("Error");
-            $(this.body).html(msg);
-            $(this.modal).modal('show');
+            this.title.html("Error");
+            this.body.html(msg);
+            this.modal.modal('show');
         }, 
         warning : function (msg) {
             this.beforeCallbacks.fire();
