@@ -43,7 +43,6 @@ public final class AccountDatabase extends CouchDbRepositorySupport<Account>
 
         if (entity.isNew()) {
             // ensure that the id is generated and revision is null for saving a new entity
-            entity.setId(UUID.randomUUID().toString());
             entity.setRevision(null);
             add(entity);
             return true;
