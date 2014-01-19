@@ -230,6 +230,7 @@ $(document).ready(function() {
         menu.disableAutoClose();
         $('#modal-form_track').modal('show');
 
+        // Initializes the datepicker
         $('.datepicker').datepicker();
     });
 
