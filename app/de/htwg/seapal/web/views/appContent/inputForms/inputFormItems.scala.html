@@ -44,10 +44,18 @@
     </div>
     <div class="row">
         <div class="centered col-12 col-sm-8">
+            <label for="waypointDelay">Waypoint record interval [min]</label>
+        </div>
+        <div class="col-12 col-sm-4">
+            <input type="number" min="1" step="1" name="waypointDelay" tabindex="4" {{bindData "WAYPOINT_DELAY"}} value={{WAYPOINT_DELAY}} required />
+        </div>
+    </div>
+    <div class="row">
+        <div class="centered col-12 col-sm-8">
             <label for="historyTrend">History trend for dashboard [s]</label>
         </div>
         <div class="col-12 col-sm-4">
-            <input type="number" min="1" step="1" name="historyTrend" tabindex="4" {{bindData "HISTORY_TREND"}} value={{HISTORY_TREND}} required />
+            <input type="number" min="1" step="1" name="historyTrend" tabindex="5" {{bindData "HISTORY_TREND"}} value={{HISTORY_TREND}} required />
         </div>
     </div>
     <div class="row">
@@ -55,7 +63,7 @@
             <label for="circleRadius">Security circle radius [m]</label>
         </div>
         <div class="col-12 col-sm-4">
-            <input type="number" min="1" step="1" name="circleRadius" tabindex="5" {{bindData "CIRCLE_RADIUS"}} value={{CIRCLE_RADIUS}} required />
+            <input type="number" min="1" step="1" name="circleRadius" tabindex="6" {{bindData "CIRCLE_RADIUS"}} value={{CIRCLE_RADIUS}} required />
         </div>
     </div>
     <div class="inputForm-footer">

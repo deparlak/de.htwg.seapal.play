@@ -406,9 +406,9 @@
             DISTANCE_UNIT       : "globalSettings_km",
             TEMPERATURE_UNIT    : "globalSettings_celsius",
             TRACKING_DELAY      : 5,
+            WAYPOINT_DELAY      : 5, 
             HISTORY_TREND       : 1,
             CIRCLE_RADIUS       : 250
-
         };
 
         /* The settings for the alarms */
