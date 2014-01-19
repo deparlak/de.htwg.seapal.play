@@ -91,14 +91,24 @@ $(document).ready(function() {
     map.addCallback(events.BOAT_POS_UPDATE, function (self) {
         $('#infoBar').html(self.html);
     });
-	
-	/* this callback will be called if an action was executed which is not allowed on active tracking */
-    map.addCallback(events.TRACKING_ACTIVE, function (self) {
-        output.warning(self.msg);
-    });
-	
+		
 	/* this callback will be called if the security circle was left and a alarm was active */
     map.addCallback(events.LEFT_SECURITY_CIRCLE, function (self) {
         output.warning(self.msg);
+    });
+    
+	/* this callback will be called if an warning occurred */
+    map.addCallback(events.WARNING, function (self) {
+        output.warning(self.msg);
+    });
+    
+	/* this callback will be called if an error occurred */
+    map.addCallback(events.ERROR, function (self) {
+        output.error(self.msg);
+    });
+    
+	/* this callback will be called if an info occurred */
+    map.addCallback(events.INFO, function (self) {
+        output.INFO(self.msg);
     });
 });

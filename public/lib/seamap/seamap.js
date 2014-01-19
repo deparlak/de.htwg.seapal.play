@@ -343,7 +343,7 @@
         /* Checks if the tracking is enabled and displays a message when it is */
         this.checkTracking = function() {
             if(isTracking) {
-                callbacks[event.TRACKING_ACTIVE].fire({msg : "This option is disabled because you are currently tracking!"});
+                callbacks[event.ERROR].fire({msg : "This option is disabled because you are currently tracking!"});
                 return false;
             }
             return true;
@@ -432,12 +432,18 @@
             NO_GEO_SUPPORT          : 7,
             BOAT_POS_UPDATE         : 8,
             CREATED_TRACK           : 9,
-            TRACKING_ACTIVE         : 10,
-            LEFT_SECURITY_CIRCLE    : 11,
-			SERVER_CREATE			: 12,
-			SERVER_REMOVE			: 13,
-            CREATED_WAYPOINT        : 14,
-            EDIT_MARK               : 15,
+            
+            ERROR                   : 10,
+            WARNING                 : 11,
+            INFO                    : 12,
+            
+            LEFT_SECURITY_CIRCLE    : 13,
+			SERVER_CREATE			: 14,
+			SERVER_REMOVE			: 15,
+            CREATED_WAYPOINT        : 16,
+            EDIT_MARK               : 17,
+            
+            
         };
 		        
         var options = $.seamap.options;
@@ -1200,7 +1206,13 @@
         * *********************************************************************************
         */
         this.startTracking = function() {
-            if(data.route.active == null) {
+            if (data.route.active == null) {
+                callbacks[event.WARNING].fire({msg : "No Route for tracking selected! Please select a Route."});
+                return false;
+            }
+            
+            if (data.boat.active == null) {
+                callbacks[event.WARNING].fire({msg : "No Boat for tracking selected! Please select a Boat from the logbook."});
                 return false;
             }
 
@@ -1460,7 +1472,7 @@
         */
         function handleAddNewRoute() {
             if(isTracking) {
-                callbacks[event.TRACKING_ACTIVE].fire({msg : "This options is disabled because tracking is active!"});
+                callbacks[event.ERROR].fire({msg : "This options is disabled because tracking is active!"});
                 return;
             }
             
