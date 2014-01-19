@@ -319,7 +319,7 @@ $(document).ready(function() {
     $('#modal-form_addCrewman').on('hidden.bs.modal',
         function() {
             menu.enableAutoClose();
-            //$('#addCrewmanInputForm').html("");
+            $('#email_addCrewman').val("");
         }
     );
 });
