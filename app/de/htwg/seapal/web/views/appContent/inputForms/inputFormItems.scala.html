@@ -264,7 +264,24 @@
             <label for="marker_pos">Position</label>
         </div>
         <div class="no_padding col-12 col-sm-3">
-            <input type="search" class="latlngInput" name="marker_pos" {{bindData "position"}} value="{{position}}" />
+            <input type="search" class="latlngInput" name="marker_pos" {{bindData "position"}} value="{{position}}" {{#unless this.image_thumb}}disabled{{/unless}}/>
+        </div>
+    </div>
+    <br>
+    <div class="inputForm-footer">
+        <button type="submit" class="btn btn-primary">Save</button>
+        <button type="button" class="btn btn-danger" data-dismiss="modal">Abort</button>
+    </div>
+</script>
+
+/* -------------------------------- route template -------------------------------- */
+<script type="text/x-handlebars" id ="route_Template">
+    <div class="row">
+        <div class="some_left_padding col-12 col-sm-4">
+            <label for="route_titel">Titel</label>
+        </div>
+        <div class="no_padding col-12 col-sm-8">
+            <input type="text" name="route_titel" tabindex="1" required {{bindData "name"}} value="{{name}}" />
         </div>
     </div>
     <br>

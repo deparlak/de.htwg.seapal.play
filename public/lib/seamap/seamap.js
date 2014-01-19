@@ -616,7 +616,7 @@
 		{
 			"type"			        : "boat",
 			"id"			        : null,
-            "boatName"              : "Titanic",
+            "boatName"              : "",
             "registerNr"            : "",
             "sailSign"              : "",
             "homePort"              : "",
@@ -624,7 +624,7 @@
             "insurance"             : "",
             "callSign"              : "",
             "boatType"              : "",
-            "boatConstructor"       : "David",
+            "boatConstructor"       : "",
             "boatOwner"             : "",
             "length"                : 0,
             "width"                 : 0,

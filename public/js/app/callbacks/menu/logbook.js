@@ -177,7 +177,30 @@ $(document).ready(function() {
         return obj;
     }
     /* END---------------------------- marker ------------------------------- */
-    
+
+    /* START-------------------------- route ------------------------------- */
+    var tmpRoute;
+
+    menu.addCallback('rightclick', ['icon-notSelectedRoute', 'icon-selectedRoute'], function (self) {
+        tmpRoute = map.get(self.data('type'), self.data('id'));
+        var template = Handlebars.compile($("#route_Template").text());
+        var html = template(tmpRoute);
+
+        $('#routeInputForm').html(html);
+
+        menu.disableAutoClose();
+        $('#modal-form_route').modal('show');
+    });
+
+    $('#modal-form_route').submit(function() {
+        var boundData = Handlebars.getBoundData(tmpRoute);
+        console.log(boundData);
+        map.set('route', boundData);
+        $('#modal-form_route').modal('hide');
+        return false;
+    });
+    /* END---------------------------- route ------------------------------- */
+
     menu.addCallback('leftclick', 'icon-signInSeapal', function (self) {
         if(!map.checkTracking()) {
             return;
@@ -219,11 +242,6 @@ $(document).ready(function() {
     menu.addCallback('rightclick', ['icon-notSelectedTrack', 'icon-selectedTrack'], function (self) {
         menu.disableAutoClose();
         $('#modal-form_track').modal('show');
-    });
-
-    menu.addCallback('rightclick', ['icon-notSelectedRoute', 'icon-selectedRoute'], function (self) {
-        menu.disableAutoClose();
-        $('#modal-form_route').modal('show');        
     });
 
     /**
