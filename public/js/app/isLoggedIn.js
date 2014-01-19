@@ -49,6 +49,7 @@ $(document).ready(function() {
     /* callback for adding a crew member */
     menu.addCallback('leftclick', 'logbookCrewAdd', function (self) {
         $('#modal-form_addCrewman').modal('show');
+        menu.disableAutoClose();
     });
 
     /* on click of button to sent the friend request */
