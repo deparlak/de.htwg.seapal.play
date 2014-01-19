@@ -32,6 +32,10 @@ $(document).ready(function() {
         response.boat.map( function(item) { 
             map.set('boat', item);
         });
+        
+        response.trip.map( function(item) { 
+            map.set('trip', item);
+        });
     });
 
     /* callback handler that will be called on failure */

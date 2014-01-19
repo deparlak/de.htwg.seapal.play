@@ -85,8 +85,8 @@
             }
         },
 
-        // Default options for a track
-        track : {
+        // Default options for a track which is stored in a trip
+        trip : {
             polyOptions : {
                 strokeColor: 'green',
                 strokeOpacity: 0.5,
@@ -369,8 +369,8 @@
             console.log("Selected boat "+id);
         };
         /* get a list with all waypoints from a specific track */
-        this.getWaypoints = function (trackId) {
-            dataParameterCheck('track', trackId, null);
+        this.getWaypoints = function (tripId) {
+            dataParameterCheck('trip', tripId, null);
             var list = [];
             /* copy only the template fields */
             for (var wp in data.waypoint.list) {
@@ -609,9 +609,9 @@
 			"owner" 		: null
 		};
         
-        var templateTrack =
+        var templateTrip =
 		{
-			"type"			: "track",
+			"type"			: "trip",
 			"id"			: null,
 			"name" 			: "",
 			"startDate" 	: "",
@@ -624,9 +624,9 @@
             "endDate"       : "",
             "crew"          : "",
             "notes"         : "",
-			"_id" 			: "",
-			"_rev" 			: "",
-			"owner" 		: ""
+			"_id" 			: null,
+			"_rev" 			: null,
+			"owner" 		: null
 		};
         
         var templateBoat =
@@ -711,8 +711,8 @@
 				count : 1,
 				active : null
 			},
-			track : {
-                template : templateTrack,
+			trip : {
+                template : templateTrip,
 				list : {},
 				count : 1,
 				active : null
@@ -751,11 +751,11 @@
 			dataCallback([event.DELETED_ROUTE], data.route.list[id]);
 		};
 		
-		/* define the remove method for the track */
-		data.track.removeMethod = function(id) {
+		/* define the remove method for the trip */
+		data.trip.removeMethod = function(id) {
 			/* check if the track is active */
-			if (data.track.active && data.track.active.id == id) {
-				data.track.active = null;
+			if (data.trip.active && data.trip.active.id == id) {
+				data.trip.active = null;
 				if (state == States.TRACK) {
 					state = States.NORMAL;
 				}
@@ -764,10 +764,10 @@
 			   be not the active track but still have a reference on the map (so it's only hidden)
 			   Because of this we have to check here if the track is "onMap" 
 			*/
-			if (data.track.list[id].onMap) {
-				data.track.list[id].onMap.remove();
+			if (data.trip.list[id].onMap) {
+				data.trip.list[id].onMap.remove();
 			}
-            dataCallback([event.DELETED_TRACK], data.track.list[id]);
+            dataCallback([event.DELETED_TRACK], data.trip.list[id]);
 		};
 		
 		/* define the visible method for a route */
@@ -783,12 +783,12 @@
 		};
 		
 		/* define the visible method for a track */
-		data.track.visibleMethod = activateTrack;
+		data.trip.visibleMethod = activateTrack;
 		
 		/* define the visible method for a track */
-		data.track.hideMethod = function(id) {
-			if (!data.track.active || data.track.active.id != id) {
-				throw("Illegal call of data.track.hideMethod, beacause only the active track can be hidden.");
+		data.trip.hideMethod = function(id) {
+			if (!data.trip.active || data.trip.active.id != id) {
+				throw("Illegal call of data.trip.hideMethod, beacause only the active track can be hidden.");
 			}
 			/* hide the active route now */
 			hideActiveTrack();
@@ -1223,15 +1223,17 @@
         * *********************************************************************************
         */
         this.startTracking = function() {
+            
             if (data.route.active == null) {
                 callbacks[event.WARNING].fire({msg : "No Route for tracking selected! Please select a Route."});
                 return false;
             }
-            
+            /*
             if (data.boat.active == null) {
                 callbacks[event.WARNING].fire({msg : "No Boat for tracking selected! Please select a Boat from the logbook."});
                 return false;
             }
+            */
 
             if(isSimulating) {
                 fakeRoutePointer = 0;
@@ -1649,15 +1651,15 @@
         * *********************************************************************************
         */
         function handleAddNewTrack() {
-            var obj = self.getTemplate('track');;
-            obj.id = data.track.count.toString();
+            var obj = self.getTemplate('trip');;
+            obj.id = data.trip.count.toString();
 			obj.startDate = new Date().getTime();
-            obj.name = "Track " + data.track.count;
+            obj.name = "Track " + data.trip.count;
             obj.onMap = getOnMapTrack(obj);
             obj.update = true;
-            data.track.list[obj.id] = obj;        
+            data.trip.list[obj.id] = obj;        
             activateTrack(obj.id); 
-            data.track.count++;
+            data.trip.count++;
             dataCallback([event.CREATED_TRACK], obj);
         }
 		
@@ -1680,11 +1682,11 @@
             hideActiveTrack();
             /* important that state will be set here, because hideActiveRoute() will set the state to NORMAL */
             state = States.TRACK;
-            data.track.active = data.track.list[id];
-            if (!data.track.active.onMap || null == data.track.active.onMap) {
-                data.track.active.onMap = getOnMapTrack(data.track.active);
+            data.trip.active = data.trip.list[id];
+            if (!data.trip.active.onMap || null == data.trip.active.onMap) {
+                data.trip.active.onMap = getOnMapTrack(data.trip.active);
             } 
-            data.track.active.onMap.visible();
+            data.trip.active.onMap.visible();
         }
         /**
         * *********************************************************************************
@@ -1692,11 +1694,11 @@
         * *********************************************************************************
         */ 
         function hideActiveTrack() {
-            if (data.track.active != null) {
+            if (data.trip.active != null) {
                 uploadTrackUpdate();
                 state = States.NORMAL;
-                data.track.active.onMap.hide();
-                data.track.active = null;
+                data.trip.active.onMap.hide();
+                data.trip.active = null;
             }
         }
         /**
@@ -1705,8 +1707,8 @@
         * *********************************************************************************
         */ 
         function deleteActiveTrack(){
-            if (data.track.active != null) {
-                self.remove('track', data.track.active.id);
+            if (data.trip.active != null) {
+                self.remove('trip', data.trip.active.id);
             }
         }
         
@@ -1727,9 +1729,8 @@
         * *********************************************************************************
         */
         function uploadTrackUpdate() {
-            if (data.track.active != null && data.track.active.update) {
-				dataCallback([event.SERVER_CREATE], data.track.active);
-                data.track.active.update = false;
+            if (data.trip.active != null) {
+				dataCallback([event.SERVER_CREATE], data.trip.active);
             }         
         }
         
@@ -1739,7 +1740,7 @@
         * *********************************************************************************
         */
         function addTrackMarker(latLng) {            
-            data.track.active.onMap.addMarker(latLng);
+            data.trip.active.onMap.addMarker(latLng);
         }
         
         /**
@@ -2079,7 +2080,7 @@
         this.path = null;
         this.markers = [];
         this.label = null;
-        this.notinteractive = (obj.type == 'track') ? true : false;
+        this.notinteractive = (obj.type == 'trip') ? true : false;
 		options = $.seamap.options[obj.type];
         init = false;
         		

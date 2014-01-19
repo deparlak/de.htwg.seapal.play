@@ -237,7 +237,7 @@ $(document).ready(function() {
     $('#modal-form_track').submit(function() {
         var boundData = Handlebars.getBoundData(tmpTrack);
         console.log(boundData);
-        map.set('track', boundData);
+        map.set('trip', boundData);
         $('#modal-form_track').modal('hide');
         return false;
     });

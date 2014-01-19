@@ -21,7 +21,7 @@ $(document).ready(function() {
     map.addCallback([events.LOADED_FROM_SERVER, events.ADDED_FROM_CLIENT], function (self) {
         if (self.type == 'route') {
             $("#routes").append(templateLoadedRoute(self));
-        } else if (self.type == 'track') {
+        } else if (self.type == 'trip') {
             $("#tracks").append(templateLoadedTrack(self));
         } else if (self.type == 'mark') {
             $("#marks").append(templateLoadedMark(self));
