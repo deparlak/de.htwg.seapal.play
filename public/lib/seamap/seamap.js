@@ -380,12 +380,13 @@
         };
         
         /* Toggles the security circle */
-        this.toggleSecurityCircle = function() {            
+        this.toggleSecurityCircle = function() {
             if (activeSecurityCircle == null) {
                 showSecurityCircle();
             } else {
                 hideSecurityCircle();
             }
+            displaySecurityCircyle = !displaySecurityCircyle;  
         }
 
         /* Gets the global settings */
@@ -532,7 +533,9 @@
         // The id of the manoverboard marker
         var manoverboardMark = null;
 		
-        
+        // Determines whether the security circle should be displayed or not
+        var displaySecurityCircyle = false;
+
         var templateAccount =
         {
             "type"                : "account",
@@ -1204,7 +1207,7 @@
          */
         function handleBoatPositionUpdate(position) {            
             callbacks[event.BOAT_POS_UPDATE].fire(getCurrentBoatInformation());
-            if(boatMarker == null){
+            if (boatMarker == null){
                 boatMarker = new google.maps.Marker({
                     position: position,
                     map: map,
@@ -1212,8 +1215,13 @@
                     shape: options.boat.markerOptions.crosshairShape,
                     icon:  options.boat.markerOptions.image
                 });
-            }else{
+            } else {
                 boatMarker.setPosition(position);
+            }
+
+            if (displaySecurityCircyle) {
+                hideSecurityCircle();
+                showSecurityCircle();
             }
         }
         
