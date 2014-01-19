@@ -1884,7 +1884,7 @@
 			if (marker.image_thumb) {
 				google.maps.event.addListener(onMap, 'click', function(event) {
 					if(!supressClick) {
-						openFancybox(marker.image_big, new Date(marker.date).toLocaleString() + " / " + getCoordinatesAsString(marker.lat, marker.lng));
+						openFancybox(marker.image_big, new Date(marker.date).toLocaleString());
 					}
 				});
 			}
