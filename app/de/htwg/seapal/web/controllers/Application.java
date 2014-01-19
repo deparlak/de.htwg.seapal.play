@@ -4,6 +4,7 @@ import com.google.inject.Inject;
 import de.htwg.seapal.controller.ITripController;
 import de.htwg.seapal.controller.IWaypointController;
 import de.htwg.seapal.model.impl.Account;
+import de.htwg.seapal.model.impl.SignupAccount;
 import de.htwg.seapal.utils.logging.ILogger;
 import de.htwg.seapal.web.controllers.helpers.Menus;
 import de.htwg.seapal.web.views.html.app;
@@ -53,7 +54,7 @@ public class Application
     }
 
     public static Result signup() {
-        return ok(signUpSeapal.render(DynamicForm.form(Account.class), routes.AccountAPI.signup()));
+        return ok(signUpSeapal.render(DynamicForm.form(SignupAccount.class), routes.AccountAPI.signup()));
     }
 
     public static Result resetForm(int token) {
