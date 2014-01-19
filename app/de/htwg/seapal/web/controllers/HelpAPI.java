@@ -2,7 +2,6 @@ package de.htwg.seapal.web.controllers;
 
 import com.google.inject.Inject;
 import de.htwg.seapal.controller.*;
-import de.htwg.seapal.controller.impl.PasswordHash;
 import de.htwg.seapal.model.*;
 import de.htwg.seapal.model.impl.*;
 import de.htwg.seapal.utils.logging.ILogger;
@@ -49,15 +48,15 @@ public class HelpAPI
         IAccount crewMember1 = new Account();
         crewMember1.setAccount(crewMember1.getUUID().toString());
         crewMember1.setEmail("crewMember1@123.de");
-        crewMember1.setPassword(PasswordHash.createHash("test"));
-        AccountController.saveAccount(crewMember1);
+        crewMember1.setPassword("test");
+        AccountController.saveAccount(crewMember1, true);
         domACL.put("crewMember1", Json.toJson(AccountController.getPerson(crewMember1.getUUID())));
 
         IAccount crewMember2 = new Account();
         crewMember2.setAccount(crewMember2.getUUID().toString());
         crewMember2.setEmail("crewMember2@123.de");
-        crewMember2.setPassword(PasswordHash.createHash("test"));
-        AccountController.saveAccount(crewMember2);
+        crewMember2.setPassword("test");
+        AccountController.saveAccount(crewMember2, true);
         domACL.put("crewMember2", Json.toJson(AccountController.getPerson(crewMember2.getUUID())));
 
         IAccount account = new Account();
@@ -65,12 +64,12 @@ public class HelpAPI
         account.addFriend(crewMember1);
         crewMember1.addFriend(account);
         account.setEmail("account@123.de");
-        account.setPassword(PasswordHash.createHash("test"));
-        AccountController.saveAccount(account);
+        account.setPassword("test");
+        AccountController.saveAccount(account, true);
 
         domACL.put("captain", Json.toJson(AccountController.getPerson(account.getUUID())));
 
-        ObjectNode nodeInner  = Json.newObject();
+        ObjectNode nodeInner = Json.newObject();
         nodeInner.putAll(domACL);
         dom.put("captainAndCrew", nodeInner);
 

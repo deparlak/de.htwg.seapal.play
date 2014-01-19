@@ -2,9 +2,7 @@ package de.htwg.seapal.web.controllers;
 
 import com.google.inject.Inject;
 import de.htwg.seapal.controller.IAccountController;
-import de.htwg.seapal.controller.impl.PasswordHash;
 import de.htwg.seapal.model.IAccount;
-import de.htwg.seapal.model.IPerson;
 import de.htwg.seapal.model.impl.Account;
 import de.htwg.seapal.utils.logging.ILogger;
 import de.htwg.seapal.web.controllers.helpers.Menus;
@@ -23,13 +21,10 @@ import play.mvc.Result;
 import play.mvc.Security;
 import play.mvc.With;
 
-import java.security.NoSuchAlgorithmException;
-import java.security.spec.InvalidKeySpecException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 @With(Menus.class)
@@ -48,55 +43,52 @@ public class AccountAPI
     @Inject
     private ILogger logger;
 
-    @play.mvc.Security.Authenticated(AccountAPI.SecuredAPI.class)
-    public Result account() {
-        String session = session(IAccountController.AUTHN_COOKIE_KEY);
+    private static String validate(IAccount account) {
+        if (!EMAIL_PATTERN.matcher(account.getEmail()).matches()) {
+            return "Please enter a valid email adress!";
+        }
 
-        return ok(Json.toJson(controller.getInternalInfo(session)));
+        if (!(account.getPassword().length() >= MIN_LENGTH)) {
+            return "The password you've entered is to short. Use at least " + MIN_LENGTH + " characters!";
+        }
+
+        return null;
     }
 
     public Result signup() {
         Form<Account> filledForm = form.bindFromRequest();
-
         ObjectNode response = Json.newObject();
-        Account account = filledForm.get();
-        boolean exists = controller.accountExists(account.getEmail());
-
-        if (filledForm.hasErrors() || exists) {
+        if (filledForm.hasErrors()) {
             response.put("success", false);
             response.put("errors", filledForm.errorsAsJson());
-            if (exists) {
-                flash("errors", "Account already exists");
-            }
-
             return badRequest(signUpSeapal.render(filledForm, routes.AccountAPI.signup()));
-        } else {
-            try {
+        }
 
-                String error = validate(account);
-                if (error != null) {
-                    flash("errors", error);
-                    return badRequest(signUpSeapal.render(filledForm, routes.AccountAPI.signup()));
-                }
+        Account account = filledForm.get();
+        if (controller.accountExists(account.getEmail())) {
+            response.put("success", false);
+            flash("errors", "Account already exists");
+            return badRequest(signUpSeapal.render(filledForm, routes.AccountAPI.signup()));
+        }
 
-                account.setPassword(PasswordHash.createHash(account.getPassword()));
-                controller.saveAccount(account);
-            } catch (InvalidKeySpecException e) {
-                e.printStackTrace();
-            } catch (NoSuchAlgorithmException e) {
-                e.printStackTrace();
-            }
+        String error = validate(account);
+        if (error != null) {
+            flash("errors", error);
+            return badRequest(signUpSeapal.render(filledForm, routes.AccountAPI.signup()));
+        }
 
-
+        if (controller.saveAccount(account, true)) {
             session().clear();
             session(IAccountController.AUTHN_COOKIE_KEY, account.getUUID().toString());
             return redirect(routes.Application.app());
         }
+
+        // saving gone wrong
+        return internalServerError("Could not save account%nThis problem will be reported");
     }
 
     public Result login() {
         Form<Account> filledForm = DynamicForm.form(Account.class).bindFromRequest();
-
 
         IAccount account = null;
 
@@ -123,12 +115,6 @@ public class AccountAPI
         return badRequest(signInSeapal.render(filledForm, routes.AccountAPI.login()));
     }
 
-    public Result logout() {
-        session().clear();
-        flash("success", "You've been logged out");
-        return redirect(routes.Application.index());
-    }
-
     public Result requestNewPassword() {
         Form<Account> filledForm = form.bindFromRequest();
 
@@ -153,7 +139,7 @@ public class AccountAPI
 
         account.setResetTimeout(System.currentTimeMillis() + TIMEOUT);
 
-        controller.saveAccount(account);
+        controller.saveAccount(account, false);
 
         /*
             MailerAPI mail = play.Play.application().plugin(MailerPlugin.class).email();
@@ -208,16 +194,10 @@ public class AccountAPI
 
         account.setResetTimeout(0);
 
-        try {
-            account.setPassword(PasswordHash.createHash(form.get("password")[0]));
-            controller.saveAccount(account);
-            session(IAccountController.AUTHN_COOKIE_KEY, account.getUUID().toString());
-            flash("success", "You have successfully changed your password");
-        } catch (InvalidKeySpecException e) {
-            e.printStackTrace();
-        } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
-        }
+        account.setPassword(form.get("password")[0]);
+        controller.saveAccount(account, true);
+        session(IAccountController.AUTHN_COOKIE_KEY, account.getUUID().toString());
+        flash("success", "You have successfully changed your password");
 
 
         return resetForm(Integer.parseInt(token));
@@ -235,6 +215,7 @@ public class AccountAPI
         public Result onUnauthorized(Context ctx) {
             return redirect(routes.Application.login());
         }
+
     }
 
     public static class SecuredAPI
@@ -252,6 +233,7 @@ public class AccountAPI
 
             return unauthorized(response);
         }
+
     }
 
     public static Result auth() {
@@ -291,28 +273,17 @@ public class AccountAPI
         return redirect(routes.Application.app());
     }
 
-    public static String validate(IAccount account) {
-        if (!validate_eMail(account.getEmail())) {
-            return "Please enter a valid email adress!";
-        }
-
-        if (!checkLength(account.getPassword())) {
-            return "The password you've entered is to short. Use at least " + MIN_LENGTH + " characters!";
-        }
-
-        return null;
+    @play.mvc.Security.Authenticated(AccountAPI.Secured.class)
+    public Result logout() {
+        session().clear();
+        flash("success", "You've been logged out");
+        return redirect(routes.Application.index());
     }
 
-    private static boolean validate_eMail(final String hex) {
-        Matcher matcher = EMAIL_PATTERN.matcher(hex);
-        return matcher.matches();
-    }
+    @play.mvc.Security.Authenticated(AccountAPI.SecuredAPI.class)
+    public Result account() {
+        String session = session(IAccountController.AUTHN_COOKIE_KEY);
 
-    private static boolean checkPasswords(IPerson account) {
-        return true; //account.getPassword().equals(account.getRepeatedAccountPassword());
-    }
-
-    private static boolean checkLength(String password) {
-        return password.length() >= MIN_LENGTH;
+        return ok(Json.toJson(controller.getInternalInfo(session)));
     }
 }
