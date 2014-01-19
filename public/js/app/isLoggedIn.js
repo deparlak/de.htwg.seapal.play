@@ -49,8 +49,27 @@ $(document).ready(function() {
 
     /* on click of button to sent the friend request */
     $('#modal-form_addCrewman').submit(function() {
-        console.log("TODO check for valid email and /api/sendFriendRequest");            
         $('#modal-form_addCrewman').modal('hide');
+        
+        /* post to server */
+        request = $.ajax({
+            url         : "/api/sendFriendRequestMail",
+            type        : "get",
+            data        : "TODO"
+        });
+
+        /* callback handler that will be called on success */
+        request.done(function (response, textStatus, jqXHR){
+            console.log("sendFriendRequestMail success");
+        });
+
+        /* callback handler that will be called on failure */
+        request.fail(function (jqXHR, textStatus, errorThrown){
+			console.log(jqXHR);
+			console.log(textStatus);
+			console.log(errorThrown);
+			console.log("error");
+        });
         return false;
     });
         
