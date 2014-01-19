@@ -264,7 +264,7 @@
             <label for="marker_pos">Position</label>
         </div>
         <div class="no_padding col-12 col-sm-3">
-            <input type="search" class="latlngInput" name="marker_pos" {{bindData "position"}} value="{{position}}" {{#if image_thumb}}disable{{/if}}/>
+            <input type="search" class="latlngInput" name="marker_pos" {{bindData "position"}} value="{{position}}" {{#unless this.image_thumb}}disabled{{/unless}}/>
         </div>
     </div>
     <br>
