@@ -120,8 +120,7 @@ public final class MainAPI
                 mark.setLatitude(Double.valueOf(form2.data().get("lat")));
             }
 
-            doc.setAccount(session(IAccountController.AUTHN_COOKIE_KEY));
-            return ok(Json.toJson(controller.creatDocument(document, doc)));
+            return ok(Json.toJson(controller.creatDocument(document, doc, session(IAccountController.AUTHN_COOKIE_KEY))));
         } catch (NullPointerException e) {
             return internalServerError(EMPTY);
         }
