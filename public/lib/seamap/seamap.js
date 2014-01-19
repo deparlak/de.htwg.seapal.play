@@ -85,8 +85,8 @@
             }
         },
 
-        // Default options for a track
-        track : {
+        // Default options for a track which is stored in a trip
+        trip : {
             polyOptions : {
                 strokeColor: 'green',
                 strokeOpacity: 0.5,
@@ -229,12 +229,16 @@
             } else if (obj.id != null){
                 console.log("updated");
                 checkId(type, obj.id);
-                copyObjAttr(type, data[type].list[obj.id], obj);
+                var modified = copyObjAttr(type, data[type].list[obj.id], obj);
                 /* create another reference to the object, so that the object is accessible through the id and the _id.*/
                 if (null != obj._id && obj.id != obj._id) {
                     data[type].list["_id"] = data[type].list[obj.id]["id"];
                 }
-                dataCallback([event.UPDATED_FROM_CLIENT], obj);
+                /* copyObjAttr check if the object was modified. if so we fire a callback to sync with the server and tell the client listeners */
+                if (modified) {
+                    /* check if more changed than the _id and _rev */
+                    dataCallback([event.UPDATED_FROM_CLIENT, event.SERVER_CREATE], obj);
+                }
             } else if (obj.id == null && obj._id == null && obj._rev == null) {
                 console.log("added from client");
                 newObj = self.getTemplate(type);
@@ -250,17 +254,28 @@
         
         /* helper method to copy only the elements to a obj */
         function copyObjAttr(type, dest, src) {
+            var modified = false;
             for (var key in data[type].template) {
-                if (src[key] !== undefined && null != src[key]) {
+                /* check if the src has the key and if the src and dest attribute differ */
+                if ((src[key] !== undefined && null != src[key])
+                  &&(src[key] != dest[key])){
                     dest[key] = src[key];
+                    /* if not _rev and _id was changed, the object was modified */
+                    modified = (key != '_id' && key != '_rev' && key != 'owner') ? true : false;
                 }
             }
+            return modified;
         };
         
 		/* return a copy of the obj with the given type and id */
         this.get = function(type, id) {
 			dataParameterCheck(type, id, null);
-			return data[type].list[id];
+            var copy = {};
+            /* copy only the template fields */
+            for (var key in data[type].template) {
+                copy[key] = data[type].list[id][key];
+            }
+			return copy;
         };
 		/* return a copy of the template for the given type */
         this.getTemplate = function(type) {
@@ -328,7 +343,7 @@
         /* Checks if the tracking is enabled and displays a message when it is */
         this.checkTracking = function() {
             if(isTracking) {
-                callbacks[event.TRACKING_ACTIVE].fire({msg : "This option is disabled because you are currently tracking!"});
+                callbacks[event.ERROR].fire({msg : "This option is disabled because you are currently tracking!"});
                 return false;
             }
             return true;
@@ -353,14 +368,25 @@
 			data.boat.active = data.boat.list[id];
             console.log("Selected boat "+id);
         };
-
+        /* get a list with all waypoints from a specific track */
+        this.getWaypoints = function (tripId) {
+            dataParameterCheck('trip', tripId, null);
+            var list = [];
+            /* copy only the template fields */
+            for (var wp in data.waypoint.list) {
+                list[list.length] = self.get('waypoint', wp.id);
+            }
+			return list;
+        };
+        
         /* Toggles the security circle */
-        this.toggleSecurityCircle = function() {            
+        this.toggleSecurityCircle = function() {
             if (activeSecurityCircle == null) {
                 showSecurityCircle();
             } else {
                 hideSecurityCircle();
             }
+            displaySecurityCircyle = !displaySecurityCircyle;  
         }
 
         /* Gets the global settings */
@@ -391,9 +417,9 @@
             DISTANCE_UNIT       : "globalSettings_km",
             TEMPERATURE_UNIT    : "globalSettings_celsius",
             TRACKING_DELAY      : 5,
+            WAYPOINT_DELAY      : 5, 
             HISTORY_TREND       : 1,
             CIRCLE_RADIUS       : 250
-
         };
 
         /* The settings for the alarms */
@@ -417,12 +443,18 @@
             NO_GEO_SUPPORT          : 7,
             BOAT_POS_UPDATE         : 8,
             CREATED_TRACK           : 9,
-            TRACKING_ACTIVE         : 10,
-            LEFT_SECURITY_CIRCLE    : 11,
-			SERVER_CREATE			: 12,
-			SERVER_REMOVE			: 13,
-            CREATED_WAYPOINT        : 14,
-            EDIT_MARK               : 15,
+            
+            ERROR                   : 10,
+            WARNING                 : 11,
+            INFO                    : 12,
+            
+            LEFT_SECURITY_CIRCLE    : 13,
+			SERVER_CREATE			: 14,
+			SERVER_REMOVE			: 15,
+            CREATED_WAYPOINT        : 16,
+            EDIT_MARK               : 17,
+            
+            
         };
 		        
         var options = $.seamap.options;
@@ -501,7 +533,9 @@
         // The id of the manoverboard marker
         var manoverboardMark = null;
 		
-        
+        // Determines whether the security circle should be displayed or not
+        var displaySecurityCircyle = false;
+
         var templateAccount =
         {
             "type"                : "account",
@@ -578,14 +612,21 @@
 			"owner" 		: null
 		};
         
-        var templateTrack =
+        var templateTrip =
 		{
-			"type"			: "track",
+			"type"			: "trip",
 			"id"			: null,
-			"name" 			: null,
-			"date" 			: null,
+			"name" 			: "",
+			"startDate" 	: "",
 			"marks" 		: [],
-			"distance" 		: null,
+			"distance" 		: "",
+            "from"          : "",
+            "to"            : "",
+            "skipper"       : "",
+            "duration"      : "",
+            "endDate"       : "",
+            "crewMembers"   : "",
+            "notes"         : "",
 			"_id" 			: null,
 			"_rev" 			: null,
 			"owner" 		: null
@@ -595,7 +636,7 @@
 		{
 			"type"			        : "boat",
 			"id"			        : null,
-            "boatName"              : "Titanic",
+            "boatName"              : "",
             "registerNr"            : "",
             "sailSign"              : "",
             "homePort"              : "",
@@ -603,7 +644,7 @@
             "insurance"             : "",
             "callSign"              : "",
             "boatType"              : "",
-            "boatConstructor"       : "David",
+            "boatConstructor"       : "",
             "boatOwner"             : "",
             "length"                : 0,
             "width"                 : 0,
@@ -640,12 +681,7 @@
 				Each listener get its own copy
 			*/
 			for (var e in events) {
-				var copy = {};
-				/* copy only the template fields */
-				for (var key in data[obj.type].template) {
-					copy[key] = data[obj.type].list[obj.id][key];
-				}
-				callbacks[events[e]].fire(copy);
+				callbacks[events[e]].fire(self.get(obj.type, obj.id));
 			}
 		};		
 		
@@ -678,8 +714,8 @@
 				count : 1,
 				active : null
 			},
-			track : {
-                template : templateTrack,
+			trip : {
+                template : templateTrip,
 				list : {},
 				count : 1,
 				active : null
@@ -718,11 +754,11 @@
 			dataCallback([event.DELETED_ROUTE], data.route.list[id]);
 		};
 		
-		/* define the remove method for the track */
-		data.track.removeMethod = function(id) {
+		/* define the remove method for the trip */
+		data.trip.removeMethod = function(id) {
 			/* check if the track is active */
-			if (data.track.active && data.track.active.id == id) {
-				data.track.active = null;
+			if (data.trip.active && data.trip.active.id == id) {
+				data.trip.active = null;
 				if (state == States.TRACK) {
 					state = States.NORMAL;
 				}
@@ -731,10 +767,10 @@
 			   be not the active track but still have a reference on the map (so it's only hidden)
 			   Because of this we have to check here if the track is "onMap" 
 			*/
-			if (data.track.list[id].onMap) {
-				data.track.list[id].onMap.remove();
+			if (data.trip.list[id].onMap) {
+				data.trip.list[id].onMap.remove();
 			}
-            dataCallback([event.DELETED_TRACK], data.track.list[id]);
+            dataCallback([event.DELETED_TRACK], data.trip.list[id]);
 		};
 		
 		/* define the visible method for a route */
@@ -750,12 +786,12 @@
 		};
 		
 		/* define the visible method for a track */
-		data.track.visibleMethod = activateTrack;
+		data.trip.visibleMethod = activateTrack;
 		
 		/* define the visible method for a track */
-		data.track.hideMethod = function(id) {
-			if (!data.track.active || data.track.active.id != id) {
-				throw("Illegal call of data.track.hideMethod, beacause only the active track can be hidden.");
+		data.trip.hideMethod = function(id) {
+			if (!data.trip.active || data.trip.active.id != id) {
+				throw("Illegal call of data.trip.hideMethod, beacause only the active track can be hidden.");
 			}
 			/* hide the active route now */
 			hideActiveTrack();
@@ -1171,7 +1207,7 @@
          */
         function handleBoatPositionUpdate(position) {            
             callbacks[event.BOAT_POS_UPDATE].fire(getCurrentBoatInformation());
-            if(boatMarker == null){
+            if (boatMarker == null){
                 boatMarker = new google.maps.Marker({
                     position: position,
                     map: map,
@@ -1179,8 +1215,13 @@
                     shape: options.boat.markerOptions.crosshairShape,
                     icon:  options.boat.markerOptions.image
                 });
-            }else{
+            } else {
                 boatMarker.setPosition(position);
+            }
+
+            if (displaySecurityCircyle) {
+                hideSecurityCircle();
+                showSecurityCircle();
             }
         }
         
@@ -1190,9 +1231,17 @@
         * *********************************************************************************
         */
         this.startTracking = function() {
-            if(data.route.active == null) {
+            
+            if (data.route.active == null) {
+                callbacks[event.WARNING].fire({msg : "No Route for tracking selected! Please select a Route."});
                 return false;
             }
+            /*
+            if (data.boat.active == null) {
+                callbacks[event.WARNING].fire({msg : "No Boat for tracking selected! Please select a Boat from the logbook."});
+                return false;
+            }
+            */
 
             if(isSimulating) {
                 fakeRoutePointer = 0;
@@ -1450,7 +1499,7 @@
         */
         function handleAddNewRoute() {
             if(isTracking) {
-                callbacks[event.TRACKING_ACTIVE].fire({msg : "This options is disabled because tracking is active!"});
+                callbacks[event.ERROR].fire({msg : "This options is disabled because tracking is active!"});
                 return;
             }
             
@@ -1610,15 +1659,15 @@
         * *********************************************************************************
         */
         function handleAddNewTrack() {
-            var obj = self.getTemplate('track');;
-            obj.id = data.track.count.toString();
-			obj.date = new Date().getTime();
-            obj.name = "Track " + data.track.count;
+            var obj = self.getTemplate('trip');;
+            obj.id = data.trip.count.toString();
+			obj.startDate = new Date().getTime();
+            obj.name = "Track " + data.trip.count;
             obj.onMap = getOnMapTrack(obj);
             obj.update = true;
-            data.track.list[obj.id] = obj;        
+            data.trip.list[obj.id] = obj;        
             activateTrack(obj.id); 
-            data.track.count++;
+            data.trip.count++;
             dataCallback([event.CREATED_TRACK], obj);
         }
 		
@@ -1641,11 +1690,11 @@
             hideActiveTrack();
             /* important that state will be set here, because hideActiveRoute() will set the state to NORMAL */
             state = States.TRACK;
-            data.track.active = data.track.list[id];
-            if (!data.track.active.onMap || null == data.track.active.onMap) {
-                data.track.active.onMap = getOnMapTrack(data.track.active);
+            data.trip.active = data.trip.list[id];
+            if (!data.trip.active.onMap || null == data.trip.active.onMap) {
+                data.trip.active.onMap = getOnMapTrack(data.trip.active);
             } 
-            data.track.active.onMap.visible();
+            data.trip.active.onMap.visible();
         }
         /**
         * *********************************************************************************
@@ -1653,11 +1702,11 @@
         * *********************************************************************************
         */ 
         function hideActiveTrack() {
-            if (data.track.active != null) {
+            if (data.trip.active != null) {
                 uploadTrackUpdate();
                 state = States.NORMAL;
-                data.track.active.onMap.hide();
-                data.track.active = null;
+                data.trip.active.onMap.hide();
+                data.trip.active = null;
             }
         }
         /**
@@ -1666,8 +1715,8 @@
         * *********************************************************************************
         */ 
         function deleteActiveTrack(){
-            if (data.track.active != null) {
-                self.remove('track', data.track.active.id);
+            if (data.trip.active != null) {
+                self.remove('trip', data.trip.active.id);
             }
         }
         
@@ -1688,9 +1737,8 @@
         * *********************************************************************************
         */
         function uploadTrackUpdate() {
-            if (data.track.active != null && data.track.active.update) {
-				dataCallback([event.SERVER_CREATE], data.track.active);
-                data.track.active.update = false;
+            if (data.trip.active != null) {
+				dataCallback([event.SERVER_CREATE], data.trip.active);
             }         
         }
         
@@ -1700,7 +1748,7 @@
         * *********************************************************************************
         */
         function addTrackMarker(latLng) {            
-            data.track.active.onMap.addMarker(latLng);
+            data.trip.active.onMap.addMarker(latLng);
         }
         
         /**
@@ -2040,7 +2088,7 @@
         this.path = null;
         this.markers = [];
         this.label = null;
-        this.notinteractive = (obj.type == 'track') ? true : false;
+        this.notinteractive = (obj.type == 'trip') ? true : false;
 		options = $.seamap.options[obj.type];
         init = false;
         		

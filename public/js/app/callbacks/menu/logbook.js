@@ -110,6 +110,7 @@ $(document).ready(function() {
         var html = template(tmpBoat);
 
         $('#boatInputForm').html(html);
+        menu.disableAutoClose();
         $('#modal-form_boat').modal('show');
     }
     /* END---------------------------- boats ------------------------------- */
@@ -177,7 +178,70 @@ $(document).ready(function() {
         return obj;
     }
     /* END---------------------------- marker ------------------------------- */
-    
+
+    /* START-------------------------- route ------------------------------- */
+    var tmpRoute;
+
+    menu.addCallback('rightclick', ['icon-notSelectedRoute', 'icon-selectedRoute'], function (self) {        
+        tmpRoute = map.get(self.data('type'), self.data('id'));
+        var template = Handlebars.compile($("#route_Template").text());
+        var html = template(tmpRoute);
+
+        $('#routeInputForm').html(html);
+
+        menu.disableAutoClose();
+        $('#modal-form_route').modal('show');
+    });
+
+    $('#modal-form_route').submit(function() {
+        var boundData = Handlebars.getBoundData(tmpRoute);
+        console.log(boundData);
+        map.set('route', boundData);
+        $('#modal-form_route').modal('hide');
+        return false;
+    });
+    /* END---------------------------- route ------------------------------- */
+
+    /* START-------------------------- track and waypoint------------------------------- */
+    var tmpTrack;
+
+    menu.addCallback('rightclick', ['icon-notSelectedTrack', 'icon-selectedTrack'], function (self) {
+        //console.log(new Date().getTime());
+        tmpTrack = map.get(self.data('type'), self.data('id'));
+        var template = Handlebars.compile($("#track_Template").text());
+        var html = template(tmpTrack);
+
+        $('#trackInputForm').html(html);
+
+        $('#open_waypoint_modal').on('click', function() {
+                if(!map.checkTracking()) {
+                    $('#modal-form_track').modal('hide');
+                    return;
+                }
+                isWaypointModalToBeOpened = true;
+                $("#waypoint_headingTo_select").html(waypoint_headingTo_template(
+                    [{id:0, label:"-"}, {id:1, label:"Routepoint 1"}, {id:2, label:"Routepoint 2"}, {id:3, label:"Routepoint 3"}]));
+                $('#modal-form_track').modal('hide');
+                $('#modal-form_waypoint').modal('show');
+            }
+        );
+
+        menu.disableAutoClose();
+        $('#modal-form_track').modal('show');
+
+        // Initializes the datepicker
+        $('.datepicker').datepicker();
+    });
+
+    $('#modal-form_track').submit(function() {
+        var boundData = Handlebars.getBoundData(tmpTrack);
+        console.log(boundData);
+        map.set('trip', boundData);
+        $('#modal-form_track').modal('hide');
+        return false;
+    });
+    /* END---------------------------- track and waypoint ------------------------------- */
+
     menu.addCallback('leftclick', 'icon-signInSeapal', function (self) {
         if(!map.checkTracking()) {
             return;
@@ -216,38 +280,6 @@ $(document).ready(function() {
         }
     });
 
-    menu.addCallback('rightclick', ['icon-notSelectedTrack', 'icon-selectedTrack'], function (self) {
-        menu.disableAutoClose();
-        $('#modal-form_track').modal('show');
-    });
-
-    menu.addCallback('rightclick', ['icon-notSelectedRoute', 'icon-selectedRoute'], function (self) {
-        menu.disableAutoClose();
-        $('#modal-form_route').modal('show');        
-    });
-
-    /**
-     * Shows the waypoint modal and closes the parent track modal
-     */
-    $('#open_waypoint_modal').on('click',
-        function() {
-            if(!map.checkTracking()) {
-                $('#modal-form_track').modal('hide');
-                return;
-            }
-            isWaypointModalToBeOpened = true;
-            $("#waypoint_headingTo_select").html(waypoint_headingTo_template(
-                [{id:0, label:"-"}, {id:1, label:"Routepoint 1"}, {id:2, label:"Routepoint 2"}, {id:3, label:"Routepoint 3"}]));
-            $('#modal-form_track').modal('hide');
-            $('#modal-form_waypoint').modal('show');
-        }
-    );
-
-    /**
-     * Launches datepicker needed for the specific form(s)
-     */
-    $('.datepicker').datepicker();
-
     /*
      * On close methods of modals to enable the menu autohide again
      */
@@ -256,27 +288,32 @@ $(document).ready(function() {
             if(!isWaypointModalToBeOpened) {
                 menu.enableAutoClose();
             }
+            $('#trackInputForm').html("");
         }
     );
     $('#modal-form_waypoint').on('hidden.bs.modal',
         function() {
             isWaypointModalToBeOpened = false;
             menu.enableAutoClose();
+            $('#waypointInputForm').html("");
         }
     );
     $('#modal-form_marker').on('hidden.bs.modal',
         function() {
             menu.enableAutoClose();
+            $('#markerInputForm').html("");
         }
     );    
     $('#modal-form_route').on('hidden.bs.modal',
         function() {
             menu.enableAutoClose();
+            $('#routeInputForm').html("");
         }
     );
     $('#modal-form_boat').on('hidden.bs.modal',
         function() {
             menu.enableAutoClose();
+            $('#boatInputForm').html("");
         }
     );
 });
