@@ -1848,24 +1848,43 @@
         * *********************************************************************************
         */
         function addNewWaypoint(image) {
-            var boat = getCurrentBoatInformation();
-            var obj = self.getTemplate('waypoint');
-            obj.id = data.waypoint.count.toString();
-            obj.name = "Waypoint "+data.waypoint.count;
-			obj.lat = position.lat();
-			obj.lng = position.lng();
-            obj.cog = boat.course;
-            obj.sog = boat.speed;
-			obj.date = new Date().getTime();
-			if (image) {
-				obj.image_thumb = image[0];
-				obj.image_big = image[1];
-			}
-            obj.onMap = getOnMapMark(obj);
-			
-            data.waypoint.list[obj.id] = obj;
-            data.waypoint.count++;
-            dataCallback([event.SERVER_CREATE, event.CREATED_WAYPOINT], obj);
+            /* add the waypoint only if a track is active and the track is already stored on the server
+               Also a boat has to be selected.
+            */
+            if (null != data.trip.active && null != data.trip.active._id) {
+                var boat = getCurrentBoatInformation();
+                var obj = self.getTemplate('waypoint');
+                obj.trip = data.trip.active._id;
+                
+                obj.id = data.waypoint.count.toString();
+                obj.name = "Waypoint "+data.waypoint.count;
+                obj.lat = obj.pos.lat();
+                obj.lng = obj.pos.lng();
+                obj.cog = boat.course;
+                obj.sog = boat.speed;
+                obj.date = new Date().getTime();
+                if (image) {
+                    obj.image_thumb = image[0];
+                    obj.image_big = image[1];
+                }
+                obj.onMap = getOnMapMark(obj);
+                
+                data.waypoint.list[obj.id] = obj;
+                data.waypoint.count++;
+                dataCallback([event.SERVER_CREATE, event.CREATED_WAYPOINT], obj);
+            }
+        }
+        /**
+        * *********************************************************************************
+        * Handles the creation of a new waypoint
+        * *********************************************************************************
+        */
+        function handleAddNewWaypoint() {
+            /* if tracking is still active, call method cyclic */
+            if (isTracking) {
+                /* call add of new waypoint cyclic */
+                setTimeout(handleAddNewWaypoint, globalSettings.WAYPOINT_DELAY * 1000);
+            }
         }
 
         /**
