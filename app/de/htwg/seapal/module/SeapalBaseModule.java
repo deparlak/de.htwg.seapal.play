@@ -33,6 +33,7 @@ public abstract class SeapalBaseModule
         bind(IRaceController.class).to(RaceController.class).in(Singleton.class);
         bind(IMarkController.class).to(MarkController.class).in(Singleton.class);
         bind(IRouteController.class).to(RouteController.class).in(Singleton.class);
+        bind(IAccountController.class).to(AccountController.class).in(Singleton.class);
     }
 
     @Provides

@@ -3,7 +3,7 @@ package de.htwg.seapal.web.controllers;
 import com.google.inject.Inject;
 import de.htwg.seapal.controller.ITripController;
 import de.htwg.seapal.controller.IWaypointController;
-import de.htwg.seapal.model.impl.Person;
+import de.htwg.seapal.model.impl.Account;
 import de.htwg.seapal.utils.logging.ILogger;
 import de.htwg.seapal.web.controllers.helpers.Menus;
 import de.htwg.seapal.web.views.html.app;
@@ -44,15 +44,15 @@ public class Application
     }
 
     public static Result login() {
-        return ok(signInSeapal.render(DynamicForm.form(Person.class), routes.AccountAPI.login()));
+        return ok(signInSeapal.render(DynamicForm.form(Account.class), routes.AccountAPI.login()));
     }
 
     public static Result forgotten() {
-        return ok(forgottenPassword.render(DynamicForm.form(Person.class)));
+        return ok(forgottenPassword.render(DynamicForm.form(Account.class)));
     }
 
     public static Result signup() {
-        return ok(signUpSeapal.render(DynamicForm.form(Person.class), routes.AccountAPI.signup()));
+        return ok(signUpSeapal.render(DynamicForm.form(Account.class), routes.AccountAPI.signup()));
     }
 
     public static Result javascriptRoutes() {

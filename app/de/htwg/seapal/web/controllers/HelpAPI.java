@@ -26,7 +26,7 @@ public class HelpAPI
     private IMarkController markController;
 
     @Inject
-    private IPersonController personController;
+    private IAccountController AccountController;
 
     @Inject
     private IRouteController routeController;
@@ -46,30 +46,30 @@ public class HelpAPI
         Map<String, JsonNode> dom = new HashMap<>();
         Map<String, JsonNode> domACL = new HashMap<>();
 
-        IPerson crewMember1 = new Person();
+        IAccount crewMember1 = new Account();
         crewMember1.setAccount(crewMember1.getUUID().toString());
         crewMember1.setEmail("crewMember1@123.de");
         crewMember1.setPassword(PasswordHash.createHash("test"));
-        personController.savePerson(crewMember1);
-        domACL.put("crewMember1", Json.toJson(new PublicPerson(personController.getPerson(crewMember1.getUUID()))));
+        AccountController.saveAccount(crewMember1);
+        domACL.put("crewMember1", Json.toJson(AccountController.getPerson(crewMember1.getUUID())));
 
-        IPerson crewMember2 = new Person();
+        IAccount crewMember2 = new Account();
         crewMember2.setAccount(crewMember2.getUUID().toString());
         crewMember2.setEmail("crewMember2@123.de");
         crewMember2.setPassword(PasswordHash.createHash("test"));
-        personController.savePerson(crewMember2);
-        domACL.put("crewMember2", Json.toJson(new PublicPerson(personController.getPerson(crewMember2.getUUID()))));
+        AccountController.saveAccount(crewMember2);
+        domACL.put("crewMember2", Json.toJson(AccountController.getPerson(crewMember2.getUUID())));
 
-        IPerson account = new Person();
+        IAccount account = new Account();
         account.setAccount(account.getUUID().toString());
         account.addFriend(crewMember1);
         crewMember1.addFriend(account);
         account.addFriend(crewMember2);
         account.setEmail("account@123.de");
         account.setPassword(PasswordHash.createHash("test"));
-        personController.savePerson(account);
+        AccountController.saveAccount(account);
 
-        domACL.put("captain", Json.toJson(new PublicPerson(personController.getPerson(account.getUUID()))));
+        domACL.put("captain", Json.toJson(AccountController.getPerson(account.getUUID())));
 
         ObjectNode nodeInner  = Json.newObject();
         nodeInner.putAll(domACL);
@@ -113,7 +113,6 @@ public class HelpAPI
         waypoint.setBoat(boat.getUUID().toString());
         waypointController.saveWaypoint(waypoint);
         dom.put("waypoint", Json.toJson(waypointController.getWaypoint(waypoint.getUUID())));
-
 
         node.putAll(dom);
 

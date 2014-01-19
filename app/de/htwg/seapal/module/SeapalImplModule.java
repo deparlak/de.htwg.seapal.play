@@ -5,6 +5,7 @@ import com.google.inject.name.Named;
 import com.google.inject.name.Names;
 import de.htwg.seapal.database.*;
 import de.htwg.seapal.database.impl.*;
+import de.htwg.seapal.database.mock.AccountDatabase;
 import de.htwg.seapal.utils.logger.iml.WebLogger;
 import de.htwg.seapal.utils.logging.ILogger;
 import org.ektorp.CouchDbConnector;
@@ -24,8 +25,8 @@ public class SeapalImplModule extends SeapalBaseModule {
 	}
 
 	private void configureDatabases() {
-        //bind(String.class).annotatedWith(Names.named("databaseOfAccount")).toInstance("seapal_account_db");
-        //bind(IAccountDatabase.class).to(AccountDatabase.class);
+        bind(String.class).annotatedWith(Names.named("databaseOfAccount")).toInstance("seapal_account_db");
+        bind(IAccountDatabase.class).to(AccountDatabase.class);
         bind(String.class).annotatedWith(Names.named("databaseOfPerson")).toInstance("seapal_person_db");
 		bind(IPersonDatabase.class).to(PersonDatabase.class);
 		bind(String.class).annotatedWith(Names.named("databaseOfBoat")).toInstance("seapal_boat_db");
@@ -38,15 +39,15 @@ public class SeapalImplModule extends SeapalBaseModule {
 		bind(IRouteDatabase.class).to(RouteDatabase.class);
 		bind(String.class).annotatedWith(Names.named("databaseOfMark")).toInstance("seapal_mark_db");
 		bind(IMarkDatabase.class).to(MarkDatabase.class);
-		bind(String.class).annotatedWith(Names.named("databaseOfRace")).toInstance("seapal_race_db");
-		bind(IRaceDatabase.class).to(RaceDatabase.class);
-	}
+        bind(String.class).annotatedWith(Names.named("databaseOfRace")).toInstance("seapal_race_db");
+        bind(IRaceDatabase.class).to(RaceDatabase.class);
+    }
 
-    /*@Provides
+    @Provides
     @Named("accountCouchDbConnector")
     CouchDbConnector getAccountStdCouchDbConnector(@Named("databaseOfAccount") String databaseName, CouchDbInstance couchDbInstance) {
         return new StdCouchDbConnector(databaseName, couchDbInstance);
-    }*/
+    }
 
     @Provides
 	@Named("personCouchDbConnector")

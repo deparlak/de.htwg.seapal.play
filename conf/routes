@@ -5,14 +5,14 @@ GET           /                                                                 
 GET           /impressum                                                                                de.htwg.seapal.web.controllers.Application.impressum()
 GET           /app                                                                                      de.htwg.seapal.web.controllers.Application.app()
 
-GET           /api/$document<(boat|mark|route|trip|waypoint)>/$id<[0-9a-fA-F\-]+>        @de.htwg.seapal.web.controllers.MainAPI.singleDocument(id: UUID, document: String)
+GET           /api/$document<(boat|mark|route|trip|waypoint|person)>/$id<[0-9a-fA-F\-]+>        @de.htwg.seapal.web.controllers.MainAPI.singleDocument(id: UUID, document: String)
 DELETE        /api/$document<(boat|mark|route|trip|waypoint)>/$id<[0-9a-fA-F\-]+>        @de.htwg.seapal.web.controllers.MainAPI.deleteDocument(id: UUID, document: String)
-GET           /api/$document<(boat|mark|route|trip|waypoint)>/$scope<(own|foreign|all)>        @de.htwg.seapal.web.controllers.MainAPI.getDocuments(document: String, scope: String)
+GET           /api/$document<(boat|mark|route|trip|waypoint|person)>/$scope<(own|foreign|all)>        @de.htwg.seapal.web.controllers.MainAPI.getDocuments(document: String, scope: String)
 GET           /api/$document<(trip|waypoint)>/byparent/$parent<(boat|trip)>/$id<[0-9a-fA-F\-]+>        @de.htwg.seapal.web.controllers.MainAPI.getByParent(document: String, parent: String, id: UUID)
-POST          /api/$document<(boat|mark|route|trip|waypoint)>        @de.htwg.seapal.web.controllers.MainAPI.createDocument(document: String)
-GET           /api/account        @de.htwg.seapal.web.controllers.MainAPI.ownAccount()
-GET           /api/account/$id<[0-9a-fA-F\-]+>        @de.htwg.seapal.web.controllers.MainAPI.account(id: UUID)
+POST          /api/$document<(boat|mark|route|trip|waypoint|person)>        @de.htwg.seapal.web.controllers.MainAPI.createDocument(document: String)
+GET           /api/account        @de.htwg.seapal.web.controllers.AccountAPI.account()
 GET           /api/sendFriendRequest/$id<[0-9a-fA-F\-]+>        @de.htwg.seapal.web.controllers.MainAPI.sendFriendRequest(id: UUID)
+GET           /api/sendFriendRequestMail/$mail<[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}>        @de.htwg.seapal.web.controllers.MainAPI.sendFriendRequestMail(mail: String)
 GET           /api/all/$scope<(own|foreign|all)>        @de.htwg.seapal.web.controllers.MainAPI.all(scope: String)
 
 # authentication

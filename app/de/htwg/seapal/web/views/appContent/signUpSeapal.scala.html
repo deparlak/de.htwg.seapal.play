@@ -1,4 +1,4 @@
-@(form: Form[de.htwg.seapal.model.impl.Person], link: play.api.mvc.Call)
+@(form: Form[de.htwg.seapal.model.impl.Account], link: play.api.mvc.Call)
 <!DOCTYPE HTML>
 <html>
     <head>
@@ -39,7 +39,4 @@
             }<div class="message-link"><a href="@de.htwg.seapal.web.controllers.routes.AccountAPI.auth()">
         Google Login</a></div></div>
     </body>
-    <footer>
-        @appContent.footer()
-    </footer>
 </html>

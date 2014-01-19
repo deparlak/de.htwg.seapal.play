@@ -1,10 +1,11 @@
 package de.htwg.seapal.web.controllers;
 
 import com.google.inject.Inject;
-import de.htwg.seapal.controller.IPersonController;
+import de.htwg.seapal.controller.IAccountController;
 import de.htwg.seapal.controller.impl.PasswordHash;
+import de.htwg.seapal.model.IAccount;
 import de.htwg.seapal.model.IPerson;
-import de.htwg.seapal.model.impl.Person;
+import de.htwg.seapal.model.impl.Account;
 import de.htwg.seapal.utils.logging.ILogger;
 import de.htwg.seapal.web.controllers.helpers.Menus;
 import de.htwg.seapal.web.views.html.appContent.reset;
@@ -28,6 +29,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @With(Menus.class)
 public class AccountAPI
@@ -35,19 +38,28 @@ public class AccountAPI
 
     private static final long TIMEOUT = 60 * 60 * 1000;
 
-    static Form<Person> form = Form.form(Person.class);
+    static Form<Account> form = Form.form(Account.class);
+    private static final Pattern EMAIL_PATTERN = Pattern.compile("^[_A-Za-z0-9-\\+]+(\\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$");
+    private static final int MIN_LENGTH = 8;
 
     @Inject
-    private IPersonController controller;
+    private IAccountController controller;
 
     @Inject
     private ILogger logger;
 
+    @play.mvc.Security.Authenticated(AccountAPI.SecuredAPI.class)
+    public Result account() {
+        String session = session(IAccountController.AUTHN_COOKIE_KEY);
+
+        return ok(Json.toJson(controller.getInternalInfo(session)));
+    }
+
     public Result signup() {
-        Form<Person> filledForm = form.bindFromRequest();
+        Form<Account> filledForm = form.bindFromRequest();
 
         ObjectNode response = Json.newObject();
-        IPerson account = filledForm.get();
+        Account account = filledForm.get();
         boolean exists = controller.accountExists(account.getEmail());
 
         if (filledForm.hasErrors() || exists) {
@@ -59,39 +71,42 @@ public class AccountAPI
 
             return badRequest(signUpSeapal.render(filledForm, routes.AccountAPI.signup()));
         } else {
+            IAccount account1 = new Account();
             try {
 
-                String error = InputValidator.validate(account);
+                String error = validate(account);
                 if (error != null) {
                     flash("errors", error);
                     return badRequest(signUpSeapal.render(filledForm, routes.AccountAPI.signup()));
                 }
 
-                account.setPassword(PasswordHash.createHash(account.getPassword()));
-                controller.savePerson(account);
+                account1.setPassword(PasswordHash.createHash(account.getPassword()));
+                controller.saveAccount(account1);
             } catch (InvalidKeySpecException e) {
                 e.printStackTrace();
             } catch (NoSuchAlgorithmException e) {
                 e.printStackTrace();
             }
+
+
             session().clear();
-            session(IPersonController.AUTHN_COOKIE_KEY, filledForm.get().getUUID().toString());
+            session(IAccountController.AUTHN_COOKIE_KEY, account1.getUUID().toString());
             return redirect(routes.Application.app());
         }
     }
 
     public Result login() {
-        Form<Person> filledForm = DynamicForm.form(Person.class).bindFromRequest();
+        Form<Account> filledForm = DynamicForm.form(Account.class).bindFromRequest();
 
 
-        IPerson account = null;
+        IAccount account = null;
 
         try {
             account = controller.authenticate(filledForm.get());
 
             if (!filledForm.hasErrors() && account != null) {
                 session().clear();
-                session(IPersonController.AUTHN_COOKIE_KEY, account.getUUID().toString());
+                session(IAccountController.AUTHN_COOKIE_KEY, account.getUUID().toString());
                 flash("success", "You've been logged in");
                 return redirect(routes.Application.app());
             }
@@ -116,10 +131,10 @@ public class AccountAPI
     }
 
     public Result requestNewPassword() {
-        Form<Person> filledForm = form.bindFromRequest();
+        Form<Account> filledForm = form.bindFromRequest();
 
-        IPerson account = filledForm.get();
-        List<? extends IPerson> list = controller.queryView("by_email", account.getEmail());
+        IAccount account = filledForm.get();
+        List<? extends IAccount> list = controller.queryView("by_email", account.getEmail());
 
         if (list.size() == 0) {
             flash("errors", "Account does not exist");
@@ -139,7 +154,7 @@ public class AccountAPI
 
         account.setResetTimeout(System.currentTimeMillis() + TIMEOUT);
 
-        controller.savePerson(account);
+        controller.saveAccount(account);
 
         /*
             MailerAPI mail = play.Play.application().plugin(MailerPlugin.class).email();
@@ -165,7 +180,7 @@ public class AccountAPI
 
         logger.error("Token", token);
 
-        List<? extends IPerson> list = controller.queryView("resetToken", token);
+        List<? extends IAccount> list = controller.queryView("resetToken", token);
 
         logger.error("size", Integer.toString(list.size()));
 
@@ -177,14 +192,14 @@ public class AccountAPI
             return resetForm(Integer.parseInt(token));
         }
 
-        IPerson account = list.get(0);
+        IAccount account = list.get(0);
 
         if (account.getResetTimeout() < System.currentTimeMillis()) {
             flash("errors", "Reset token expired. Please request a new token by clicking on I forgot my password!");
             return resetForm(Integer.parseInt(token));
         }
 
-        String error = InputValidator.validate(account);
+        String error = validate(account);
         if (error != null) {
             flash("errors", error);
             return resetForm(Integer.parseInt(token));
@@ -201,9 +216,9 @@ public class AccountAPI
         } catch (InvalidKeySpecException e) {
             e.printStackTrace();
         }
-        controller.savePerson(account);
+        controller.saveAccount(account);
 
-        session(IPersonController.AUTHN_COOKIE_KEY, account.getUUID().toString());
+        session(IAccountController.AUTHN_COOKIE_KEY, account.getUUID().toString());
         flash("success", "You have successfully changed your password");
 
         return resetForm(Integer.parseInt(token));
@@ -214,7 +229,7 @@ public class AccountAPI
 
         @Override
         public String getUsername(Context ctx) {
-            return ctx.session().get(IPersonController.AUTHN_COOKIE_KEY);
+            return ctx.session().get(IAccountController.AUTHN_COOKIE_KEY);
         }
 
         @Override
@@ -228,7 +243,7 @@ public class AccountAPI
 
         @Override
         public String getUsername(Context ctx) {
-            return ctx.session().get(IPersonController.AUTHN_COOKIE_KEY);
+            return ctx.session().get(IAccountController.AUTHN_COOKIE_KEY);
         }
 
         @Override
@@ -254,21 +269,51 @@ public class AccountAPI
     }
 
     public Result verify() {
-        try {
-            F.Promise<OpenID.UserInfo> userInfoPromise = OpenID.verifiedId();
-            OpenID.UserInfo userInfo = userInfoPromise.get();
-            IPerson person = controller.googleLogin(userInfo.attributes, userInfo.id);
-            if (person == null) {
-                flash("errors", "Login Failed");
-                return badRequest(signInSeapal.render(null, routes.AccountAPI.login()));
+        String[] modes = request().queryString().get("openid.mode");
+        if (modes != null) {
+            for (String mode: modes) {
+                if (mode.equals("cancel")) {
+                    flash("errors", "Login Failed");
+                    return badRequest(signInSeapal.render(null, routes.AccountAPI.login()));
+                }
             }
+        }
 
-            session().clear();
-            session(IPersonController.AUTHN_COOKIE_KEY, person.getId());
-            return redirect(routes.Application.app());
-        } catch (Exception e) {
+        F.Promise<OpenID.UserInfo> userInfoPromise = OpenID.verifiedId();
+        OpenID.UserInfo userInfo = userInfoPromise.get();
+        IAccount person = controller.googleLogin(userInfo.attributes, userInfo.id);
+        if (person == null) {
             flash("errors", "Login Failed");
             return badRequest(signInSeapal.render(null, routes.AccountAPI.login()));
         }
+
+        session().clear();
+        session(IAccountController.AUTHN_COOKIE_KEY, person.getId());
+        return redirect(routes.Application.app());
+    }
+
+    public static String validate(IAccount account) {
+        if (!validate_eMail(account.getEmail())) {
+            return "Please enter a valid email adress!";
+        }
+
+        if (!checkLength(account.getPassword())) {
+            return "The password you've entered is to short. Use at least " + MIN_LENGTH + " characters!";
+        }
+
+        return null;
+    }
+
+    private static boolean validate_eMail(final String hex) {
+        Matcher matcher = EMAIL_PATTERN.matcher(hex);
+        return matcher.matches();
+    }
+
+    private static boolean checkPasswords(IPerson account) {
+        return true; //account.getPassword().equals(account.getRepeatedAccountPassword());
+    }
+
+    private static boolean checkLength(String password) {
+        return password.length() >= MIN_LENGTH;
     }
 }

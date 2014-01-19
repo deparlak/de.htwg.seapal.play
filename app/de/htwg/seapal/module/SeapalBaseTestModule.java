@@ -25,7 +25,6 @@ public abstract class SeapalBaseTestModule extends AbstractModule {
 	}
 
 	private void configureControllers() {
-        // bind(IAccountController.class).to(AccountController.class).in(Singleton.class);
         bind(IBoatController.class).to(BoatController.class).in(Singleton.class);
         bind(ITripController.class).to(TripController.class).in(Singleton.class);
 		bind(IWaypointController.class).to(WaypointController.class).in(Singleton.class);
@@ -33,6 +32,7 @@ public abstract class SeapalBaseTestModule extends AbstractModule {
         bind(IMarkController.class).to(MarkController.class).in(Singleton.class);
         bind(IPersonController.class).to(PersonController.class).in(Singleton.class);
         bind(IRouteController.class).to(RouteController.class).in(Singleton.class);
+        bind(IAccountController.class).to(AccountController.class).in(Singleton.class);
     }
 
 	@Provides

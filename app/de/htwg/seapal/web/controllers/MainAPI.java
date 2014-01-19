@@ -1,8 +1,9 @@
 package de.htwg.seapal.web.controllers;
 
 import com.google.inject.Inject;
+import de.htwg.seapal.controller.IAccountController;
 import de.htwg.seapal.controller.IMainController;
-import de.htwg.seapal.controller.IPersonController;
+import de.htwg.seapal.controller.impl.AccountController;
 import de.htwg.seapal.model.ModelDocument;
 import de.htwg.seapal.model.impl.*;
 import org.codehaus.jackson.JsonNode;
@@ -11,6 +12,7 @@ import play.data.Form;
 import play.libs.Json;
 import play.mvc.Controller;
 import play.mvc.Result;
+import play.mvc.Security;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -26,6 +28,9 @@ public final class MainAPI
     @Inject
     private IMainController controller;
 
+    @Inject
+    private AccountController accountController;
+
     private Map<String, Class<? extends ModelDocument>> forms;
 
     public MainAPI() {
@@ -39,10 +44,12 @@ public final class MainAPI
 
     @play.mvc.Security.Authenticated(AccountAPI.SecuredAPI.class)
     public Result all(String scope) {
-        String session = session(IPersonController.AUTHN_COOKIE_KEY);
+        String session = session(IAccountController.AUTHN_COOKIE_KEY);
 
         ObjectNode node = Json.newObject();
-        node.put("account", Json.toJson(controller.account(session)));
+        node.put("person_info", Json.toJson(accountController.getPerson(UUID.fromString(session))));
+
+        node.put("account_info", Json.toJson(accountController.getInternalInfo(session)));
 
         for (String type: forms.keySet()) {
             node.put(type, Json.toJson(controller.getDocuments(type, session, scope)));
@@ -51,16 +58,16 @@ public final class MainAPI
         return ok(node);
     }
 
-    @play.mvc.Security.Authenticated(AccountAPI.SecuredAPI.class)
+    @Security.Authenticated(AccountAPI.SecuredAPI.class)
     public Result singleDocument(final UUID id, final String document) {
-        String session = session(IPersonController.AUTHN_COOKIE_KEY);
+        String session = session(IAccountController.AUTHN_COOKIE_KEY);
 
         return ok(Json.toJson(controller.getSingleDocument(session, id, document)));
     }
 
     @play.mvc.Security.Authenticated(AccountAPI.SecuredAPI.class)
     public Result deleteDocument(final UUID id, final String document) {
-        String session = session(IPersonController.AUTHN_COOKIE_KEY);
+        String session = session(IAccountController.AUTHN_COOKIE_KEY);
 
         if (controller.deleteDocument(session, id, document)) {
             return ok(success);
@@ -71,14 +78,14 @@ public final class MainAPI
 
     @play.mvc.Security.Authenticated(AccountAPI.SecuredAPI.class)
     public Result getDocuments(String document, String scope) {
-        String session = session(IPersonController.AUTHN_COOKIE_KEY);
+        String session = session(IAccountController.AUTHN_COOKIE_KEY);
 
         return ok(Json.toJson(controller.getDocuments(document, session, scope)));
     }
 
     @play.mvc.Security.Authenticated(AccountAPI.SecuredAPI.class)
     public Result getByParent(String document, String parent, UUID id) {
-        String session = session(IPersonController.AUTHN_COOKIE_KEY);
+        String session = session(IAccountController.AUTHN_COOKIE_KEY);
 
         try {
             return ok(Json.toJson(controller.getByParent(document, parent, session, id)));
@@ -102,26 +109,8 @@ public final class MainAPI
                 mark.setLatitude(Double.valueOf(form2.data().get("lat")));
             }
 
-            doc.setAccount(session(IPersonController.AUTHN_COOKIE_KEY));
+            doc.setAccount(session(IAccountController.AUTHN_COOKIE_KEY));
             return ok(Json.toJson(controller.creatDocument(document, doc)));
-        } catch (NullPointerException e) {
-            return internalServerError(EMPTY);
-        }
-    }
-
-    @play.mvc.Security.Authenticated(AccountAPI.SecuredAPI.class)
-    public Result ownAccount() {
-        try {
-            return ok(Json.toJson(controller.account(session(IPersonController.AUTHN_COOKIE_KEY))));
-        } catch (NullPointerException e) {
-            return internalServerError(EMPTY);
-        }
-    }
-
-    @play.mvc.Security.Authenticated(AccountAPI.SecuredAPI.class)
-    public Result account(UUID id) {
-        try {
-            return ok(Json.toJson(controller.account(id, session(IPersonController.AUTHN_COOKIE_KEY))));
         } catch (NullPointerException e) {
             return internalServerError(EMPTY);
         }
@@ -130,7 +119,15 @@ public final class MainAPI
     @play.mvc.Security.Authenticated(AccountAPI.SecuredAPI.class)
     public Result sendFriendRequest(UUID askedPersonUUID) {
         try {
-            return ok(Json.toJson(controller.addFriend(session(IPersonController.AUTHN_COOKIE_KEY), askedPersonUUID)));
+            return ok(Json.toJson(controller.addFriend(session(IAccountController.AUTHN_COOKIE_KEY), askedPersonUUID)));
+        } catch (NullPointerException e) {
+            return internalServerError(EMPTY);
+        }
+    }
+
+    public Result sendFriendRequestMail(String mail) {
+        try {
+            return ok(Json.toJson(controller.addFriend(session(IAccountController.AUTHN_COOKIE_KEY), mail)));
         } catch (NullPointerException e) {
             return internalServerError(EMPTY);
         }
