@@ -8,6 +8,7 @@ import de.htwg.seapal.utils.logging.ILogger;
 import de.htwg.seapal.web.controllers.helpers.Menus;
 import de.htwg.seapal.web.views.html.app;
 import de.htwg.seapal.web.views.html.appContent.forgottenPassword;
+import de.htwg.seapal.web.views.html.appContent.reset;
 import de.htwg.seapal.web.views.html.appContent.signInSeapal;
 import de.htwg.seapal.web.views.html.appContent.signUpSeapal;
 import de.htwg.seapal.web.views.html.impressum;
@@ -53,6 +54,10 @@ public class Application
 
     public static Result signup() {
         return ok(signUpSeapal.render(DynamicForm.form(Account.class), routes.AccountAPI.signup()));
+    }
+
+    public static Result resetForm(int token) {
+        return ok(reset.render(token));
     }
 
     public static Result javascriptRoutes() {

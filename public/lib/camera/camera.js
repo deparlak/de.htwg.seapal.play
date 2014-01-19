@@ -34,7 +34,7 @@
 	/* Capture an image and returns it BASE64 encoded */
 	camera.captureImage = function() {
 	    dataURL[0] = takePhoto(20, 20);
-	    dataURL[1] = takePhoto(1, 1);
+	    dataURL[1] = takeImage(210, 157);
 		return dataURL;
 	}
 
@@ -44,6 +44,18 @@
 			video.pause();
 			video_stream.stop();
 		}
+	}
+
+	function takeImage(width, height) {
+		var canvas = document.createElement('canvas');
+	    canvas.id = 'hiddenCanvas';
+	    //add canvas to the body element
+	    var ctx = canvas.getContext('2d');
+	    canvas.width = width;
+	    canvas.height = height;
+	    ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+	    return canvas.toDataURL();
 	}
 
 	/* Takes the photo and scales it by the given factors*/
