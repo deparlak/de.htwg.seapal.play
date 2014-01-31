@@ -1,8 +1,6 @@
 package de.htwg.seapal.web.controllers;
 
 import com.google.inject.Inject;
-import de.htwg.seapal.controller.ITripController;
-import de.htwg.seapal.controller.IWaypointController;
 import de.htwg.seapal.model.impl.Account;
 import de.htwg.seapal.model.impl.SignupAccount;
 import de.htwg.seapal.utils.logging.ILogger;
@@ -23,12 +21,6 @@ import play.mvc.With;
 @With(Menus.class)
 public class Application
         extends Controller {
-
-    @Inject
-    private ITripController tripController;
-
-    @Inject
-    private IWaypointController waypointController;
 
     @Inject
     private ILogger logger;

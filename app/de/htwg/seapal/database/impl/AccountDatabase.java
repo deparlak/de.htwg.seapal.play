@@ -42,15 +42,14 @@ public final class AccountDatabase extends CouchDbRepositorySupport<Account>
         Account entity = (Account) data;
 
         if (entity.isNew()) {
-            // ensure that the id is generated and revision is null for saving a new entity
             entity.setRevision(null);
             add(entity);
             return true;
+        } else {
+            logger.info("AccountDatabase", "Updating entity with UUID: " + entity.getId());
+            update(entity);
+            return false;
         }
-
-        logger.info("AccountDatabase", "Updating entity with UUID: " + entity.getId());
-        update(entity);
-        return false;
     }
 
     @Override

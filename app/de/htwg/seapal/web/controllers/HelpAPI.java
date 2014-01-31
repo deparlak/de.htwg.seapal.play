@@ -18,23 +18,12 @@ import java.util.Map;
 
 public class HelpAPI
         extends Controller {
-    @Inject
-    private IBoatController boatController;
 
     @Inject
-    private IMarkController markController;
+    private IMainController mainController;
 
     @Inject
     private IAccountController AccountController;
-
-    @Inject
-    private IRouteController routeController;
-
-    @Inject
-    private ITripController tripController;
-
-    @Inject
-    private IWaypointController waypointController;
 
     @Inject
     private ILogger logger;
@@ -44,20 +33,25 @@ public class HelpAPI
         ObjectNode node = Json.newObject();
         Map<String, JsonNode> dom = new HashMap<>();
         Map<String, JsonNode> domACL = new HashMap<>();
+        Map<String, JsonNode> domACLPerson = new HashMap<>();
 
-        IAccount crewMember1 = new Account();
+        Account crewMember1 = new Account();
         crewMember1.setAccount(crewMember1.getUUID().toString());
         crewMember1.setEmail("crewMember1@123.de");
         crewMember1.setPassword("test");
-        AccountController.saveAccount(crewMember1, true);
-        domACL.put("crewMember1", Json.toJson(AccountController.getPerson(crewMember1.getUUID())));
+        SignupAccount save = new SignupAccount(crewMember1, "Alfred", "von Tirpitz");
+        AccountController.saveAccount(save, true);
+        domACL.put("crewMember1", Json.toJson(AccountController.getInternalInfo(String.valueOf(crewMember1.getUUID()))));
+        domACLPerson.put("crewMember1", Json.toJson(AccountController.getPerson(crewMember1.getUUID())));
 
         IAccount crewMember2 = new Account();
         crewMember2.setAccount(crewMember2.getUUID().toString());
         crewMember2.setEmail("crewMember2@123.de");
         crewMember2.setPassword("test");
-        AccountController.saveAccount(crewMember2, true);
-        domACL.put("crewMember2", Json.toJson(AccountController.getPerson(crewMember2.getUUID())));
+        SignupAccount save2 = new SignupAccount(crewMember2, "Ernst", "Lindemann");
+        AccountController.saveAccount(save2, true);
+        domACL.put("crewMember2", Json.toJson(AccountController.getInternalInfo(String.valueOf(crewMember2.getUUID()))));
+        domACLPerson.put("crewMember2", Json.toJson(AccountController.getPerson(crewMember2.getUUID())));
 
         IAccount account = new Account();
         account.setAccount(account.getUUID().toString());
@@ -65,52 +59,56 @@ public class HelpAPI
         crewMember1.addFriend(account);
         account.setEmail("account@123.de");
         account.setPassword("test");
-        AccountController.saveAccount(account, true);
-
-        domACL.put("captain", Json.toJson(AccountController.getPerson(account.getUUID())));
+        SignupAccount save3 = new SignupAccount(crewMember2, "Karl", "Dönitz");
+        AccountController.saveAccount(save3, true);
+        domACL.put("captain", Json.toJson(AccountController.getInternalInfo(String.valueOf(account.getUUID()))));
+        domACLPerson.put("captain", Json.toJson(AccountController.getPerson(account.getUUID())));
 
         ObjectNode nodeInner = Json.newObject();
         nodeInner.putAll(domACL);
-        dom.put("captainAndCrew", nodeInner);
+        ObjectNode nodeInner2 = Json.newObject();
+        nodeInner2.putAll(domACLPerson);
+        dom.put("captainAndCrew_internal_info", nodeInner);
+        dom.put("captainAndCrew_external_info", nodeInner2);
 
         String owner = account.getUUID().toString();
 
         IBoat boat = new Boat();
         boat.setBoatName("boat1");
         boat.setAccount(owner);
-        boatController.saveBoat(boat);
-        dom.put("boat", Json.toJson(boatController.getBoat(boat.getUUID())));
+        mainController.creatDocument("boat", (ModelDocument) boat, owner);
+        dom.put("boat", Json.toJson(mainController.getSingleDocument(owner, boat.getUUID(), "boat")));
 
         IBoat boat2 = new Boat();
         boat2.setBoatName("boat2");
         boat2.setAccount(crewMember1.getUUID().toString());
-        boatController.saveBoat(boat2);
-        dom.put("boat2", Json.toJson(boatController.getBoat(boat2.getUUID())));
+        mainController.creatDocument("boat", (ModelDocument) boat2, crewMember1.getUUID().toString());
+        dom.put("boat2", Json.toJson(mainController.getSingleDocument(crewMember1.getUUID().toString(), boat2.getUUID(), "boat")));
 
         IMark mark = new Mark();
         mark.setAccount(owner);
         mark.setLatitude(3.4);
         mark.setLongitude(5.6);
-        markController.saveMark(mark);
-        dom.put("mark", Json.toJson(markController.getMark(mark.getUUID())));
+        mainController.creatDocument("mark", (ModelDocument) mark, owner);
+        dom.put("mark", Json.toJson(mainController.getSingleDocument(owner, mark.getUUID(), "mark")));
 
         IRoute route = new Route();
         route.setAccount(owner);
-        routeController.saveRoute(route);
-        dom.put("route", Json.toJson(routeController.getRoute(route.getUUID())));
+        mainController.creatDocument("route", (ModelDocument) route, owner);
+        dom.put("route", Json.toJson(mainController.getSingleDocument(owner, route.getUUID(), "route")));
 
         ITrip trip = new Trip();
         trip.setAccount(owner);
         trip.setBoat(boat.getUUID().toString());
-        tripController.saveTrip(trip);
-        dom.put("trip", Json.toJson(tripController.getTrip(trip.getUUID())));
+        mainController.creatDocument("trip", (ModelDocument) trip, owner);
+        dom.put("trip", Json.toJson(mainController.getSingleDocument(owner, trip.getUUID(), "trip")));
 
         IWaypoint waypoint = new Waypoint();
         waypoint.setAccount(owner);
         waypoint.setTrip(trip.getUUID().toString());
         waypoint.setBoat(boat.getUUID().toString());
-        waypointController.saveWaypoint(waypoint);
-        dom.put("waypoint", Json.toJson(waypointController.getWaypoint(waypoint.getUUID())));
+        mainController.creatDocument("waypoint", (ModelDocument) waypoint, owner);
+        dom.put("waypoint", Json.toJson(mainController.getSingleDocument(owner, waypoint.getUUID(), "waypoint")));
 
         node.putAll(dom);
 
