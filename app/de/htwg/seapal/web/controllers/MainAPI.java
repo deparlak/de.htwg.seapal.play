@@ -72,14 +72,14 @@ public final class MainAPI
     public Result singleDocument(final UUID id, final String document) {
         String session = session(IAccountController.AUTHN_COOKIE_KEY);
 
-        return ok(Json.toJson(controller.getSingleDocument(session, id, document)));
+        return ok(Json.toJson(controller.getSingleDocument(document, session, id)));
     }
 
     @play.mvc.Security.Authenticated(AccountAPI.SecuredAPI.class)
     public Result deleteDocument(final UUID id, final String document) {
         String session = session(IAccountController.AUTHN_COOKIE_KEY);
 
-        if (controller.deleteDocument(session, id, document)) {
+        if (controller.deleteDocument(document, session, id)) {
             return ok(success);
         } else {
             return unauthorized(fail);

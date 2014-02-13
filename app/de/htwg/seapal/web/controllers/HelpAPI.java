@@ -59,7 +59,7 @@ public class HelpAPI
         crewMember1.addFriend(account);
         account.setEmail("account@123.de");
         account.setPassword("test");
-        SignupAccount save3 = new SignupAccount(crewMember2, "Karl", "Dönitz");
+        SignupAccount save3 = new SignupAccount(account, "Karl", "Dönitz");
         AccountController.saveAccount(save3, true);
         domACL.put("captain", Json.toJson(AccountController.getInternalInfo(String.valueOf(account.getUUID()))));
         domACLPerson.put("captain", Json.toJson(AccountController.getPerson(account.getUUID())));
@@ -77,38 +77,38 @@ public class HelpAPI
         boat.setBoatName("boat1");
         boat.setAccount(owner);
         mainController.creatDocument("boat", (ModelDocument) boat, owner);
-        dom.put("boat", Json.toJson(mainController.getSingleDocument(owner, boat.getUUID(), "boat")));
+        dom.put("boat", Json.toJson(mainController.getSingleDocument("boat", owner, boat.getUUID())));
 
         IBoat boat2 = new Boat();
         boat2.setBoatName("boat2");
         boat2.setAccount(crewMember1.getUUID().toString());
         mainController.creatDocument("boat", (ModelDocument) boat2, crewMember1.getUUID().toString());
-        dom.put("boat2", Json.toJson(mainController.getSingleDocument(crewMember1.getUUID().toString(), boat2.getUUID(), "boat")));
+        dom.put("boat2", Json.toJson(mainController.getSingleDocument("boat", crewMember1.getUUID().toString(), boat2.getUUID())));
 
         IMark mark = new Mark();
         mark.setAccount(owner);
         mark.setLatitude(3.4);
         mark.setLongitude(5.6);
         mainController.creatDocument("mark", (ModelDocument) mark, owner);
-        dom.put("mark", Json.toJson(mainController.getSingleDocument(owner, mark.getUUID(), "mark")));
+        dom.put("mark", Json.toJson(mainController.getSingleDocument("mark", owner, mark.getUUID())));
 
         IRoute route = new Route();
         route.setAccount(owner);
         mainController.creatDocument("route", (ModelDocument) route, owner);
-        dom.put("route", Json.toJson(mainController.getSingleDocument(owner, route.getUUID(), "route")));
+        dom.put("route", Json.toJson(mainController.getSingleDocument("route", owner, route.getUUID())));
 
         ITrip trip = new Trip();
         trip.setAccount(owner);
         trip.setBoat(boat.getUUID().toString());
         mainController.creatDocument("trip", (ModelDocument) trip, owner);
-        dom.put("trip", Json.toJson(mainController.getSingleDocument(owner, trip.getUUID(), "trip")));
+        dom.put("trip", Json.toJson(mainController.getSingleDocument("trip", owner, trip.getUUID())));
 
         IWaypoint waypoint = new Waypoint();
         waypoint.setAccount(owner);
         waypoint.setTrip(trip.getUUID().toString());
         waypoint.setBoat(boat.getUUID().toString());
         mainController.creatDocument("waypoint", (ModelDocument) waypoint, owner);
-        dom.put("waypoint", Json.toJson(mainController.getSingleDocument(owner, waypoint.getUUID(), "waypoint")));
+        dom.put("waypoint", Json.toJson(mainController.getSingleDocument("waypoint", owner, waypoint.getUUID())));
 
         node.putAll(dom);
 

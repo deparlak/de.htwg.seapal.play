@@ -47,7 +47,6 @@ public class SeapalTestModule extends SeapalBaseTestModule {
         bind(IMainController.class).to(MainController.class).in(Singleton.class);
 	}
 
-
     @Provides
     @Named("accountCouchDbConnector")
     CouchDbConnector getAccountStdCouchDbConnector(@Named("databaseOfAccount") String databaseName, CouchDbInstance couchDbInstance) {

@@ -4,10 +4,13 @@ import com.google.inject.Inject;
 import com.google.inject.name.Named;
 import de.htwg.seapal.database.IRouteDatabase;
 import de.htwg.seapal.model.IRoute;
+import de.htwg.seapal.model.ModelDocument;
 import de.htwg.seapal.model.impl.Route;
 import de.htwg.seapal.utils.logging.ILogger;
 import org.ektorp.CouchDbConnector;
+import org.ektorp.CouchDbInstance;
 import org.ektorp.DocumentNotFoundException;
+import org.ektorp.impl.StdCouchDbConnector;
 import org.ektorp.support.CouchDbRepositorySupport;
 
 import java.util.ArrayList;
@@ -19,13 +22,15 @@ public class RouteDatabase extends CouchDbRepositorySupport<Route> implements
 		IRouteDatabase {
 
 	private final ILogger logger;
+    private final StdCouchDbConnector connector;
 
-	@Inject
-	protected RouteDatabase(@Named("routeCouchDbConnector") CouchDbConnector db, ILogger logger) {
+    @Inject
+	protected RouteDatabase(@Named("routeCouchDbConnector") CouchDbConnector db, ILogger logger, CouchDbInstance dbInstance) {
 		super(Route.class, db, true);
 		super.initStandardDesignDocument();
 		this.logger = logger;
-	}
+        connector = new StdCouchDbConnector(db.getDatabaseName(), dbInstance);
+    }
 
 	@Override
 	public boolean open() {
@@ -93,5 +98,15 @@ public class RouteDatabase extends CouchDbRepositorySupport<Route> implements
         } catch (DocumentNotFoundException e) {
             return new ArrayList<>();
         }
+    }
+
+    @Override
+    public void create(ModelDocument doc) {
+        connector.create(doc);
+    }
+
+    @Override
+    public void update(ModelDocument document) {
+        connector.update(document);
     }
 }

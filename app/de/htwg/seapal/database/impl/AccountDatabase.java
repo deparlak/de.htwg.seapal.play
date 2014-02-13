@@ -4,6 +4,7 @@ import com.google.inject.Inject;
 import com.google.inject.name.Named;
 import de.htwg.seapal.database.IAccountDatabase;
 import de.htwg.seapal.model.IAccount;
+import de.htwg.seapal.model.ModelDocument;
 import de.htwg.seapal.model.impl.Account;
 import de.htwg.seapal.utils.logging.ILogger;
 import org.ektorp.CouchDbConnector;
@@ -80,12 +81,22 @@ public final class AccountDatabase extends CouchDbRepositorySupport<Account>
     }
 
     @Override
+    public void create(ModelDocument document) {
+        //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
     public List<? extends IAccount> queryViews(final String viewName, final String key) {
         try {
             return super.queryView(viewName, key);
         } catch (DocumentNotFoundException e) {
             return new ArrayList<>();
         }
+    }
+
+    @Override
+    public void update(ModelDocument document) {
+        //To change body of implemented methods use File | Settings | File Templates.
     }
 
     @Override

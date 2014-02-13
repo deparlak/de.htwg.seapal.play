@@ -3,11 +3,14 @@ package de.htwg.seapal.database.impl;
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
 import de.htwg.seapal.database.IRaceDatabase;
+import de.htwg.seapal.model.ModelDocument;
 import de.htwg.seapal.model._IRace;
 import de.htwg.seapal.model.impl._Race;
 import de.htwg.seapal.utils.logging.ILogger;
 import org.ektorp.CouchDbConnector;
+import org.ektorp.CouchDbInstance;
 import org.ektorp.DocumentNotFoundException;
+import org.ektorp.impl.StdCouchDbConnector;
 import org.ektorp.support.CouchDbRepositorySupport;
 
 import java.util.ArrayList;
@@ -18,13 +21,15 @@ import java.util.UUID;
 public class RaceDatabase extends CouchDbRepositorySupport<_Race> implements IRaceDatabase {
 
 	private final ILogger logger;
+    private final StdCouchDbConnector connector;
 
-	@Inject
-	protected RaceDatabase(@Named("raceCouchDbConnector") CouchDbConnector db, ILogger logger) {
+    @Inject
+	protected RaceDatabase(@Named("raceCouchDbConnector") CouchDbConnector db, ILogger logger, CouchDbInstance dbInstance) {
 		super(_Race.class, db, true);
 		super.initStandardDesignDocument();
 		this.logger = logger;
-	}
+        connector = new StdCouchDbConnector(db.getDatabaseName(), dbInstance);
+    }
 
 	@Override
 	public boolean open() {
@@ -86,5 +91,15 @@ public class RaceDatabase extends CouchDbRepositorySupport<_Race> implements IRa
         } catch (DocumentNotFoundException e) {
             return new ArrayList<>();
         }
+    }
+
+    @Override
+    public void create(ModelDocument doc) {
+        connector.create(doc);
+    }
+
+    @Override
+    public void update(ModelDocument document) {
+        connector.update(document);
     }
 }

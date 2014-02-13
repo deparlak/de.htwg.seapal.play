@@ -4,10 +4,13 @@ import com.google.inject.Inject;
 import com.google.inject.name.Named;
 import de.htwg.seapal.database.IMarkDatabase;
 import de.htwg.seapal.model.IMark;
+import de.htwg.seapal.model.ModelDocument;
 import de.htwg.seapal.model.impl.Mark;
 import de.htwg.seapal.utils.logging.ILogger;
 import org.ektorp.CouchDbConnector;
+import org.ektorp.CouchDbInstance;
 import org.ektorp.DocumentNotFoundException;
+import org.ektorp.impl.StdCouchDbConnector;
 import org.ektorp.support.CouchDbRepositorySupport;
 
 import java.util.ArrayList;
@@ -19,12 +22,14 @@ public class MarkDatabase extends CouchDbRepositorySupport<Mark> implements
 		IMarkDatabase {
 
 	private final ILogger logger;
+    private final StdCouchDbConnector connector;
 
 	@Inject
-	protected MarkDatabase(@Named("markCouchDbConnector") CouchDbConnector db, ILogger logger) {
+	protected MarkDatabase(@Named("markCouchDbConnector") CouchDbConnector db, ILogger logger, CouchDbInstance dbInstance) {
 		super(Mark.class, db, true);
 		super.initStandardDesignDocument();
 		this.logger = logger;
+        connector = new StdCouchDbConnector(db.getDatabaseName(), dbInstance);
 	}
 
 	@Override
@@ -89,5 +94,15 @@ public class MarkDatabase extends CouchDbRepositorySupport<Mark> implements
         } catch (DocumentNotFoundException e) {
             return new ArrayList<>();
         }
+    }
+
+    @Override
+    public void create(ModelDocument doc) {
+        connector.create(doc);
+    }
+
+    @Override
+    public void update(ModelDocument document) {
+        connector.update(document);
     }
 }

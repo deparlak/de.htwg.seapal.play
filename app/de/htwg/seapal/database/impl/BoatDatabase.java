@@ -4,10 +4,13 @@ import com.google.inject.Inject;
 import com.google.inject.name.Named;
 import de.htwg.seapal.database.IBoatDatabase;
 import de.htwg.seapal.model.IBoat;
+import de.htwg.seapal.model.ModelDocument;
 import de.htwg.seapal.model.impl.Boat;
 import de.htwg.seapal.utils.logging.ILogger;
 import org.ektorp.CouchDbConnector;
+import org.ektorp.CouchDbInstance;
 import org.ektorp.DocumentNotFoundException;
+import org.ektorp.impl.StdCouchDbConnector;
 import org.ektorp.support.CouchDbRepositorySupport;
 
 import java.util.ArrayList;
@@ -20,12 +23,14 @@ public class BoatDatabase
         implements IBoatDatabase {
 
     private final ILogger logger;
+    private final StdCouchDbConnector connector;
 
     @Inject
-    protected BoatDatabase(@Named("boatCouchDbConnector") CouchDbConnector db, ILogger logger) {
+    protected BoatDatabase(@Named("boatCouchDbConnector") CouchDbConnector db, ILogger logger, CouchDbInstance dbInstance) {
         super(Boat.class, db, true);
         super.initStandardDesignDocument();
         this.logger = logger;
+        connector = new StdCouchDbConnector(db.getDatabaseName(), dbInstance);
     }
 
     @Override
@@ -88,5 +93,15 @@ public class BoatDatabase
         } catch (DocumentNotFoundException e) {
             return new ArrayList<>();
         }
+    }
+
+    @Override
+    public void create(ModelDocument doc) {
+        connector.create(doc);
+    }
+
+    @Override
+    public void update(ModelDocument document) {
+        connector.update(document);
     }
 }
