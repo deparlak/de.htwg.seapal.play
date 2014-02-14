@@ -534,27 +534,25 @@
         // Determines whether the security circle should be displayed or not
         var displaySecurityCircyle = false;
 
-        var templateAccount =
+        var templatePerson =
         {
-            "type"                : "account",
-            "id"                  : null,
-            "birth"               : null,
-            "city"                : null,
-            "country"             : null,
-            "email"               : null,
-            "first_name"          : null,
-            "friend_list"         : [],
-            "last_name"           : null,
-            "mobile"              : null,
-            "nationality"         : null,
-            "postcode"            : null,
-            "received_requests"   : [],
-            "registration"        : null,
-            "sent_requests"       : null,
-            "street"              : null,
-            "telephone"           : null,
+            "type"              : "person",
+            "id"                : null,
+            "birth"             : null,
+            "city"              : null,
+            "country"           : null,
+            "first_name"        : null,
+            "last_name"         : null,
+            "mobile"            : null,
+            "nationality"       : null,
+            "postcode"          : null,
+            "registration"      : null,
+            "street"            : null,
+            "telephone"         : null,
+			"_id"			    : null,
+			"_rev" 			    : null,
+			"owner" 		    : null
         };
-        
         
 		var templateMark = 
 		{
@@ -684,10 +682,12 @@
 		};		
 		
 		var data = {
-            account : {
-                template : templateAccount,
+            person : {
+                template : templatePerson,
+				list : {},
+				count : 1,
 				active : null
-			},	
+            },
 			boat : {
                 template : templateBoat,
 				list : {},
@@ -1233,6 +1233,9 @@
                 callbacks[event.WARNING].fire({msg : "No Boat for tracking selected! Please select a Boat from the logbook."});
                 return false;
             }
+            
+            /* stop the tracking if it is actually active */
+            self.stopTracking();
 
             if(isSimulating && data.route.active != null) {
                 fakeRoutePointer = 0;
@@ -1241,7 +1244,9 @@
 
             isTracking = true;
             handleAddNewTrack();
-            handleTracking();
+            /* call the cyclic methods for trackpoints and waypoints */
+            handleAddNewWaypoint();
+            handleAddTrackpoint();
             return true;
         }
         /* stops the tracking */
@@ -1249,16 +1254,7 @@
             handleExitTrackCreation();
             isTracking = false;
         }
-        /* Handles the tracking itself */
-        function handleTracking() {
-            if(!isTracking) { 
-                return;
-            }
-            var timeout = globalSettings.TRACKING_DELAY * 1000;
-            setTimeout(function(){handleTracking();}, timeout);
-
-            addTrackMarker(currentPosition);
-        }
+        
         /**
         * *********************************************************************************
         * Handles the person overboard
@@ -1735,10 +1731,10 @@
         
         /**
         * *********************************************************************************
-        * Adds a new route marker to the active route.
+        * Adds a new track point to the active track.
         * *********************************************************************************
         */
-        function addTrackMarker(latLng) {            
+        function addTrackpoint(latLng) {            
             data.trip.active.onMap.addMarker(latLng);
         }
         
@@ -1849,8 +1845,8 @@
                 
                 obj.id = data.waypoint.count.toString();
                 obj.name = "Waypoint "+data.waypoint.count;
-                obj.lat = obj.pos.lat();
-                obj.lng = obj.pos.lng();
+                obj.lat = boat.pos.lat();
+                obj.lng = boat.pos.lng();
                 obj.cog = boat.course;
                 obj.sog = boat.speed;
                 obj.date = new Date().getTime();
@@ -1871,10 +1867,22 @@
         * *********************************************************************************
         */
         function handleAddNewWaypoint() {
-            /* if tracking is still active, call method cyclic */
             if (isTracking) {
-                /* call add of new waypoint cyclic */
-                setTimeout(handleAddNewWaypoint, globalSettings.WAYPOINT_DELAY * 1000);
+                addNewWaypoint();
+                setTimeout(handleAddNewWaypoint, globalSettings.WAYPOINT_DELAY * 1000 * 60);
+                uploadTrackUpdate();
+            }
+        }
+        
+        /**
+        * *********************************************************************************
+        * Handles the creation of a new track point
+        * *********************************************************************************
+        */
+        function handleAddTrackpoint() {
+            if (isTracking) {
+                addTrackpoint(currentPosition);
+                setTimeout(handleAddTrackpoint, globalSettings.TRACKING_DELAY * 1000);
             }
         }
 
