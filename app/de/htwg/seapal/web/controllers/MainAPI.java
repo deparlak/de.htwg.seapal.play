@@ -11,9 +11,12 @@ import org.codehaus.jackson.node.ObjectNode;
 import play.data.Form;
 import play.libs.Json;
 import play.mvc.Controller;
+import play.mvc.Http;
 import play.mvc.Result;
 import play.mvc.Security;
 
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -24,6 +27,7 @@ public final class MainAPI
     private static final JsonNode success = Json.parse("{\"success\":true}");
     private static final JsonNode fail = Json.parse("{\"success\":false}");
     private static final JsonNode EMPTY = Json.parse("{\"error\":\"no such document\"}");
+    private static final JsonNode FILE_UPLOAD_FAILED = Json.parse("{\"error\":\"file upload failed\"}");
 
     @Inject
     private IMainController controller;
@@ -135,6 +139,7 @@ public final class MainAPI
         }
     }
 
+    @play.mvc.Security.Authenticated(AccountAPI.SecuredAPI.class)
     public Result sendFriendRequestMail(String mail) {
         try {
             return ok(Json.toJson(controller.addFriend(session(IAccountController.AUTHN_COOKIE_KEY), mail)));
@@ -142,4 +147,31 @@ public final class MainAPI
             return internalServerError(EMPTY);
         }
     }
+
+    @play.mvc.Security.Authenticated(AccountAPI.SecuredAPI.class)
+    public Result addPhoto(UUID uuid) throws FileNotFoundException {
+        String session = session(IAccountController.AUTHN_COOKIE_KEY);
+
+        Http.MultipartFormData body = request().body().asMultipartFormData();
+        Http.MultipartFormData.FilePart picture = body.getFile("picture");
+        if (picture != null) {
+            String contentType = picture.getContentType();
+            File file = picture.getFile();
+            System.out.println(file);
+            if (controller.addPhoto(session, uuid, contentType, file)) {
+                return ok();
+            } else {
+                return internalServerError(FILE_UPLOAD_FAILED);
+            }
+        } else {
+            return internalServerError(FILE_UPLOAD_FAILED);
+        }
+    }
+
+    @play.mvc.Security.Authenticated(AccountAPI.SecuredAPI.class)
+    public Result getPhoto(UUID id) throws FileNotFoundException {
+        String session = session(IAccountController.AUTHN_COOKIE_KEY);
+        return ok(controller.getPhoto(session, id));
+    }
+
 }
