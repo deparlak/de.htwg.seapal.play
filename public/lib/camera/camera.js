@@ -34,7 +34,7 @@
 	/* Capture an image and returns it BASE64 encoded */
 	camera.captureImage = function() {
 	    dataURL[0] = takePhoto(20, 20);
-	    dataURL[1] = takeImage(210, 157);
+	    dataURL[1] = takePhoto(1, 1);
 		return dataURL;
 	}
 

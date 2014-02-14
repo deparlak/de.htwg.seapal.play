@@ -46,6 +46,10 @@ public final class MainAPI
         forms.put("waypoint", Waypoint.class);
     }
 
+    public Result realName(UUID id) {
+        return ok(Json.toJson(controller.realName(id)));
+    }
+
     @play.mvc.Security.Authenticated(AccountAPI.SecuredAPI.class)
     public Result abortFriendRequest(UUID id) {
         try {

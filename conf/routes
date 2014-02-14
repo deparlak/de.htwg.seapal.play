@@ -38,5 +38,6 @@ GET           /help        @de.htwg.seapal.web.controllers.HelpAPI.help()
 GET           /openID/auth        @de.htwg.seapal.web.controllers.AccountAPI.auth()
 GET           /openID/verify        @de.htwg.seapal.web.controllers.AccountAPI.verify()
 
-GET        /api/photo/$id<[0-9a-fA-F\-]+>        @de.htwg.seapal.web.controllers.MainAPI.getPhoto(id: UUID)
-POST        /api/photo/$id<[0-9a-fA-F\-]+> @de.htwg.seapal.web.controllers.MainAPI.addPhoto(id: UUID)
+GET           /api/photo/$id<[0-9a-fA-F\-]+>        @de.htwg.seapal.web.controllers.MainAPI.getPhoto(id: UUID)
+POST          /api/photo/$id<[0-9a-fA-F\-]+>        @de.htwg.seapal.web.controllers.MainAPI.addPhoto(id: UUID)
+# GET           /api/realName/$id<[0-9a-fA-F\-]+>        @de.htwg.seapal.web.controllers.MainAPI.realName(id: UUID)
