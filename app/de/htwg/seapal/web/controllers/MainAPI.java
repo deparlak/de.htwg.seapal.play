@@ -46,10 +46,6 @@ public final class MainAPI
         forms.put("waypoint", Waypoint.class);
     }
 
-    public Result realName(UUID id) {
-        return ok(Json.toJson(controller.realName(id)));
-    }
-
     @play.mvc.Security.Authenticated(AccountAPI.SecuredAPI.class)
     public Result abortFriendRequest(UUID id) {
         try {
@@ -161,7 +157,6 @@ public final class MainAPI
         if (picture != null) {
             String contentType = picture.getContentType();
             File file = picture.getFile();
-            System.out.println(file);
             if (controller.addPhoto(session, uuid, contentType, file)) {
                 return ok();
             } else {
