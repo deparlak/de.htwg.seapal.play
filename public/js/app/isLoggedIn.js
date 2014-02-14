@@ -19,21 +19,21 @@ $(document).ready(function() {
     request.done(function (response, textStatus, jqXHR){
         console.log(response);
 
-        response.mark.map( function(item) { 
+        response.mark.map( function(item) {
             item.image_big = null;
             item.image_thumb = null;
             map.set('mark', item);
         });
 
-        response.route.map( function(item) { 
+        response.route.map( function(item) {
             map.set('route', item);
         });
-        
-        response.boat.map( function(item) { 
+
+        response.boat.map( function(item) {
             map.set('boat', item);
         });
         
-        response.trip.map( function(item) { 
+        response.trip.map( function(item) {
             map.set('trip', item);
         });
     });
