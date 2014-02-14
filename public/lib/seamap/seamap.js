@@ -72,7 +72,7 @@
         // Default options for a route
         route : {
             polyOptions : {
-                strokeColor: 'blue',
+                strokeColor: 'red',
                 strokeOpacity: 0.5,
                 strokeWeight: 3
             },
@@ -354,13 +354,11 @@
         };
         /* set map type to satellite */
         this.satellite = function () {
-            map.overlayMapTypes.clear();
             map.setMapTypeId(google.maps.MapTypeId.SATELLITE);
         };
         /* set map type to roamap + charts */
         this.roadmap = function () {
             map.setMapTypeId(google.maps.MapTypeId.ROADMAP);
-            initOpenSeaMaps();
         };
         /* select a boat */
         this.selectBoat = function(id) {
@@ -1231,17 +1229,10 @@
         * *********************************************************************************
         */
         this.startTracking = function() {
-            
-            if (data.route.active == null) {
-                callbacks[event.WARNING].fire({msg : "No Route for tracking selected! Please select a Route."});
-                return false;
-            }
-            /*
             if (data.boat.active == null) {
                 callbacks[event.WARNING].fire({msg : "No Boat for tracking selected! Please select a Boat from the logbook."});
                 return false;
             }
-            */
 
             if(isSimulating) {
                 fakeRoutePointer = 0;
