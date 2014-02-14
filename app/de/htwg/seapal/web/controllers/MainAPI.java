@@ -46,10 +46,6 @@ public final class MainAPI
         forms.put("waypoint", Waypoint.class);
     }
 
-    public Result realName(UUID id) {
-        return ok(Json.toJson(controller.realName(id)));
-    }
-
     @play.mvc.Security.Authenticated(AccountAPI.SecuredAPI.class)
     public Result abortFriendRequest(UUID id) {
         try {
@@ -156,12 +152,14 @@ public final class MainAPI
     public Result addPhoto(UUID uuid) throws FileNotFoundException {
         String session = session(IAccountController.AUTHN_COOKIE_KEY);
 
-        Http.MultipartFormData body = request().body().asMultipartFormData();
+        Http.Request s2 = request();
+        Http.RequestBody s = s2.body();
+
+        Http.MultipartFormData body = s.asMultipartFormData();
         Http.MultipartFormData.FilePart picture = body.getFile("picture");
         if (picture != null) {
             String contentType = picture.getContentType();
             File file = picture.getFile();
-            System.out.println(file);
             if (controller.addPhoto(session, uuid, contentType, file)) {
                 return ok();
             } else {

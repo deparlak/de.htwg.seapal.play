@@ -122,7 +122,14 @@ public class AccountAPI
         Form<Account> filledForm = form.bindFromRequest();
 
         IAccount account = filledForm.get();
-        account = controller.getByMail(account.getEmail());
+        List<? extends IAccount> list = controller.queryView("by_email", account.getEmail());
+
+        if (list.size() == 0 || list.size() > 1) {
+            flash("errors", "An internal error occured. Please try again!");
+            return redirect(routes.Application.forgotten());
+        }
+
+        account =  list.get(0);
 
         if (account == null) {
             flash("errors", "An internal error occured. Please try again!");
