@@ -144,15 +144,17 @@ $(document).ready(function() {
 			map.set(self.type, response);
             /* If we have uploaded an item with an image (mark, waypoint, ...) we have to upload the image file now */
             if (image_big) {
+                var formData = new FormData();
+                formData.append("picture", image_big);
             
                 /* post the image to the server */
                 request = $.ajax({
                     url         : "/api/photo/"+response._id,
                     type        : "post",
-                    contentType : "multipart/form-data",
-                    data        : image_big
+                    processData: false,
+                    contentType: 'multipart/form-data',
+                    data        : formData
                 });
-            
             
                 /* callback handler that will be called on failure */
                 request.fail(function (jqXHR, textStatus, errorThrown){
