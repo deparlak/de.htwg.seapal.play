@@ -414,7 +414,7 @@
 
         /* THe global settings object */
         var globalSettings = {
-            DISTANCE_UNIT       : "globalSettings_km",
+            DISTANCE_UNIT       : "globalSettings_nautmil",
             TEMPERATURE_UNIT    : "globalSettings_celsius",
             TRACKING_DELAY      : 5,
             WAYPOINT_DELAY      : 5, 
