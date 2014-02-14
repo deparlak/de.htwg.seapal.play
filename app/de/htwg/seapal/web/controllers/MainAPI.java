@@ -177,5 +177,4 @@ public final class MainAPI
         String session = session(IAccountController.AUTHN_COOKIE_KEY);
         return ok(controller.getPhoto(session, id));
     }
-
 }
