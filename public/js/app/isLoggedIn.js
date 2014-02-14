@@ -115,7 +115,18 @@ $(document).ready(function() {
             because the server will interpret an 'id' as a '_id'.
         */
         var objectId = self.id;
+        var image_big = null;
         self.id = null;
+        
+        /*  
+            If we like to upload an image, save the image to a variable,
+            because the image has to be uploaded seperatly. 
+        */
+        if (self.image_big) {
+            image_big = self.image_big
+            self.image_big = null;
+        }
+        
         /* post to server */
         request = $.ajax({
             url         : "api/"+self.type,
@@ -129,7 +140,29 @@ $(document).ready(function() {
             /* restore the object id and set the response object to the map storage (because the _rev and _id changed). */
 			response.id = objectId;
             response.type = self.type;
+            response.image_big = null;
 			map.set(self.type, response);
+            /* If we have uploaded an item with an image (mark, waypoint, ...) we have to upload the image file now */
+            if (image_big) {
+            
+                /* post the image to the server */
+                request = $.ajax({
+                    url         : "/api/photo/"+response._id,
+                    type        : "post",
+                    contentType : "multipart/form-data",
+                    data        : image_big
+                });
+            
+            
+                /* callback handler that will be called on failure */
+                request.fail(function (jqXHR, textStatus, errorThrown){
+                    console.log("TODO : upload file failed ");
+                });
+                
+                request.done(function (response, textStatus, jqXHR){
+                    console.log("TODO : upload file passed ");
+                });
+            }
         });
 
         /* callback handler that will be called on failure */
