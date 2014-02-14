@@ -205,13 +205,17 @@ $(document).ready(function() {
     /* START-------------------------- track and waypoint------------------------------- */
     var tmpTrack;
 
-    menu.addCallback('leftclick', 'logbookTrackAdd', function (self) {
-        console.log("TODO : add track");
+    menu.addCallback('leftclick', 'logbookTrackAdd', function (self) {        
+        tmpTrack = map.getTemplate('trip');
+        openTrackTripModal(tmpTrack);
     });
     
     menu.addCallback('rightclick', ['icon-notSelectedTrack', 'icon-selectedTrack'], function (self) {
-        //console.log(new Date().getTime());
         tmpTrack = map.get(self.data('type'), self.data('id'));
+        openTrackTripModal(tmpTrack);
+    });
+
+    function openTrackTripModal(tmpTrack) {
         var template = Handlebars.compile($("#track_Template").text());
         var html = template(tmpTrack);
 
@@ -235,7 +239,7 @@ $(document).ready(function() {
 
         // Initializes the datepicker
         $('.datepicker').datepicker();
-    });
+    }
 
     $('#modal-form_track').submit(function() {
         var boundData = Handlebars.getBoundData(tmpTrack);
