@@ -74,13 +74,13 @@ public class HelpAPI
         String owner = account.getUUID().toString();
 
         IBoat boat = new Boat();
-        boat.setBoatName("boat1");
+        boat.setName("boat1");
         boat.setAccount(owner);
         mainController.creatDocument("boat", (ModelDocument) boat, owner);
         dom.put("boat", Json.toJson(mainController.getSingleDocument("boat", owner, boat.getUUID())));
 
         IBoat boat2 = new Boat();
-        boat2.setBoatName("boat2");
+        boat2.setName("boat2");
         boat2.setAccount(crewMember1.getUUID().toString());
         mainController.creatDocument("boat", (ModelDocument) boat2, crewMember1.getUUID().toString());
         dom.put("boat2", Json.toJson(mainController.getSingleDocument("boat", crewMember1.getUUID().toString(), boat2.getUUID())));
