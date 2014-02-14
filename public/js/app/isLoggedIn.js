@@ -129,8 +129,6 @@ $(document).ready(function() {
             /* restore the object id and set the response object to the map storage (because the _rev and _id changed). */
 			response.id = objectId;
             response.type = self.type;
-            response.image_big = null;
-            response.image_thumb = null;
 			map.set(self.type, response);
         });
 
