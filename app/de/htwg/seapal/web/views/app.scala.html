@@ -125,15 +125,17 @@
                                     }
                                 </div>
                                 <div id="crew" class="inactive-logbook">
-                                    <li class="heading">
-                                        <div class="heading1">
-                                            About SeaPal Crew
-                                        </div>
-                                    </li>
-                                    <li class="description">
-                                            You can invite others with an Account on SeaPal to read or contribute to your Logbook.
-                                            Likewise you can be invited to join someone elses logbook.
-                                    </li>
+                                    @if(!session.contains("id")) {
+                                        <li class="heading">
+                                            <div class="heading1">
+                                                About SeaPal Crew
+                                            </div>
+                                        </li>
+                                        <li class="description">
+                                                You can invite others with an Account on SeaPal to read or contribute to your Logbook.
+                                                Likewise you can be invited to join someone elses logbook.
+                                        </li>
+                                    }
                                     <li class="heading">
                                         <div class="heading1">
                                             Your Crew
@@ -142,15 +144,17 @@
                                     <div id="logbook-crews"></div>
                                 </div>
                                 <div id="boats" class="inactive-logbook">
-                                    <li class="heading">
-                                        <div class="heading1">
-                                            About SeaPal Boats
-                                        </div>
-                                    </li>
-                                    <li class="description">
-                                            With SeaPal you can keep a seperate Logbook for every boat.
-                                            You select one boat as active to access its Logbook.
-                                    </li>
+                                    @if(!session.contains("id")) {
+                                        <li class="heading">
+                                            <div class="heading1">
+                                                About SeaPal Boats
+                                            </div>
+                                        </li>
+                                        <li class="description">
+                                                With SeaPal you can keep a seperate Logbook for every boat.
+                                                You select one boat as active to access its Logbook.
+                                        </li>
+                                    }
                                     <li class="heading">
                                         <div class="heading1">
                                             Select a boat to view it's logbook
