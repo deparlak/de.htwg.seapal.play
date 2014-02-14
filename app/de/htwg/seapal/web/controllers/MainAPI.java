@@ -152,7 +152,9 @@ public final class MainAPI
     public Result addPhoto(UUID uuid) throws FileNotFoundException {
         String session = session(IAccountController.AUTHN_COOKIE_KEY);
 
-        Http.MultipartFormData body = request().body().asMultipartFormData();
+        Http.RequestBody s = request().body();
+
+        Http.MultipartFormData body = s.asMultipartFormData();
         Http.MultipartFormData.FilePart picture = body.getFile("picture");
         if (picture != null) {
             String contentType = picture.getContentType();
