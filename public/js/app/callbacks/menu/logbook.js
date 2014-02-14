@@ -205,6 +205,10 @@ $(document).ready(function() {
     /* START-------------------------- track and waypoint------------------------------- */
     var tmpTrack;
 
+    menu.addCallback('leftclick', 'logbookTrackAdd', function (self) {
+        console.log("TODO : add track");
+    });
+    
     menu.addCallback('rightclick', ['icon-notSelectedTrack', 'icon-selectedTrack'], function (self) {
         //console.log(new Date().getTime());
         tmpTrack = map.get(self.data('type'), self.data('id'));
