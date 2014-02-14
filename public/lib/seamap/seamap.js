@@ -1234,7 +1234,7 @@
                 return false;
             }
 
-            if(isSimulating) {
+            if(isSimulating && data.route.active != null) {
                 fakeRoutePointer = 0;
                 generateFakeTrackingRoute(data.route.active);
             }
