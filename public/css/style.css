@@ -121,7 +121,7 @@ body {
 }
 
 #special-active-menu-2 {
-	background-color: #1abc9c !important;
+	background-color: #2A7364 !important;
 }
 
 #special-active-menu-3 {
@@ -178,7 +178,7 @@ body {
 	}
 	
 	.nav li[data-slide="2"] {
-		background-color: #1abc9c;
+		background-color: #2A7364;
 	}
 	
 	.nav li[data-slide="3"] {
@@ -229,12 +229,6 @@ body {
 
 #slide-1 h1 {
 	padding-top: 130px;
-}
-
-@media (max-width: 991px) {
-	#slide-1 {
-		background-position: -70% 0, 170% 0;
-	}
 }
 
 @media (max-width: 767px) {
@@ -303,7 +297,7 @@ body {
 }
 
 #slide-2 {
-	background-color: #1abc9c;
+	background-color: #2A7364;
 	color: #e4e6e5;
 	padding-bottom: 90px;
 	padding-top: 90px;
