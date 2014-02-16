@@ -1292,6 +1292,9 @@
         this.togglePersonOverboard = function() {
             if(manoverboardMark == null) {
                 addManOverboardMark();
+                isShowingTargetLine = true;
+                targetLineDestination = currentPosition;
+                drawSetAsDestination();
             } else {
                 removeManOverboardMark();
             }
