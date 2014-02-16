@@ -73,7 +73,6 @@
 </script>
 
 <!-- alarms template -->
-
 <script type="text/x-handlebars" id="alarms_Template">
     <!--<div class="row">
         <div class="centered col-12 col-sm-10">
@@ -95,7 +94,6 @@
 </script>
 
 <!-- boats template -->
-
 <script type="text/x-handlebars" id ="boats_Template">
     <div class="row">
         <div class="col-12 col-sm-1_a font-light">
@@ -368,5 +366,21 @@
         <button type="submit" class="btn btn-primary">Save</button>
         <button type="button" id="open_waypoint_modal" class="btn btn-info">See waypoints</button>
         <button type="button" class="btn btn-danger" data-dismiss="modal">Abort</button>
+    </div>
+</script>
+
+<!-- Confirm crew request template -->
+<script type="text/x-handlebars" id ="confirmCrewRequest_Template">
+    <div class="row">
+        <div class="some_left_padding col-12 col-sm-12">
+            <label>Would you like to add</label>
+            <label>{{crewMember}}</label>
+            <label>to your crew?</label>
+        </div>
+    </div>
+    <br>
+    <div class="inputForm-footer">
+        <button type="submit" class="btn btn-primary">YES</button>
+        <button type="button" id="rejectCrewRequest" class="btn btn-danger">NO</button>
     </div>
 </script>

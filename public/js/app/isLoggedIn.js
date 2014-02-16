@@ -73,6 +73,37 @@ $(document).ready(function() {
         });
         return false;
     });
+
+    /* Callback for confirm crew request */
+    menu.addCallback('leftclick', 'TODO', function (self) {
+        var confirm = {crewMember : "Harald Schmidt"}; // TODO Get correct name of crew meber to be added
+        var template = Handlebars.compile($("#confirmCrewRequest_Template").text());
+        var html = template(confirm);
+        $('#confirmCrewRequestInputForm').html(html);
+
+        menu.disableAutoClose();
+        $('#modal-form_confirmCrewRequest').modal('show');
+
+        $('#rejectCrewRequest').on('click', function() {
+            $('#modal-form_confirmCrewRequest').modal('hide');
+            console.log("REJECTED");
+            output.info("Request rejected!"); 
+        });
+    });
+
+    $('#modal-form_confirmCrewRequest').submit(function(event) {
+        $('#modal-form_confirmCrewRequest').modal('hide');
+        console.log("CONFIRMED");
+        output.info("Request confirmed!");
+        return false;
+    });
+
+    $('#modal-form_confirmCrewRequest').on('hidden.bs.modal',
+        function() {
+            menu.enableAutoClose();
+            $('#confirmCrewRequestInputForm').html("");
+        }
+    );
         
 	/* this callback will be called if marks where loaded from the server */
     map.addCallback(events.SERVER_REMOVE, function (self) {
