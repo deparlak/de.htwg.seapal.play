@@ -1959,7 +1959,7 @@
             obj.pos = currentPosition;
             obj.latStr = toLatLngString(obj.pos.lat(), "lat");
             obj.lngStr = toLatLngString(obj.pos.lng(), "lng");
-            obj.html = "COG " + obj.course + "° SOG " + obj.speed + "kn <br/>" + getCoordinatesAsString(obj.pos.lat(), obj.pos.lng());
+            obj.html = "COG " + obj.course + "° SOG " + obj.speed + "kn " + getCoordinatesAsString(obj.pos.lat(), obj.pos.lng());
             return obj;
         }
         /* Converts kmh to knots */
