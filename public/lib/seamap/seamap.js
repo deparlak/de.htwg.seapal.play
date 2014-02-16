@@ -53,6 +53,21 @@
             }
         },
 
+        // Default options for the target line
+        targetOptions : {
+            polyOptions : {
+                icons: [{
+                    icon: {
+                        path: google.maps.SymbolPath.FORWARD_OPEN_ARROW
+                    },
+                    offset: '100%'
+                }],
+                strokeColor: '#32AB32',
+                strokeOpacity: 0.8,
+                strokeWeight: 5
+            }
+        },
+
         // Default options for the marker
         personOverboardOptions : {
             polyOptions : {
@@ -534,6 +549,12 @@
         // Determines whether the security circle should be displayed or not
         var displaySecurityCircyle = false;
 
+        // Determines whether the set as Target line should be drawn or not
+        var isShowingTargetLine = false;
+
+        // The destination of the end of the targetline
+        var targetLineDestination;
+
         var templateAccount =
         {
             "type"                : "account",
@@ -829,7 +850,7 @@
         var $this = $(element);
         
         // set as destination path
-        var destpath = new google.maps.Polyline(options.polyOptions);
+        var destpath = new google.maps.Polyline(options.targetOptions.polyOptions);
 
         init();
 		
@@ -1221,6 +1242,10 @@
                 hideSecurityCircle();
                 showSecurityCircle();
             }
+
+            if(isShowingTargetLine) {
+                drawSetAsDestination();
+            }
         }
         
         /**
@@ -1404,6 +1429,7 @@
         */
         function getContextMenuContent() {
             var ctx = '<div id="contextmenu">'
+            var target = !isShowingTargetLine ? "Set as Target" : "Disable Target";
             switch(contextMenuType) {
                 case ContextMenuTypes.DEFAULT:
                     ctx += '<button id="addMark" type="button" class="btn"><i class="icon-map-marker"></i> Set Mark</button>';
@@ -1413,7 +1439,7 @@
                         ctx += '<button id="exitRouteCreation" type="button" class="btn"><i class="icon-flag"></i> Finish Route Recording</button>';
                     }
                     ctx += '<button id="addNewDistanceRoute" type="button" class="btn"><i class="icon-resize-full"></i> Distance from here</button>'
-                        + '<button id="setAsDestination" type="button" class="btn"><i class="icon-star"></i> Set as Target</button>'
+                        + '<button id="setAsDestination" type="button" class="btn"><i class="icon-star"></i> ' + target + '</button>'
                         + '<button id="hideContextMenu" type="button" class="btn"><i class="icon-remove"></i> Close</button>'; 
                     break;
                 case ContextMenuTypes.DELETE_MARKER:
@@ -1783,11 +1809,20 @@
         function handleSetAsDestination() {
             hideContextMenu();
             hideCrosshairMarker();
-
-            destpath.setMap(map);
-            destpath.setPath([boatMarker.getPosition(), crosshairMarker.getPosition()]);
+            if(!isShowingTargetLine) {
+                targetLineDestination = crosshairMarker.getPosition();
+                drawSetAsDestination();
+            } else {
+                destpath.setPath([]);
+            }
+            isShowingTargetLine = !isShowingTargetLine;
         }
         
+        function drawSetAsDestination() {
+            destpath.setMap(map);
+            destpath.setPath([currentPosition, targetLineDestination]);
+        }
+
         /**
         * *********************************************************************************
         * set a temporary marker to the screen, which will be overwritten if the method will be called again.
