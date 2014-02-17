@@ -425,6 +425,14 @@ input.menubar-search:focus {
         content: "\f00c"
 }
 
+.icon-notSelectedPerson::after{
+        content: ""
+}
+
+.icon-selectedPerson::after{
+        content: "\f00c"
+}
+
 
 /* specification of the icons from the tools */
 

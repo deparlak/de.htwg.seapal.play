@@ -245,10 +245,12 @@
                 console.log("updated");
                 checkId(type, obj.id);
                 var modified = copyObjAttr(type, data[type].list[obj.id], obj);
-                /* create another reference to the object, so that the object is accessible through the id and the _id.*/
-                if (null != obj._id && obj.id != obj._id) {
-                    data[type].list["_id"] = data[type].list[obj.id]["id"];
-                }
+          
+          /* TODO check if the additional reference is required. */
+            /* create another reference to the object, so that the object is accessible through the id and the _id.*/
+        //         if (null != obj._id && obj.id != obj._id) {
+        //            data[type].list[obj._id] = data[type].list[obj.id]["id"];
+        //        }
                 /* copyObjAttr check if the object was modified. if so we fire a callback to sync with the server and tell the client listeners */
                 if (modified) {
                     /* check if more changed than the _id and _rev */
@@ -381,13 +383,22 @@
 			data.boat.active = data.boat.list[id];
             console.log("Selected boat "+id);
         };
+        /* select a person */
+        this.selectPerson = function(id) {
+			dataParameterCheck('person', id, null);
+			data.person.active = data.person.list[id];
+            console.log("Selected person "+id);
+        };
         /* get a list with all waypoints from a specific track */
         this.getWaypoints = function (tripId) {
             dataParameterCheck('trip', tripId, null);
             var list = [];
             /* copy only the template fields */
             for (var wp in data.waypoint.list) {
-                list[list.length] = self.get('waypoint', wp.id);
+                console.log(data.waypoint.list[wp].trip);
+                if (data.waypoint.list[wp].trip == tripId) {
+                    list[list.length] = self.get('waypoint', wp);
+                }
             }
 			return list;
         };
@@ -553,15 +564,17 @@
         var isShowingTargetLine = false;
 
         // The destination of the end of the targetline
-        var targetLineDestination;        var templatePerson =
+        var targetLineDestination;        
+        
+        var templatePerson =
         {
             "type"              : "person",
             "id"                : null,
             "birth"             : null,
             "city"              : null,
             "country"           : null,
-            "first_name"        : null,
-            "last_name"         : null,
+            "firstname"         : null,
+            "lastname"          : null,
             "mobile"            : null,
             "nationality"       : null,
             "postcode"          : null,

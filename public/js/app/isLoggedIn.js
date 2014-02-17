@@ -7,10 +7,41 @@
  
 $(document).ready(function() {    
     events = map.getEvents();
-	
+    var templateFriendRequests = Handlebars.compile($("#template-friendRequests").html());
+
+    /* local list to store friend requests */
+    var receivedRequests = {};
+    /* method to call friend request list cylic */
+    var friendRequest = function(){
+        request = $.ajax({
+            url         : "api/all/asking",
+            type        : "get",
+            contentType : "application/json",
+        });
+        
+        request.done(function (response, textStatus, jqXHR){
+            /* run through all requests and check if they will already be displayed. */
+            for (var i in response.person_info) {
+                if (!receivedRequests[response.person_info[i].owner]) {
+                    $("#friendRequests").append(templateFriendRequests(response.person_info[i]));
+                    receivedRequests[response.person_info[i].owner] = response.person_info[i];
+                }
+            }
+            /* there are no friend requests */
+            if (Object.keys(receivedRequests).length === 0) {
+                $("#logbook-friendRequests").hide();
+            } else {
+                $("#logbook-friendRequests").show();
+            }
+        }
+    )};
+    
+    /* cylcic friend request every minute */
+    setInterval(friendRequest, 6000);
+
     /* startup code initialise objects from the server */
     request = $.ajax({
-        url         : "api/all/own",
+        url         : "api/all/all",
         type        : "get",
         contentType : "application/json",
     });
@@ -36,6 +67,16 @@ $(document).ready(function() {
         response.trip.map( function(item) {
             map.set('trip', item);
         });
+        
+        response.waypoint.map( function(item) {
+            map.set('waypoint', item);
+        });
+        
+        response.person_info.map( function(item) {
+            map.set('person', item);
+        });
+        
+        friendRequest();
     });
 
     /* callback handler that will be called on failure */
@@ -75,27 +116,38 @@ $(document).ready(function() {
     });
 
     /* Callback for confirm crew request */
-    menu.addCallback('leftclick', 'TODO', function (self) {
-        var confirm = {crewMember : "Harald Schmidt"}; // TODO Get correct name of crew meber to be added
+    menu.addCallback('leftclick', 'icon-friendRequests', function (self) {
         var template = Handlebars.compile($("#confirmCrewRequest_Template").text());
-        var html = template(confirm);
+        var html = template(receivedRequests[self.data('id')]);
         $('#confirmCrewRequestInputForm').html(html);
 
         menu.disableAutoClose();
         $('#modal-form_confirmCrewRequest').modal('show');
-
+        
         $('#rejectCrewRequest').on('click', function() {
             $('#modal-form_confirmCrewRequest').modal('hide');
-            console.log("REJECTED");
-            output.info("Request rejected!"); 
-        });
-    });
 
-    $('#modal-form_confirmCrewRequest').submit(function(event) {
-        $('#modal-form_confirmCrewRequest').modal('hide');
-        console.log("CONFIRMED");
-        output.info("Request confirmed!");
-        return false;
+            request = $.ajax({
+                url         : "api/abortFriendRequest/"+self.data('id'),
+                type        : "get"
+            });
+            
+            $("#friendRequests"+self.data('id')).remove();
+            delete receivedRequests[self.data('id')];
+        });
+        
+        $('#confirmCrewRequest').on('click', function() {
+            $('#modal-form_confirmCrewRequest').modal('hide');
+
+            request = $.ajax({
+                url         : "api/sendFriendRequest/"+self.data('id'),
+                type        : "get"
+            });
+            
+            map.set('person', receivedRequests[self.data('id')]);
+            $("#friendRequests"+self.data('id')).remove();
+            delete receivedRequests[self.data('id')];
+        });
     });
 
     $('#modal-form_confirmCrewRequest').on('hidden.bs.modal',

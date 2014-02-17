@@ -1,3 +1,11 @@
+<script id='template-friendRequests' type='text/x-handlebars-template'>
+    <li><a class='menu-icon icon-friendRequests action' data-id='{{owner}}' data-type='friendRequests' id='friendRequests{{owner}}'>{{firstname}} {{lastname}}</a></li>
+</script>
+
+<script id='template-person' type='text/x-handlebars-template'>
+    <li><a class='menu-icon icon-notSelectedPerson action' data-id='{{id}}' data-type='{{type}}' id='{{type}}{{id}}'>{{firstname}} {{lastname}}</a></li>
+</script>
+
 <script id='template-createdRoute' type='text/x-handlebars-template'>
     <li><a class='menu-icon icon-selectedRoute action' data-id='{{id}}' data-type='{{type}}' id='{{type}}{{id}}'>{{name}}</a></li>
 </script>

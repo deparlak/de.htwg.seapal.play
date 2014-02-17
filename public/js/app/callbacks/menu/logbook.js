@@ -80,6 +80,21 @@ $(document).ready(function() {
         /* hide the remove footer */
         $('#logbookRemove-footer').removeClass('visible').addClass('hidden');
     });
+    /* START-------------------------- person ------------------------------- */
+    
+    menu.addCallback('leftclick', 'icon-notSelectedPerson', function (self) {
+        if(!map.checkTracking() && state == states.normal) {
+            return;
+        }
+        
+        if (state == states.normal && self.hasClass('icon-notSelectedPerson')) {
+            $('.icon-selectedPerson').removeClass('icon-selectedPerson').addClass('icon-notSelectedPerson');
+            self.removeClass('icon-notSelectedPerson').addClass('icon-selectedPerson');
+            map.selectPerson(self.data('id'));
+        }
+    });
+    
+    /* END-------------------------- person ------------------------------- */
    
     /* START-------------------------- boats ------------------------------- */
     var tmpBoat;
