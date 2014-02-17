@@ -50,7 +50,7 @@ $(document).ready(function() {
     });
     
     menu.addCallback('leftclick', 'icon-info', function (self) {
-        output.info("Seapal is developed in a cooperation between IBN Verlag and the University of Applied Science Konstanz (HTWG).<br/>Further information and a user guide are available at seapal.info.<br/>For new, follow Seapal at Google+.<br/>Please support our project and rate Seapal in the App Store<br/>The weather layer is provided by openportguide.org");
+        output.info("Seapal is developed in a cooperation between IBN Verlag and the University of Applied Science Konstanz (HTWG).<br/>Further information and a user guide are available at seapal.info.<br/>For new, follow Seapal at Google+.<br/>Please support our project and rate Seapal in the App Store<br/>The weather layer is provided by openportguide.org<br/><a href='/'>Back to info page</a>");
     });
     
     menu.addCallback('leftclick', 'icon-addOns', function (self) {
