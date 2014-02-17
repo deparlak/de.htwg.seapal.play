@@ -143,8 +143,4 @@ $(document).ready(function() {
         }
     });
 
-    $("#track_WaypointList>table>tbody>tr").on('mousedown', 'th', function() {
-        console.log("YEP");
-    });
-
 });

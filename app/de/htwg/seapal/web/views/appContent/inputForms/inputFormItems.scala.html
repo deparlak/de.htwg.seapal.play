@@ -303,26 +303,9 @@
         <div class="col-sm-3 scroll_table" id="track_WaypointList">
             <table>
                 <tbody>
-                    <tr><th>Coffe</th></tr>
-                    <tr><th>Milk</th></tr>
-                    <tr><th>Coco</th></tr>
-                    <tr><th>Tee</th></tr>
-                    <tr><th>Cola</th></tr>
-                    <tr><th>Fanta</th></tr>
-                    <tr><th>Water</th></tr>
-                    <tr><th>Gin</th></tr>
-                    <tr><th>Vodka</th></tr>
-                    <tr><th>Rum</th></tr>
-                    <tr><th>Coffe</th></tr>
-                    <tr><th>Milk</th></tr>
-                    <tr><th>Coco</th></tr>
-                    <tr><th>Tee</th></tr>
-                    <tr><th>Cola</th></tr>
-                    <tr><th>Fanta</th></tr>
-                    <tr><th>Water</th></tr>
-                    <tr><th>Gin</th></tr>
-                    <tr><th>Vodka</th></tr>
-                    <tr><th>Rum</th></tr>
+                    {{#each waypoint}}
+                        <tr><th data-id='{{id}}' data-type='{{type}}'>{{name}}</th></tr>   
+                    {{/each}}                    
                 </tbody>
             </table>
         </div>
