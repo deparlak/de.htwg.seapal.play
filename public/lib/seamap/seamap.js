@@ -441,7 +441,7 @@
             DISTANCE_UNIT       : "globalSettings_nautmil",
             TEMPERATURE_UNIT    : "globalSettings_celsius",
             TRACKING_DELAY      : 5,
-            WAYPOINT_DELAY      : 5, 
+            WAYPOINT_DELAY      : 1, 
             HISTORY_TREND       : 1,
             CIRCLE_RADIUS       : 250
         };
@@ -1919,7 +1919,8 @@
             if (isTracking) {
                 addNewWaypoint();
                 setTimeout(handleAddNewWaypoint, globalSettings.WAYPOINT_DELAY * 1000 * 60);
-                uploadTrackUpdate();
+                //TODO : check if cyclic track upload should be done.
+                //uploadTrackUpdate();
             }
         }
         
