@@ -89,6 +89,22 @@
     width: 100%;
 }
 
+.scroll_table table
+{
+    width:100%;
+}
+.scroll_table th
+{
+    height: 35px;
+    width:100px;
+}
+.scroll_table tbody
+{
+    display: block;
+    max-height: 300px;
+    overflow: auto;
+}
+
 .form_track textarea
 {
     width: 100%;
