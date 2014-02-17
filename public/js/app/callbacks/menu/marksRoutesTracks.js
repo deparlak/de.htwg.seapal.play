@@ -142,4 +142,5 @@ $(document).ready(function() {
             selectToRemove(self);
         }
     });
+
 });

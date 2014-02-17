@@ -227,6 +227,7 @@ $(document).ready(function() {
     
     menu.addCallback('rightclick', ['icon-notSelectedTrack', 'icon-selectedTrack'], function (self) {
         tmpTrack = map.get(self.data('type'), self.data('id'));
+        tmpTrack.waypoint = map.getWaypoints(tmpTrack.id);
         openTrackTripModal(tmpTrack);
     });
 
@@ -254,6 +255,10 @@ $(document).ready(function() {
 
         // Initializes the datepicker
         $('.datepicker').datepicker();
+
+        $("#track_WaypointList>table>tbody>tr").on('mousedown', 'th', function() {
+            console.log($(this).data('id'));
+        });
     }
 
     $('#modal-form_track').submit(function() {
