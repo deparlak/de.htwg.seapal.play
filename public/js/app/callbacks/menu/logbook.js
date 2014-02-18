@@ -240,8 +240,6 @@ $(document).ready(function() {
                 return;
             }
             $('#modal-form_waypoint').modal('show');
-
-            console.log(tmpWaypoint);
         });
     }
 
