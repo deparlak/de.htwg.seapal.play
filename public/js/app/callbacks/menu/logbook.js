@@ -8,8 +8,6 @@
 $(document).ready(function() {
 
     var active = "#account";
-    var waypoint_headingTo_template = Handlebars.compile($("#waypoint_headingTo_option").html());
-    var isWaypointModalToBeOpened = false;
     var states = {normal : 0, remove : 1};
     var state = states.normal;
     var removeElements = {};
@@ -224,21 +222,7 @@ $(document).ready(function() {
     function openTrackTripModal(tmpTrack) {
         var template = Handlebars.compile($("#track_Template").text());
         var html = template(tmpTrack);
-
         $('#trackInputForm').html(html);
-
-        $('#open_waypoint_modal').on('click', function() {
-                if(!map.checkTracking()) {
-                    $('#modal-form_track').modal('hide');
-                    return;
-                }
-                isWaypointModalToBeOpened = true;
-                $("#waypoint_headingTo_select").html(waypoint_headingTo_template(
-                    [{id:0, label:"-"}, {id:1, label:"Routepoint 1"}, {id:2, label:"Routepoint 2"}, {id:3, label:"Routepoint 3"}]));
-                $('#modal-form_track').modal('hide');
-                $('#modal-form_waypoint').modal('show');
-            }
-        );
 
         menu.disableAutoClose();
         $('#modal-form_track').modal('show');
@@ -247,7 +231,17 @@ $(document).ready(function() {
         $('.datepicker').datepicker();
 
         $("#track_WaypointList>table>tbody>tr").on('mousedown', 'th', function() {
-            console.log($(this).data('id'));
+            tmpWaypoint = map.get('waypoint', $(this).data('id'));
+            var template = Handlebars.compile($('#waypoint_Template').text());
+            var html = template(tmpWaypoint);
+            $('#waypointInputForm').html(html);
+
+            if(!map.checkTracking()) {                
+                return;
+            }
+            $('#modal-form_waypoint').modal('show');
+
+            console.log(tmpWaypoint);
         });
     }
 
@@ -297,16 +291,12 @@ $(document).ready(function() {
      */
     $('#modal-form_track').on('hidden.bs.modal',
         function() {
-            if(!isWaypointModalToBeOpened) {
-                menu.enableAutoClose();
-            }
+            menu.enableAutoClose();
             $('#trackInputForm').html("");
         }
     );
     $('#modal-form_waypoint').on('hidden.bs.modal',
         function() {
-            isWaypointModalToBeOpened = false;
-            menu.enableAutoClose();
             $('#waypointInputForm').html("");
         }
     );
