@@ -56,6 +56,13 @@ $(document).ready(function() {
         return tmp.toLocaleDateString("de-DE");
     });
 
+    Handlebars.registerHelper('timeDateToString', function(date) {
+        var tmp = new Date(date);
+        var hour = tmp.getHours().toString().length < 2 ?  "0" + tmp.getHours() : tmp.getHours();
+        var minute = tmp.getMinutes().toString().length < 2 ? "0" + tmp.getMinutes() : tmp.getMinutes();
+        return tmp.toLocaleDateString("de-DE") + ", " + hour + ":" + minute;
+    });
+
     function stringToDate(string) {
         return new Date(string.substring(6,10), string.substring(3,5) -1, string.substring(0,2)).getTime();
     }
