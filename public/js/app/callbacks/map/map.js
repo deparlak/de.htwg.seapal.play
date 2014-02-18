@@ -52,7 +52,7 @@ $(document).ready(function() {
     map.addCallback([events.DESELECTED], function (self) {
         $('.'+self.type+self.id).removeClass('icon-selected-'+self.type).addClass('icon-notSelected-'+self.type);
     });
-	
+    
 	/* this callback will be called if an object was updated by a user */
     map.addCallback([events.UPDATED_FROM_CLIENT], function (self) {
         $("."+self.type+self.id).text(self.name);

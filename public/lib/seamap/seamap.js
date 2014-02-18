@@ -249,11 +249,14 @@
                 checkId(type, obj.id);
                 var modified = copyObjAttr(type, data[type].list[obj.id], obj);
           
-          /* TODO check if the additional reference is required. */
-            /* create another reference to the object, so that the object is accessible through the id and the _id.*/
-        //         if (null != obj._id && obj.id != obj._id) {
-        //            data[type].list[obj._id] = data[type].list[obj.id]["id"];
-        //        }
+                /* check if an update of the id is required. This happen if the user creates an element and the element was upload to the server. */
+                 if (null != obj._id && obj.id != obj._id) {
+                    data[type].list[obj._id] = data[type].list[obj.id]["id"];
+                    dataCallback([event.ID_UPDATE], obj);
+                    /* change the id now and delete the old one */
+                    delete data[type].list[obj.id]["id"];
+                    data[type].list[obj._id].id = obj._id;
+                }
                 /* copyObjAttr check if the object was modified. if so we fire a callback to sync with the server and tell the client listeners */
                 if (modified) {
                     /* check if more changed than the _id and _rev */
@@ -474,7 +477,8 @@
             EDIT_MARK               : 17,
             
             SELECTED                : 18,
-            DESELECTED              : 19
+            DESELECTED              : 19,
+            ID_UPDATE               : 20
             
             
         };
@@ -1727,7 +1731,7 @@
             data.trip.list[obj.id] = obj;        
             activateTrack(obj.id); 
             data.trip.count++;
-            dataCallback([event.CREATED_TRACK], obj);
+            dataCallback([event.CREATED_TRACK, event.SERVER_CREATE], obj);
         }
 		
         /**
@@ -1951,7 +1955,7 @@
         function handleAddNewWaypoint() {
             if (isTracking) {
                 addNewWaypoint();
-                setTimeout(handleAddNewWaypoint, globalSettings.WAYPOINT_DELAY * 1000 * 60);
+                setTimeout(handleAddNewWaypoint, globalSettings.WAYPOINT_DELAY * 1000 );
                 //TODO : check if cyclic track upload should be done.
                 //uploadTrackUpdate();
             }

@@ -215,7 +215,7 @@ $(document).ready(function() {
         openTrackTripModal(tmpTrack);
     });
     
-    menu.addCallback('rightclick', ['icon-notSelected-track', 'icon-selected-track'], function (self) {
+    menu.addCallback('rightclick', ['icon-notSelected-trip', 'icon-selected-trip'], function (self) {
         tmpTrack = map.get(self.data('type'), self.data('id'));
         tmpTrack.waypoint = map.getWaypoints(tmpTrack.id);
         openTrackTripModal(tmpTrack);
