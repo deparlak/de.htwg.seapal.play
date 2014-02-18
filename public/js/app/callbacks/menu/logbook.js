@@ -231,7 +231,7 @@ $(document).ready(function() {
         // Initializes the datepicker
         $('.datepicker').datepicker();
 
-        $("#track_WaypointList>table>tbody>tr").on('mousedown', 'th', function() {
+        $("#track_WaypointList>table>tbody>tr").on('click', 'th', function() {
             tmpWaypoint = map.get('waypoint', $(this).data('id'));
             tmpWaypoint.title = tmpWaypoint.name;
             tmpWaypoint.position = coord.getCoordinatesAsString(tmpWaypoint.lat, tmpWaypoint.lng);
