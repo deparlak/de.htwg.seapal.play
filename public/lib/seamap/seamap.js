@@ -1073,10 +1073,10 @@
             google.maps.event.addListener(map, 'rightclick', function(event) {
 
                 switch(state) {
-                    case States.NORMAL: 
-                        hideContextMenu();
+                    case States.NORMAL:
                         hideCrosshairMarker(crosshairMarker);
-                        showCrosshairMarker(event.latLng);
+                        showCrosshairMarker(event.latLng);                        
+                        showContextMenu(event.latLng, ContextMenuTypes.DEFAULT, crosshairMarker);
                         break;
                         
                     case States.ROUTE:
@@ -1094,10 +1094,10 @@
             new LongPress(map, 500);
             google.maps.event.addListener(map, 'longpress', function(event) {
                 switch(state) {
-                    case States.NORMAL: 
-                        hideContextMenu();
+                    case States.NORMAL:
                         hideCrosshairMarker(crosshairMarker);
-                        showCrosshairMarker(event.latLng);
+                        showCrosshairMarker(event.latLng);                        
+                        showContextMenu(event.latLng, ContextMenuTypes.DEFAULT, crosshairMarker);
                         break;
                         
                     case States.ROUTE:
