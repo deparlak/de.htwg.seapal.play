@@ -1,9 +1,3 @@
-<script id="waypoint_headingTo_option" type="text/x-handlebars-template">
-    {{#each this}}
-        <option value={{id}}>{{label}}</option>
-    {{/each}}
-</script>
-
 <!-- global settings template -->
 <script type="text/x-handlebars" id="globalSettings_Template">
     <div class="row">
@@ -377,7 +371,112 @@
     </div>
     <div class="inputForm-footer">
         <button type="submit" class="btn btn-primary">Save</button>
-        <button type="button" id="open_waypoint_modal" class="btn btn-info">See waypoints</button>
+        <button type="button" class="btn btn-danger" data-dismiss="modal">Abort</button>
+    </div>
+</script>
+
+<!-- Waypoint template -->
+<script type="text/x-handlebars" id="waypoint_Template">
+    <div class="row">
+        <div class="some_left_padding col-12 col-sm-1">
+            <label for="waypoint_titel">Titel</label>
+        </div>
+        <div class="no_padding col-12 col-sm-3">
+            <input type="text" name="waypoint_titel" tabindex="1" {{bindData "title"}} value="{{title}}" />
+        </div>
+        <div class="some_left_padding col-12 col-sm-1">
+            <label for="waypoint_pos">Pos.</label>
+        </div>
+        <div class="no_padding col-12 col-sm-3">
+            <input type="search" class="latlngInput" name="waypoint_pos" {{bindData "position"}} value="{{position}}" tabindex="2" disabled/>
+        </div>
+        <div class="some_left_padding col-12 col-sm-1">
+            <label for="waypoint_date">Date</label>
+        </div>
+        <div class="no_padding col-12 col-sm-3">
+            <input type="text" name="waypoint_date" tabindex="3" readonly {{bindData "date"}} value="{{timeDateToString date}}" />
+        </div>
+    </div>
+    <div class="row">
+        <div class="some_left_padding col-12 col-sm-1">
+            <label for="waypoint_COG">COG</label>
+        </div>
+        <div class="no_padding col-12 col-sm-1">
+            <input type="text" name="waypoint_COG" tabindex="4" readonly {{bindData "cog"}} value="{{cog}}" />
+        </div>
+        <div class="some_left_padding col-12 col-sm-1">
+            <label for="waypoint_SOG">SOG</label>
+        </div>
+        <div class="no_padding col-12 col-sm-1">
+            <input type="text" name="waypoint_SOG" tabindex="5" readonly {{bindData "sog"}} value="{{sog}}" />
+        </div>
+        <div class="some_left_padding col-12 col-sm-1">
+            <label for="waypoint_BTM">BTM</label>
+        </div>
+        <div class="no_padding col-12 col-sm-1">
+            <input type="text" name="waypoint_BTM" tabindex="6" readonly {{bindData "btm"}} value="{{btm}}" />
+        </div>
+        <div class="some_left_padding col-12 col-sm-1">
+            <label for="waypoint_DTM">DTM</label>
+        </div>
+        <div class="no_padding col-12 col-sm-1">
+            <input type="text" name="waypoint_DTM" tabindex="7" readonly {{bindData "dtm"}} value="{{dtm}}" />
+        </div>        
+    </div>
+    <div class="row">
+        <div class="some_left_padding col-12 col-sm-2">
+            <label for="waypoint_maneuver">Maneuver</label>
+        </div>
+        <div class="no_padding col-12 col-sm-2">
+            <select name="waypoint_maneuver" tabindex="9" {{bindData "maneuver"}}>
+                {{#select maneuver}}
+                <option value="NONE">-</option>
+                <option value="waypoint_maneuver_mob">Man overboard</option>
+                <option value="waypoint_maneuver_tack">Tack</option>
+                <option value="waypoint_maneuver_jibe">Jibe</option>
+                <option value="waypoint_maneuver_shooting">Shooting head to wind</option>
+                {{/select}}
+            </select>
+        </div>
+        <div class="some_left_padding col-12 col-sm-2">
+            <label for="waypoint_headsail">Headsail</label>
+        </div>
+        <div class="no_padding no_padding col-12 col-sm-2">
+            <select name="waypoint_headsail" tabindex="10" {{bindData "foresail"}}>
+                {{#select foresail}}
+                <option value="NONE">-</option>
+                <option value="waypoint_headsail_jib">Jib</option>
+                <option value="waypoint_headsail_genoa">Genoa</option>
+                <option value="waypoint_headsail_spinnaker">Spinnaker</option>
+                {{/select}}
+            </select>
+        </div>
+        <div class="some_left_padding col-12 col-sm-2">
+            <label for="waypoint_mainsail">Mainsail</label>
+        </div>
+        <div class="no_padding col-12 col-sm-2">
+            <select name="waypoint_mainsail" tabindex="11" {{bindData "mainsail"}}>
+                {{#select mainsail}}
+                <option value="NONE">-</option>
+                <option value="waypoint_mainsail_jib">Jib</option>
+                <option value="waypoint_mainsail_mainsail">Mainsail</option>
+                {{/select}}
+            </select>
+        </div>
+    </div>
+    <div class="row">
+        <div class="some_left_padding col-12 col-sm-1">
+            <label for="waypoint_Notes">Notes</label>
+        </div>
+        <div class="no_padding col-12 col-sm-5">                            
+            <textarea name="waypoint_Notes" rows="10" tabindex="9"{{bindData "note"}} value="{{note}}" ></textarea>
+        </div>
+        <div class="no_padding col-12 col-sm-6">                            
+            <img src="@routes.Assets.at("images/screenshots/23-big.jpg")">
+        </div>
+    </div>
+    <div class="inputForm-footer">
+        <button type="submit" class="btn btn-primary">Save</button>
         <button type="button" class="btn btn-danger" data-dismiss="modal">Abort</button>
     </div>
 </script>
