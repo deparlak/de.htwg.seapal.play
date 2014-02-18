@@ -132,7 +132,7 @@ $(document).ready(function() {
         createModal(self);
     });
 
-    menu.addCallback('rightclick', ['icon-notSelectedMark', 'icon-selectedMark'], function (self) {
+    menu.addCallback('rightclick', ['icon-notSelected-mark', 'icon-selected-mark'], function (self) {
         createModal(map.get(self.data('type'), self.data('id')));
     });    
 
@@ -187,7 +187,7 @@ $(document).ready(function() {
     /* START-------------------------- route ------------------------------- */
     var tmpRoute;
 
-    menu.addCallback('rightclick', ['icon-notSelectedRoute', 'icon-selectedRoute'], function (self) {        
+    menu.addCallback('rightclick', ['icon-notSelected-route', 'icon-selected-route'], function (self) {        
         tmpRoute = map.get(self.data('type'), self.data('id'));
         var template = Handlebars.compile($("#route_Template").text());
         var html = template(tmpRoute);
@@ -215,7 +215,7 @@ $(document).ready(function() {
         openTrackTripModal(tmpTrack);
     });
     
-    menu.addCallback('rightclick', ['icon-notSelectedTrack', 'icon-selectedTrack'], function (self) {
+    menu.addCallback('rightclick', ['icon-notSelected-track', 'icon-selected-track'], function (self) {
         tmpTrack = map.get(self.data('type'), self.data('id'));
         tmpTrack.waypoint = map.getWaypoints(tmpTrack.id);
         openTrackTripModal(tmpTrack);
@@ -284,8 +284,8 @@ $(document).ready(function() {
         window.location = "/logout";
     });
     
-    menu.addCallback('leftclick', 'icon-notSelectedBoat', function (self) {
-        if (state == states.normal && self.hasClass('icon-notSelectedBoat')) {
+    menu.addCallback('leftclick', ['icon-notSelected-trip', 'icon-notSelected-boat', 'icon-notSelected-person'], function (self) {
+        if (state == states.normal) {
             map.select(self.data('type'), self.data('id'));
         } else if (state == states.remove) {
             selectToRemove(self);

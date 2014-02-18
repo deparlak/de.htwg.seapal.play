@@ -2263,8 +2263,10 @@
                     this.setVisible(true);
                 });
             }
-            this.updateLabel();
-            this.path.setVisible(true);
+            if (0 < this.markers.length) {
+                this.updateLabel();
+                this.path.setVisible(true);
+            }
         }
         
         /**
