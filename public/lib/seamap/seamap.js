@@ -39,17 +39,17 @@
             },
             markerOptions : {
                 image : new google.maps.MarkerImage(
-                    "/assets/images/pin_marker.png",
+                    "/assets/images/ann_mark.png",
                     new google.maps.Size(42, 42),
                     new google.maps.Point(0,0),
-                    new google.maps.Point(21, 36))
+                    new google.maps.Point(8, 35))
             },
             tmpMarkerOptions : {
                 image : new google.maps.MarkerImage(
-                    "/assets/images/pin_marker.png",
+                    "/assets/images/ann_mark.png",
                     new google.maps.Size(42, 42),
                     new google.maps.Point(0,0),
-                    new google.maps.Point(21, 36))
+                    new google.maps.Point(0, 35))
             }
         },
 
@@ -68,7 +68,7 @@
             }
         },
 
-        // Default options for the marker
+        // Default options for the person overboard
         personOverboardOptions : {
             polyOptions : {
                 strokeColor: '#000000',
@@ -93,10 +93,10 @@
             },
             markerOptions : {
                 image : new google.maps.MarkerImage(
-                    "/assets/images/circle.png",
-                    new google.maps.Size(20, 20),
+                    "/assets/images/ann_route.png",
+                    new google.maps.Size(42, 42),
                     new google.maps.Point(0,0),
-                    new google.maps.Point(10, 10))
+                    new google.maps.Point(5, 35))
             }
         },
 
@@ -109,7 +109,7 @@
             },
             markerOptions : {
                 image : new google.maps.MarkerImage(
-                    "/assets/images/circle.png",
+                    "/assets/images/circle_green.png",
                     new google.maps.Size(1, 1),
                     new google.maps.Point(0,0),
                     new google.maps.Point(10, 10))
@@ -119,16 +119,16 @@
         // Default options for a distance measurement
         distance : {
             polyOptions : {
-                strokeColor: 'grey',
+                strokeColor: 'orange',
                 strokeOpacity: 0.5,
                 strokeWeight: 2
             },
             markerOptions : {
                 image : new google.maps.MarkerImage(
-                    "/assets/images/circle.png",
-                    new google.maps.Size(20, 20),
+                    "/assets/images/ann_distance.png",
+                    new google.maps.Size(42, 42),
                     new google.maps.Point(0,0),
-                    new google.maps.Point(10, 10))
+                    new google.maps.Point(5, 35))
             }
         },
         
@@ -140,7 +140,7 @@
                     type:'rect'
                 },
                 image : new google.maps.MarkerImage(
-                    '/assets/images/boat.png', 
+                    '/assets/images/ann_cursor.png', 
                     new google.maps.Size(32,32),    
                     new google.maps.Point(0,0),    
                     new google.maps.Point(16,16))    
@@ -155,10 +155,10 @@
                     type:'rect'
                 },
                 image : new google.maps.MarkerImage(
-                    '/assets/images/crosshair.png', 
-                    new google.maps.Size(28,28),    
+                    '/assets/images/haircross.png', 
+                    new google.maps.Size(74,74),    
                     new google.maps.Point(0,0),    
-                    new google.maps.Point(14,14))    
+                    new google.maps.Point(37,37))    
             }
         }
     };
@@ -1879,7 +1879,7 @@
 
         this.discardTarget = function() {
             destpath.setPath([]);
-            isShowingTargetLine = !isShowingTargetLine;
+            isShowingTargetLine = false;
         };
         
         function drawSetAsDestination() {
