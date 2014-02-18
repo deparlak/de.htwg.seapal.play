@@ -2,6 +2,14 @@
  * Seapal input forms
  */
 
+.disable-select
+{
+  -webkit-user-select: none;  
+  -moz-user-select: none;    
+  -ms-user-select: none;      
+  user-select: none;
+}
+
 .inputForm-modal
 {
     margin-top: 70px;
@@ -89,6 +97,10 @@
     width: 100%;
 }
 
+.wrap_scrollable {
+    overflow:hidden;
+}
+
 .scroll_table table
 {
     width:100%;
@@ -96,12 +108,23 @@
 .scroll_table th
 {
     height: 35px;
-    width:100px;
+    width:150px;
+}
+.scroll_table th:hover
+{
+    color: white;
+}
+.scroll_table tr:hover
+{
+    cursor: pointer;
+    cursor: hand;
+    background-color: #697994;
 }
 .scroll_table tbody
 {
     display: block;
     max-height: 300px;
+    width: 800px;
     overflow: auto;
 }
 
