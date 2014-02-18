@@ -395,7 +395,6 @@
             var list = [];
             /* copy only the template fields */
             for (var wp in data.waypoint.list) {
-                console.log(data.waypoint.list[wp].trip);
                 if (data.waypoint.list[wp].trip == tripId) {
                     newWp = self.get('waypoint', wp);
                     insert = false;

@@ -11,6 +11,8 @@ $(document).ready(function() {
 
     /* local list to store friend requests */
     var receivedRequests = {};
+    /* local friend list, which can be checked for new friends */
+    var friend_list = [];
     /* method to call friend request list cylic */
     var friendRequest = function(){
         request = $.ajax({
@@ -33,22 +35,40 @@ $(document).ready(function() {
             } else {
                 $("#logbook-friendRequests").show();
             }
-        }
-    )};
+            
+            /* check if you have a new friend */
+            if (friend_list.length != response.account_info.friend_list.length) {                    
+                newFriendsRequest = $.ajax({
+                    url         : "api/all/friends",
+                    type        : "get",
+                    contentType : "application/json",
+                });
+                
+                newFriendsRequest.done(function (response, textStatus, jqXHR){
+                    for (var i in response.person_info) {
+                        /* friend entry not exist, download the info about the new friend now. */
+                        if (-1 == friend_list.indexOf(response.person_info[i]._id)) {
+                            friend_list.push(response.person_info[i]._id);
+                            map.set('person', response.person_info[i]);
+                        }
+                    }
+                });
+            }
+        });
+    };
     
-    /* cylcic friend request every minute */
-    setInterval(friendRequest, 6000);
 
     /* startup code initialise objects from the server */
     request = $.ajax({
-        url         : "api/all/all",
+        url         : "api/all/own",
         type        : "get",
         contentType : "application/json",
     });
 
     /* callback handler that will be called on success */
     request.done(function (response, textStatus, jqXHR){
-        console.log(response);
+        console.log(response.account_info);
+        console.log(response.person_info);
 
         response.mark.map( function(item) {
             item.image_big = null;
@@ -76,8 +96,10 @@ $(document).ready(function() {
             map.set('person', item);
         });
         
+        /* trigger friend list */
         friendRequest();
-        
+        /* sset cylcic friend request every minute */
+        setInterval(friendRequest, 6000);
         
         /* select the default boat and person */
         if (response.boat.length) {
@@ -140,9 +162,12 @@ $(document).ready(function() {
                 url         : "api/abortFriendRequest/"+self.data('id'),
                 type        : "get"
             });
-            
-            $("#friendRequests"+self.data('id')).remove();
-            delete receivedRequests[self.data('id')];
+            /* callback handler that will be called on success */
+            request.done(function (response, textStatus, jqXHR){
+                $("#friendRequests"+self.data('id')).remove();
+                delete receivedRequests[self.data('id')];
+                friendRequest();
+            });
         });
         
         $('#confirmCrewRequest').on('click', function() {
@@ -152,10 +177,13 @@ $(document).ready(function() {
                 url         : "api/sendFriendRequest/"+self.data('id'),
                 type        : "get"
             });
-            
-            map.set('person', receivedRequests[self.data('id')]);
-            $("#friendRequests"+self.data('id')).remove();
-            delete receivedRequests[self.data('id')];
+            /* callback handler that will be called on success */
+            request.done(function (response, textStatus, jqXHR){
+                map.set('person', receivedRequests[self.data('id')]);
+                $("#friendRequests"+self.data('id')).remove();
+                delete receivedRequests[self.data('id')];
+                friendRequest();
+            });
         });
     });
 
