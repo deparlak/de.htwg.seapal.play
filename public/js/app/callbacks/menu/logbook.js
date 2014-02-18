@@ -233,6 +233,8 @@ $(document).ready(function() {
 
         $("#track_WaypointList>table>tbody>tr").on('mousedown', 'th', function() {
             tmpWaypoint = map.get('waypoint', $(this).data('id'));
+            tmpWaypoint.title = tmpWaypoint.name;
+            tmpWaypoint.position = coord.getCoordinatesAsString(tmpWaypoint.lat, tmpWaypoint.lng);
             console.log(tmpWaypoint);
             var template = Handlebars.compile($('#waypoint_Template').text());
             var html = template(tmpWaypoint);
@@ -247,8 +249,9 @@ $(document).ready(function() {
 
     $('#modal-form_waypoint').submit(function() {
         var boundData = Handlebars.getBoundData(tmpWaypoint);
+        boundData.name = boundData.title;
         console.log(boundData);
-        //map.set('waypoint', boundData);
+        map.set('waypoint', boundData);
         $('#modal-form_waypoint').modal('hide');
         return false;
     });

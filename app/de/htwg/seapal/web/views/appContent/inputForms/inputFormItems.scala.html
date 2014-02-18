@@ -382,19 +382,19 @@
             <label for="waypoint_titel">Titel</label>
         </div>
         <div class="no_padding col-12 col-sm-3">
-            <input type="text" name="waypoint_titel" tabindex="1" {{bindData "name"}} value="{{name}}" />
+            <input type="text" name="waypoint_titel" tabindex="1" {{bindData "title"}} value="{{title}}" />
         </div>
         <div class="some_left_padding col-12 col-sm-1">
-            <label for="waypoint_posN">Pos.N</label>
+            <label for="waypoint_pos">Pos.</label>
         </div>
         <div class="no_padding col-12 col-sm-3">
-            <input type="text" name="waypoint_posN" tabindex="2" readonly {{bindData "lat"}} value="{{lat}}" />
+            <input type="search" class="latlngInput" name="waypoint_pos" {{bindData "position"}} value="{{position}}" tabindex="2" disabled/>
         </div>
         <div class="some_left_padding col-12 col-sm-1">
-            <label for="waypoint_posE">Pos.E</label>
+            <label for="waypoint_date">Date</label>
         </div>
         <div class="no_padding col-12 col-sm-3">
-            <input type="text" name="waypoint_posE" tabindex="3" readonly {{bindData "lng"}} value="{{lng}}" />
+            <input type="text" name="waypoint_date" tabindex="3" readonly {{bindData "date"}} value="{{timeDateToString date}}" />
         </div>
     </div>
     <div class="row">
@@ -421,13 +421,7 @@
         </div>
         <div class="no_padding col-12 col-sm-1">
             <input type="text" name="waypoint_DTM" tabindex="7" readonly {{bindData "dtm"}} value="{{dtm}}" />
-        </div>
-        <div class="some_left_padding col-12 col-sm-1">
-            <label for="waypoint_date">Date</label>
-        </div>
-        <div class="no_padding col-12 col-sm-3">
-            <input type="text" name="waypoint_date" tabindex="8" readonly {{bindData "date"}} value="{{timeDateToString date}}" />
-        </div>
+        </div>        
     </div>
     <div class="row">
         <div class="some_left_padding col-12 col-sm-2">
