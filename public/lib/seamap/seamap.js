@@ -397,7 +397,18 @@
             for (var wp in data.waypoint.list) {
                 console.log(data.waypoint.list[wp].trip);
                 if (data.waypoint.list[wp].trip == tripId) {
-                    list[list.length] = self.get('waypoint', wp);
+                    newWp = self.get('waypoint', wp);
+                    insert = false;
+                    for (var i = 0; i < list.length; i++) {
+                        if (newWp.date < list[i].date) {
+                            list.splice(i, 0, self.get('waypoint', wp));
+                            insert = true;
+                            break;
+                        }
+                    }
+                    if (!insert) {
+                        list[list.length] = self.get('waypoint', wp);
+                    }
                 }
             }
 			return list;
@@ -1731,6 +1742,7 @@
             data.trip.list[obj.id] = obj;        
             activateTrack(obj.id); 
             data.trip.count++;
+            data.waypoint.count = 1;
             dataCallback([event.CREATED_TRACK, event.SERVER_CREATE], obj);
         }
 		
