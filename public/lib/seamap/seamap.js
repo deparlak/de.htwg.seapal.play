@@ -1486,7 +1486,7 @@
         */
         function getContextMenuContent() {
             var ctx = '<div id="contextmenu">'
-            var target = !isShowingTargetLine ? "Set as Target" : "Disable Target";
+            var target = !isShowingTargetLine ? "Set as Target" : "Discard Target";
             switch(contextMenuType) {
                 case ContextMenuTypes.DEFAULT:
                     ctx += '<button id="addMark" type="button" class="btn"><i class="icon-map-marker"></i> Set Mark</button>';
@@ -1876,6 +1876,11 @@
             }
             isShowingTargetLine = !isShowingTargetLine;
         }
+
+        this.discardTarget = function() {
+            destpath.setPath([]);
+            isShowingTargetLine = !isShowingTargetLine;
+        };
         
         function drawSetAsDestination() {
             destpath.setMap(map);

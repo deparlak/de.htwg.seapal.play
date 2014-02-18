@@ -57,6 +57,6 @@ $(document).ready(function() {
     });
 
     tools.addCallback('leftclick', 'icon-discardTarget', function (self) {
-        console.log('icon-discardTarget');
+        map.discardTarget();
     });
 });
