@@ -207,6 +207,7 @@ $(document).ready(function() {
 
     /* START-------------------------- track and waypoint------------------------------- */
     var tmpTrack;
+    var tmpWaypoint;
 
     menu.addCallback('leftclick', 'logbookTrackAdd', function (self) {        
         tmpTrack = map.getTemplate('trip');
@@ -232,6 +233,7 @@ $(document).ready(function() {
 
         $("#track_WaypointList>table>tbody>tr").on('mousedown', 'th', function() {
             tmpWaypoint = map.get('waypoint', $(this).data('id'));
+            console.log(tmpWaypoint);
             var template = Handlebars.compile($('#waypoint_Template').text());
             var html = template(tmpWaypoint);
             $('#waypointInputForm').html(html);
@@ -242,6 +244,14 @@ $(document).ready(function() {
             $('#modal-form_waypoint').modal('show');
         });
     }
+
+    $('#modal-form_waypoint').submit(function() {
+        var boundData = Handlebars.getBoundData(tmpWaypoint);
+        console.log(boundData);
+        //map.set('waypoint', boundData);
+        $('#modal-form_waypoint').modal('hide');
+        return false;
+    });
 
     $('#modal-form_track').submit(function() {
         var boundData = Handlebars.getBoundData(tmpTrack);
