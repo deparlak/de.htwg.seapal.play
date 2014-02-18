@@ -381,27 +381,43 @@ input.menubar-search:focus {
         content: "\f002"
 }
 
-.icon-selectedMark::after{
+.icon-selected-mark::after{
         content: "\f00c"
 }
 
-.icon-selectedRoute::after{
+.icon-selected-route::after{
         content: "\f00c"
 }
 
-.icon-selectedTrack::after{
+.icon-selected-trip::after{
         content: "\f00c"
 }
 
-.icon-notSelectedMark::after{
+.icon-selected-boat::after{
+        content: "\f00c"
+}
+
+.icon-selected-person::after{
+        content: "\f00c"
+}
+
+.icon-notSelected-mark::after{
         content: ""
 }
 
-.icon-notSelectedRoute::after{
+.icon-notSelected-route::after{
         content: ""
 }
 
-.icon-notSelectedTrack::after{
+.icon-notSelected-trip::after{
+        content: ""
+}
+
+.icon-notSelected-boat::after{
+        content: ""
+}
+
+.icon-notSelected-person::after{
         content: ""
 }
 
@@ -416,23 +432,6 @@ input.menubar-search:focus {
 .icon-signUpSeapal::after{
         content: "\f015"
 }
-
-.icon-notSelectedBoat::after{
-        content: ""
-}
-
-.icon-selectedBoat::after{
-        content: "\f00c"
-}
-
-.icon-notSelectedPerson::after{
-        content: ""
-}
-
-.icon-selectedPerson::after{
-        content: "\f00c"
-}
-
 
 /* specification of the icons from the tools */
 

@@ -214,18 +214,21 @@
         };
         /* remove a route,mark,track,boat,... */
         this.remove = function(type, id) {
+            var ok = true;
 			dataParameterCheck(type, id, null);
 			/* check if a remove method is defined which has to be called. 
                A remove method can be defined for example a mark which has to
                be removed from the map if it is still visible or a route.
             */
 			if (undefined !== data[type].removeMethod) {
-				data[type].removeMethod(id);
+				ok = data[type].removeMethod(id);
 			}
-			/* remove the element now from the list */
-			dataCallback([event.SERVER_REMOVE], data[type].list[id]);
-            delete data[type].list[data[type].list[id]["_id"]];
-			delete data[type].list[id];
+            if (ok) {
+                /* remove the element now from the list */
+                dataCallback([event.SERVER_REMOVE], data[type].list[id]);
+                delete data[type].list[data[type].list[id]["_id"]];
+                delete data[type].list[id];
+            }
         };
 		/* set a route,mark,track,boat,... */
         this.set = function(type, obj) {
@@ -303,23 +306,29 @@
 			}
 			return jQuery.extend(true, {}, data[type].template);
         };
-		/* visible the object with the given type and id */
-        this.visible = function(type, id) {
+		/* select the object with the given type and id */
+        this.select = function(type, id) {
+            var ok = true;
 			dataParameterCheck(type, id, null);
 			/* check if a visible method is not defined which has to be called */
-			if (undefined === data[type].visibleMethod) {
-				throw("Cannot call visible for objects of the type "+type);
+			if (undefined !== data[type].selectMethod) {
+                ok = data[type].selectMethod(id);
 			}
-			data[type].visibleMethod(id);
+            if (ok) {
+                dataCallback([event.SELECTED], data[type].list[id]);
+            }
         };
-		/* hide the object with the given type and id */
-        this.hide = function(type, id) {
+		/* deselect the object with the given type and id */
+        this.deselect = function(type, id) {
+            var ok = true;
 			dataParameterCheck(type, id, null);
 			/* check if a hide method is not defined which has to be called */
-			if (undefined === data[type].hideMethod) {
-				throw("Cannot call hide for objects of the type "+type);
+			if (undefined !== data[type].deselectMethod) {
+                ok = data[type].deselectMethod(id);
 			}
-			data[type].hideMethod(id);
+            if (ok) {
+                dataCallback([event.DESELECTED], data[type].list[id]);
+            }
         };
         /* get the handle of the google map */
         this.getGoogleMapsHandle = function () {
@@ -376,18 +385,6 @@
         /* set map type to roamap + charts */
         this.roadmap = function () {
             map.setMapTypeId(google.maps.MapTypeId.ROADMAP);
-        };
-        /* select a boat */
-        this.selectBoat = function(id) {
-			dataParameterCheck('boat', id, null);
-			data.boat.active = data.boat.list[id];
-            console.log("Selected boat "+id);
-        };
-        /* select a person */
-        this.selectPerson = function(id) {
-			dataParameterCheck('person', id, null);
-			data.person.active = data.person.list[id];
-            console.log("Selected person "+id);
         };
         /* get a list with all waypoints from a specific track */
         this.getWaypoints = function (tripId) {
@@ -477,6 +474,9 @@
 			SERVER_REMOVE			: 15,
             CREATED_WAYPOINT        : 16,
             EDIT_MARK               : 17,
+            
+            SELECTED                : 18,
+            DESELECTED              : 19
             
             
         };
@@ -762,7 +762,7 @@
 			if (data.mark.list[id].onMap) {
 				data.mark.list[id].onMap.setMap(null);
 			}
-			dataCallback([event.DELETED_MARK], data.mark.list[id]);
+            return true;
 		};		
 		
 		/* define the remove method for the route */
@@ -781,7 +781,7 @@
 			if (data.route.list[id].onMap) {
 				data.route.list[id].onMap.remove();
 			}
-			dataCallback([event.DELETED_ROUTE], data.route.list[id]);
+            return true;
 		};
 		
 		/* define the remove method for the trip */
@@ -800,46 +800,80 @@
 			if (data.trip.list[id].onMap) {
 				data.trip.list[id].onMap.remove();
 			}
-            dataCallback([event.DELETED_TRACK], data.trip.list[id]);
+            return true;
 		};
 		
-		/* define the visible method for a route */
-		data.route.visibleMethod = activateRoute;
+        /* define a select method for a boat */
+        data.boat.selectMethod = function(id) {
+			data.boat.active = data.boat.list[id];
+            return true;
+        };
+        
+        /* define a deselect method for a boat */
+        data.boat.deselectMethod = function(id) {
+			/* deselect is not possible, because a boat can only be switched by selecting */
+            return false;
+        };
+        
+        /* define a select method for a person */
+        data.person.selectMethod = function(id) {
+			data.person.active = data.person.list[id];
+            return true;
+        };
+        
+        /* define a deselect method for a person */
+        data.person.deselectMethod = function(id) {
+			/* deselect is not possible, because a person can only be switched by selecting */
+            return false;
+        };
+        
+		/* define the select method for a route */
+		data.route.selectMethod = function(id) {
+            activateRoute(id);
+            return true;
+        }
 		
-		/* define the visible method for a route */
-		data.route.hideMethod = function(id) {
+		/* define the select method for a route */
+		data.route.deselectMethod = function(id) {
 			if (!data.route.active || data.route.active.id != id) {
-				throw("Illegal call of data.route.hideMethod, beacause only the active route can be hidden.");
+				throw("Illegal call of data.route.deselectMethod, beacause only the active route can be hidden.");
 			}
 			/* hide the active route now */
 			hideActiveRoute();
+            return true;
 		};
 		
-		/* define the visible method for a track */
-		data.trip.visibleMethod = activateTrack;
-		
-		/* define the visible method for a track */
-		data.trip.hideMethod = function(id) {
+		/* define the select method for a track */
+		data.trip.selectMethod = function(id) {
+            activateTrack(id);
+            return true;
+		};
+        
+		/* define the select method for a track */
+		data.trip.deselectMethod = function(id) {
 			if (!data.trip.active || data.trip.active.id != id) {
-				throw("Illegal call of data.trip.hideMethod, beacause only the active track can be hidden.");
+				throw("Illegal call of data.trip.deselectMethod, beacause only the active track can be hidden.");
 			}
-			/* hide the active route now */
+			/* hide the active trip now */
 			hideActiveTrack();
+            return true;
 		};	
 
-		/* define the visible method for a mark */
-		data.mark.visibleMethod	 = function(id){
+		/* define the select method for a mark */
+		data.mark.selectMethod	 = function(id){
 			if (!data.mark.list[id].onMap) {
 				data.mark.list[id].onMap = getOnMapMark(data.mark.list[id]);
 			}
+            return true;
 		};
 		
-		/* define a hide method for a mark */
-		data.mark.hideMethod = function(id){
+		/* define a deselect method for a mark */
+		data.mark.deselectMethod = function(id){
 			if (null != data.mark.list[id].onMap) {
 				data.mark.list[id].onMap.setMap(null);
 				data.mark.list[id].onMap = null;
 			}
+            return true;
 		};
 		
         // distance
@@ -1764,8 +1798,9 @@
         * *********************************************************************************
         */
         function uploadTrackUpdate() {
-            if (data.trip.active != null) {
+            if (data.trip.active != null && data.trip.active.update) {
 				dataCallback([event.SERVER_CREATE], data.trip.active);
+                data.trip.active.update = false;
             }         
         }
         

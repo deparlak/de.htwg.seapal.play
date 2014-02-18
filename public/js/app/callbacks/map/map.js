@@ -9,13 +9,13 @@ $(document).ready(function() {
     events = map.getEvents();
     
     var templateLoadedRoute = Handlebars.compile($("#template-loadedRoute").html());
-    var templateLoadedTrack = Handlebars.compile($("#template-loadedTrack").html());
+    var templateLoadedTrip = Handlebars.compile($("#template-loadedTrip").html());
     var templateLoadedMark = Handlebars.compile($("#template-loadedMark").html());
     var templateLoadedBoat = Handlebars.compile($("#template-loadedBoat").html());
     var templatePerson = Handlebars.compile($("#template-person").html());
     
 	var templateCreatedRoute = Handlebars.compile($("#template-createdRoute").html());
-    var templateCreatedTrack = Handlebars.compile($("#template-createdTrack").html());
+    var templateCreatedTrip = Handlebars.compile($("#template-createdTrip").html());
     var templateCreatedMark = Handlebars.compile($("#template-createdMark").html());
 	
 	/* this callback will be called if an object was loaded from the server */
@@ -23,7 +23,8 @@ $(document).ready(function() {
         if (self.type == 'route') {
             $("#routes").append(templateLoadedRoute(self));
         } else if (self.type == 'trip') {
-            $("#tracks").append(templateLoadedTrack(self));
+            $("#tracks").append(templateLoadedTrip(self));
+            $("#logbook-trips").append(templateLoadedTrip(self));
         } else if (self.type == 'mark') {
             $("#marks").append(templateLoadedMark(self));
         } else if (self.type == 'boat') {
@@ -31,6 +32,20 @@ $(document).ready(function() {
         } else if (self.type == 'person') {
             $("#logbook-crews").append(templatePerson(self));
         }
+    });
+    
+	/* this callback will be called if an object was selected by a user */
+    map.addCallback([events.SELECTED], function (self) {
+        /* remove other selection not if a mark was selected */
+        if ('mark' != self.type) {
+            $('.icon-selected-'+self.type).removeClass('icon-selected-'+self.type).addClass('icon-notSelected-'+self.type);
+        }
+        $('.'+self.type+self.id).removeClass('icon-notSelected-'+self.type).addClass('icon-selected-'+self.type);
+    });
+    
+	/* this callback will be called if an object was deselected by a user */
+    map.addCallback([events.DESELECTED], function (self) {
+        $('.'+self.type+self.id).removeClass('icon-selected-'+self.type).addClass('icon-notSelected-'+self.type);
     });
 	
 	/* this callback will be called if an object was updated by a user */
@@ -42,8 +57,8 @@ $(document).ready(function() {
     map.addCallback(events.CREATED_ROUTE, function (self) {
         $("#routes li a").each(function() {
             /* de-select other routes */
-            if ($(this).hasClass('icon-selectedRoute')) {
-                $(this).removeClass('icon-selectedRoute').addClass('icon-notSelectedRoute');
+            if ($(this).hasClass('icon-selected-route')) {
+                $(this).removeClass('icon-selected-route').addClass('icon-notSelected-route');
             }
         });
         $("#routes").append(templateCreatedRoute(self));
@@ -53,11 +68,11 @@ $(document).ready(function() {
     map.addCallback(events.CREATED_TRACK, function (self) {
         $("#tracks li a").each(function() {
             /* de-select other routes */
-            if ($(this).hasClass('icon-selectedTrack')) {
-                $(this).removeClass('icon-selectedTrack').addClass('icon-notSelectedTrack');
+            if ($(this).hasClass('icon-selected-track')) {
+                $(this).removeClass('icon-selected-track').addClass('icon-notSelected-track');
             }
         });
-        $("#tracks").append(templateCreatedTrack(self));
+        $("#tracks").append(templateCreatedTrip(self));
     });
 
 	/* this callback will be called when a route was deleted */

@@ -83,14 +83,8 @@ $(document).ready(function() {
     /* START-------------------------- person ------------------------------- */
     
     menu.addCallback('leftclick', 'icon-notSelectedPerson', function (self) {
-        if(!map.checkTracking() && state == states.normal) {
-            return;
-        }
-        
-        if (state == states.normal && self.hasClass('icon-notSelectedPerson')) {
-            $('.icon-selectedPerson').removeClass('icon-selectedPerson').addClass('icon-notSelectedPerson');
-            self.removeClass('icon-notSelectedPerson').addClass('icon-selectedPerson');
-            map.selectPerson(self.data('id'));
+        if (state == states.normal) {
+            map.select(self.data('type'), self.data('id'));
         }
     });
     
@@ -104,10 +98,7 @@ $(document).ready(function() {
         openBoatModal();
     });
 
-    menu.addCallback('rightclick', ['icon-notSelectedBoat', 'icon-selectedBoat'], function (self) {
-        if(!map.checkTracking()) {
-            return;
-        }
+    menu.addCallback('rightclick', ['icon-notSelected-boat', 'icon-selected-boat'], function (self) {
         menu.disableAutoClose();
         tmpBoat = map.get(self.data('type'), self.data('id'));
         openBoatModal();
@@ -295,14 +286,8 @@ $(document).ready(function() {
     });
     
     menu.addCallback('leftclick', 'icon-notSelectedBoat', function (self) {
-        if(!map.checkTracking() && state == states.normal) {
-            return;
-        }
-        
         if (state == states.normal && self.hasClass('icon-notSelectedBoat')) {
-            $('.icon-selectedBoat').removeClass('icon-selectedBoat').addClass('icon-notSelectedBoat');
-            self.removeClass('icon-notSelectedBoat').addClass('icon-selectedBoat');
-            map.selectBoat(self.data('id'));
+            map.select(self.data('type'), self.data('id'));
         } else if (state == states.remove) {
             selectToRemove(self);
         }

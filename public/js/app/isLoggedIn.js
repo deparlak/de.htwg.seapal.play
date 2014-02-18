@@ -81,12 +81,10 @@ $(document).ready(function() {
         
         /* select the default boat and person */
         if (response.boat.length) {
-            map.selectBoat(response.boat[0]._id);
-            $('#boat'+response.boat[0]._id).removeClass('icon-notSelectedBoat').addClass('icon-selectedBoat');
+            map.select('boat', response.boat[0]._id);
         }
         if (response.person_info.length) {
-            map.selectPerson(response.person_info[0]._id);
-            $('#person'+response.person_info[0]._id).removeClass('icon-notSelectedPerson').addClass('icon-selectedPerson');
+            map.select('person', response.person_info[0]._id);
         }
     });
 

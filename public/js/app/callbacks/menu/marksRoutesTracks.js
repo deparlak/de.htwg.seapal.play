@@ -96,51 +96,21 @@ $(document).ready(function() {
         event.preventDefault();
     });
     
-    /* handle leftclick events on a mark */
-    menu.addCallback('leftclick', ['icon-selectedMark', 'icon-notSelectedMark'], function (self) {
-        if (state == states.normal && self.hasClass('icon-selectedMark')) {
-            self.removeClass('icon-selectedMark').addClass('icon-notSelectedMark');
-            map.hide(self.data('type'), self.data('id'));
-        } else if (state == states.normal && self.hasClass('icon-notSelectedMark')) {
-            self.removeClass('icon-notSelectedMark').addClass('icon-selectedMark');
-            map.visible(self.data('type'), self.data('id'));
+    /* handle leftclick events on a selected mark, route, trip,... */
+    menu.addCallback('leftclick', ['icon-selected-mark', 'icon-selected-route', 'icon-selected-trip'], function (self) {
+        if (state == states.normal) {
+            map.deselect(self.data('type'), self.data('id'));
         } else if (state == states.remove) {
             selectToRemove(self);
         }
     });
 
-    /* handle leftclick events on a route */ 
-    menu.addCallback('leftclick', ['icon-selectedRoute', 'icon-notSelectedRoute'], function (self) {
-        if(!map.checkTracking() && state == states.normal) {
-            return;
-        }
-        if (state == states.normal && self.hasClass('icon-selectedRoute')) {
-            self.removeClass('icon-selectedRoute').addClass('icon-notSelectedRoute');
-            map.hide(self.data('type'), self.data('id'));
-        } else if (state == states.normal && self.hasClass('icon-notSelectedRoute')) {
-            $('.icon-selectedRoute').removeClass('icon-selectedRoute').addClass('icon-notSelectedRoute');
-            self.removeClass('icon-notSelectedRoute').addClass('icon-selectedRoute');
-            map.visible(self.data('type'), self.data('id'));
+    /* handle leftclick events on a not selected mark, route, trip,... */
+    menu.addCallback('leftclick', ['icon-notSelected-mark', 'icon-notSelected-route', 'icon-notSelected-trip'], function (self) {
+        if (state == states.normal) {
+            map.select(self.data('type'), self.data('id'));
         } else if (state == states.remove) {
             selectToRemove(self);
         }
     });
-
-    /* handle leftclick events on a track */ 
-    menu.addCallback('leftclick', ['icon-selectedTrack', 'icon-notSelectedTrack'], function (self) {
-        if(!map.checkTracking() && state == states.normal) {
-            return;
-        }
-        if (state == states.normal && self.hasClass('icon-selectedTrack')) {
-            self.removeClass('icon-selectedTrack').addClass('icon-notSelectedTrack');
-            map.hide(self.data('type'), self.data('id'));
-        } else if (state == states.normal && self.hasClass('icon-notSelectedTrack')) {
-            $('.icon-selectedTrack').removeClass('icon-selectedTrack').addClass('icon-notSelectedTrack');
-            self.removeClass('icon-notSelectedTrack').addClass('icon-selectedTrack');
-            map.visible(self.data('type'), self.data('id'));
-        } else if (state == states.remove) {
-            selectToRemove(self);
-        }
-    });
-
 });
