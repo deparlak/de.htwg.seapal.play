@@ -146,8 +146,13 @@
                     coords:[0,0,0,0],
                     type:'rect'
                 },
-                image : new google.maps.MarkerImage(
+                imageBlack : new google.maps.MarkerImage(
                     '/assets/images/ann_cursor.png', 
+                    new google.maps.Size(32,32),    
+                    new google.maps.Point(0,0),    
+                    new google.maps.Point(16,16)),
+                imageWhite : new google.maps.MarkerImage(
+                    '/assets/images/ann_cursor_white.png', 
                     new google.maps.Size(32,32),    
                     new google.maps.Point(0,0),    
                     new google.maps.Point(16,16))    
@@ -175,7 +180,8 @@
     * The seamap object class
     * *************************************************************************************
     */
-    $.seamap = function(element){    
+    $.seamap = function(element){
+
 		function checkType(type) {
 			/* check if the type exist */
             if (undefined === data[type]) {
@@ -447,6 +453,29 @@
             alarmsSettings = settings;
         }
 
+        this.switchBoatMarker = function() {
+            console.log(boatMarker.icon);
+            isSatelliteView = !isSatelliteView;
+            boatMarker.setMap(null);
+            if(isSatelliteView) {
+                boatMarker = new google.maps.Marker({
+                    position: currentPosition,
+                    map: map,
+                    title:"boat",
+                    shape: options.boat.markerOptions.crosshairShape,
+                    icon:  options.boat.markerOptions.imageWhite
+                });
+            } else {
+                boatMarker = new google.maps.Marker({
+                    position: currentPosition,
+                    map: map,
+                    title:"boat",
+                    shape: options.boat.markerOptions.crosshairShape,
+                    icon:  options.boat.markerOptions.imageBlack
+                });
+            }
+        };
+
         /* The security circle on the map */
         var activeSecurityCircle = null;
 
@@ -578,7 +607,10 @@
         var isShowingTargetLine = false;
 
         // The destination of the end of the targetline
-        var targetLineDestination;        
+        var targetLineDestination;
+
+        // Determines if the map is in satellite view
+        var isSatelliteView = false;
         
         var templatePerson =
         {
@@ -1314,7 +1346,7 @@
                     map: map,
                     title:"boat",
                     shape: options.boat.markerOptions.crosshairShape,
-                    icon:  options.boat.markerOptions.image
+                    icon:  options.boat.markerOptions.imageBlack
                 });
             } else {
                 boatMarker.setPosition(position);
