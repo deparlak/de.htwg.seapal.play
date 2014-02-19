@@ -57,7 +57,28 @@ $(document).ready(function() {
         });
     };
     
+ 	/* this callback will be called if an object was updated by a user */
+    map.addCallback([events.SWITCHED_PERSON], function (self) {
+        $("#tracks").html("");
+        $("#logbook-trips").html("");
+        $("#routes").html("");
+        $("#logbook-boats").html("");
+        $("#marks").html("");
+        
+        console.log(self._id);
+        /* startup code initialise objects from the server */
+        request = $.ajax({
+            url         : "api/all/own",
+            type        : "get",
+            contentType : "application/json",
+        });
 
+        /* callback handler that will be called on success */
+        request.done(function (response, textStatus, jqXHR){
+            console.log(response);
+        });
+    });
+    
     /* startup code initialise objects from the server */
     request = $.ajax({
         url         : "api/all/own",

@@ -521,7 +521,8 @@
             
             SELECTED                : 18,
             DESELECTED              : 19,
-            SWITCHED_BOAT           : 20
+            SWITCHED_BOAT           : 20,
+            SWITCHED_PERSON         : 21
         };
 		        
         var options = $.seamap.options;
@@ -879,6 +880,7 @@
                 return false;
             }
 			data.person.active = data.person.list[id];
+            dataCallback([event.SWITCHED_PERSON], data.person.active);
             return true;
         };
         
