@@ -1129,7 +1129,7 @@
             });
             // right-click
             google.maps.event.addListener(map, 'rightclick', function(event) {
-
+                console.log(state);
                 switch(state) {
                     case States.NORMAL:
                         hideCrosshairMarker(crosshairMarker);
@@ -1145,6 +1145,12 @@
                         
                     case States.DISTANCE:
                         handleExitDistanceRouteCreation();
+                        break;
+
+                    case States.TRACK:
+                        hideCrosshairMarker(crosshairMarker);
+                        showCrosshairMarker(event.latLng);                        
+                        showContextMenu(event.latLng, ContextMenuTypes.DEFAULT, crosshairMarker);
                         break;
                 }
             });
@@ -1166,6 +1172,12 @@
                         
                     case States.DISTANCE:
                         handleExitDistanceRouteCreation();
+                        break;
+
+                    case States.TRACK:
+                        hideCrosshairMarker(crosshairMarker);
+                        showCrosshairMarker(event.latLng);                        
+                        showContextMenu(event.latLng, ContextMenuTypes.DEFAULT, crosshairMarker);
                         break;
                 }
             });
