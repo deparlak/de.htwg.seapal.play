@@ -44,6 +44,13 @@
                     new google.maps.Point(0,0),
                     new google.maps.Point(8, 35))
             },
+            waypointOptions : {
+                image : new google.maps.MarkerImage(
+                    "/assets/images/circle_green.png",
+                    new google.maps.Size(14, 14),
+                    new google.maps.Point(0,0),
+                    new google.maps.Point(7, 7))
+            },
             tmpMarkerOptions : {
                 image : new google.maps.MarkerImage(
                     "/assets/images/ann_mark.png",
@@ -1998,7 +2005,7 @@
 			var onMap = new google.maps.Marker({
                 map: map,
                 position: new google.maps.LatLng(marker.lat, marker.lng),
-                icon: (marker.image_thumb) ? marker.image_thumb : options.defaultOptions.markerOptions.image,
+                icon: (marker.image_thumb) ? marker.image_thumb : options.defaultOptions.waypointOptions.image,
                 draggable: (marker.image_thumb || marker.type == 'waypoint') ? false : true
             });
 			/* check if the marker has a image */
