@@ -1708,8 +1708,8 @@
             }
             
             openContextMenu = function(marker) {
-                console.log("open context "+marker);
-                onMap.removeMarker(marker);
+                console.log(marker);
+                onMap.removeMarker(marker.id);
             }
             
             onMap.addEventListener("remove", remove);      
@@ -2425,20 +2425,20 @@
                     obj.marks[(marker.id * 2) + 1] = event.latLng.lng();
                     $this.drawPath();
                     $this.updateLabel();
-                    $this.notify("drag", marker.id);
+                    $this.notify("drag", marker);
                 });
     
                 google.maps.event.addListener(marker, 'rightclick', function(event) {                    
-                    $this.notify("rightclick", marker.id);
+                    $this.notify("rightclick", marker);
                 });
                 
                 new LongPress(marker, 500);
                 google.maps.event.addListener(marker, 'longpress', function(event) {
-                    $this.notify("rightclick", marker.id);
+                    $this.notify("rightclick", marker);
                 });
 
                 google.maps.event.addListener(marker, 'click', function(event) {
-                    $this.notify("click", marker.id);
+                    $this.notify("click", marker);
                 });
             }
             if (!init) {
