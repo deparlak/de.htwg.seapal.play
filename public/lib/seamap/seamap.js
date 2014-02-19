@@ -538,7 +538,8 @@
         // The context menu types
         ContextMenuTypes = {
             "DEFAULT" : 0, 
-            "DELETE_MARKER" : 1
+            "DELETE_MARKER" : 1,
+            "DELETE_ROUTEPOINT" : 2
         };
 
         /* Array pointer at the default route */
@@ -1129,7 +1130,6 @@
             });
             // right-click
             google.maps.event.addListener(map, 'rightclick', function(event) {
-                console.log(state);
                 switch(state) {
                     case States.NORMAL:
                         hideCrosshairMarker(crosshairMarker);
@@ -1572,6 +1572,9 @@
                 case ContextMenuTypes.DELETE_MARKER:
                     ctx += '<button id="deleteMark" type="button" class="btn"><i class="icon-map-marker"></i> Delete Mark</button>';
                     ctx += '<button id="editMark" type="button" class="btn"><i class="icon-map-marker"></i> Edit Mark</button>';
+                    break;
+                case ContextMenuTypes.DELETE_ROUTEPOINT:
+                    ctx += '<button id="deleteRoutePoint" type="button" class="btn"><i class="icon-map-marker"></i> Delete routepoint</button>';
                     break;
             }
             ctx += '</div>'
@@ -2413,14 +2416,17 @@
                     $this.notify("drag");
                 });
     
-                google.maps.event.addListener(marker, 'rightclick', function(event) {
-					obj.marks.splice(marker.id * 2, 2);
-                    $this.removeMarker(marker);
+                google.maps.event.addListener(marker, 'rightclick', function(event) {                    
+                    console.log("RIGHT");                    
+					//obj.marks.splice(marker.id * 2, 2);
+                    //$this.removeMarker(marker);
                 });
                 
                 new LongPress(marker, 500);
                 google.maps.event.addListener(marker, 'longpress', function(event) {
-                    $this.removeMarker(marker);
+                    console.log("LONG");
+                    //obj.marks.splice(marker.id * 2, 2);
+                    //$this.removeMarker(marker);
                 });
 
                 google.maps.event.addListener(marker, 'click', function(event) {
