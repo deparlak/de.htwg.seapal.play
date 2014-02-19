@@ -858,6 +858,7 @@
                 callbacks[event.ERROR].fire({msg : "You cannot switch your boat when tracking is active."});
                 return false;
             }
+            hideActiveTrack();
 			data.boat.active = data.boat.list[id];
             dataCallback([event.SWITCHED_BOAT], data.boat.active);
             for (var i in data.trip.list) {
@@ -880,6 +881,12 @@
                 callbacks[event.ERROR].fire({msg : "You cannot switch to the logbook of another person if tracking is active."});
                 return false;
             }
+            hideActiveTrack();
+            hideActiveRoute();
+            for (var i in data.mark.list) {
+                data.mark.deselectMethod(i);
+            }            
+            
 			data.person.active = data.person.list[id];
             ['boat', 'route', 'mark', 'trip'].forEach(function(type) {
                 data[type].list = {};
