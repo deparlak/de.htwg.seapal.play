@@ -2053,10 +2053,17 @@
         * *********************************************************************************
         */
 		function getOnMapMark(marker) {
+            var icon = options.defaultOptions.markerOptions.image;
+            if(marker.image_thumb) {
+                icon = marker.image_thumb;
+            } else if (marker.type == 'waypoint') {
+                icon = options.defaultOptions.waypointOptions.image;
+            }
+            
 			var onMap = new google.maps.Marker({
                 map: map,
                 position: new google.maps.LatLng(marker.lat, marker.lng),
-                icon: (marker.image_thumb) ? marker.image_thumb : options.defaultOptions.waypointOptions.image,
+                icon: icon,
                 draggable: (marker.image_thumb || marker.type == 'waypoint') ? false : true
             });
 			/* check if the marker has a image */
@@ -2068,7 +2075,7 @@
 				});
 			}
 			/* marker get dragged */
-            google.maps.event.addListener(onMap, 'dragend', function(e) {
+            google.maps.event.addListener(onMap, 'draged', function(e) {
 				marker.lat = e.latLng.lat();
 				marker.lng = e.latLng.lng();
 				/* update mark on server */
