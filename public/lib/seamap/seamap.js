@@ -2146,7 +2146,7 @@
 				});
 			}
 			/* marker get dragged */
-            google.maps.event.addListener(onMap, 'draged', function(e) {
+            google.maps.event.addListener(onMap, 'dragend', function(e) {
 				marker.lat = e.latLng.lat();
 				marker.lng = e.latLng.lng();
 				/* update mark on server */
