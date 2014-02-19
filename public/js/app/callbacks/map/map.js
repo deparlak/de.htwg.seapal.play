@@ -58,6 +58,12 @@ $(document).ready(function() {
         $("."+self.type+self.id).text(self.name);
     });
     
+	/* this callback will be called if an object was updated by a user */
+    map.addCallback([events.SWITCHED_BOAT], function (self) {
+        $("#tracks").html("");
+        $("#logbook-trips").html("");
+    });
+    
 	/* this callback will be called when a new route was created */
     map.addCallback(events.CREATED_ROUTE, function (self) {
         $('.icon-selected-'+self.type).removeClass('icon-selected-'+self.type).addClass('icon-notSelected-'+self.type);

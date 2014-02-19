@@ -242,7 +242,10 @@
                 data[type].list[newObj.id] = newObj;
                 data[type].count++;
                 copyObjAttr(type, newObj, obj);
-                dataCallback([event.LOADED_FROM_SERVER], newObj);
+                /* if we loaded a trip from the server, we display the trip only if the boat for this trip is active */
+                if ('trip' != newObj.type || (null != data.boat.active && newObj.boat == data.boat.active._id)) {
+                    dataCallback([event.LOADED_FROM_SERVER], newObj);
+                }
             /* if the object already exist, go to the entry and update all entry's */
             } else if (obj.id != null){
                 console.log("updated");
@@ -482,9 +485,7 @@
             
             SELECTED                : 18,
             DESELECTED              : 19,
-            ID_UPDATE               : 20
-            
-            
+            SWITCHED_BOAT           : 20
         };
 		        
         var options = $.seamap.options;
@@ -661,6 +662,7 @@
             "endDate"       : "",
             "crewMembers"   : "",
             "notes"         : "",
+            "boat"          : null,
 			"_id" 			: null,
 			"_rev" 			: null,
 			"owner" 		: null
@@ -816,6 +818,12 @@
                 return false;
             }
 			data.boat.active = data.boat.list[id];
+            dataCallback([event.SWITCHED_BOAT], data.boat.active);
+            for (var i in data.trip.list) {
+                if (data.trip.list[i].boat == data.boat.active._id) {
+                    dataCallback([event.LOADED_FROM_SERVER], data.trip.list[i]);
+                }
+            }
             return true;
         };
         
@@ -1748,6 +1756,7 @@
             obj.name = "Track " + data.trip.count;
             obj.onMap = getOnMapTrack(obj);
             obj.update = true;
+            obj.boat = data.boat.active._id;
             data.trip.list[obj.id] = obj;        
             activateTrack(obj.id); 
             data.trip.count++;
