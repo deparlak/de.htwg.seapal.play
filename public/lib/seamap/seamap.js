@@ -248,15 +248,7 @@
                 console.log("updated");
                 checkId(type, obj.id);
                 var modified = copyObjAttr(type, data[type].list[obj.id], obj);
-          
-                /* check if an update of the id is required. This happen if the user creates an element and the element was upload to the server. */
-                 if (null != obj._id && obj.id != obj._id) {
-                    data[type].list[obj._id] = data[type].list[obj.id]["id"];
-                    dataCallback([event.ID_UPDATE], obj);
-                    /* change the id now and delete the old one */
-                    delete data[type].list[obj.id]["id"];
-                    data[type].list[obj._id].id = obj._id;
-                }
+
                 /* copyObjAttr check if the object was modified. if so we fire a callback to sync with the server and tell the client listeners */
                 if (modified) {
                     /* check if more changed than the _id and _rev */
@@ -392,6 +384,8 @@
         /* get a list with all waypoints from a specific track */
         this.getWaypoints = function (tripId) {
             dataParameterCheck('trip', tripId, null);
+            /* get the server id, which is used at the waypoints */
+            tripId = data.trip.list[tripId]._id;
             var list = [];
             /* copy only the template fields */
             for (var wp in data.waypoint.list) {
@@ -817,6 +811,10 @@
 		
         /* define a select method for a boat */
         data.boat.selectMethod = function(id) {
+            if(isTracking) {
+                callbacks[event.ERROR].fire({msg : "You cannot switch your boat when tracking is active."});
+                return false;
+            }
 			data.boat.active = data.boat.list[id];
             return true;
         };
@@ -829,6 +827,10 @@
         
         /* define a select method for a person */
         data.person.selectMethod = function(id) {
+            if(isTracking) {
+                callbacks[event.ERROR].fire({msg : "You cannot switch to the logbook of another person if tracking is active."});
+                return false;
+            }
 			data.person.active = data.person.list[id];
             return true;
         };
@@ -857,6 +859,10 @@
 		
 		/* define the select method for a track */
 		data.trip.selectMethod = function(id) {
+            if(isTracking) {
+                callbacks[event.ERROR].fire({msg : "You cannot select another track if tracking is active."});
+                return false;
+            }
             activateTrack(id);
             return true;
 		};
@@ -866,6 +872,10 @@
 			if (!data.trip.active || data.trip.active.id != id) {
 				throw("Illegal call of data.trip.deselectMethod, beacause only the active track can be hidden.");
 			}
+            if(isTracking) {
+                callbacks[event.ERROR].fire({msg : "You cannot deselect the active track if tracking is active."});
+                return false;
+            }
 			/* hide the active trip now */
 			hideActiveTrack();
             return true;
