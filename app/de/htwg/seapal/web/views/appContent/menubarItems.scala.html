@@ -75,6 +75,8 @@
                 Too many request, try later again...
             </div>
         </li>
+    {{else}} {{#if status.PLACES_COORDINATE}}
+        <li><a class='tools-icon icon-searchedPlace action' data-lat={{coord.lat}} data-lng={{coord.lon}}>{{cutStringLength name}}</a></li>
     {{else}} {{#if status.OK}}
         {{#each SearchPlaces}}
             <li><a class='tools-icon icon-searchedPlace action' data-lat={{getLat geometry}} data-lng={{getLng geometry}}>{{cutStringLength name}}</a></li>
@@ -88,7 +90,7 @@
                 An unknown error occurred, try later again...
             </div>
         </li>
-    {{/if}}{{/if}}{{/if}}{{/if}}{{/if}}{{/if}}{{/if}}{{/if}}
+    {{/if}}{{/if}}{{/if}}{{/if}}{{/if}}{{/if}}{{/if}}{{/if}}{{/if}}
     
     {{#if history}}
         <li class='heading'>

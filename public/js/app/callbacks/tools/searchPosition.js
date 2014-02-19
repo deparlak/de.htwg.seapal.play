@@ -54,7 +54,7 @@ $(document).ready(function() {
         if (!render.status.OK) {
             removeFromHistory(div);
         }
-        $(div).html(templateSearchPlaces(render));
+        $(div).append(templateSearchPlaces(render));
     }
     
     function SearchPlacesCallback(results, status) {
@@ -80,6 +80,7 @@ $(document).ready(function() {
     }
     
     method["#SearchPlaces"] = function(search) {
+        $("#SearchPlaces").html("");
         addToHistory(search);
         var request = {
             bounds: map.getGoogleMapsHandle().getBounds(),
@@ -89,6 +90,7 @@ $(document).ready(function() {
     };
       
     method["#SearchPOIs"] = function(search) {
+        $("#SearchPOIs").html("");
         $(active).html(templateSearchPlaces({history : history[active], status : {SEARCHING_POIS : true}}));
     };
     
@@ -105,6 +107,7 @@ $(document).ready(function() {
             $(active).html(templateSearchPlaces(obj));
             return;
         }
+        $("#SearchCoordinates").html(templateSearchPlaces({name : search, coord : obj, status : {PLACES_COORDINATE : true}}));
         var latlng = new google.maps.LatLng(obj.lat, obj.lon);
         geocoder.geocode({'latLng': latlng},SearchCoordinatesCallback);
     };
