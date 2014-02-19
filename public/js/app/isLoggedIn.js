@@ -199,7 +199,6 @@ $(document).ready(function() {
             });
             /* callback handler that will be called on success */
             request.done(function (response, textStatus, jqXHR){
-                map.set('person', receivedRequests[self.data('id')]);
                 $("#friendRequests"+self.data('id')).remove();
                 delete receivedRequests[self.data('id')];
                 friendRequest();
