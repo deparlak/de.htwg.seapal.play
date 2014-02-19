@@ -57,7 +57,25 @@ $(document).ready(function() {
         output.info("Add-ons are not supported in the web app. With Add-ons you can download for example offline maps to use the app without an internet connection.");
     });
 
+    menu.addCallback('leftclick', 'icon-weather', function (self) {
+        output.info("Weather is not supported in the web app. In the app there is an weather overlay giving you forecasts and information about the weather.");
+    });
+
+    menu.addCallback('leftclick', 'icon-poi', function (self) {
+        output.info("Points of interest is not supported in the web app.");
+    });
+
+    menu.addCallback('leftclick', 'icon-charts', function (self) {
+        output.info("Navigation charts are not supported in the web app.");
+    });
+
+    menu.addCallback('leftclick', 'icon-dashboard', function (self) {
+        output.info("The dashboard is not supported in the web app.");
+    });
+
     menu.addCallback('leftclick', 'icon-alarms', function (self) {
+        output.info("Alarms are not supported in the web app. Alarms notify you when defined events happen.");
+        /* DISABLED UNTIL NEEDED
         var settings = map.getAlarmsSettings();
         var template = Handlebars.compile($("#alarms_Template").text());
         var html = template(settings);
@@ -76,7 +94,7 @@ $(document).ready(function() {
         $('#alertSecurityCircle').click(function() {
             settings.LEAVE_SECURITY_CIRCLE = !state;
             map.setAlarmsSettings(map.getAlarmsSettings());
-        });
+        }); */
     });    
 
     menu.addCallback('leftclick', 'icon-settings', function (self) {
