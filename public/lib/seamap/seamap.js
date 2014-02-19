@@ -1116,6 +1116,7 @@
             $this.on("click", "#addMark", handleAddMark);
             $this.on("click", "#deleteMark", handleDeleteMark);
             $this.on("click", "#deleteRoutePoint", handleDeleteRoutePoint);
+            $this.on("click", "#setAsTarget", handleSetAsTarget);            
             $this.on("click", "#editMark", handleEditMark);
             $this.on("click", "#addNewRoute", handleAddNewRoute);
             $this.on("click", "#exitRouteCreation", handleExitRouteCreation);
@@ -1584,6 +1585,7 @@
                     break;
                 case ContextMenuTypes.DELETE_ROUTEPOINT:
                     ctx += '<button id="deleteRoutePoint" type="button" class="btn"><i class="icon-map-marker"></i> Delete routepoint</button>';
+                    ctx += '<button id="setAsTarget" type="button" class="btn"><i class="icon-map-marker"></i> Set as Target</button>';
                     break;
             }
             ctx += '</div>'
@@ -1712,7 +1714,7 @@
             }
             
             openContextMenu = function(marker, event) {
-                activeRoutePoint = marker.id;                
+                activeRoutePoint = marker;                
                 showContextMenu(event.latLng, ContextMenuTypes.DELETE_ROUTEPOINT, marker);
                 state = States.NORMAL;
             }
@@ -1946,9 +1948,22 @@
         */
         function handleDeleteRoutePoint() {            
             if (activeRoutePoint != null) {
-                data.route.active.onMap.removeMarker(activeRoutePoint);
+                data.route.active.onMap.removeMarker(activeRoutePoint.id);
                 activeRoutePoint = null;
             }
+            hideContextMenu();
+            state = States.NORMAL;
+        }
+
+        /**
+        * *********************************************************************************
+        * Handler function for setting a routePoint as target. Also hides the context menu.
+        * *********************************************************************************
+        */
+        function handleSetAsTarget() {
+            targetLineDestination = activeRoutePoint.getPosition();
+            isShowingTargetLine = true;
+            drawSetAsDestination();
             hideContextMenu();
             state = States.NORMAL;
         }
