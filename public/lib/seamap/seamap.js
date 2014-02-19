@@ -267,6 +267,9 @@
 
                 /* copyObjAttr check if the object was modified. if so we fire a callback to sync with the server and tell the client listeners */
                 if (modified) {
+                    if (data.person.active) {
+                        obj.owner = data.person.active.owner;
+                    }
                     /* check if more changed than the _id and _rev */
                     dataCallback([event.UPDATED_FROM_CLIENT, event.SERVER_CREATE], obj);
                 }
@@ -277,6 +280,9 @@
                 data[type].list[newObj.id] = newObj;
                 data[type].count++;
                 copyObjAttr(type, newObj, obj);
+                if (data.person.active) {
+                    newObj.owner = data.person.active.owner;
+                }
                 dataCallback([event.ADDED_FROM_CLIENT, event.SERVER_CREATE], newObj);
             } else {
                 throw("Not expected case in map.set(..)");
@@ -1663,11 +1669,6 @@
         * *********************************************************************************
         */
         function handleAddNewRoute() {
-            if(isTracking) {
-                callbacks[event.ERROR].fire({msg : "This options is disabled because tracking is active!"});
-                return;
-            }
-            
             hideContextMenu();
             hideCrosshairMarker();
 

@@ -67,7 +67,7 @@ $(document).ready(function() {
         
         /* startup code initialise objects from the server */
         request = $.ajax({
-            url         : "api/all/own",
+            url         : "api/all/all",
             type        : "get",
             contentType : "application/json",
         });
