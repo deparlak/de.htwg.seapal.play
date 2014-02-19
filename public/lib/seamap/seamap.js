@@ -880,6 +880,11 @@
                 return false;
             }
 			data.person.active = data.person.list[id];
+            ['boat', 'route', 'mark', 'trip'].forEach(function(type) {
+                data[type].list = {};
+                data[type].count = 1;
+                data[type].active = null;
+            });
             dataCallback([event.SWITCHED_PERSON], data.person.active);
             return true;
         };
