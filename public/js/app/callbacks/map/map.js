@@ -74,6 +74,7 @@ $(document).ready(function() {
     map.addCallback(events.CREATED_TRACK, function (self) {
         $('.icon-selected-'+self.type).removeClass('icon-selected-'+self.type).addClass('icon-notSelected-'+self.type);
         $("#tracks").append(templateCreatedTrip(self));
+        $("#logbook-trips").append(templateCreatedTrip(self));
     });
 
 	/* this callback will be called when a mark was added */
