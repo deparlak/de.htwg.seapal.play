@@ -36,6 +36,7 @@ $(document).ready(function() {
     });
     
     menu.addCallback('leftclick', 'icon-map', function (self) {
+        map.switchBoatMarker();
         menu.closeMenu();
         self.text("Map + Charts");
         self.removeClass('icon-map').addClass('icon-satellite');
@@ -43,6 +44,7 @@ $(document).ready(function() {
     });
     
     menu.addCallback('leftclick', 'icon-satellite', function (self) {
+        map.switchBoatMarker();
         menu.closeMenu();
         self.text("Satellite");
         self.removeClass('icon-satellite').addClass('icon-map');
