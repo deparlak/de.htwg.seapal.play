@@ -67,47 +67,38 @@ $(document).ready(function() {
 
     /* callback handler that will be called on success */
     request.done(function (response, textStatus, jqXHR){
-        console.log(response.account_info);
-        console.log(response.person_info);
+        console.log(response);
 
-        response.mark.map( function(item) {
-            item.image_big = null;
-            item.image_thumb = null;
-            map.set('mark', item);
-        });
-
-        response.route.map( function(item) {
-            map.set('route', item);
-        });
-
-        response.boat.map( function(item) {
-            map.set('boat', item);
-        });
-        
-        response.trip.map( function(item) {
-            map.set('trip', item);
-        });
-        
-        response.waypoint.map( function(item) {
-            map.set('waypoint', item);
-        });
-        
         response.person_info.map( function(item) {
             map.set('person', item);
         });
-        
+        /* select the default person */
+        if (response.person_info.length) {
+            map.select('person', response.person_info[0]._id);
+        }
+        response.boat.map( function(item) {
+            map.set('boat', item);
+        });
+        /* select the default boat */
+        if (response.boat.length) {
+            map.select('boat', response.boat[0]._id);
+        }
+        response.mark.map( function(item) {
+            map.set('mark', item);
+        });
+        response.route.map( function(item) {
+            map.set('route', item);
+        });
+        response.trip.map( function(item) {
+            map.set('trip', item);
+        });
+        response.waypoint.map( function(item) {
+            map.set('waypoint', item);
+        });
         /* trigger friend list */
         friendRequest();
         /* sset cylcic friend request every minute */
         setInterval(friendRequest, 6000);
-        
-        /* select the default boat and person */
-        if (response.boat.length) {
-            map.select('boat', response.boat[0]._id);
-        }
-        if (response.person_info.length) {
-            map.select('person', response.person_info[0]._id);
-        }
     });
 
     /* callback handler that will be called on failure */

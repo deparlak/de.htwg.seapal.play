@@ -255,21 +255,16 @@
                 data[type].list[newObj.id] = newObj;
                 data[type].count++;
                 copyObjAttr(type, newObj, obj);
-                dataCallback([event.LOADED_FROM_SERVER], newObj);
+                /* if we loaded a trip from the server, we display the trip only if the boat for this trip is active */
+                if ('trip' != newObj.type || (null != data.boat.active && newObj.boat == data.boat.active._id)) {
+                    dataCallback([event.LOADED_FROM_SERVER], newObj);
+                }
             /* if the object already exist, go to the entry and update all entry's */
             } else if (obj.id != null){
                 console.log("updated");
                 checkId(type, obj.id);
                 var modified = copyObjAttr(type, data[type].list[obj.id], obj);
-          
-                /* check if an update of the id is required. This happen if the user creates an element and the element was upload to the server. */
-                 if (null != obj._id && obj.id != obj._id) {
-                    data[type].list[obj._id] = data[type].list[obj.id]["id"];
-                    dataCallback([event.ID_UPDATE], obj);
-                    /* change the id now and delete the old one */
-                    delete data[type].list[obj.id]["id"];
-                    data[type].list[obj._id].id = obj._id;
-                }
+
                 /* copyObjAttr check if the object was modified. if so we fire a callback to sync with the server and tell the client listeners */
                 if (modified) {
                     /* check if more changed than the _id and _rev */
@@ -405,6 +400,8 @@
         /* get a list with all waypoints from a specific track */
         this.getWaypoints = function (tripId) {
             dataParameterCheck('trip', tripId, null);
+            /* get the server id, which is used at the waypoints */
+            tripId = data.trip.list[tripId]._id;
             var list = [];
             /* copy only the template fields */
             for (var wp in data.waypoint.list) {
@@ -524,9 +521,7 @@
             
             SELECTED                : 18,
             DESELECTED              : 19,
-            ID_UPDATE               : 20
-            
-            
+            SWITCHED_BOAT           : 20
         };
 		        
         var options = $.seamap.options;
@@ -706,6 +701,7 @@
             "endDate"       : "",
             "crewMembers"   : "",
             "notes"         : "",
+            "boat"          : null,
 			"_id" 			: null,
 			"_rev" 			: null,
 			"owner" 		: null
@@ -856,7 +852,17 @@
 		
         /* define a select method for a boat */
         data.boat.selectMethod = function(id) {
+            if(isTracking) {
+                callbacks[event.ERROR].fire({msg : "You cannot switch your boat when tracking is active."});
+                return false;
+            }
 			data.boat.active = data.boat.list[id];
+            dataCallback([event.SWITCHED_BOAT], data.boat.active);
+            for (var i in data.trip.list) {
+                if (data.trip.list[i].boat == data.boat.active._id) {
+                    dataCallback([event.LOADED_FROM_SERVER], data.trip.list[i]);
+                }
+            }
             return true;
         };
         
@@ -868,6 +874,10 @@
         
         /* define a select method for a person */
         data.person.selectMethod = function(id) {
+            if(isTracking) {
+                callbacks[event.ERROR].fire({msg : "You cannot switch to the logbook of another person if tracking is active."});
+                return false;
+            }
 			data.person.active = data.person.list[id];
             return true;
         };
@@ -896,6 +906,10 @@
 		
 		/* define the select method for a track */
 		data.trip.selectMethod = function(id) {
+            if(isTracking) {
+                callbacks[event.ERROR].fire({msg : "You cannot select another track if tracking is active."});
+                return false;
+            }
             activateTrack(id);
             return true;
 		};
@@ -905,6 +919,10 @@
 			if (!data.trip.active || data.trip.active.id != id) {
 				throw("Illegal call of data.trip.deselectMethod, beacause only the active track can be hidden.");
 			}
+            if(isTracking) {
+                callbacks[event.ERROR].fire({msg : "You cannot deselect the active track if tracking is active."});
+                return false;
+            }
 			/* hide the active trip now */
 			hideActiveTrack();
             return true;
@@ -1777,6 +1795,7 @@
             obj.name = "Track " + data.trip.count;
             obj.onMap = getOnMapTrack(obj);
             obj.update = true;
+            obj.boat = data.boat.active._id;
             data.trip.list[obj.id] = obj;        
             activateTrack(obj.id); 
             data.trip.count++;
