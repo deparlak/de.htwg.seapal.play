@@ -613,6 +613,9 @@
 
         // Determines if the map is in satellite view
         var isSatelliteView = false;
+
+        // The selected route point when right clicking on it
+        var activeRoutePoint;
         
         var templatePerson =
         {
@@ -1119,6 +1122,8 @@
 
             $this.on("click", "#addMark", handleAddMark);
             $this.on("click", "#deleteMark", handleDeleteMark);
+            $this.on("click", "#deleteRoutePoint", handleDeleteRoutePoint);
+            $this.on("click", "#setAsTarget", handleSetAsTarget);            
             $this.on("click", "#editMark", handleEditMark);
             $this.on("click", "#addNewRoute", handleAddNewRoute);
             $this.on("click", "#exitRouteCreation", handleExitRouteCreation);
@@ -1511,7 +1516,7 @@
             $('#tooltip_helper').popover({title: function() {
                     if (contextMenuType == ContextMenuTypes.DELETE_MARKER) {
                         var lat = marker.onMap.getPosition().lat();
-                        var lng = marker.onMap.getPosition().lng();
+                        var lng = marker.onMap.getPosition().lng();                    
                     } else {
                         var lat = marker.getPosition().lat();
                         var lng = marker.getPosition().lng();
@@ -1587,6 +1592,7 @@
                     break;
                 case ContextMenuTypes.DELETE_ROUTEPOINT:
                     ctx += '<button id="deleteRoutePoint" type="button" class="btn"><i class="icon-map-marker"></i> Delete routepoint</button>';
+                    ctx += '<button id="setAsTarget" type="button" class="btn"><i class="icon-map-marker"></i> Set as Target</button>';
                     break;
             }
             ctx += '</div>'
@@ -1714,9 +1720,10 @@
                 route.update = true;
             }
             
-            openContextMenu = function(marker) {
-                console.log(marker);
-                onMap.removeMarker(marker.id);
+            openContextMenu = function(marker, event) {
+                activeRoutePoint = marker;                
+                showContextMenu(event.latLng, ContextMenuTypes.DELETE_ROUTEPOINT, marker);
+                state = States.NORMAL;
             }
             
             onMap.addEventListener("remove", remove);      
@@ -1940,6 +1947,33 @@
         function handleDeleteMark() {
             deleteSelectedMark();
             hideContextMenu();
+        }
+
+        /**
+        * *********************************************************************************
+        * Handler function for deleting a routePoint. Also hides the context menu.
+        * *********************************************************************************
+        */
+        function handleDeleteRoutePoint() {            
+            if (activeRoutePoint != null) {
+                data.route.active.onMap.removeMarker(activeRoutePoint.id);
+                activeRoutePoint = null;
+            }
+            hideContextMenu();
+            state = States.NORMAL;
+        }
+
+        /**
+        * *********************************************************************************
+        * Handler function for setting a routePoint as target. Also hides the context menu.
+        * *********************************************************************************
+        */
+        function handleSetAsTarget() {
+            targetLineDestination = activeRoutePoint.getPosition();
+            isShowingTargetLine = true;
+            drawSetAsDestination();
+            hideContextMenu();
+            state = States.NORMAL;
         }
 
         /**
@@ -2436,17 +2470,17 @@
                     $this.notify("drag", marker);
                 });
     
-                google.maps.event.addListener(marker, 'rightclick', function(event) {                    
-                    $this.notify("rightclick", marker);
+                google.maps.event.addListener(marker, 'rightclick', function(event) {
+                    $this.notify("rightclick", marker, event);
                 });
                 
                 new LongPress(marker, 500);
                 google.maps.event.addListener(marker, 'longpress', function(event) {
-                    $this.notify("rightclick", marker);
+                    $this.notify("rightclick", marker, event);
                 });
 
                 google.maps.event.addListener(marker, 'click', function(event) {
-                    $this.notify("click", marker);
+                    $this.notify("click", marker, event);
                 });
             }
             if (!init) {
@@ -2558,10 +2592,10 @@
         * Calls the event listener functions, to notify the observers.
         * *********************************************************************************
         */
-        this.notify = function(type, arg) {
+        this.notify = function(type, arg, event) {
             var that = this;
             $.each(eventListener[type], function(){
-                this.call(that, arg);
+                this.call(that, arg, event);
             });
         }
     };
