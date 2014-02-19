@@ -1671,7 +1671,7 @@
             obj.name = "Route "+data.route.count;
             obj.update = true;
 			obj.onMap = getOnMapRoute(obj);
-			
+			obj.owner = data.person.active.owner;
             data.route.list[obj.id] = obj;        
             activateRoute(obj.id); 
   
@@ -1831,6 +1831,7 @@
             obj.onMap = getOnMapTrack(obj);
             obj.update = true;
             obj.boat = data.boat.active._id;
+            obj.owner = data.person.active.owner;
             data.trip.list[obj.id] = obj;        
             activateTrack(obj.id); 
             data.trip.count++;
@@ -2016,7 +2017,7 @@
 				obj.image_big = image[1];
 			}
             obj.onMap = getOnMapMark(obj);
-			
+			obj.owner = data.person.active.owner;
             data.mark.list[obj.id] = obj;
             data.mark.count++;
             dataCallback([event.SERVER_CREATE, event.CREATED_MARK], obj);
@@ -2050,7 +2051,7 @@
                     obj.image_big = image[1];
                 }
                 obj.onMap = getOnMapMark(obj);
-                
+                obj.owner = data.person.active.owner;
                 data.waypoint.list[obj.id] = obj;
                 data.waypoint.count++;
                 dataCallback([event.SERVER_CREATE, event.CREATED_WAYPOINT], obj);
