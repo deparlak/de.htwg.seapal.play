@@ -1707,10 +1707,16 @@
                 route.update = true;
             }
             
+            openContextMenu = function(marker) {
+                console.log("open context "+marker);
+                onMap.removeMarker(marker);
+            }
+            
             onMap.addEventListener("remove", remove);      
             onMap.addEventListener("click", activate);
             onMap.addEventListener("add", update);
-            onMap.addEventListener("drag", update);  
+            onMap.addEventListener("drag", update);
+            onMap.addEventListener("rightclick", openContextMenu);
 			
 			return onMap;
 		}
@@ -2302,10 +2308,11 @@
         		
         // internal data
         var eventListener = {
-            add : [],
-            remove : [],
-            drag : [],
-            click : []
+            add         : [],
+            remove      : [],
+            drag        : [],
+            click       : [],
+            rightclick  : []
         };
         	
         this.path = new google.maps.Polyline(options.polyOptions);
@@ -2418,24 +2425,20 @@
                     obj.marks[(marker.id * 2) + 1] = event.latLng.lng();
                     $this.drawPath();
                     $this.updateLabel();
-                    $this.notify("drag");
+                    $this.notify("drag", marker.id);
                 });
     
                 google.maps.event.addListener(marker, 'rightclick', function(event) {                    
-                    console.log("RIGHT");                    
-					//obj.marks.splice(marker.id * 2, 2);
-                    //$this.removeMarker(marker);
+                    $this.notify("rightclick", marker.id);
                 });
                 
                 new LongPress(marker, 500);
                 google.maps.event.addListener(marker, 'longpress', function(event) {
-                    console.log("LONG");
-                    //obj.marks.splice(marker.id * 2, 2);
-                    //$this.removeMarker(marker);
+                    $this.notify("rightclick", marker.id);
                 });
 
                 google.maps.event.addListener(marker, 'click', function(event) {
-                    $this.notify("click");
+                    $this.notify("click", marker.id);
                 });
             }
             if (!init) {
@@ -2451,11 +2454,13 @@
         * Removes a marker from the route.
         * *********************************************************************************
         */
-        this.removeMarker = function($marker) {
-            $marker.setMap(null);
-            this.markers = $.grep(this.markers, function(mark) {
-                return mark != $marker;
-            });
+        this.removeMarker = function(id) {
+            if (id >= this.markers.length) {
+                throw("id to removeMarker does not exist.");
+            }
+            obj.marks.splice(id * 2, 2);
+            this.markers[id].setMap(null);
+            this.markers.splice(id, 1);
             
             var i = 0;
             $.each(this.markers, function(){
@@ -2545,10 +2550,10 @@
         * Calls the event listener functions, to notify the observers.
         * *********************************************************************************
         */
-        this.notify = function(type) {
+        this.notify = function(type, arg) {
             var that = this;
             $.each(eventListener[type], function(){
-                this.call(that, 0);
+                this.call(that, arg);
             });
         }
     };
