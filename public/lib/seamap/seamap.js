@@ -528,7 +528,8 @@
             SELECTED                : 18,
             DESELECTED              : 19,
             SWITCHED_BOAT           : 20,
-            SWITCHED_PERSON         : 21
+            SWITCHED_PERSON         : 21,
+            EDIT_WAYPOINT           : 22
         };
 		        
         var options = $.seamap.options;
@@ -545,7 +546,8 @@
         ContextMenuTypes = {
             "DEFAULT" : 0, 
             "DELETE_MARKER" : 1,
-            "DELETE_ROUTEPOINT" : 2
+            "DELETE_ROUTEPOINT" : 2,
+            "EDIT_WAYPOINT" : 3
         };
 
         /* Array pointer at the default route */
@@ -1132,6 +1134,7 @@
             $this.on("click", "#setAsTarget", handleSetAsTarget);
             $this.on("click", "#setAsMarkTarget", handleSetAsMarkTarget);
             $this.on("click", "#editMark", handleEditMark);
+            $this.on("click", "#editWaypoint", handleEditWaypoint);
             $this.on("click", "#addNewRoute", handleAddNewRoute);
             $this.on("click", "#exitRouteCreation", handleExitRouteCreation);
             $this.on("click", "#setAsDestination", handleSetAsDestination);
@@ -1497,7 +1500,14 @@
         */
         function showContextMenu(latLng, type, marker) {
             contextMenuVisible = true;
-            data.mark.active = marker;
+            switch(marker.type) {
+                case 'mark':
+                    data.mark.active = marker;
+                    break;
+                case 'waypoint':
+                    data.waypoint.active = marker;
+                    break;
+            }
             showContextMenuInternal(latLng, type, marker);
         }
         
@@ -1521,7 +1531,7 @@
 
             marker = markerToShowOn;
             $('#tooltip_helper').popover({title: function() {
-                    if (contextMenuType == ContextMenuTypes.DELETE_MARKER) {
+                    if (contextMenuType == ContextMenuTypes.DELETE_MARKER || contextMenuType == ContextMenuTypes.EDIT_WAYPOINT) {
                         var lat = marker.onMap.getPosition().lat();
                         var lng = marker.onMap.getPosition().lng();                    
                     } else {
@@ -1601,6 +1611,9 @@
                 case ContextMenuTypes.DELETE_ROUTEPOINT:                
                     ctx += '<button id="setAsTarget" type="button" class="btn"><i class="icon-map-marker"></i> Set as Target</button>';
                     ctx += '<button id="deleteRoutePoint" type="button" class="btn"><i class="icon-map-marker"></i> Delete routepoint</button>';
+                    break;
+                case ContextMenuTypes.EDIT_WAYPOINT:
+                    ctx += '<button id="editWaypoint" type="button" class="btn"><i class="icon-map-marker"></i> Edit waypoint</button>';
                     break;
             }
             ctx += '</div>'
@@ -2013,6 +2026,16 @@
             dataCallback([event.EDIT_MARK], data.mark.active);
             hideContextMenu();
         }
+
+        /**
+        * *********************************************************************************
+        * Handler function for editing a waypoint. Also hides the context menu.
+        * *********************************************************************************
+        */
+        function handleEditWaypoint() {
+            dataCallback([event.EDIT_WAYPOINT], data.waypoint.active);
+            hideContextMenu();
+        }        
         
         /**
         * *********************************************************************************
@@ -2190,19 +2213,27 @@
             });
 			/* show menu on rightclick to marker */
             google.maps.event.addListener(onMap, 'rightclick', function(event) {
-                showContextMenu(event.latLng, ContextMenuTypes.DELETE_MARKER, marker);
+                selectContextMenu(event, marker);
             });
 			/* show menu on longpress (rightclick not available on mobile devices) */
             new LongPress(onMap, 500);
             google.maps.event.addListener(onMap, 'longpress', function(event) {
                 supressClick = true;
-                showContextMenu(event.latLng, ContextMenuTypes.DELETE_MARKER, marker);
+                selectContextMenu(event, marker);
                 setTimeout(function() {
                     supressClick = false;
                 }, 1000);
             });
 			return onMap;
 		}
+
+        function selectContextMenu(event, marker) {
+            if (marker.type == 'waypoint') {
+                showContextMenu(event.latLng, ContextMenuTypes.EDIT_WAYPOINT, marker);    
+            } else {
+                showContextMenu(event.latLng, ContextMenuTypes.DELETE_MARKER, marker);
+            }
+        }
 		
         /* Opens a fancybox with the image */
         function openFancybox(picture, text) {
@@ -2474,8 +2505,6 @@
             if (1 < obj.marks.length && position.lat() == obj.marks[obj.marks.length - 2] && position.lng() == obj.marks[obj.marks.length - 1]) {
                 return null;
             }
-            console.log(obj.type);
-            console.log(options);
             // create marker
             var marker = new google.maps.Marker({
                 map: this.googlemaps,

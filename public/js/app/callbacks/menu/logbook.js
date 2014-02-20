@@ -209,6 +209,10 @@ $(document).ready(function() {
     var tmpTrack;
     var tmpWaypoint;
 
+    map.addCallback(events.EDIT_WAYPOINT, function (self) {
+        showEditWaypointModal(self.id);
+    });
+
     menu.addCallback('leftclick', 'logbookTrackAdd', function (self) {        
         tmpTrack = map.getTemplate('trip');
         openTrackTripModal(tmpTrack);
@@ -232,19 +236,23 @@ $(document).ready(function() {
         $('.datepicker').datepicker();
 
         $("#track_WaypointList>table>tbody>tr").on('click', 'th', function() {
-            tmpWaypoint = map.get('waypoint', $(this).data('id'));
-            tmpWaypoint.title = tmpWaypoint.name;
-            tmpWaypoint.position = coord.getCoordinatesAsString(tmpWaypoint.lat, tmpWaypoint.lng);
-            console.log(tmpWaypoint);
-            var template = Handlebars.compile($('#waypoint_Template').text());
-            var html = template(tmpWaypoint);
-            $('#waypointInputForm').html(html);
-
-            if(!map.checkTracking()) {                
-                return;
-            }
-            $('#modal-form_waypoint').modal('show');
+            showEditWaypointModal($(this).data('id'));
         });
+    }
+
+    function showEditWaypointModal(id) {
+        tmpWaypoint = map.get('waypoint', id);
+        tmpWaypoint.title = tmpWaypoint.name;
+        tmpWaypoint.position = coord.getCoordinatesAsString(tmpWaypoint.lat, tmpWaypoint.lng);
+        console.log(tmpWaypoint);
+        var template = Handlebars.compile($('#waypoint_Template').text());
+        var html = template(tmpWaypoint);
+        $('#waypointInputForm').html(html);
+
+        if(!map.checkTracking()) {                
+            return;
+        }
+        $('#modal-form_waypoint').modal('show');
     }
 
     $('#modal-form_waypoint').submit(function() {
