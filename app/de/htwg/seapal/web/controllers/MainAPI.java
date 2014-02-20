@@ -127,6 +127,11 @@ public final class MainAPI
                 waypoint.setLongitude(Double.valueOf(form2.data().get("lng")));
                 waypoint.setLatitude(Double.valueOf(form2.data().get("lat")));
             }
+            /* 
+               account has to be set here, because it will not mapped automatically. 
+               TODO : check why auto mapping is not working 
+            */
+            doc.setAccount(form2.data().get("owner"));
 
             return ok(Json.toJson(controller.creatDocument(document, doc, session(IAccountController.AUTHN_COOKIE_KEY))));
         } catch (NullPointerException e) {
