@@ -1855,7 +1855,7 @@
             obj.onMap = getOnMapTrack(obj);
             obj.update = true;
             obj.boat = data.boat.active._id;
-            obj.owner = data.person.active.owner;
+            obj.owner = data.person.active != null ? data.person.active.owner : "Someone";
             data.trip.list[obj.id] = obj;        
             activateTrack(obj.id); 
             data.trip.count++;
