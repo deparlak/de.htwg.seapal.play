@@ -113,7 +113,7 @@ $(document).ready(function() {
         }
 
         result[0] = (days * sign);
-        result[1] = minutes;
+        result[1] = minutes.length == 4 ? "0" + minutes : minutes;
         result[2] = direction;
         
         return result;
