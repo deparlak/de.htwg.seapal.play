@@ -1323,7 +1323,7 @@
          * Handles the boat position with fake/generated geolocation data
          */
         function handleFakeBoatPositionUpdate() {
-            if(isTracking && data.route.active != null) {
+            if(isTracking && generatedTrackingRoute != null) {
                 fakeTrackingRoutePositionUpdate(generatedTrackingRoute);
             } else {
                 fakeTrackingRoutePositionUpdate(defaultRoute);
@@ -1419,7 +1419,8 @@
 
             if(isSimulating && data.route.active != null) {
                 fakeRoutePointer = 0;
-                generateFakeTrackingRoute(data.route.active);
+                var route = data.route.active;
+                generateFakeTrackingRoute(route);
             }
 
             isTracking = true;
