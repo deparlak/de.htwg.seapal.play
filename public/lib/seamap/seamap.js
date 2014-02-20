@@ -1129,7 +1129,8 @@
             $this.on("click", "#addMark", handleAddMark);
             $this.on("click", "#deleteMark", handleDeleteMark);
             $this.on("click", "#deleteRoutePoint", handleDeleteRoutePoint);
-            $this.on("click", "#setAsTarget", handleSetAsTarget);            
+            $this.on("click", "#setAsTarget", handleSetAsTarget);
+            $this.on("click", "#setAsMarkTarget", handleSetAsMarkTarget);
             $this.on("click", "#editMark", handleEditMark);
             $this.on("click", "#addNewRoute", handleAddNewRoute);
             $this.on("click", "#exitRouteCreation", handleExitRouteCreation);
@@ -1593,12 +1594,13 @@
                         + '<button id="hideContextMenu" type="button" class="btn"><i class="icon-remove"></i> Close</button>'; 
                     break;
                 case ContextMenuTypes.DELETE_MARKER:
-                    ctx += '<button id="deleteMark" type="button" class="btn"><i class="icon-map-marker"></i> Delete Mark</button>';
+                    ctx += '<button id="setAsMarkTarget" type="button" class="btn"><i class="icon-map-marker"></i> Set as Target</button>';
                     ctx += '<button id="editMark" type="button" class="btn"><i class="icon-map-marker"></i> Edit Mark</button>';
+                    ctx += '<button id="deleteMark" type="button" class="btn"><i class="icon-map-marker"></i> Delete Mark</button>';                    
                     break;
-                case ContextMenuTypes.DELETE_ROUTEPOINT:
-                    ctx += '<button id="deleteRoutePoint" type="button" class="btn"><i class="icon-map-marker"></i> Delete routepoint</button>';
+                case ContextMenuTypes.DELETE_ROUTEPOINT:                
                     ctx += '<button id="setAsTarget" type="button" class="btn"><i class="icon-map-marker"></i> Set as Target</button>';
+                    ctx += '<button id="deleteRoutePoint" type="button" class="btn"><i class="icon-map-marker"></i> Delete routepoint</button>';
                     break;
             }
             ctx += '</div>'
@@ -1970,11 +1972,16 @@
         * *********************************************************************************
         */
         function handleSetAsTarget() {
-            targetLineDestination = activeRoutePoint.getPosition();
-            isShowingTargetLine = true;
-            drawSetAsDestination();
-            hideContextMenu();
-            state = States.NORMAL;
+            setAsDestination(activeRoutePoint.getPosition());            
+        }
+
+        /**
+        * *********************************************************************************
+        * Handler function for setting a routePoint as target. Also hides the context menu.
+        * *********************************************************************************
+        */
+        function handleSetAsMarkTarget() {
+            setAsDestination(data.mark.active.onMap.getPosition());            
         }
 
         /**
@@ -2009,6 +2016,15 @@
             destpath.setPath([]);
             isShowingTargetLine = false;
         };
+
+        function setAsDestination(position) {
+            targetLineDestination = position;
+            isShowingTargetLine = true;
+            drawSetAsDestination();
+            hideContextMenu();
+            hideCrosshairMarker();
+            state = States.NORMAL;
+        }
         
         function drawSetAsDestination() {
             destpath.setMap(map);
