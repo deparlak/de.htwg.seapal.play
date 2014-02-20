@@ -1694,7 +1694,7 @@
             obj.name = "Route "+data.route.count;
             obj.update = true;
 			obj.onMap = getOnMapRoute(obj);
-			obj.owner = data.person.active.owner;
+			obj.owner = data.person.active != null ? data.person.active.owner : "Someone";
             data.route.list[obj.id] = obj;        
             activateRoute(obj.id); 
   
