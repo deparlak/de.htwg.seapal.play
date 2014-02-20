@@ -489,8 +489,8 @@
         var globalSettings = {
             DISTANCE_UNIT       : "globalSettings_nautmil",
             TEMPERATURE_UNIT    : "globalSettings_celsius",
-            TRACKING_DELAY      : 5,
-            WAYPOINT_DELAY      : 1, 
+            TRACKING_DELAY      : 2,
+            WAYPOINT_DELAY      : 4, 
             HISTORY_TREND       : 1,
             CIRCLE_RADIUS       : 250
         };
@@ -1870,6 +1870,15 @@
             if (!data.trip.active.onMap || null == data.trip.active.onMap) {
                 data.trip.active.onMap = getOnMapTrack(data.trip.active);
             } 
+            /* visible the waypoints of the track on the map */
+            for (var i in data.waypoint.list) {
+                if (data.waypoint.list[i].trip != data.trip.active._id) {
+                    continue;
+                }
+                if (!data.waypoint.list[i].onMap) {
+                    data.waypoint.list[i].onMap = getOnMapMark(data.waypoint.list[i]);
+                }
+            }
             data.trip.active.onMap.visible();
         }
         /**
@@ -1882,6 +1891,17 @@
                 uploadTrackUpdate();
                 state = States.NORMAL;
                 data.trip.active.onMap.hide();
+                
+                /* remove the waypoints of the track from the map */
+                for (var i in data.waypoint.list) {
+                    if (data.waypoint.list[i].trip != data.trip.active._id) {
+                        continue;
+                    }
+                    if (null != data.waypoint.list[i].onMap) {
+                        data.waypoint.list[i].onMap.setMap(null);
+                        data.waypoint.list[i].onMap = null;
+                    }
+                }
                 data.trip.active = null;
             }
         }
