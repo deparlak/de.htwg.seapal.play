@@ -2449,11 +2449,13 @@
         */
         this.addMarker = function(position) {
             var $this = this;
+            options = $.seamap.options[obj.type];
             // check if the position did not changed, so we do not safe this position.
             if (1 < obj.marks.length && position.lat() == obj.marks[obj.marks.length - 2] && position.lng() == obj.marks[obj.marks.length - 1]) {
                 return null;
             }
-            
+            console.log(obj.type);
+            console.log(options);
             // create marker
             var marker = new google.maps.Marker({
                 map: this.googlemaps,
