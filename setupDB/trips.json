@@ -1,0 +1,16 @@
+{
+   "_id": "_design/Trip",
+   "language": "coffeescript",
+   "views": {
+       "own": {
+           "map": "(doc)->\n if doc? and doc.owner? and doc.owner.length? and doc.owner.length > 0\n  emit doc.owner, doc"
+       },
+       "singleDocument": {
+           "map": "(doc)->\n if doc? and doc.owner? and doc.owner.length? and doc.owner.length > 0 and doc._id?\n  emit doc.owner + doc._id, doc"
+       },
+       "boat": {
+         "map":"(doc)->\n if doc? and doc.boat? and doc.owner.length? and doc.owner.length > 0 and doc.boat.length? and doc.boat.length > 0\n  emit \"#{doc.owner}#{doc.boat}\", doc"
+       }
+   },
+   "validate_doc_update": "(newDoc,oldDoc,userCtx)->\n if oldDoc? and !newDoc._deleted? and newDoc.owner isnt oldDoc.owner\n  throw forbidden: 'old and new user dont match'"
+}

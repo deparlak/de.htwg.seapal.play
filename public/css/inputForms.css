@@ -1,0 +1,238 @@
+/**
+ * Seapal input forms
+ */
+
+.disable-select
+{
+  -webkit-user-select: none;  
+  -moz-user-select: none;    
+  -ms-user-select: none;      
+  user-select: none;
+}
+
+.inputForm-modal
+{
+    margin-top: 70px;
+    margin-left: auto;
+    margin-right: auto;
+    height: auto;
+    padding: 40px 0px 20px 0px;
+} 
+
+.inputForm_Boat-modal
+{
+    max-width: 1150px;
+}
+
+.inputForm_Track-modal
+{
+    max-width: 800px;
+}
+
+.inputForm_GlobalSettings-modal
+{
+    max-width: 400px;
+}
+
+.inputForm_Waypoint-modal
+{
+    max-width: 750px;
+}
+
+.inputForm_Marker-modal
+{
+    max-width: 650px;
+}
+
+.inputForm_Route-modal
+{
+    max-width: 350px;
+}
+
+.inputForm_Alarms-modal
+{
+    max-width: 600px;
+}
+
+.inputForm_confirmCrewRequest-modal
+{
+    max-width: 600px;
+}
+.inputForm_addCrewman-Modal
+{
+    max-width: 600px;
+}
+
+.inputForm_confirmCrewRequest-Modal
+{
+    max-width: 600px;
+}
+
+.inputForm-content {
+    background-color: #f7f7f7;
+    -moz-box-shadow: 0px 2px 2px rgba(0, 0, 0, 0.3);
+    -webkit-box-shadow: 0px 2px 2px rgba(0, 0, 0, 0.3);
+    box-shadow: 0px 2px 2px rgba(0, 0, 0, 0.3);
+	position: relative;
+	background-clip: padding-box;
+    padding-right: 15px !important;
+}
+
+.inputForm-footer
+{
+	padding: 5px 5px 5px 5px;
+  	text-align: right;
+  	border-top: 1px solid #e5e5e5;
+}
+
+.form_global
+{
+    padding: 15px;
+    margin: 0 auto;
+}
+
+.form_global input
+{
+    max-width: 400px;
+    width: 100%;
+}
+
+.wrap_scrollable {
+    overflow:hidden;
+}
+
+.scroll_table table
+{
+    width:100%;
+}
+.scroll_table th
+{
+    height: 35px;
+    width:150px;
+}
+.scroll_table th:hover
+{
+    color: white;
+}
+.scroll_table tr:hover
+{
+    cursor: pointer;
+    cursor: hand;
+    background-color: #697994;
+}
+.scroll_table tbody
+{
+    display: block;
+    max-height: 300px;
+    width: 800px;
+    overflow: auto;
+}
+
+.form_track textarea
+{
+    width: 100%;
+    resize: none;
+}
+
+.form_waypoint select
+{
+    width: 100%;
+}
+
+.form_waypoint img
+{
+    padding-left: 5%;
+    max-width: 100%;
+    max-height: 205px;
+}
+
+.form_waypoint textarea
+{
+    width: 100%;
+    resize: none;
+}
+
+.form_globalSettings select
+{
+    width: 100%;
+}
+
+.no_padding
+{
+    padding-left: 0px !important;
+    padding-right: 0px !important;
+}
+
+.some_left_padding
+{
+    padding-left: 15px !important;
+    padding-right: 0px !important;   
+}
+
+.coords_row
+{
+    width: 50px !important;
+}
+
+.centered
+{
+    text-align: left;
+    padding-right: 0px;
+}
+
+
+.onoffswitch {
+    position: relative; width: 70px;
+    padding-bottom: 5px;
+    -webkit-user-select:none; -moz-user-select:none; -ms-user-select: none;
+}
+.onoffswitch-checkbox {
+    display: none;
+}
+.onoffswitch-label {
+    display: block; overflow: hidden; cursor: pointer;
+    border: 2px solid #999999; border-radius: 20px;
+}
+.onoffswitch-inner {
+    width: 200%; margin-left: -100%;
+    -moz-transition: margin 0.3s ease-in 0s; -webkit-transition: margin 0.3s ease-in 0s;
+    -o-transition: margin 0.3s ease-in 0s; transition: margin 0.3s ease-in 0s;
+}
+.onoffswitch-inner:before, .onoffswitch-inner:after {
+    float: left; width: 50%; height: 20px; padding: 0; line-height: 20px;
+    font-size: 14px; color: white; font-family: Trebuchet, Arial, sans-serif; font-weight: bold;
+    -moz-box-sizing: border-box; -webkit-box-sizing: border-box; box-sizing: border-box;
+}
+.onoffswitch-inner:before {
+    content: "ON";
+    padding-left: 10px;
+    background-color: #2FCCFF; color: #FFFFFF;
+}
+.onoffswitch-inner:after {
+    content: "OFF";
+    padding-right: 10px;
+    background-color: #EEEEEE; color: #999999;
+    text-align: right;
+}
+.onoffswitch-switch {
+    width: 18px; margin: 1px;
+    background: #FFFFFF;
+    border: 2px solid #999999; border-radius: 20px;
+    position: absolute; top: 0; bottom: 10px; right: 46px;
+    -moz-transition: all 0.3s ease-in 0s; -webkit-transition: all 0.3s ease-in 0s;
+    -o-transition: all 0.3s ease-in 0s; transition: all 0.3s ease-in 0s;
+}
+.onoffswitch-checkbox:checked + .onoffswitch-label .onoffswitch-inner {
+    margin-left: 0;
+}
+.onoffswitch-checkbox:checked + .onoffswitch-label .onoffswitch-switch {
+    right: 0px;
+}
+
+input.latlngInput {
+    outline: none;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    width:260px;
+}

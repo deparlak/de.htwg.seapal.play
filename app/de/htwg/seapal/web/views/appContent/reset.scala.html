@@ -1,0 +1,39 @@
+@(token: Int)
+<!DOCTYPE HTML>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv='content-type' content='text/html; charset=utf-8'/>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta name='keywords' content='sea navigation, Seapal, log in, sign in'/>
+        <meta name='description' content='Sign in to the Webapplication of Seapal.'/>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+        <title>SeaPal Sign In</title>
+        <link type="text/css" rel="stylesheet" href="@routes.Assets.at("lib/bootstrap/css/bootstrap.min.css")" />
+        <link type="text/css" rel="stylesheet" href="@routes.Assets.at("css/signInSeapal.css")" />
+    </head>
+    <body>
+        <div class="account-wall">
+            <img class="profile-img" src="@routes.Assets.at("images/seapal_launcher.png")" alt="Seapal">
+            @if(!flash.contains("success")) {
+                @if(flash.contains("errors")) {
+                    <div class="error-message">
+                        <p>@flash.get("errors")</p>
+                    </div>
+                }
+                <form class="form-signInSeapal" method="post" action="@de.htwg.seapal.web.controllers.routes.AccountAPI.resetPassword">
+                <input type="hidden" name="token" value="@token">
+                <input type="password" class="form-control" name="password" placeholder="Password" required>
+                <!--input type="password" class="form-control" name="repeatedAccountPassword" placeholder="Repeat Password" required-->
+                <button class="btn btn-lg btn-primary btn-block" type="submit">Set new password</button></form>
+            } else {
+                <div class="info-message">
+                    <p>@flash.get("success")</p>
+                </div>
+                <div class="message-link">
+                    <a href="@de.htwg.seapal.web.controllers.routes.Application.app()">Back to the app</a>
+                </div>
+            }
+        </div>
+    </body>
+</html>

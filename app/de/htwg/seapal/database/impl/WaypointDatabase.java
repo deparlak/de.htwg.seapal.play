@@ -1,31 +1,35 @@
 package de.htwg.seapal.database.impl;
 
+import com.google.inject.Inject;
+import com.google.inject.name.Named;
+import de.htwg.seapal.database.IWaypointDatabase;
+import de.htwg.seapal.model.IWaypoint;
+import de.htwg.seapal.model.ModelDocument;
+import de.htwg.seapal.model.impl.Waypoint;
+import de.htwg.seapal.utils.logging.ILogger;
+import org.ektorp.CouchDbConnector;
+import org.ektorp.CouchDbInstance;
+import org.ektorp.DocumentNotFoundException;
+import org.ektorp.impl.StdCouchDbConnector;
+import org.ektorp.support.CouchDbRepositorySupport;
+
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
 
-import org.ektorp.CouchDbConnector;
-import org.ektorp.support.CouchDbRepositorySupport;
-import org.ektorp.support.GenerateView;
-
-import com.google.inject.Inject;
-import com.google.inject.name.Named;
-
-import de.htwg.seapal.database.IWaypointDatabase;
-import de.htwg.seapal.model.IWaypoint;
-import de.htwg.seapal.model.impl.Waypoint;
-import de.htwg.seapal.utils.logging.ILogger;
-
 public class WaypointDatabase extends CouchDbRepositorySupport<Waypoint> implements IWaypointDatabase {
 
 	private final ILogger logger;
-	
-	@Inject
-	protected WaypointDatabase(@Named("waypointCouchDbConnector") CouchDbConnector db, ILogger logger) {
+    private final StdCouchDbConnector connector;
+
+    @Inject
+	protected WaypointDatabase(@Named("waypointCouchDbConnector") CouchDbConnector db, ILogger logger, CouchDbInstance dbInstance) {
 		super(Waypoint.class, db, true);
 		super.initStandardDesignDocument();
 		this.logger = logger;
-	}
+        connector = new StdCouchDbConnector(db.getDatabaseName(), dbInstance);
+    }
 
 	@Override
 	public boolean open() {
@@ -41,7 +45,7 @@ public class WaypointDatabase extends CouchDbRepositorySupport<Waypoint> impleme
 	@Override
 	public boolean save(IWaypoint data) {
 		Waypoint entity = (Waypoint)data;
-		
+
 		if (entity.isNew()) {
 			// ensure that the id is generated and revision is null for saving a new entity
 			entity.setId(UUID.randomUUID().toString());
@@ -49,7 +53,7 @@ public class WaypointDatabase extends CouchDbRepositorySupport<Waypoint> impleme
 			add(entity);
 			return true;
 		}
-		
+
 		logger.info("WaypointDatabase", "Updating entity with UUID: " + entity.getId());
 		update(entity);
 		return false;
@@ -57,8 +61,12 @@ public class WaypointDatabase extends CouchDbRepositorySupport<Waypoint> impleme
 
 	@Override
 	public Waypoint get(UUID id) {
-		return get(id.toString());
-	}
+        try {
+            return get(id.toString());
+        } catch (DocumentNotFoundException e) {
+            return null;
+        }
+    }
 
 	@Override
 	public List<IWaypoint> loadAll() {
@@ -77,10 +85,22 @@ public class WaypointDatabase extends CouchDbRepositorySupport<Waypoint> impleme
 	public boolean close() {
 		return true;
 	}
+    @Override
+    public List<? extends IWaypoint> queryViews(final String viewName, final String key) {
+        try {
+            return super.queryView(viewName, key);
+        } catch (DocumentNotFoundException e) {
+            return new ArrayList<>();
+        }
+    }
 
-	@Override
-	@GenerateView
-	public List<IWaypoint> findByTrip(UUID tripId) {
-		return new LinkedList<IWaypoint>(queryView("by_trip", tripId.toString()));
-	}
+    @Override
+    public void create(ModelDocument doc) {
+        connector.create(doc);
+    }
+
+    @Override
+    public void update(ModelDocument document) {
+        connector.update(document);
+    }
 }

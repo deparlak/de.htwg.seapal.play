@@ -1,31 +1,36 @@
 package de.htwg.seapal.database.impl;
 
+import com.google.inject.Inject;
+import com.google.inject.name.Named;
+import de.htwg.seapal.database.IRouteDatabase;
+import de.htwg.seapal.model.IRoute;
+import de.htwg.seapal.model.ModelDocument;
+import de.htwg.seapal.model.impl.Route;
+import de.htwg.seapal.utils.logging.ILogger;
+import org.ektorp.CouchDbConnector;
+import org.ektorp.CouchDbInstance;
+import org.ektorp.DocumentNotFoundException;
+import org.ektorp.impl.StdCouchDbConnector;
+import org.ektorp.support.CouchDbRepositorySupport;
+
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
-
-import org.ektorp.CouchDbConnector;
-import org.ektorp.support.CouchDbRepositorySupport;
-
-import com.google.inject.Inject;
-import com.google.inject.name.Named;
-
-import de.htwg.seapal.database.IRouteDatabase;
-import de.htwg.seapal.model.IRoute;
-import de.htwg.seapal.model.impl.Route;
-import de.htwg.seapal.utils.logging.ILogger;
 
 public class RouteDatabase extends CouchDbRepositorySupport<Route> implements
 		IRouteDatabase {
 
 	private final ILogger logger;
-	
-	@Inject
-	protected RouteDatabase(@Named("routeCouchDbConnector") CouchDbConnector db, ILogger logger) {
+    private final StdCouchDbConnector connector;
+
+    @Inject
+	protected RouteDatabase(@Named("routeCouchDbConnector") CouchDbConnector db, ILogger logger, CouchDbInstance dbInstance) {
 		super(Route.class, db, true);
 		super.initStandardDesignDocument();
 		this.logger = logger;
-	}
+        connector = new StdCouchDbConnector(db.getDatabaseName(), dbInstance);
+    }
 
 	@Override
 	public boolean open() {
@@ -41,7 +46,7 @@ public class RouteDatabase extends CouchDbRepositorySupport<Route> implements
 	@Override
 	public boolean save(IRoute data) {
 		Route entity = (Route)data;
-		
+
 		if (entity.isNew()) {
 			// ensure that the id is generated and revision is null for saving a new entity
 			entity.setId(UUID.randomUUID().toString());
@@ -49,7 +54,7 @@ public class RouteDatabase extends CouchDbRepositorySupport<Route> implements
 			add(entity);
 			return true;
 		}
-			
+
 		logger.info("RouteDatabase", "Updating entity with UUID: " + entity.getId());
 		update(entity);
 		return false;
@@ -57,8 +62,12 @@ public class RouteDatabase extends CouchDbRepositorySupport<Route> implements
 
 	@Override
 	public IRoute get(UUID id) {
-		return get(id.toString());
-	}
+        try {
+            return get(id.toString());
+        } catch (DocumentNotFoundException e) {
+            return null;
+        }
+    }
 
 	@Override
 	public List<IRoute> loadAll() {
@@ -77,5 +86,27 @@ public class RouteDatabase extends CouchDbRepositorySupport<Route> implements
 	public boolean close() {
 		return true;
 	}
+    @Override
+    public List<? extends IRoute> queryViews(final String viewName, final String key) {
+        return super.queryView(viewName, key);
+    }
 
+    @Override
+    public List<Route> queryView(final String viewName, final String key) {
+        try {
+            return super.queryView(viewName, key);
+        } catch (DocumentNotFoundException e) {
+            return new ArrayList<>();
+        }
+    }
+
+    @Override
+    public void create(ModelDocument doc) {
+        connector.create(doc);
+    }
+
+    @Override
+    public void update(ModelDocument document) {
+        connector.update(document);
+    }
 }

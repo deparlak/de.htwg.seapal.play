@@ -1,14 +1,12 @@
 package de.htwg.seapal.web.controllers.helpers;
 
-import java.util.LinkedList;
-import java.util.List;
-
 import de.htwg.seapal.web.models.MenuItem;
-
-
-import play.mvc.Result;
 import play.mvc.Action;
 import play.mvc.Http;
+import play.mvc.Result;
+
+import java.util.LinkedList;
+import java.util.List;
 
 public class Menus extends Action.Simple {
 
@@ -20,25 +18,25 @@ public class Menus extends Action.Simple {
 
 	public static List<MenuItem> createMainNavi(String url){
 		List<MenuItem> menu = new LinkedList<MenuItem>();
-		
+
 		menu.add(new MenuItem("Start", "/"));
 		menu.add(new MenuItem("How To", "/user_guide"));
 		menu.add(new MenuItem("Screenshots", "/screenshots"));
 		menu.add(new MenuItem("Team", "/about"));
-		menu.add(new MenuItem("Contact", "/contact"));
-		
-		return menu;
-		
+        menu.add(new MenuItem("Contact", "/contact"));
+
+        return menu;
+
 	}
-	
+
 	public static List<MenuItem> createSubNavi(String url){
 		List<MenuItem> menu = new LinkedList<MenuItem>();
-		
+
 		menu.add(new MenuItem("Boat Info", "/boat_info"));
 		menu.add(new MenuItem("Trip List", ""));
 		menu.add(new MenuItem("Trip Info", ""));
 		menu.add(new MenuItem("Log Entry", ""));
-		
+
 		if(menu.contains(new MenuItem(url)) || url.contains("/boat")){
 			return menu;
 		} else {
@@ -48,18 +46,18 @@ public class Menus extends Action.Simple {
 
 	@SuppressWarnings("unchecked")
 	public static List<MenuItem> mainNavigation() {
-        
+
 		return (List<MenuItem>)Http.Context.current().args.get("mainNavi");
     }
-	
+
 	@SuppressWarnings("unchecked")
 	public static List<MenuItem> subNavigation() {
         return (List<MenuItem>)Http.Context.current().args.get("subNavi");
     }
-	
+
 	public static boolean hasSubNavigation(){
 		List<MenuItem> menu = subNavigation();
-		
+
 		return (menu != null && !menu.isEmpty());
 	}
 

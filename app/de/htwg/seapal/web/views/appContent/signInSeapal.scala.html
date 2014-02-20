@@ -1,0 +1,38 @@
+@(form: Form[de.htwg.seapal.model.impl.Account], link: play.api.mvc.Call)
+<!DOCTYPE HTML>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv='content-type' content='text/html; charset=utf-8'/>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta name='keywords' content='sea navigation, Seapal, log in, sign in'/>
+        <meta name='description' content='Sign in to the Webapplication of Seapal.'/>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+        <title>SeaPal Sign In</title>
+        <link type="text/css" rel="stylesheet" href="@routes.Assets.at("lib/bootstrap/css/bootstrap.min.css")" />
+        <link type="text/css" rel="stylesheet" href="@routes.Assets.at("css/signInSeapal.css")" />
+    </head>
+    <body>
+        <div class="account-wall">
+            <img class="profile-img" src="@routes.Assets.at("images/seapal_launcher.png")" alt="Seapal">
+            @if(flash.contains("errors")) {
+                <div class="error-message">
+                    <p>@flash.get("errors")</p>
+                </div>
+            }
+            @helper.form(link, 'class -> "form-signInSeapal") {
+                <input type="text" class="form-control" name="email" placeholder="Email" required autofocus>
+                <input type="password" class="form-control" name="password" placeholder="Password" required>
+                <button class="btn btn-lg btn-primary btn-block" type="submit">
+                    Sign in
+                </button>
+            }
+            <div class="message-link">
+                <a href="@de.htwg.seapal.web.controllers.routes.Application.forgotten">Forgot Password?</a>
+            </div>
+            <div class="message-link">
+                <a href="@de.htwg.seapal.web.controllers.routes.AccountAPI.auth()">Google Login</a>
+            </div>
+        </div>
+    </body>
+</html>

@@ -1,0 +1,498 @@
+<!-- global settings template -->
+<script type="text/x-handlebars" id="globalSettings_Template">
+    <div class="row">
+        <div class="centered col-12 col-sm-8">
+            <label for="distanceUnit">Unit for distance</label>
+        </div>
+        <div class="col-12 col-sm-4">
+            <select name="distanceUnit" tabindex="1" {{bindData "DISTANCE_UNIT"}}>
+                {{#select DISTANCE_UNIT}}
+                <option value="globalSettings_nautmil">Naut. miles</option>
+                <option value="globalSettings_km">Kilometer</option>
+                <option value="globalSettings_mil">Miles</option>
+                {{/select}}
+            </select>
+        </div>
+    </div>
+    <div class="row">
+        <div class="centered col-12 col-sm-8">
+            <label for="temperatureUnit">Unit for temperature</label>
+        </div>
+        <div class="col-12 col-sm-4">
+            <select name="temperatureUnit" tabindex="2" {{bindData "TEMPERATURE_UNIT"}}>
+                {{#select TEMPERATURE_UNIT}}
+                <option value="globalSettings_celsius">°C</option>
+                <option value="globalSettings_fahrenheit">°F</option>
+                <option value="globalSettings_kelvin">°K</option>
+                {{/select}}
+            </select>
+        </div>
+    </div>
+    <div class="row">
+        <div class="centered col-12 col-sm-8">
+            <label for="trackInteral">Track record interval [s]</label>
+        </div>
+        <div class="col-12 col-sm-4">
+            <input type="number" min="1" step="1" name="trackInteral" tabindex="3" {{bindData "TRACKING_DELAY"}} value={{TRACKING_DELAY}} required />
+        </div>
+    </div>
+    <div class="row">
+        <div class="centered col-12 col-sm-8">
+            <label for="waypointDelay">Waypoint record interval [min]</label>
+        </div>
+        <div class="col-12 col-sm-4">
+            <input type="number" min="1" step="1" name="waypointDelay" tabindex="4" {{bindData "WAYPOINT_DELAY"}} value={{WAYPOINT_DELAY}} required />
+        </div>
+    </div>
+    <div class="row">
+        <div class="centered col-12 col-sm-8">
+            <label for="historyTrend">History trend for dashboard [s]</label>
+        </div>
+        <div class="col-12 col-sm-4">
+            <input type="number" min="1" step="1" name="historyTrend" tabindex="5" {{bindData "HISTORY_TREND"}} value={{HISTORY_TREND}} required />
+        </div>
+    </div>
+    <div class="row">
+        <div class="centered col-12 col-sm-8">
+            <label for="circleRadius">Security circle radius [m]</label>
+        </div>
+        <div class="col-12 col-sm-4">
+            <input type="number" min="1" step="1" name="circleRadius" tabindex="6" {{bindData "CIRCLE_RADIUS"}} value={{CIRCLE_RADIUS}} required />
+        </div>
+    </div>
+    <div class="inputForm-footer">
+        <button type="submit" class="btn btn-primary">Save</button>
+        <button type="button" class="btn btn-danger" data-dismiss="modal">Abort</button>
+    </div>
+</script>
+
+<!-- alarms template -->
+<script type="text/x-handlebars" id="alarms_Template">
+    <!--<div class="row">
+        <div class="centered col-12 col-sm-10">
+            <label for="onoffswitch">Enable leave security circle alarm</label>
+        </div>
+        <div class="col-12 col-sm-2">
+            <div class="onoffswitch">
+                <input type="checkbox" name="onoffswitch" class="onoffswitch-checkbox" id="alertSecurityCircle" {{#if LEAVE_SECURITY_CIRCLE}}checked{{/if}}>
+                <label class="onoffswitch-label" for="alertSecurityCircle">
+                    <div class="onoffswitch-inner"></div>
+                    <div class="onoffswitch-switch"></div>
+                </label>
+            </div> 
+        </div>
+    </div>-->
+    <div class="inputForm-footer">
+        <button type="submit" class="btn btn-primary">Ok</button>
+    </div>
+</script>
+
+<!-- boats template -->
+<script type="text/x-handlebars" id ="boats_Template">
+    <div class="row">
+        <div class="col-12 col-sm-1_a font-light">
+            <label for="boat_name">Bootsname</label>
+        </div>
+        <div class="col-12 col-sm-1_a font-light">
+            <input type="text" name="boat_name" tabindex="1" required {{bindData "name"}} value="{{name}}" />
+        </div>
+        <div class="col-12 col-sm-1_a font-light">
+            <label for="boat_type">Typ</label>
+        </div>
+        <div class="col-12 col-sm-1_a font-light">
+            <input type="text" name="boat_type" tabindex="2" {{bindData "boatType"}} value="{{boatType}}" />
+        </div>
+        <div class="col-12 col-sm-1_a font-light">
+            <label for="build_year">Baujahr</label>
+        </div>
+        <div class="col-12 col-sm-1_a font-light">
+            <input type="number" name="build_year" tabindex="3" min="1900" {{bindData "yearOfConstruction"}} value={{yearOfConstruction}} />
+        </div>
+        <div class="col-12 col-sm-1_a font-light">
+            <label for="register_nr">Registernr.</label>
+        </div>
+        <div class="col-12 col-sm-1_a font-light">
+            <input type="text" name="register_nr" tabindex="4" {{bindData "registerNr"}} value="{{registerNr}}" />
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-12 col-sm-1_a font-light">
+            <label for="boat_constructor">Konstrukteur</label>
+        </div>
+        <div class="col-12 col-sm-1_a font-light">
+            <input type="text" name="boat_constructor" tabindex="5" {{bindData "boatConstructor"}} value="{{boatConstructor}}" />
+        </div>
+        <div class="col-12 col-sm-1_a font-light">
+            <label for="engine">Motor</label>
+        </div>
+        <div class="col-12 col-sm-1_a font-light">
+            <input type="text" name="engine" tabindex="6" {{bindData "motor"}} value="{{motor}}" />
+        </div>
+        <div class="col-12 col-sm-1_a font-light">
+            <label for="sail_sign">Segelzeichen</label>
+        </div>
+        <div class="col-12 col-sm-1_a font-light">
+            <input type="text" name="sail_sign" tabindex="7" {{bindData "sailSign"}} value="{{sailSign}}" />
+        </div>
+        <div class="col-12 col-sm-1_a font-light">
+            <label for="boat_length">Länge</label>
+        </div>
+        <div class="col-12 col-sm-1_a font-light">
+            <input type="number" name="boat_length" tabindex="8" min="0" step="0.1" {{bindData "length"}} value={{length}} />
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-12 col-sm-1_a font-light">
+            <label for="fueltank_size">Tankgröße</label>
+        </div>
+        <div class="col-12 col-sm-1_a font-light">
+            <input type="number" name="fueltank_size" tabindex="9" min="0" step="0.1" {{bindData "tankSize"}} value={{tankSize}} />
+        </div>
+        <div class="col-12 col-sm-1_a font-light">
+            <label for="home_port">Heimathafen</label>
+        </div>
+        <div class="col-12 col-sm-1_a font-light">
+            <input type="text" name="home_port" tabindex="10" {{bindData "homePort"}} value="{{homePort}}" />
+        </div>
+        <div class="col-12 col-sm-1_a font-light">
+            <label for="boat_width">Breite</label>
+        </div>
+        <div class="col-12 col-sm-1_a font-light">
+            <input type="number" name="boat_width" tabindex="11" min="0" step="0.1" {{bindData "width"}} value={{width}} />
+        </div>
+        <div class="col-12 col-sm-1_a font-light">
+            <label for="watertank_size">Wassertankgröße</label>
+        </div>
+        <div class="col-12 col-sm-1_a font-light">
+            <input type="number" name="watertank_size" tabindex="12" min="0" step="0.1" {{bindData "freshWaterTankSize"}} value={{freshWaterTankSize}} />
+        </div>                          
+    </div>
+    <div class="row">
+        <div class="col-12 col-sm-1_a font-light">
+            <label for="yachtclub">Yachtclub</label>
+        </div>
+        <div class="col-12 col-sm-1_a font-light">
+            <input type="text" name="yachtclub" tabindex="13" {{bindData "yachtclub"}} value="{{yachtclub}}" />
+        </div>
+        <div class="col-12 col-sm-1_a font-light">
+            <label for="draught">Tiefgang</label>
+        </div>
+        <div class="col-12 col-sm-1_a font-light">
+            <input type="number" name="draught" tabindex="14" min="0" step="0.1" {{bindData "draft"}} value={{draft}} />
+        </div>
+        <div class="col-12 col-sm-1_a font-light">
+            <label for="wastewatertank_size">Abwassertankgröße</label>
+        </div>
+        <div class="col-12 col-sm-1_a font-light">
+            <input type="number" name="wastewatertank_size" tabindex="15" min="0" step="0.1" {{bindData "wasteWaterTankSize"}} value="{{wasteWaterTankSize}}" />
+        </div>
+        <div class="col-12 col-sm-1_a font-light">
+            <label for="owner">Eigner</label>
+        </div>
+        <div class="col-12 col-sm-1_a font-light">
+            <input type="text" name="owner" tabindex="16" {{bindData "boatOwner"}} value="{{boatOwner}}" >
+        </div>                          
+    </div>
+    <div class="row">
+        <div class="col-12 col-sm-1_a font-light">
+            <label for="mast_height">Masthöhe</label>
+        </div>
+        <div class="col-12 col-sm-1_a font-light">
+            <input type="number" name="mast_height" tabindex="17" min="0" step="0.1" {{bindData "mastHeight"}} value={{mastHeight}} />
+        </div>
+        <div class="col-12 col-sm-1_a font-light">
+            <label for="mainsail_size">Großsegelgröße</label>
+        </div>
+        <div class="col-12 col-sm-1_a font-light">
+            <input type="number" name="mainsail_size" tabindex="18" min="0" step="0.1" {{bindData "mainSailSize"}} value={{mainSailSize}} />
+        </div>
+        <div class="col-12 col-sm-1_a font-light">
+            <label for="insurance">Versicherung</label>
+        </div>
+        <div class="col-12 col-sm-1_a font-light">
+            <input type="text" name="insurance" tabindex="19" {{bindData "insurance"}} value="{{insurance}}" />
+        </div>
+        <div class="col-12 col-sm-1_a font-light">
+            <label for="water_displacement">Verdrängung</label>
+        </div>
+        <div class="col-12 col-sm-1_a font-light">
+            <input type="number" name="water_displacement" tabindex="20" min="0" step="0.1" {{bindData "displacement"}} value={{displacement}} />
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-12 col-sm-1_a font-light">
+            <label for="genua_size">Genuagröße</label>
+        </div>
+        <div class="col-12 col-sm-1_a font-light">
+            <input type="number" name="genua_size" tabindex="21" min="0" step="0.1" {{bindData "genuaSize"}} value={{genuaSize}} />
+        </div>
+        <div class="col-12 col-sm-1_a font-light">
+            <label for="callsign">Rufzeichen</label>
+        </div>
+        <div class="col-12 col-sm-1_a font-light">
+            <input type="text" name="callsign" tabindex="22" {{bindData "callSign"}} value="{{callSign}}" />
+        </div>
+        <div class="col-12 col-sm-1_a font-light">
+            <label for="rig_kind">Rig-Art</label>
+        </div>
+        <div class="col-12 col-sm-1_a font-light">
+            <input type="text" name="rig_kind" tabindex="23" {{bindData "rigging"}} value="{{rigging}}" />
+        </div>
+        <div class="col-12 col-sm-1_a font-light">
+            <label for="spi_size">Spigröße</label>
+        </div>
+        <div class="col-12 col-sm-1_a font-light">
+            <input type="number" name="spi_size" tabindex="24" min="0" step="0.1" {{bindData "spiSize"}} value={{spiSize}} />
+        </div>
+    </div>
+    <div class="inputForm-footer">
+        <button type="submit" class="btn btn-primary">Save</button>
+        <button type="button" class="btn btn-danger" data-dismiss="modal">Abort</button>
+    </div>
+</script>
+
+<!-- marker template -->
+<script type="text/x-handlebars" id ="marker_Template">
+    <div class="row">
+        <div class="some_left_padding col-12 col-sm-1">
+            <label for="marker_titel">Titel</label>
+        </div>
+        <div class="no_padding col-12 col-sm-6">
+            <input type="text" name="marker_titel" tabindex="1" required {{bindData "name"}} value="{{name}}" />
+        </div>
+        <div class="some_left_padding col-12 col-sm-2">
+            <label for="marker_pos">Position</label>
+        </div>
+        <div class="no_padding col-12 col-sm-3">
+            <input type="search" class="latlngInput" name="marker_pos" {{bindData "position"}} value="{{position}}" {{#unless this.image_thumb}}disabled{{/unless}}/>
+        </div>
+    </div>
+    <br>
+    <div class="inputForm-footer">
+        <button type="submit" class="btn btn-primary">Save</button>
+        <button type="button" class="btn btn-danger" data-dismiss="modal">Abort</button>
+    </div>
+</script>
+
+<!-- route template -->
+<script type="text/x-handlebars" id ="route_Template">
+    <div class="row">
+        <div class="some_left_padding col-12 col-sm-4">
+            <label for="route_titel">Titel</label>
+        </div>
+        <div class="no_padding col-12 col-sm-8">
+            <input type="text" name="route_titel" tabindex="1" required {{bindData "name"}} value="{{name}}" />
+        </div>
+    </div>
+    <br>
+    <div class="inputForm-footer">
+        <button type="submit" class="btn btn-primary">Save</button>
+        <button type="button" class="btn btn-danger" data-dismiss="modal">Abort</button>
+    </div>
+</script>
+
+<!-- track template -->
+<script type="text/x-handlebars" id ="track_Template">
+    <div class="row wrap_scrollable">
+        <div class="col-sm-3 scroll_table" id="track_WaypointList">
+            <table>
+                <tbody>
+                    {{#each waypoint}}
+                        <tr><th class="disable-select" data-id='{{id}}' data-type='{{type}}'>{{name}}</th></tr>   
+                    {{/each}}                    
+                </tbody>
+            </table>
+        </div>
+        <div class="col-sm-9">
+            <div class="row">
+                <div class="col-12 col-sm-1 font-light no_padding">
+                    <label for="track_title">Titel</label>
+                </div>
+                <div class="col-12 col-sm-5 font-light no_padding">
+                    <input type="text" name="track_title" tabindex="1" required {{bindData "name"}} value="{{name}}" />
+                </div>
+                <div class="col-12 col-sm-2 font-light some_left_padding">
+                    <label for="track_skipper">Skipper</label>
+                </div>
+                <div class="col-12 col-sm-4 font-light">
+                    <input type="text" name="track_skipper" tabindex="2" required {{bindData "skipper"}} value="{{skipper}}" />
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-12 col-sm-1 font-light no_padding">
+                    <label for="track_startDestination">From</label>
+                </div>
+                <div class="col-12 col-sm-5 font-light no_padding">
+                    <input type="text" name="track_startDestination" tabindex="4" required {{bindData "from"}} value="{{from}}" />
+                </div>
+                <div class="col-12 col-sm-2 font-light some_left_padding">
+                    <label for="track_endDestination">To</label>
+                </div>
+                <div class="col-12 col-sm-4 font-light">
+                    <input type="text" name="track_endDestination" tabindex="5" required {{bindData "to"}} value="{{to}}" />
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-12 col-sm-1 font-light no_padding">
+                    <label for="track_startDate">Start</label>
+                </div>
+                <div class="col-12 col-sm-2 font-light no_padding">
+                    <input type="text" class="datepicker" data-date-format="dd.mm.yyyy" name="track_startDate" tabindex="6" readonly required {{bindData "startDate"}} value="{{dateToString startDate}}" />
+                </div>
+                <div class="col-12 col-sm-1 font-light some_left_padding">
+                    <label for="track_endDate">End</label>
+                </div>
+                <div class="col-12 col-sm-2 font-light no_padding">
+                    <input type="text" class="datepicker" data-date-format="dd.mm.yyyy" name="track_endDate" tabindex="7" readonly {{bindData "endDate"}} value="{{dateToString endDate}}" />
+                </div>
+                <div class="col-12 col-sm-2 font-light some_left_padding">
+                    <label for="track_duration">Duration</label>
+                </div>
+                <div class="col-12 col-sm-4 font-light">
+                    <input type="text" name="track_duration" tabindex="8" {{bindData "duration"}} value="{{duration}}" />
+                </div>
+            </div>
+            <div class="row"><br></div>
+            <div class="row">
+                <div class="col-12 col-sm-1 font-light no_padding">
+                    <label for="track_crew">Crew</label>
+                </div>
+                <div class="col-12 col-sm-5 font-light no_padding">                            
+                    <textarea name="track_crew" rows="10" tabindex="9" {{bindData "crewMembers"}}>{{crewMembers}}</textarea>
+                </div>
+                <div class="col-12 col-sm-1 font-light no_padding">
+                    <label for="track_notes">Notes</label>
+                </div>
+                <div class="col-12 col-sm-5 font-light no_padding">                            
+                    <textarea name="track_notes" rows="10" tabindex="10" {{bindData "notes"}}>{{notes}}</textarea>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="inputForm-footer">
+        <button type="submit" class="btn btn-primary">Save</button>
+        <button type="button" class="btn btn-danger" data-dismiss="modal">Abort</button>
+    </div>
+</script>
+
+<!-- Waypoint template -->
+<script type="text/x-handlebars" id="waypoint_Template">
+    <div class="row">
+        <div class="some_left_padding col-12 col-sm-1">
+            <label for="waypoint_titel">Titel</label>
+        </div>
+        <div class="no_padding col-12 col-sm-3">
+            <input type="text" name="waypoint_titel" tabindex="1" {{bindData "title"}} value="{{title}}" />
+        </div>
+        <div class="some_left_padding col-12 col-sm-1">
+            <label for="waypoint_pos">Pos.</label>
+        </div>
+        <div class="no_padding col-12 col-sm-3">
+            <input type="search" class="latlngInput" name="waypoint_pos" {{bindData "position"}} value="{{position}}" tabindex="2" disabled/>
+        </div>
+        <div class="some_left_padding col-12 col-sm-1">
+            <label for="waypoint_date">Date</label>
+        </div>
+        <div class="no_padding col-12 col-sm-3">
+            <input type="text" name="waypoint_date" tabindex="3" readonly {{bindData "date"}} value="{{timeDateToString date}}" />
+        </div>
+    </div>
+    <div class="row">
+        <div class="some_left_padding col-12 col-sm-1">
+            <label for="waypoint_COG">COG</label>
+        </div>
+        <div class="no_padding col-12 col-sm-1">
+            <input type="text" name="waypoint_COG" tabindex="4" readonly {{bindData "cog"}} value="{{cog}}" />
+        </div>
+        <div class="some_left_padding col-12 col-sm-1">
+            <label for="waypoint_SOG">SOG</label>
+        </div>
+        <div class="no_padding col-12 col-sm-1">
+            <input type="text" name="waypoint_SOG" tabindex="5" readonly {{bindData "sog"}} value="{{sog}}" />
+        </div>
+        <div class="some_left_padding col-12 col-sm-1">
+            <label for="waypoint_BTM">BTM</label>
+        </div>
+        <div class="no_padding col-12 col-sm-1">
+            <input type="text" name="waypoint_BTM" tabindex="6" readonly {{bindData "btm"}} value="{{btm}}" />
+        </div>
+        <div class="some_left_padding col-12 col-sm-1">
+            <label for="waypoint_DTM">DTM</label>
+        </div>
+        <div class="no_padding col-12 col-sm-1">
+            <input type="text" name="waypoint_DTM" tabindex="7" readonly {{bindData "dtm"}} value="{{dtm}}" />
+        </div>        
+    </div>
+    <div class="row">
+        <div class="some_left_padding col-12 col-sm-2">
+            <label for="waypoint_maneuver">Maneuver</label>
+        </div>
+        <div class="no_padding col-12 col-sm-2">
+            <select name="waypoint_maneuver" tabindex="9" {{bindData "maneuver"}}>
+                {{#select maneuver}}
+                <option value="NONE">-</option>
+                <option value="waypoint_maneuver_mob">Man overboard</option>
+                <option value="waypoint_maneuver_tack">Tack</option>
+                <option value="waypoint_maneuver_jibe">Jibe</option>
+                <option value="waypoint_maneuver_shooting">Shooting head to wind</option>
+                {{/select}}
+            </select>
+        </div>
+        <div class="some_left_padding col-12 col-sm-2">
+            <label for="waypoint_headsail">Headsail</label>
+        </div>
+        <div class="no_padding no_padding col-12 col-sm-2">
+            <select name="waypoint_headsail" tabindex="10" {{bindData "foresail"}}>
+                {{#select foresail}}
+                <option value="NONE">-</option>
+                <option value="waypoint_headsail_jib">Jib</option>
+                <option value="waypoint_headsail_genoa">Genoa</option>
+                <option value="waypoint_headsail_spinnaker">Spinnaker</option>
+                {{/select}}
+            </select>
+        </div>
+        <div class="some_left_padding col-12 col-sm-2">
+            <label for="waypoint_mainsail">Mainsail</label>
+        </div>
+        <div class="no_padding col-12 col-sm-2">
+            <select name="waypoint_mainsail" tabindex="11" {{bindData "mainsail"}}>
+                {{#select mainsail}}
+                <option value="NONE">-</option>
+                <option value="waypoint_mainsail_jib">Jib</option>
+                <option value="waypoint_mainsail_mainsail">Mainsail</option>
+                {{/select}}
+            </select>
+        </div>
+    </div>
+    <div class="row">
+        <div class="some_left_padding col-12 col-sm-1">
+            <label for="waypoint_Notes">Notes</label>
+        </div>
+        <div class="no_padding col-12 col-sm-5">                            
+            <textarea name="waypoint_Notes" rows="10" tabindex="9"{{bindData "note"}} value="{{note}}" ></textarea>
+        </div>
+        <div class="no_padding col-12 col-sm-6">                            
+            <img src="@routes.Assets.at("images/screenshots/23-big.jpg")">
+        </div>
+    </div>
+    <div class="inputForm-footer">
+        <button type="submit" class="btn btn-primary">Save</button>
+        <button type="button" class="btn btn-danger" data-dismiss="modal">Abort</button>
+    </div>
+</script>
+
+<!-- Confirm crew request template -->
+<script type="text/x-handlebars" id ="confirmCrewRequest_Template">
+    <div class="row">
+        <div class="some_left_padding col-12 col-sm-12">
+            <label>Would you like to add</label>
+            <label>{{firstname}} {{lastname}}</label>
+            <label>to your crew?</label>
+        </div>
+    </div>
+    <br>
+    <div class="inputForm-footer">
+        <button type="button" id="confirmCrewRequest" class="btn btn-primary">YES</button>
+        <button type="button" id="rejectCrewRequest" class="btn btn-danger">NO</button>
+    </div>
+</script>

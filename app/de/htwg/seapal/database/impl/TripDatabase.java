@@ -1,33 +1,36 @@
 package de.htwg.seapal.database.impl;
 
+import com.google.inject.Inject;
+import com.google.inject.name.Named;
+import de.htwg.seapal.database.ITripDatabase;
+import de.htwg.seapal.model.ITrip;
+import de.htwg.seapal.model.ModelDocument;
+import de.htwg.seapal.model.impl.Trip;
+import de.htwg.seapal.utils.logging.ILogger;
+import org.ektorp.CouchDbConnector;
+import org.ektorp.CouchDbInstance;
+import org.ektorp.DocumentNotFoundException;
+import org.ektorp.impl.StdCouchDbConnector;
+import org.ektorp.support.CouchDbRepositorySupport;
+
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
-
-import org.ektorp.CouchDbConnector;
-import org.ektorp.support.CouchDbRepositorySupport;
-import org.ektorp.support.GenerateView;
-
-import com.google.inject.Inject;
-import com.google.inject.name.Named;
-
-import de.htwg.seapal.database.ITripDatabase;
-import de.htwg.seapal.model.ITrip;
-import de.htwg.seapal.model.IWaypoint;
-import de.htwg.seapal.model.impl.Trip;
-import de.htwg.seapal.utils.logging.ILogger;
 
 
 public class TripDatabase extends CouchDbRepositorySupport<Trip> implements ITripDatabase {
 
 	private final ILogger logger;
-	
-	@Inject
-	protected TripDatabase(@Named("tripCouchDbConnector") CouchDbConnector db, ILogger logger) {
+    private final StdCouchDbConnector connector;
+
+    @Inject
+	protected TripDatabase(@Named("tripCouchDbConnector") CouchDbConnector db, ILogger logger, CouchDbInstance dbInstance) {
 		super(Trip.class, db, true);
 		super.initStandardDesignDocument();
 		this.logger = logger;
-	}
+        connector = new StdCouchDbConnector(db.getDatabaseName(), dbInstance);
+    }
 
 	@Override
 	public boolean open() {
@@ -41,9 +44,9 @@ public class TripDatabase extends CouchDbRepositorySupport<Trip> implements ITri
 	}
 
 	@Override
-	public boolean save(ITrip data) {	
+	public boolean save(ITrip data) {
 		Trip entity = (Trip)data;
-		
+
 		if (entity.isNew()) {
 			// ensure that the id is generated and revision is null for saving a new entity
 			entity.setId(UUID.randomUUID().toString());
@@ -51,7 +54,7 @@ public class TripDatabase extends CouchDbRepositorySupport<Trip> implements ITri
 			add(entity);
 			return true;
 		}
-		
+
 		logger.info("TripDatabase", "Updating entity with UUID: " + entity.getId());
 		update(entity);
 		return false;
@@ -59,8 +62,12 @@ public class TripDatabase extends CouchDbRepositorySupport<Trip> implements ITri
 
 	@Override
 	public ITrip get(UUID id) {
-		return get(id.toString());
-	}
+        try {
+            return get(id.toString());
+        } catch (DocumentNotFoundException e) {
+            return null;
+        }
+    }
 
 	@Override
 	public List<ITrip> loadAll() {
@@ -79,11 +86,22 @@ public class TripDatabase extends CouchDbRepositorySupport<Trip> implements ITri
 	public boolean close() {
 		return true;
 	}
+    @Override
+    public List<? extends ITrip> queryViews(final String viewName, final String key) {
+        try {
+            return super.queryView(viewName, key);
+        } catch (DocumentNotFoundException e) {
+            return new ArrayList<>();
+        }
+    }
 
-	@Override
-	@GenerateView
-	public List<ITrip> findByBoat(UUID boatId) {
-		return new LinkedList<ITrip>(queryView("by_boat", boatId.toString()));
-	}
+    @Override
+    public void create(ModelDocument doc) {
+        connector.create(doc);
+    }
 
+    @Override
+    public void update(ModelDocument document) {
+        connector.update(document);
+    }
 }

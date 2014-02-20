@@ -16,13 +16,13 @@
 		zoom       : 15,
 		saveRace   : null,
 		saveSuccess: null,
-		
+
 		height    : function() {
 			return;
-		},	
+		},
 		// Stroke colors: [0] is used for the distance tool, [1..] are used for the routes
 		strokeColors : ['grey','red','blue','green','yellow','blueviolet','darkorange','magenta','black'],
-		
+
 		// Default options for the marker
 		defaultOptions : {
 			polyOptions : {
@@ -39,7 +39,7 @@
 					new google.maps.Point(16, 29))
 			}
 		},
-		
+
 		// Default options for the routing tool
 		routeOptions : {
 			polyOptions : {
@@ -55,7 +55,7 @@
 					new google.maps.Point(8, 8))
 			}
 		},
-		
+
 		// Default options for the distance tool
 		distanceOptions : {
 			polyOptions : {
@@ -72,7 +72,7 @@
 					new google.maps.Point(8, 8))
 			}
 		},
-		
+
 		// Start options for the distance tool
 		startOptions : {
 			polyOptions : {
@@ -89,7 +89,7 @@
 					new google.maps.Point(16, 29))
 			}
 		},
-		
+
 		// Goal options for the distance tool
 		goalOptions : {
 			polyOptions : {
@@ -106,7 +106,7 @@
 					new google.maps.Point(21, 42))
 			}
 		},
-		
+
 		// Control point options for the distance tool
 		controlPointOptions : {
 			polyOptions : {
@@ -133,7 +133,7 @@
 					new google.maps.Point(21, 42))
 			}
 		},
-		
+
 		// Default options for the crosshair.
 		crosshairOptions : {
 			markerOptions : {
@@ -142,36 +142,36 @@
 					type:'rect'
 				},
 				image : new google.maps.MarkerImage(
-					'/assets/images/crosshair.png', 
-					new google.maps.Size(28,28),	
-					new google.maps.Point(0,0),	
-					new google.maps.Point(14,14))	
+					'/assets/images/crosshair.png',
+					new google.maps.Size(28,28),
+					new google.maps.Point(0,0),
+					new google.maps.Point(14,14))
 			}
 		}
 	};
-	
+
 	/**
 	 * ########################################################################################################
 	 * #########################################   RACE MAP   #################################################
 	 * ########################################################################################################
 	 */
-	
+
 	/**
 	* *************************************************************************************
 	* The racemap object class
 	* *************************************************************************************
 	*/
-	$.racemap = function(element){	
-		var options = $.racemap.options; 
-		
+	$.racemap = function(element){
+		var options = $.racemap.options;
+
 		/* race additional data */
 		// controlPoints (before called markers)
 		var controlPoints = [];
-		
+
 		var assignedMarkPassings = []; // Note: can contain NULL values (because of the deleted entities)
 		var activeAssignMarkPassingMarker = null;
 		var activeAssignMarkPassingPath = null;
-		
+
 		var startMarkers = [];
 		var startPath = null;
 		var startPassings = [];
@@ -179,12 +179,12 @@
 		var goalMarkers = [];
 		var goalPath = null;
 		var goalPassings = [];
-		
+
 		var activeRouteData = null;
-		
+
 		// The states of the plugin
 		var States = {
-			"NORMAL"      : 0, 
+			"NORMAL"      : 0,
 			"START"       : 1,
 			"GOAL"        : 2,
 			"DISTANCE"    : 3,
@@ -192,17 +192,17 @@
 		},
 		// The context menu types
 		ContextMenuTypes = {
-			"DEFAULT"           : 0, 
-			"CONTROL_POINT"     : 1, 
+			"DEFAULT"           : 0,
+			"CONTROL_POINT"     : 1,
 			"ROUTE_POINTMARKER" : 2
 		};
-		
+
 		// maps
 		var map = null;
 
 		// crosshair marker
 		var crosshairMarker = null;
-		
+
 		// routes
 		var routeCounter = 1,
 			routes = [],
@@ -218,7 +218,7 @@
 		var contextMenuType = ContextMenuTypes.DEFAULT,
 			selectedMarker = null,
 			contextMenuVisible = false;
-	
+
 		// bind our jquery element
 		var $this = $(element);
 
@@ -233,17 +233,17 @@
 		function init() {
 			initMap();
 			initOpenSeaMaps();
-			
-			initContextMenu();	
+
+			initContextMenu();
 			initGoogleMapsListeners();
-			
+
 			initRace();
-			
+
 			initStartPath();
 			initGoalPath();
-			
+
 			initActiveAssignMarkPassingPath();
-			
+
 			initCrosshairMarker();
 		}
 
@@ -255,20 +255,20 @@
 		function initMap() {
 			if(typeof options.height == 'function') {
 				$this.height(options.height());
-				
+
 				$(window).resize(function(){
 					$this.height(options.height());
 				});
 			} else {
 				$this.height(options.height);
-			}		
-						
+			}
+
 			map = new google.maps.Map(element, {
 				zoom: options.zoom,
 				center: new google.maps.LatLng(options.startLat, options.startLong),
 				mapTypeId: google.maps.MapTypeId.ROADMAP
 			});
-			
+
 			$this.append("<div class='racemapsidebar' style='float:left;width:0%;height:100%;'><div class='racemapsidebar_inner'></div></div>");
 		}
 
@@ -297,19 +297,19 @@
 			$this.append('<div id="tooltip_helper"></div>');
 
 			$this.on("click", "#saveRace", handleSaveRace);
-			
+
 			$this.on("click", "#addStart", handleAddStart);
 			$this.on("click", "#addGoal", handleAddGoal);
 			$this.on("click", "#addControlPoint", handleAddControlPoint);
 			$this.on("click", "#deleteMarker", handleDeleteControlPoint);
 			$this.on("click", "#addNewDistanceRoute", handleAddNewDistanceRoute);
 			$this.on("click", "#hideContextMenu", handleHideContextMenu);
-			
+
 			$this.on("click", "#showRouteMarkerInfo", handleShowRouteMarkerInfo);
 			$this.on("click", "#assignMarkPassing", handleAssignMarkPassing);
 			$this.on("click", "#clearMarkPassings", handleClearMarkPassing);
 		}
-				
+
 		/**
 		* *********************************************************************************
 		* Initializes the GoogleMaps listeners (left/right click, move, ...) and defines
@@ -329,11 +329,11 @@
 					case States.START:
 						updateStartLine(event.latLng);
 						break;
-						
+
 					case States.GOAL:
 						updateGoalLine(event.latLng);
 						break;
-						
+
 					case States.MARKPASSING:
 						updateActiveMarkPassingPath(event.latLng, activeAssignMarkPassingMarker, activeAssignMarkPassingPath);
 						break;
@@ -342,26 +342,26 @@
 			// right-click
 			google.maps.event.addListener(map, 'rightclick', function(event) {
 				switch(state) {
-					case States.NORMAL: 
+					case States.NORMAL:
 						hideContextMenu();
 						hideCrosshairMarker(crosshairMarker);
 						showCrosshairMarker(event.latLng);
 						break;
-						
+
 					case States.DISTANCE:
 						handleExitDistanceRouteCreation();
 						break;
-						
+
 					case States.START:
 						removeStartFromMap();
 						state = States.NORMAL;
 						break;
-						
+
 					case States.GOAL:
 						removeGoalFromMap();
 						state = States.NORMAL;
 						break;
-						
+
 					case States.MARKPASSING:
 						removeActiveMarkPassingPathFromMap();
 						state = States.NORMAL;
@@ -372,32 +372,32 @@
 			google.maps.event.addListener(map, 'click', function(event) {
 				hideCrosshairMarker(crosshairMarker);
 				hideContextMenu();
-				
+
 				switch(state) {
 					case States.NORMAL:
 						// nothing special
 						break;
-						
+
 					case States.DISTANCE:
 						addDistanceRouteMarker(event.latLng);
 						break;
-						
+
 					case States.START:
 						addStartMarker(event.latLng);
 						break;
-						
+
 					case States.GOAL:
 						addGoalMarker(event.latLng);
 						break;
-						
+
 					case States.MARKPASSING:
 						removeActiveMarkPassingPathFromMap();
 						state = States.NORMAL;
 						break;
 				}
-			});	
+			});
 		}
-		
+
 		/**
 		* *********************************************************************************
 		* Initializes the race with the given trips and waypoints of the race.
@@ -410,15 +410,15 @@
 			}
 			for (var i = 0; i < options.raceData.trips.length; ++i) {
 				routeId = routeCounter++;
-				
-				activeRoute = routes[routeId] = new $.racemap.route(routeId, map, "ROUTE");	
+
+				activeRoute = routes[routeId] = new $.racemap.route(routeId, map, "ROUTE");
 				activeRoute.setNotInteractive();
-				
+
 				activate = function() {
 					removeDistanceRoute();
 					activateRoute(this);
 				}
-				
+
 				rightClicked = function(clickedRaceDataEntity) {
 					removeActiveMarkPassingPathFromMap();
 					state = States.NORMAL;
@@ -430,16 +430,16 @@
 					activeRoute = this;
 					hideCrosshairMarker(crosshairMarker);
 				}
-				
+
 				activeRoute.addEventListener("click", activate);
 				activeRoute.addEventListener("rightclick", rightClicked);
-				
-				$.each(options.raceData.trips[i].waypoints, function() {	
-					addRouteMarker(this);	
+
+				$.each(options.raceData.trips[i].waypoints, function() {
+					addRouteMarker(this);
 				});
 			}
 		}
-		
+
 		/**
 		* *********************************************************************************
 		* Initializes the start line path.
@@ -449,7 +449,7 @@
 			startPath = new google.maps.Polyline(options.startOptions.polyOptions);
 			startPath.setMap(map);
 		}
-		
+
 		/**
 		* *********************************************************************************
 		* Initializes the goal line path.
@@ -459,7 +459,7 @@
 			goalPath = new google.maps.Polyline(options.goalOptions.polyOptions);
 			goalPath.setMap(map);
 		}
-		
+
 		/**
 		* *********************************************************************************
 		* Initializes the given mark passing path.
@@ -469,7 +469,7 @@
 			activeAssignMarkPassingPath = new google.maps.Polyline(options.controlPointOptions.polyOptions);
 			activeAssignMarkPassingPath.setMap(map);
 		}
-		
+
 		/**
 		* *********************************************************************************
 		* Initializes the given mark passing path.
@@ -480,7 +480,7 @@
 			path.setMap(map);
 			return path;
 		}
-		
+
 		/**
 		* *********************************************************************************
 		* Inits the crosshair marker (as invisible)
@@ -494,15 +494,15 @@
 				title:"crosshair",
 				icon: options.crosshairOptions.markerOptions.image
 			});
-			
+
 			// init left-click context menu listener
 			google.maps.event.addListener(crosshairMarker, 'click', function(event) {
 				showContextMenu(event.latLng, ContextMenuTypes.DEFAULT, crosshairMarker);
 			});
-			
+
 			hideCrosshairMarker();
 		}
-				
+
 		/**
 		* *********************************************************************************
 		* Activates the route, so that it is also visible in the sidebar.
@@ -511,26 +511,26 @@
 		function activateRoute(route) {
 			hideCrosshairMarker(crosshairMarker);
 			hideContextMenu();
-			
+
 			switch(state) {
 			case States.START:
 				removeStartFromMap();
 				break;
-				
+
 			case States.GOAL:
 				removeGoalFromMap();
 				break;
-				
+
 			case States.MARKPASSING:
 				removeActiveMarkPassingPathFromMap();
 				break;
 			}
-			
+
 			showSidebarWithRoute(route);
 			activeRoute = route;
 			state = States.NORMAL;
 		}
-		
+
 		/**
 		* *********************************************************************************
 		* Hides the crosshair marker.
@@ -540,7 +540,7 @@
 			crosshairMarker.setMap(map);
 			crosshairMarker.setPosition(position);
 		}
-		
+
 		/**
 		* *********************************************************************************
 		* Hides the crosshair marker.
@@ -564,7 +564,7 @@
 			crosshairMarker.setPosition(latLng);
 			showContextMenuInternal(latLng, type, marker);
 		}
-		
+
 		/**
 		* *********************************************************************************
 		* Hides the context menu.
@@ -572,7 +572,7 @@
 		*/
 		function hideContextMenu() {
 			//$('#tooltip_helper').popover('hide'); <-- REMARK: this does cause problems!
-			
+
 			$('.popover').css({'display':'none'});
 			contextMenuVisible = false;
 		}
@@ -584,7 +584,7 @@
 		*/
 		function showContextMenuInternal(latLng, ctxMenuType, markerToShowOn) {
 			contextMenuType = ctxMenuType;
-			
+
 			marker = markerToShowOn;
 			$('#tooltip_helper').popover({
 				title: function() {
@@ -598,16 +598,16 @@
 				placement: function(){
 					var leftDist = $('#tooltip_helper').position().left;
 					var width = $this.width() - $(".racemapsidebar",$this).width();
-		
+
 					return (leftDist > width / 2 ? "left" : "right");
 				}
 			});
-			
+
 			$('#tooltip_helper').popover('show');
-			
+
 			$this.css("overflow","visible"); // bugfix > menu overlaps!
-			
-			updateContextMenuPosition(latLng);	
+
+			updateContextMenuPosition(latLng);
 		}
 
 		/**
@@ -631,7 +631,7 @@
 			} else {
 				$('#tooltip_helper').popover('hide');
 			}
-			
+
 			contextMenuVisible = true;
 		}
 
@@ -645,15 +645,15 @@
 			switch(contextMenuType) {
 				case ContextMenuTypes.DEFAULT:
 					if (canSaveRace()) {
-						ctx += '<button id="saveRace" type="button" class="btn btn-success"><i class="icon-check"></i> Save Race</button>';
+						ctx += '<button id="saveRace" type="button" class="btn btn-success"><i class="icon-check"></i> Save _Race</button>';
 					} else {
-						ctx += '<button id="saveRace" type="button" class="btn btn-success disabled"><i class="icon-check"></i> Save Race</button>';
+						ctx += '<button id="saveRace" type="button" class="btn btn-success disabled"><i class="icon-check"></i> Save _Race</button>';
 					}
 					ctx += '<button id="addStart" type="button" class="btn"><i class="icon-map-marker"></i> Define Start</button>';
 					ctx += '<button id="addGoal" type="button" class="btn"><i class="icon-flag"></i> Define Goal</button>';
 					ctx += '<button id="addControlPoint" type="button" class="btn"><i class="icon-download-alt"></i> Set Control Point</button>';
 					ctx += '<button id="addNewDistanceRoute" type="button" class="btn"><i class="icon-resize-full"></i> Distance from here</button>'
-						+ '<button id="hideContextMenu" type="button" class="btn"><i class="icon-remove"></i> Close</button>'; 
+						+ '<button id="hideContextMenu" type="button" class="btn"><i class="icon-remove"></i> Close</button>';
 					break;
 				case ContextMenuTypes.CONTROL_POINT:
 					ctx += '<button id="deleteMarker" type="button" class="btn"><i class="icon-remove-circle"></i> Delete Control Point</button>';
@@ -669,13 +669,13 @@
 			ctx += '</div>'
 			return ctx;
 		}
-		
+
 		/**
 		 * ####################################################################################################
 		 * ############################   SIDEBAR   ###########################################################
 		 * ####################################################################################################
 		 */
-				
+
 		/**
 		* *********************************************************************************
 		* Display the sidebar with the given heading and optional Subheading.
@@ -685,41 +685,41 @@
 			var sidebarWidth = 275;
 			$(".racemapsidebar").siblings("div:not(#tooltip_helper,.popover)").animate({'margin-left':sidebarWidth,width:$(window).width() - sidebarWidth});
 			$(".racemapsidebar", $this).animate({width:sidebarWidth});
-			
+
 			$(".racemapsidebar .racemapsidebar_inner", $this).html('<h4>' + heading + '</h4><h5>' + subheading + '</h5><div class="racemapalerts"></div>');
 		}
-		
+
 		/**
 		* *********************************************************************************
 		* Shows the sidebar of the given route.
 		* *********************************************************************************
-		*/	
+		*/
 		function showSidebarWithRoute(route) {
 			var currentTrip = options.raceData.trips[route.id - 1];
-			
+
 			showSidebar(
 					'Trip: <span class="badge" style="background-color:' + route.color + ';font-size: 14px">' + currentTrip.name + '</span>',
 					'<span class="entrytitle">Boat:</span>' + currentTrip.boat.name + '</br>' +
 					'<span class="entrytitle">Tracked Distance:</span>' + route.getTotalDistanceText());
 			appendContentIntoSidebar('<ul class="nav nav-tabs nav-stacked"></ul>');
 			appendContentIntoSidebar('<div class="buttons_bottom"><div><a class="closeIt btn btn-block" href="#close"> Close</a></div></div>');
-			
+
 			$.each(route.routeData, function() {
 				appendMarkerIntoSidebar(this);
 			});
-			
+
 			$this.unbind('click.sidebar');
-			
+
 			$this.on("click.sidebar", ".racemapsidebar a.closeIt", function(){
 				hideSidebar();
 			});
 		}
-		
+
 		/**
 		* *********************************************************************************
 		* Shows the sidebar of the given route data.
 		* *********************************************************************************
-		*/	
+		*/
 		function showSidebarWithRouteData(route, routeData) {
 			var waypoint = routeData.waypoint;
 			var currentTrip = options.raceData.trips[route.id - 1];
@@ -738,100 +738,100 @@
 					'<span class="entrytitle">Mark passing:</span>' + ((hasAssignedMarkPassing(routeData))? 'YES' : 'NO'));
 			appendContentIntoSidebar('<ul class="nav nav-tabs nav-stacked"></ul>');
 			appendContentIntoSidebar('<div class="buttons_bottom"><div><a class="closeIt btn btn-block" href="#close"> Close</a></div></div>');
-			
+
 			$this.unbind('click.sidebar');
-			
+
 			$this.on("click.sidebar", ".racemapsidebar a.closeIt", function(){
 				hideSidebar();
 			});
 		}
-		
+
 		/**
 		* *********************************************************************************
 		* Gets the index number of the given waypoint in the triplist.
 		* *********************************************************************************
-		*/	
+		*/
 		function getWaypointIdNumber(trip, waypoint) {
 			for (var i = 0; i < trip.waypoints.length; ++i) {
 				if (trip.waypoints[i] == waypoint)
 					return i;
 			}
-			
+
 			return 0;
 		}
-		
+
 		/**
 		* *********************************************************************************
 		* Hides the sidebar.
 		* *********************************************************************************
-		*/	
+		*/
 		function hideSidebar() {
 			$(".racemapsidebar").siblings("div:not(#tooltip_helper,.popover)").animate({'margin-left':'0%',width:'100%'});
 			$(".racemapsidebar", $this).animate({width:'0%'});
 			$(".racemapsidebar .racemapsidebar_inner", $this).html("");
 		}
-		
+
 		/**
 		* *********************************************************************************
 		* Appends content into the sidebar.
 		* *********************************************************************************
-		*/	
-		function appendContentIntoSidebar(content) {			
+		*/
+		function appendContentIntoSidebar(content) {
 			$(".racemapsidebar .racemapsidebar_inner", $this).append(content);
 		}
-		
+
 		/**
 		* *********************************************************************************
 		* Appends content into the sidebar element with the given selector.
 		* *********************************************************************************
-		*/	
-		function appendContentIntoSidebarElement(content, selector) {	
+		*/
+		function appendContentIntoSidebarElement(content, selector) {
 			$(".racemapsidebar .racemapsidebar_inner " +  selector, $this).append(content);
 		}
-		
+
 		/**
 		* *********************************************************************************
 		* Deletes the sidebar element with the given selector.
 		* *********************************************************************************
-		*/	
-		function clearSidebarElement(selector) {	
+		*/
+		function clearSidebarElement(selector) {
 			$(".racemapsidebar .racemapsidebar_inner " +  selector, $this).html("");
 		}
-		
+
 		/**
 		* *********************************************************************************
 		* Appends a info notificaion into the sidebar.
 		* *********************************************************************************
-		*/	
-		function appendInfoIntoSidebar(content, type) {	
+		*/
+		function appendInfoIntoSidebar(content, type) {
 			$(".racemapsidebar .racemapsidebar_inner .racemapalerts", $this)
 				.append('<div class="alert alert-' + type + '"><button type="button" class="close" data-dismiss="alert">&times;</button>' + content + '</div>');
 		}
-		
+
 		/**
 		* *********************************************************************************
 		* Appends a marker into the sidebar.
 		* *********************************************************************************
-		*/	
-		function appendMarkerIntoSidebar(routeDataEntity) {	
+		*/
+		function appendMarkerIntoSidebar(routeDataEntity) {
 			var content = $('<li class="well well-small"><div class="btn-toolbar pull-right" style="margin:0"> \
 					<div class="btn-group"></div></div> \
-					<b>#' + routeDataEntity.marker.id + '</b> <small>- Lat ' + toGeoString(routeDataEntity.marker.getPosition().lat(), "N", "S", 2) + ' Lon ' + 
+					<b>#' + routeDataEntity.marker.id + '</b> <small>- Lat ' + toGeoString(routeDataEntity.marker.getPosition().lat(), "N", "S", 2) + ' Lon ' +
 					toGeoString(routeDataEntity.marker.getPosition().lng(), "E", "W", 3) + '</small></li>');
 			appendContentIntoSidebarElement(content, '.nav');
 		}
-		
+
 		/**
 		 * ####################################################################################################
 		 * #############################   HANDLER FUNCTIONS   ################################################
 		 * ####################################################################################################
 		 */
-		
+
 		/**
 		* *********************************************************************************
 		* Saves the race.
 		* *********************************************************************************
-		*/		
+		*/
 		function handleSaveRace() {
 			hideContextMenu();
 			hideCrosshairMarker();
@@ -853,12 +853,12 @@
 				}
 			});
 		}
-		
+
 		/**
 		* *********************************************************************************
 		* Verfifies whether the race can be saved.
 		* *********************************************************************************
-		*/		
+		*/
 		function canSaveRace() {
 			return startMarkers.length == 2 && goalMarkers.length == 2;
 		}
@@ -867,12 +867,12 @@
 		* *********************************************************************************
 		* Hides the context menu and the crosshair.
 		* *********************************************************************************
-		*/		
+		*/
 		function handleHideContextMenu() {
 			hideContextMenu();
 			hideCrosshairMarker();
 		}
-		
+
 		/**
 		* *********************************************************************************
 		* Starts the distance tool and hides the context menu and crosshair.
@@ -881,13 +881,13 @@
 		function handleAddNewDistanceRoute() {
 			hideContextMenu();
 			hideCrosshairMarker();
-			
-			activeRoute = distanceroute = new $.racemap.route(-1, map, "DISTANCE");			
+
+			activeRoute = distanceroute = new $.racemap.route(-1, map, "DISTANCE");
 			activeRoute.addDistanceMarker(crosshairMarker.getPosition());
 
 			state = States.DISTANCE;
 		}
-		
+
 		/**
 		* *********************************************************************************
 		* Stops the distance tool and hides the context menu and crosshair.
@@ -896,12 +896,12 @@
 		function handleExitDistanceRouteCreation() {
 			hideContextMenu();
 			hideCrosshairMarker();
-			
+
 			state = States.NORMAL;
-			
+
 			removeDistanceRoute();
 		}
-		
+
 		/**
 		* *********************************************************************************
 		* Shows the selected route marker in the sidebar.
@@ -911,7 +911,7 @@
 			hideContextMenu();
 			showSidebarWithRouteData(activeRoute, activeRouteData);
 		}
-		
+
 		/**
 		* *********************************************************************************
 		* Starts assigning the selected route point to a next clicked controlPoint.
@@ -921,7 +921,7 @@
 			hideContextMenu();
 			assignMarkPassing(activeRouteData);
 		}
-		
+
 		/**
 		* *********************************************************************************
 		* Starts assining a mark passing to the selected waypoint data entity.
@@ -931,11 +931,11 @@
 			if (hasAssignedMarkPassing(routeData)) {
 				removeMarkPassingPathOfRouteData(routeData)
 			}
-			
+
 			activeAssignMarkPassingMarker = routeData.marker;
 			state = States.MARKPASSING;
 		}
-		
+
 		/**
 		* *********************************************************************************
 		* Assigns the waypoint to the control point to define a mark passing.
@@ -949,10 +949,10 @@
 			});
 			removeActiveMarkPassingPathFromMap();
 			updateMarkPassingPathOfControlPoint(controlPoint);
-			
+
 			state = States.NORMAL;
 		}
-		
+
 		/**
 		* *********************************************************************************
 		* Deleted all connected mark passings of the selected control Point.
@@ -962,7 +962,7 @@
 			hideContextMenu();
 			deleteMarkPassingsOfControlPoint(selectedMarker);
 		}
-		
+
 		/**
 		* *********************************************************************************
 		* Deletes the the mark passings of the given control point.
@@ -970,19 +970,19 @@
 		*/
 		function deleteMarkPassingsOfControlPoint(controlPointToDelete) {
 			removeMarkPassingPathOfControlPoint(controlPointToDelete);
-			
+
 			for (var i = 0; i < assignedMarkPassings.length; ++i) {
 				if (assignedMarkPassings[i] == null)
 					continue;
-				
+
 				var controlPoint = assignedMarkPassings[i].controlPoint;
-				
+
 				if (controlPoint == controlPointToDelete) {
 					assignedMarkPassings[i] = null;
 				}
 			}
 		}
-		
+
 		/**
 		* *********************************************************************************
 		* Updates the active assign mark passing path to the given mouse position.
@@ -999,22 +999,22 @@
 				activeAssignMarkPassingPath.setPath(newPath);
 			}
 		}
-		
+
 		/**
 		* *********************************************************************************
 		* Updates the assigned mark passing paths of the given control point.
 		* *********************************************************************************
 		*/
 		function updateMarkPassingPathOfControlPoint(controlPointToUpdate) {
-			
+
 			for (var i = 0; i < assignedMarkPassings.length; ++i) {
 				if (assignedMarkPassings[i] == null)
 					continue;
-				
+
 				var controlPoint = assignedMarkPassings[i].controlPoint;
 				var routeData = assignedMarkPassings[i].routeData;
 				var path = assignedMarkPassings[i].path;
-				
+
 				if (controlPoint == controlPointToUpdate) {
 					var newPath = new Array();
 					newPath[0] = controlPoint.getPosition();
@@ -1024,27 +1024,27 @@
 				}
 			}
 		}
-		
+
 		/**
 		* *********************************************************************************
 		* Removes the assigned mark passing paths of the given control point.
 		* *********************************************************************************
 		*/
 		function removeMarkPassingPathOfControlPoint(controlPointToRemove) {
-			
+
 			for (var i = 0; i < assignedMarkPassings.length; ++i) {
 				if (assignedMarkPassings[i] == null)
 					continue;
-				
+
 				var controlPoint = assignedMarkPassings[i].controlPoint;
 				var path = assignedMarkPassings[i].path;
-				
+
 				if (controlPoint == controlPointToRemove) {
 					path.setMap(null);
 				}
 			}
 		}
-		
+
 		/**
 		* *********************************************************************************
 		* Removes the assigned mark passing paths of the given control point.
@@ -1059,7 +1059,7 @@
 					startPassings[i] = null;
 				}
 			}
-			
+
 			// goal
 			for (var i = 0; i < goalPassings.length; ++i) {
 				if (goalPassings[0] != null && goalPassings[0].routeData == routeDataToRemove) {
@@ -1068,7 +1068,7 @@
 					goalPassings[0] = null;
 				}
 			}
-			
+
 			// control points
 			for (var i = 0; i < assignedMarkPassings.length; ++i) {
 				if (assignedMarkPassings[i] == null)
@@ -1076,13 +1076,13 @@
 
 				var routeData = assignedMarkPassings[i].routeData;
 				var path = assignedMarkPassings[i].path;
-				
+
 				if (routeData == routeDataToRemove) {
 					path.setMap(null);
 				}
 			}
 		}
-		
+
 		function hasAssignedMarkPassing(routeDataToFind) {
 			// start
 			for (var i = 0; i < startPassings.length; ++i) {
@@ -1090,52 +1090,52 @@
 					return true;
 				}
 			}
-			
+
 			// goal
 			for (var i = 0; i < goalPassings.length; ++i) {
 				if (goalPassings[i] != null && goalPassings[i].routeData == routeDataToFind) {
 					return true;
 				}
 			}
-			
+
 			for (var i = 0; i < assignedMarkPassings.length; ++i) {
 				if (assignedMarkPassings[i] == null)
 					continue;
-				
+
 				var routeData = assignedMarkPassings[i].routeData;
-				
+
 				if (routeData == routeDataToFind) {
 					return true;
 				}
 			}
-			
+
 			return false;
 		}
-		
+
 		function hasControlPointAssignedMarkPassing(controlPointToFind) {
 			for (var i = 0; i < assignedMarkPassings.length; ++i) {
 				if (assignedMarkPassings[i] == null)
 					continue;
-				
+
 				var controlPoint = assignedMarkPassings[i].controlPoint;
-				
+
 				if (controlPoint == controlPointToFind) {
 					return true;
 				}
 			}
-			
+
 			return false;
 		}
-		
+
 		/**
 		* *********************************************************************************
 		* Removes the active assign mark passing path from the map.
 		* *********************************************************************************
 		*/
 		function removeActiveMarkPassingPathFromMap() {
-			activeAssignMarkPassingPath.setMap(null);			
+			activeAssignMarkPassingPath.setMap(null);
 		}
-		
+
 		/**
 		* *********************************************************************************
 		* Removes the distance route from the map.
@@ -1146,8 +1146,8 @@
 				distanceroute.removeFromMap();
 				distanceroute = null;
 			}
-		}	
-		
+		}
+
 		/**
 		* *********************************************************************************
 		* Adds a new route marker to the active route.
@@ -1156,11 +1156,11 @@
 		function addRouteMarker(waypoint) {
 			hideContextMenu();
 			hideCrosshairMarker();
-			
+
 			var newmarker = activeRoute.addWaypoint(waypoint);
 			activeRoute.drawPath();
 		}
-		
+
 		/**
 		* *********************************************************************************
 		* Adds a new distance route marker to the active route.
@@ -1169,11 +1169,11 @@
 		function addDistanceRouteMarker(waypoint) {
 			hideContextMenu();
 			hideCrosshairMarker();
-			
+
 			var newmarker = activeRoute.addDistanceMarker(waypoint);
 			activeRoute.drawPath();
 		}
-		
+
 		/**
 		* *********************************************************************************
 		* Handler function for adding a new controlPoint to the map.
@@ -1195,7 +1195,7 @@
 			deleteSelectedControlPoint();
 			hideContextMenu();
 		}
-		
+
 		/**
 		* *********************************************************************************
 		* Adds a simple marker to the given position and
@@ -1209,11 +1209,11 @@
 				icon: options.controlPointOptions.markerOptions.image,
 				draggable: true
 			});
-			
+
 			google.maps.event.addListener(newMarker, 'drag', function() {
 				updateMarkPassingPathOfControlPoint(newMarker);
 			});
-			
+
 			google.maps.event.addListener(newMarker, 'click', function() {
 				hideCrosshairMarker(crosshairMarker);
 				hideContextMenu();
@@ -1229,7 +1229,7 @@
 				showContextMenu(event.latLng, ContextMenuTypes.CONTROL_POINT, newMarker);
 				hideCrosshairMarker(crosshairMarker);
 			});
-			
+
 			controlPoints[controlPoints.length] = newMarker;
 		}
 
@@ -1244,7 +1244,7 @@
 				deleteMarkPassingsOfControlPoint(selectedMarker);
 			}
 		}
-		
+
 		/**
 		* *********************************************************************************
 		* Handler function for defining a new start to the map.
@@ -1256,7 +1256,7 @@
 			hideCrosshairMarker();
 			addStartMarker(crosshairMarker.getPosition());
 		}
-		
+
 		/**
 		* *********************************************************************************
 		* Adds a start marker to the given position and
@@ -1267,39 +1267,39 @@
 			if (startMarkers.length == 2) {
 				removeStartFromMap();
 			}
-			
+
 			var newMarker = new google.maps.Marker({
 				map: map,
 				position: position,
 				icon: options.defaultOptions.markerOptions.image,
 				draggable: true
 			});
-			
+
 			google.maps.event.addListener(newMarker, 'click', function() {
 				hideCrosshairMarker(crosshairMarker);
 				hideContextMenu();
-				
+
 				if (state == States.MARKPASSING) {
 					assignMarkPassingToStart(activeRouteData, newMarker);
 				}
 			});
-			
+
 			google.maps.event.addListener(newMarker, 'drag', function() {
 				updateStartLine();
 				updateMarkPassingPathOfStart();
 			});
-			
+
 			startMarkers[startMarkers.length] = newMarker;
-			
+
 			if (startMarkers.length < 2) {
 				state = States.START;
 			} else {
 				state = States.NORMAL;
 			}
-			
+
 			updateStartLine();
 		}
-		
+
 		/**
 		* *********************************************************************************
 		* Removes the start line from the map.
@@ -1311,7 +1311,7 @@
 				this.setMap(null);
 			});
 			startMarkers = [];
-			
+
 			for (var i = 0; i < startPassings.length; ++i) {
 				if (startPassings[i] != null) {
 					startPassings[i].paths[0].setMap(null);
@@ -1319,10 +1319,10 @@
 					startPassings[i] = null;
 				}
 			}
-			
+
 			updateStartLine();
 		}
-		
+
 		/**
 		* *********************************************************************************
 		* Updates the start line path.
@@ -1346,7 +1346,7 @@
 				startPath.setPath(newPath);
 			}
 		}
-		
+
 		/**
 		* *********************************************************************************
 		* Assigns the waypoint to the control point to define a mark passing.
@@ -1362,10 +1362,10 @@
 			});
 			removeActiveMarkPassingPathFromMap();
 			updateMarkPassingPathOfStart();
-			
+
 			state = States.NORMAL;
 		}
-		
+
 		/**
 		* *********************************************************************************
 		* Updates the assigned mark passing paths of the start line.
@@ -1385,7 +1385,7 @@
 				}
 			}
 		}
-		
+
 		/**
 		* *********************************************************************************
 		* Handler function for defining a new goal to the map.
@@ -1397,7 +1397,7 @@
 			hideCrosshairMarker();
 			addGoalMarker(crosshairMarker.getPosition());
 		}
-		
+
 		/**
 		* *********************************************************************************
 		* Adds a goal marker to the given position and
@@ -1408,39 +1408,39 @@
 			if (goalMarkers.length == 2) {
 				removeGoalFromMap();
 			}
-			
+
 			var newMarker = new google.maps.Marker({
 				map: map,
 				position: position,
 				icon: options.goalOptions.markerOptions.image,
 				draggable: true
 			});
-			
+
 			google.maps.event.addListener(newMarker, 'click', function() {
 				hideCrosshairMarker(crosshairMarker);
 				hideContextMenu();
-				
+
 				if (state == States.MARKPASSING) {
 					assignMarkPassingToGoal(activeRouteData, newMarker);
 				}
 			});
-			
+
 			google.maps.event.addListener(newMarker, 'drag', function() {
 				updateGoalLine();
 				updateMarkPassingPathOfGoal();
 			});
-			
+
 			goalMarkers[goalMarkers.length] = newMarker;
-			
+
 			if (goalMarkers.length < 2) {
 				state = States.GOAL;
 			} else {
 				state = States.NORMAL;
 			}
-			
+
 			updateGoalLine();
 		}
-		
+
 		/**
 		* *********************************************************************************
 		* Removes the goal line from the map.
@@ -1452,7 +1452,7 @@
 				this.setMap(null);
 			});
 			goalMarkers = [];
-			
+
 			for (var i = 0; i < startPassings.length; ++i) {
 				if (goalPassings[i] != null) {
 					goalPassings[i].paths[0].setMap(null);
@@ -1460,10 +1460,10 @@
 					goalPassings[i] = null;
 				}
 			}
-			
+
 			updateGoalLine();
 		}
-		
+
 		/**
 		* *********************************************************************************
 		* Updates the goal line path.
@@ -1471,12 +1471,12 @@
 		*/
 		function updateGoalLine(position) {
 			var newPath = new Array();
-			
+
 			if (position && goalMarkers.length == 1) {
 				goalPath.setMap(null);
 				initGoalPath();
 				newPath[0] = goalMarkers[0].getPosition();
-				newPath[1] = position;		
+				newPath[1] = position;
 				goalPath.setPath(newPath);
 			} else if (goalMarkers.length == 2) {
 				goalPath.setMap(null);
@@ -1487,7 +1487,7 @@
 				goalPath.setPath(newPath);
 			}
 		}
-		
+
 		/**
 		* *********************************************************************************
 		* Assigns the waypoint to the control point to the goal.
@@ -1503,10 +1503,10 @@
 			});
 			removeActiveMarkPassingPathFromMap();
 			updateMarkPassingPathOfGoal();
-			
+
 			state = States.NORMAL;
 		}
-		
+
 		/**
 		* *********************************************************************************
 		* Updates the assigned mark passing paths of the goal line.
@@ -1526,7 +1526,7 @@
 				}
 			}
 		}
-		
+
 		/**
 		* *********************************************************************************
 		* Gets the aggregated race data.
@@ -1537,7 +1537,7 @@
 			//var resultRace = jQuery.extend(true, {}, options.raceData);
 			var resultRace = options.raceData; // TODO: check deep copy neccessary?
 			resultRace.controlPoints = [];
-			
+
 			// START
 			var startUUID = createUUID();
 			resultRace.controlPoints.push({
@@ -1551,31 +1551,31 @@
 					lng: startMarkers[1].getPosition().lng()
 				}]
 			});
-			
+
 			// set start passing for every route
 			for (var i = 0; i < startPassings.length; ++i) {
 				if (startPassings[i] != null) {
 					var routeData = startPassings[i].routeData;
-				
+
 					routeData.waypoint.markPassing = startUUID;
 				}
 			}
-			
+
 			var storedControlPoints = [];
-			
+
 			// CONTROL POINTS / MARK PASSINGS
 			for (var i = 0; i < assignedMarkPassings.length; ++i) {
 				if (assignedMarkPassings[i] != null) {
 					var controlPoint = assignedMarkPassings[i].controlPoint;
 					var routeData = assignedMarkPassings[i].routeData;
-					
+
 					if (!arrayContainsControlPoint(storedControlPoints, controlPoint)) {
 						var newControlPointUUID = createUUID();
 						storedControlPoints.push({
 							controlPoint: controlPoint,
 							id : newControlPointUUID
 						});
-						
+
 						// create controlPoint
 						resultRace.controlPoints.push({
 							id: newControlPointUUID,
@@ -1586,14 +1586,14 @@
 							}
 						});
 					}
-					
+
 					// set mark passings
 					var controlPointUUID = getIdOfStoredControlPoint(storedControlPoints, controlPoint);
-					
+
 					routeData.waypoint.markPassing = controlPointUUID;
 				}
 			}
-			
+
 			// GOAL
 			var goalUUID = createUUID();
 			resultRace.controlPoints.push({
@@ -1607,19 +1607,19 @@
 					lng: goalMarkers[1].getPosition().lng()
 				}]
 			});
-			
+
 			// set goal passing for every route
 			for (var i = 0; i < goalPassings.length; ++i) {
 				if (goalPassings[i] != null) {
 					var routeData = goalPassings[i].routeData;
-				
+
 					routeData.waypoint.markPassing = goalUUID;
 				}
 			}
-			
+
 			return resultRace;
 		}
-		
+
 		function arrayContainsControlPoint(objArray, controlPoint) {
 			for (var i = 0; i < objArray.length; ++i) {
 				if (objArray[i].controlPoint == controlPoint) {
@@ -1628,7 +1628,7 @@
 			}
 			return false;
 		}
-		
+
 		function getIdOfStoredControlPoint(objArray, controlPoint) {
 			for (var i = 0; i < objArray.length; ++i) {
 				if (objArray[i].controlPoint == controlPoint) {
@@ -1638,7 +1638,7 @@
 			console.log("controlPoint not stored... :(");
 			return createUUID(); // should not occure!!!
 		}
-		
+
 		/**
 		 * ###################################################################################################
 		 * ######################################   UTIL FUNCTIONS   #########################################
@@ -1655,7 +1655,7 @@
 
 			if (value >= 0) {
 				direction = posChar;
-				
+
 			} else {
 				direction = negChar;
 				value = -value;
@@ -1701,7 +1701,7 @@
 		  );
 		  return currentLatLngOffset;
 		}
-		
+
 		/**
 		* *********************************************************************************
 		* Gets the hash-parameters. If there is no param, an empty string will be returned.
@@ -1713,7 +1713,7 @@
 			return(match ? match[1] : "");
 		}
 	};
-	
+
 	/**
 	 * *********************************************************************************
 	 * Creates a random and unique UUID.
@@ -1733,7 +1733,7 @@
 	    var uuid = s.join("");
 	    return uuid;
 	}
-	
+
 	/**
 	* *********************************************************************************
 	* Calculates the distance in meters between two GEO-coordinates (lat/lng).
@@ -1742,36 +1742,36 @@
 	function distance(lat1,lon1,lat2,lon2) {
 		var R = 6371; // km (change this constant to get miles)
 		var dLat = (lat2-lat1) * Math.PI / 180;
-		var dLon = (lon2-lon1) * Math.PI / 180; 
+		var dLon = (lon2-lon1) * Math.PI / 180;
 		var a = Math.sin(dLat/2) * Math.sin(dLat/2) +
-			Math.cos(lat1 * Math.PI / 180 ) * Math.cos(lat2 * Math.PI / 180 ) * 
-			Math.sin(dLon/2) * Math.sin(dLon/2); 
-		var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)); 
+			Math.cos(lat1 * Math.PI / 180 ) * Math.cos(lat2 * Math.PI / 180 ) *
+			Math.sin(dLon/2) * Math.sin(dLon/2);
+		var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
 		var d = R * c;
 		return Math.round(d*1000); // in meters
 	}
-	
+
 	/**
 	 * ########################################################################################################
 	 * ##########################################   ROUTE CLASS ###############################################
 	 * ########################################################################################################
 	 */
-	
+
 	/**
 	* *************************************************************************************
-	* The route object class 
+	* The route object class
 	* *************************************************************************************
 	*/
 	$.racemap.route = function(newrouteid, newgooglemaps, type){
 		this.id = newrouteid;
 		this.googlemaps = newgooglemaps;
 		this.color = $.racemap.options.strokeColors[this.id % ($.racemap.options.strokeColors.length-1)];
-		
+
 		this.path = null;
 		this.routeData = []; // array of object types: {marker: ..., waypoint: ...}
 		this.label = null;
 		this.notinteractive = false;
-		
+
 		// internal data
 		var eventListener = {
 			add : [],
@@ -1780,28 +1780,28 @@
 			click : [],
 			rightclick: [],
 		};
-		
+
 		if(type === "DISTANCE") {
 			options = $.racemap.options.distanceOptions;
 		} else {
 			options = $.racemap.options.routeOptions;
 		}
-		
+
 		// edit color
 		options.polyOptions.strokeColor = this.color;
 
 		this.path = new google.maps.Polyline(options.polyOptions);
 		this.path.setMap(this.googlemaps);
-		
+
 		/**
 		* *********************************************************************************
 		* Sets the route as not interactive.
 		* *********************************************************************************
-		*/		
+		*/
 		this.setNotInteractive = function() {
 			this.notinteractive = true;
 		}
-		
+
 		/**
 		* *********************************************************************************
 		* Adds a new route marker to the given position.
@@ -1818,14 +1818,14 @@
 				shadow: options.markerOptions.shadow,
 				animation: google.maps.Animation.DROP,
 				draggable: !this.notinteractive,
-				id: this.routeData.length 
+				id: this.routeData.length
 			});
-			
+
 			var entity = this.routeData[this.routeData.length] = {
 				marker: marker,
 				waypoint: waypoint
 			}
-			
+
 			// adds or updates the label
 			if(this.label == null) {
 				this.addLabel();
@@ -1836,16 +1836,16 @@
 			google.maps.event.addListener(marker, 'rightclick', function(event) {
 				$this.notify("rightclick", entity);
 			});
-			
+
 			google.maps.event.addListener(marker, 'click', function(event) {
 				$this.notify("click");
 			});
-			
+
 			this.notify("add");
-			
+
 			return marker;
 		}
-		
+
 		/**
 		* *********************************************************************************
 		* Adds a new distance marker to the given position.
@@ -1862,13 +1862,13 @@
 				shadow: options.markerOptions.shadow,
 				animation: google.maps.Animation.DROP,
 				draggable: !this.notinteractive,
-				id: this.routeData.length 
+				id: this.routeData.length
 			});
 			this.routeData[this.routeData.length] = {
 				marker: marker,
 				waypoint: null
 			}
-			
+
 			// adds or updates the label
 			if(this.label == null) {
 				if (!this.notinteractive) {
@@ -1888,26 +1888,26 @@
 				$this.removeMarker(marker);
 				$this.notify("remove");
 			});
-			
+
 			google.maps.event.addListener(marker, 'click', function(event) {
 				$this.notify("click");
 			});
-			
+
 			this.notify("add");
-			
+
 			return marker;
 		}
-		
+
 		/**
 		* *********************************************************************************
 		* Adds a label to the last marker.
 		* *********************************************************************************
 		*/
-		this.addLabel = function() {		
+		this.addLabel = function() {
 			this.label = new Label({map: this.googlemaps });
 			this.label.bindTo('position', this.routeData[this.routeData.length-1].marker, 'position');
 			$(this.label.span_).css({"margin-left":"15px","padding":"7px","box-shadow":"0px 0px 3px #666","z-index":99999,"color":this.color});
-			
+
 			// distance routes have no waypoint and should show the distance, not the boat name
 			if (this.routeData[this.routeData.length-1].waypoint != null) {
 				this.label.set('text', $.racemap.options.raceData.trips[this.id - 1].boat.name);
@@ -1915,7 +1915,7 @@
 				this.label.set('text', this.getTotalDistanceText());
 			}
 		}
-		
+
 		/**
 		* *********************************************************************************
 		* Updates the the label (removes the old and adds a new one).
@@ -1927,7 +1927,7 @@
 			if(this.routeData.length != 0)
 				this.addLabel();
 		}
-		
+
 		/**
 		* *********************************************************************************
 		* Removes a whole route from the map (with its paths, labels and routeData).
@@ -1954,7 +1954,7 @@
 
 			this.path.setPath(newPath);
 		}
-		
+
 		/**
 		* *********************************************************************************
 		* Gets the total distance text of the route. Format example: 1234m
@@ -1974,7 +1974,7 @@
 
 			return dist + "m";
 		}
-		
+
 		/**
 		* *********************************************************************************
 		* Adds an event listener with the given type and function.
@@ -1983,7 +1983,7 @@
 		this.addEventListener = function(type, fn) {
 			eventListener[type][ eventListener[type].length ] = fn;
 		}
-				
+
 		/**
 		* *********************************************************************************
 		* Calls the event listener functions, to notify the observers.
@@ -2000,13 +2000,13 @@
 			});
 		}
 	};
-	
+
 	/**
 	 * ########################################################################################################
 	 * ########################################   START   #####################################################
 	 * ########################################################################################################
 	 */
-	
+
 	$.racemap.options = options;
 
 	// extend jquery with our new fancy racemap plugin
@@ -2014,10 +2014,10 @@
 		if( typeof opts === 'object') {
 			$.extend(options, opts);
 		}
-	
+
 		return this.each(function () {
 			$this = $(this);
-		
+
 			if($this.data('racemap') === undefined) {
 				$this.data('racemap:original', $this.clone());
 				var racemap = new $.racemap(this);

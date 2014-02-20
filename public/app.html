@@ -1,0 +1,175 @@
+<!DOCTYPE HTML>
+<html>
+	<head>
+		<title>SeaPal App</title>
+		<!-- CSS -->
+
+		
+		<!-- JS -->
+		<script src="http://code.jquery.com/jquery-latest.js"></script>
+		<script src="lib/bootstrap/js/bootstrap.min.js"></script>
+        <script type="text/javascript" src="https://maps.google.com/maps/api/js?key=AIzaSyAL6gKFmwH7gDXmmAW-5VqkW_HbJG7_QLA&sensor=false"></script>
+        <script type="text/javascript" src="lib/label.js"></script>
+        <script type="text/javascript" src="lib/seamap/seamap-1.0.1.js"></script>
+<!--        <script type="text/javascript" src="js/seapal_main.min.js"></script> -->
+        <script type="text/javascript" src="lib/menubar/js/classie.js"></script>
+        <script type="text/javascript" src="lib/menubar/js/menubar.js"></script>
+        <script type="text/javascript" src="lib/menubar/js/modernizr.custom.js"></script>
+
+        <link type="text/css" rel="stylesheet" href="lib/bootstrap/css/bootstrap.min.css" />
+        <link type="text/css" rel="stylesheet" href="lib/menubar/css/normalize.css" />
+        <link type="text/css" rel="stylesheet" href="lib/menubar/css/menubar.css" />
+        <link type="text/css" rel="stylesheet" href="lib/menubar/css/shortcuts.css" />
+        <link type="text/css" rel="stylesheet" href="lib/menubar/css/heading.css" />
+        <link type="text/css" rel="stylesheet" href="css/seamap.css"/>
+		<!-- META -->
+        <meta content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0' name='viewport' />
+        <meta name="viewport" content="width=device-width" />
+		<meta charset="utf-8">
+	</head>
+	<body>      
+        <div class="container" style="z-index: 2;  position: relative;"> 
+            <ul id="menubar-menu" class="menubar-menu-main">
+                <li class="menu-trigger">
+                    <a class="menubar-icon menubar-icon-menu"><span></span></a>
+                    <nav class="menubar-menu-wrapper">
+                        <div class="scroller">
+                            <ul id="menu-routes" class="menubar-menu inactive-menu-list">
+                                <li><a class="menu-icon icon-info link" data-link="menu-main">back</a></li>
+                                <li><a class="menu-icon icon-settings">Settings</a></li>
+                            </ul>
+                        
+                            <ul id="menu-main" class="menubar-menu active-menu-list">
+                                <li>
+                                    <div class="btn-group-justified" data-toggle="buttons" style="width:96.3%;">
+                                        <label class="btn btn-default active">
+                                            <input type="radio" name="options" id="option1">Places
+                                        </label>
+                                        <label class="btn btn-default active">
+                                            <input type="radio" name="options" id="option2">Marks
+                                        </label>
+                                        <label class="btn btn-default data-toggle="modal" data-target="#myModal">
+                                            <input type="radio" name="options" id="option3">Coords
+                                        </label>
+                                        <label class="btn btn-default">
+                                            <input type="radio" name="options" id="option3">POI's
+                                        </label>
+                                    </div>
+                                </li>
+                                <li><a class="menu-icon icon-map action">Map + Charts</a></li>
+                                <li><a class="menu-icon icon-logbook">Logbook</a></li>
+                                <li><a class="menu-icon icon-dashboard">Dashboard</a></li>
+                                <li><a class="menu-icon icon-routes">Marks, Routes, Tracks</a></li>
+                                <li><a class="menu-icon icon-charts">Navigation Charts</a></li>
+                                <li><a class="menu-icon icon-addOns">Add-ons</a></li>
+                                <li><a class="menu-icon icon-poi action">Points of Interest</a></li>
+                                <li><a class="menu-icon icon-weather">Weather</a></li>
+                                <li><a class="menu-icon icon-alarms">Alarms</a></li>
+                                <li><a class="menu-icon icon-info action">Info</a></li>
+                                <li><a class="menu-icon icon-settings">Settings</a></li>
+                            </ul>
+                        </div><!-- /menubar-scroller -->
+                    </nav>
+                </li>
+                
+                <li class="tools-trigger">
+                    <a class="menubar-icon menubar-icon-tools"><span></span></a>
+                    <nav class="menubar-tools-wrapper">
+                        <div class="scroller">
+                            <ul id="tools-main" class="menubar-menu active-tools-list">
+                                <li><a class="tools-icon icon-searchPosition link" data-link="tools-searchPosition">Search for Position</a></li>
+                                <li><a class="tools-icon icon-startLogging action">Start Logging</a></li>
+                                <li><a class="tools-icon icon-takePhoto action">Take Photo</a></li>
+                                <li><a class="tools-icon icon-setMark action">Set Mark</a></li>
+                                <li><a class="tools-icon icon-setRoute action">Set Route</a></li>
+                                <li><a class="tools-icon icon-GetDistance action">Get Distance</a></li>
+                                <li><a class="tools-icon icon-PersonOverBoard action">Person over Board</a></li>
+                                <li><a class="tools-icon icon-SecurityCircle action">Security Circle</a></li>
+                                <li><a class="tools-icon icon-NorthUp action">North up</a></li>
+                                <li><a class="tools-icon icon-disableSleepMode action">Disable Sleep Mode</a></li>
+                                <li><a class="tools-icon icon-discardTarget action">Discard Target</a></li>
+                            </ul>
+                            
+                            <ul id="tools-searchPosition" class="menubar-menu inactive-tools-list">
+                                <li><a class="tools-icon icon-searchPosition link" data-link="tools-main">back</a></li>
+                                <li class="menubar-search-item tools-icon icon-searchPosition">
+									<input placeholder="Search" type="search" class="menubar-tools-search menubar-search">
+								</li>
+                            </ul>  
+                            
+                            
+                            
+                        </div><!-- /menubar-scroller -->
+                    </nav>
+                </li>
+            </ul>
+
+        </div><!-- /container -->
+
+<!-- Modal toggle with $('#myModal').modal('show')-->
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="false">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+        <h4 class="modal-title" id="myModalLabel">Modal title</h4>
+      </div>
+      <div class="modal-body">
+        ...
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary">Save changes</button>
+      </div>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+        
+        <!--
+        <div class="heading"><p align="center">COG 270 SOG 000,5 kn Lat 47 38.57' N Lon 0009 10.5 E</p></div>
+        -->
+           
+ <!--           
+        <div class="shortcuts">
+            <div class="shortcut-item">
+                <a class="shortcut-logbook"></a>
+                <br/>Logbook
+            </div>
+            <div class="shortcut-item">
+                <a class="shortcut-logbook"></a>
+                <br/>Dashboard
+            </div>
+            <div class="shortcut-item">
+                <a class="shortcut-logbook"></a>
+                <br/>Routes
+            </div>
+            <div class="shortcut-item">
+                <a class="shortcut-logbook"></a>
+                <br/>Charts
+            </div>
+            <div class="shortcut-item">
+                <a class="shortcut-logbook"></a>
+                <br/>Weather
+            </div>
+            <div class="shortcut-item">
+                <a class="shortcut-logbook"></a>
+                <br/>POI
+            </div>
+        </div>
+ -->
+                
+        <div id="map_canvas" style="background-image: url(images/map.png); height: 100%; position: absolute; top: 0; bottom: -200px; left: 0; right: 0; z-index: 0;"></div>
+        
+        <script>
+
+            menu  = new menubar( document.getElementById( 'menubar-menu' ), 'menu' );
+            tools = new menubar( document.getElementById( 'menubar-menu' ), 'tools' );
+
+        </script>
+    
+            <script type="text/javascript" src="menu.js"></script>
+            <script type="text/javascript" src="tools.js"></script>
+    
+	</body>
+</html>

@@ -1,11 +1,6 @@
-## PLAY // HTWG Konstanz SeaPal Web
+## Seapal Setup
 
-### Download play
-
-[Play Framework](http://downloads.typesafe.com/play/2.2.0/play-2.2.0.zip)
-
-### Add Play to PATH env
-
-add the following line to ```~/.bash_profile``` or ```~/.profile```
-
-```export PATH=/path/to/play:$PATH```
+1. clone ```https://github.com/pakohan/de.htwg.seapal.core```
+2. change to cloned folder
+3. run ```sbt compile && sbt package```; this will create the class files and put em together in a nice jar file
+4. take the jar from ```target/core-1.0-SNAPSHOT.jar``` and put it into the ```lib``` directory of the seapal Project, no you have a freshly compiled core
