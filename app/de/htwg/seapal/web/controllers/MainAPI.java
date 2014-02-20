@@ -122,6 +122,10 @@ public final class MainAPI
                 Mark mark = (Mark) doc;
                 mark.setLongitude(Double.valueOf(form2.data().get("lng")));
                 mark.setLatitude(Double.valueOf(form2.data().get("lat")));
+            } else if (document.equals("waypoint")) {
+                Waypoint waypoint = (Waypoint) doc;
+                waypoint.setLongitude(Double.valueOf(form2.data().get("lng")));
+                waypoint.setLatitude(Double.valueOf(form2.data().get("lat")));
             }
 
             return ok(Json.toJson(controller.creatDocument(document, doc, session(IAccountController.AUTHN_COOKIE_KEY))));

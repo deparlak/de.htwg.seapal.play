@@ -104,8 +104,8 @@ $(document).ready(function() {
         }
     });
 
-    /* handle leftclick events on a not selected mark, route, trip,... */
-    menu.addCallback('leftclick', ['icon-notSelected-mark', 'icon-notSelected-route', 'icon-notSelected-trip'], function (self) {
+    /* handle leftclick events on a not selected mark, route,... */
+    menu.addCallback('leftclick', ['icon-notSelected-mark', 'icon-notSelected-route'], function (self) {
         if (state == states.normal) {
             map.select(self.data('type'), self.data('id'));
         } else if (state == states.remove) {
