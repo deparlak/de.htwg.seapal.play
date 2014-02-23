@@ -4,6 +4,7 @@ import com.google.inject.Inject;
 import de.htwg.seapal.controller.IAccountController;
 import de.htwg.seapal.model.IAccount;
 import de.htwg.seapal.model.impl.Account;
+import de.htwg.seapal.model.impl.PublicPerson;
 import de.htwg.seapal.model.impl.SignupAccount;
 import de.htwg.seapal.utils.logging.ILogger;
 import de.htwg.seapal.web.controllers.helpers.Menus;
@@ -270,7 +271,15 @@ public class AccountAPI
     public Result account() {
         String session = session(IAccountController.AUTHN_COOKIE_KEY);
 
-        return ok(Json.toJson(controller.getInternalInfo(session, session)));
+        PublicPerson s = controller.getInternalInfo(session, session);
+        if (s != null) {
+            return ok(Json.toJson(s));
+        } else {
+            ObjectNode response = Json.newObject();
+            response.put("error", "unauthorized");
+
+            return unauthorized(response);
+        }
     }
 
     public static class Secured
