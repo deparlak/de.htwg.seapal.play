@@ -2414,8 +2414,8 @@
         this.markers = [];
         this.label = null;
         this.notinteractive = (obj.type == 'trip') ? true : false;
-		options = $.seamap.options[obj.type];
-        init = false;
+		this.options = $.seamap.options[obj.type];
+        this.init = false;
         		
         // internal data
         var eventListener = {
@@ -2426,7 +2426,7 @@
             rightclick  : []
         };
         	
-        this.path = new google.maps.Polyline(options.polyOptions);
+        this.path = new google.maps.Polyline(this.options.polyOptions);
         this.path.setMap(this.googlemaps);
         
         /**
@@ -2474,15 +2474,15 @@
             /* check if no elements are on the map, so we have to set them back to map */
             if (0 == this.markers.length && 0 < obj.marks.length) {
                 if(this.path == null) {
-                    this.path = new google.maps.Polyline(options.polyOptions);
+                    this.path = new google.maps.Polyline(this.options.polyOptions);
                     this.path.setMap(this.googlemaps);
                 }
                 tmp = obj.marks.splice(0, obj.marks.length);
-                init = true;
+                this.init = true;
                 for (var i=0, l=tmp.length; i<l; i+=2) {
                     this.addMarker(new google.maps.LatLng(tmp[i], tmp[i + 1]));
                 }
-                init = false;
+                this.init = false;
             } else {
                 $.each(this.markers, function(){
                     this.setVisible(true);
@@ -2501,7 +2501,7 @@
         */
         this.addMarker = function(position) {
             var $this = this;
-            options = $.seamap.options[obj.type];
+            var options = $.seamap.options[obj.type];
             // check if the position did not changed, so we do not safe this position.
             if (1 < obj.marks.length && position.lat() == obj.marks[obj.marks.length - 2] && position.lng() == obj.marks[obj.marks.length - 1]) {
                 return null;
@@ -2552,7 +2552,7 @@
                     $this.notify("click", marker, event);
                 });
             }
-            if (!init) {
+            if (!this.init) {
                 this.notify("add");
             }
 			$this.drawPath();
