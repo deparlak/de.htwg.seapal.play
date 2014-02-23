@@ -126,9 +126,9 @@ $(document).ready(function() {
             map.select('person', response.person_info[0]._id);
         }
         /* trigger friend list */
-        friendRequest();
+        //friendRequest();
         /* sset cylcic friend request every minute */
-        setInterval(friendRequest, 6000);
+        //setInterval(friendRequest, 6000);
     });
 
     /* callback handler that will be called on failure */
