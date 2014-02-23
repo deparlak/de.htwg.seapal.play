@@ -270,7 +270,7 @@ public class AccountAPI
     public Result account() {
         String session = session(IAccountController.AUTHN_COOKIE_KEY);
 
-        return ok(Json.toJson(controller.getInternalInfo(session)));
+        return ok(Json.toJson(controller.getInternalInfo(session, session)));
     }
 
     public static class Secured

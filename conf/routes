@@ -14,7 +14,8 @@ GET           /api/account        @de.htwg.seapal.web.controllers.AccountAPI.acc
 GET           /api/sendFriendRequest/$id<[0-9a-fA-F\-]+>        @de.htwg.seapal.web.controllers.MainAPI.sendFriendRequest(id: UUID)
 GET           /api/sendFriendRequestMail/:mail        @de.htwg.seapal.web.controllers.MainAPI.sendFriendRequestMail(mail: String)
 GET           /api/abortFriendRequest/$id<[0-9a-fA-F\-]+>        @de.htwg.seapal.web.controllers.MainAPI.abortFriendRequest(id: UUID)
-GET           /api/all/$scope<(all|friends|own)>        @de.htwg.seapal.web.controllers.MainAPI.all(scope: String)
+GET        /api/all/$scope<(all|friends|own)>        @de.htwg.seapal.web.controllers.MainAPI.all(scope: String)
+GET        /api/all/$id<[0-9a-fA-F\-]+>        @de.htwg.seapal.web.controllers.MainAPI.allofFriend(user: UUID)
 
 # authentication
 GET           /login                                                                                                  de.htwg.seapal.web.controllers.Application.login()
