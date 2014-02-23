@@ -34,8 +34,7 @@
 	/* Capture an image and returns it BASE64 encoded */
 	camera.captureImage = function() {
 	    dataURL[0] = takePhoto(20, 20);
-	    dataURL[1] = takeImage();
-	    console.log(dataURL);
+	    dataURL[1] = takeAsImageFile();
 		return dataURL;
 	}
 
@@ -47,9 +46,8 @@
 		}
 	}
 
+	/* convert base64 to raw binary data held in a string. Doesn't handle URLEncoded DataURIs */
     function dataURItoBlob(dataURI, callback) {
-        // convert base64 to raw binary data held in a string
-        // doesn't handle URLEncoded DataURIs
 
         var byteString;
         if (dataURI.split(',')[0].indexOf('base64') >= 0) {
@@ -78,13 +76,13 @@
         if(canvas.mozGetAsFile) {
             return canvas.mozGetAsFile("foo.jpg", "image/jpeg");
         } else {
-            var data = canvas.toDataURL('image/jpeg', 0.7);
+            var data = canvas.toDataURL('image/jpeg', 1.0);
             var blob = dataURItoBlob(data);
             return blob;
         }
     }
 
-	function takeImage() {
+	function takeAsImageFile() {
 		var canvas = document.createElement('canvas');
 	    canvas.id = 'hiddenCanvas';
 	    //add canvas to the body element
