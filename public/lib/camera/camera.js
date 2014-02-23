@@ -34,7 +34,8 @@
 	/* Capture an image and returns it BASE64 encoded */
 	camera.captureImage = function() {
 	    dataURL[0] = takePhoto(20, 20);
-	    dataURL[1] = takePhoto(1, 1);
+	    dataURL[1] = takeImage();
+	    console.log(dataURL);
 		return dataURL;
 	}
 
@@ -46,16 +47,53 @@
 		}
 	}
 
-	function takeImage(width, height) {
+    function dataURItoBlob(dataURI, callback) {
+        // convert base64 to raw binary data held in a string
+        // doesn't handle URLEncoded DataURIs
+
+        var byteString;
+        if (dataURI.split(',')[0].indexOf('base64') >= 0) {
+            byteString = atob(dataURI.split(',')[1]);
+        } else {
+            byteString = unescape(dataURI.split(',')[1]);
+        }
+
+        // separate out the mime component
+        var mimeString = dataURI.split(',')[0].split(':')[1].split(';')[0];
+
+        // write the bytes of the string to an ArrayBuffer
+        var ab = new ArrayBuffer(byteString.length);
+        var ia = new Uint8Array(ab);
+        for (var i = 0; i < byteString.length; i++) {
+            ia[i] = byteString.charCodeAt(i);
+        }
+
+        window.URL = window.URL || window.webkitURL;
+        var blob = new Blob([ab], { type: mimeString });
+
+        return blob;
+    }
+
+   function getAsJPEGBlob(canvas) {
+        if(canvas.mozGetAsFile) {
+            return canvas.mozGetAsFile("foo.jpg", "image/jpeg");
+        } else {
+            var data = canvas.toDataURL('image/jpeg', 0.7);
+            var blob = dataURItoBlob(data);
+            return blob;
+        }
+    }
+
+	function takeImage() {
 		var canvas = document.createElement('canvas');
 	    canvas.id = 'hiddenCanvas';
 	    //add canvas to the body element
 	    var ctx = canvas.getContext('2d');
-	    canvas.width = width;
-	    canvas.height = height;
+	    canvas.width = video.videoWidth;
+	    canvas.height = video.videoHeight;
 	    ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
 
-	    return canvas.toDataURL();
+	    return getAsJPEGBlob(canvas);
 	}
 
 	/* Takes the photo and scales it by the given factors*/
