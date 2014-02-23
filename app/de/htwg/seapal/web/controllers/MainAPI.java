@@ -47,6 +47,25 @@ public final class MainAPI
     }
 
     @play.mvc.Security.Authenticated(AccountAPI.SecuredAPI.class)
+    public Result allofFriend(UUID user) {
+        String session = session(IAccountController.AUTHN_COOKIE_KEY);
+
+        ObjectNode node = Json.newObject();
+        node.put("person_info", Json.toJson(controller.getDocuments("person", session, user.toString(), "own")));
+
+        PublicPerson account = accountController.getInternalInfo(session, user.toString());
+        if (account != null) {
+            node.put("account_info", Json.toJson(account));
+        }
+
+        for (String type : forms.keySet()) {
+            node.put(type, Json.toJson(controller.getDocuments(type, session, user.toString(), "own")));
+        }
+
+        return ok(node);
+    }
+
+    @play.mvc.Security.Authenticated(AccountAPI.SecuredAPI.class)
     public Result abortFriendRequest(UUID id) {
         try {
             controller.abortRequest(session(IAccountController.AUTHN_COOKIE_KEY), id);
@@ -61,12 +80,12 @@ public final class MainAPI
         String session = session(IAccountController.AUTHN_COOKIE_KEY);
 
         ObjectNode node = Json.newObject();
-        node.put("person_info", Json.toJson(controller.getDocuments("person", session, scope)));
+        node.put("person_info", Json.toJson(controller.getDocuments("person", session, session, scope)));
 
-        node.put("account_info", Json.toJson(accountController.getInternalInfo(session)));
+        node.put("account_info", Json.toJson(accountController.getInternalInfo(session, session)));
 
         for (String type: forms.keySet()) {
-            node.put(type, Json.toJson(controller.getDocuments(type, session, scope)));
+            node.put(type, Json.toJson(controller.getDocuments(type, session, session, scope)));
         }
 
         return ok(node);
@@ -94,7 +113,7 @@ public final class MainAPI
     public Result getDocuments(String document, String scope) {
         String session = session(IAccountController.AUTHN_COOKIE_KEY);
 
-        return ok(Json.toJson(controller.getDocuments(document, session, scope)));
+        return ok(Json.toJson(controller.getDocuments(document, session, session, scope)));
     }
 
     @play.mvc.Security.Authenticated(AccountAPI.SecuredAPI.class)
@@ -127,9 +146,9 @@ public final class MainAPI
                 waypoint.setLongitude(Double.valueOf(form2.data().get("lng")));
                 waypoint.setLatitude(Double.valueOf(form2.data().get("lat")));
             }
-            /* 
-               account has to be set here, because it will not mapped automatically. 
-               TODO : check why auto mapping is not working 
+            /*
+               account has to be set here, because it will not mapped automatically.
+               TODO : check why auto mapping is not working
             */
             doc.setAccount(form2.data().get("owner"));
 

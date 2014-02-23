@@ -45,7 +45,7 @@ public class HelpAPI
         crewMember1.setPassword("test");
         SignupAccount save = new SignupAccount(crewMember1, "Alfred", "von Tirpitz");
         AccountController.saveAccount(save, true);
-        domACL.put("crewMember1", Json.toJson(AccountController.getInternalInfo(String.valueOf(crewMember1.getUUID()))));
+        domACL.put("crewMember1", Json.toJson(AccountController.getInternalInfo(String.valueOf(crewMember1.getUUID()), session)));
         domACLPerson.put("crewMember1", Json.toJson(controller.getByAccount(crewMember1.getUUID())));
 
         IAccount crewMember2 = new Account();
@@ -54,7 +54,7 @@ public class HelpAPI
         crewMember2.setPassword("test");
         SignupAccount save2 = new SignupAccount(crewMember2, "Ernst", "Lindemann");
         AccountController.saveAccount(save2, true);
-        domACL.put("crewMember2", Json.toJson(AccountController.getInternalInfo(String.valueOf(crewMember2.getUUID()))));
+        domACL.put("crewMember2", Json.toJson(AccountController.getInternalInfo(String.valueOf(crewMember2.getUUID()), session)));
         domACLPerson.put("crewMember2", Json.toJson(controller.getByAccount(crewMember2.getUUID())));
 
         IAccount account = new Account();
@@ -65,7 +65,7 @@ public class HelpAPI
         account.setPassword("test");
         SignupAccount save3 = new SignupAccount(account, "Karl", "Dönitz");
         AccountController.saveAccount(save3, true);
-        domACL.put("captain", Json.toJson(AccountController.getInternalInfo(String.valueOf(account.getUUID()))));
+        domACL.put("captain", Json.toJson(AccountController.getInternalInfo(String.valueOf(account.getUUID()), session)));
         domACLPerson.put("captain", Json.toJson(controller.getByAccount(account.getUUID())));
 
         ObjectNode nodeInner = Json.newObject();

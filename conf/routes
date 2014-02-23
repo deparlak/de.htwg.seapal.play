@@ -7,14 +7,15 @@ GET           /app                                                              
 
 GET           /api/$document<(boat|mark|route|trip|waypoint|person)>/$id<[0-9a-fA-F\-]+>        @de.htwg.seapal.web.controllers.MainAPI.singleDocument(id: UUID, document: String)
 DELETE        /api/$document<(boat|mark|route|trip|waypoint)>/$id<[0-9a-fA-F\-]+>        @de.htwg.seapal.web.controllers.MainAPI.deleteDocument(id: UUID, document: String)
-GET           /api/$document<(boat|mark|route|trip|waypoint|person)>/$scope<(all|friends|foreign|asking|own)>        @de.htwg.seapal.web.controllers.MainAPI.getDocuments(document: String, scope: String)
+GET           /api/$document<(boat|mark|route|trip|waypoint|person)>/$scope<(all|friends|own)>        @de.htwg.seapal.web.controllers.MainAPI.getDocuments(document: String, scope: String)
 GET           /api/$document<(trip|waypoint)>/byparent/$parent<(boat|trip)>/$id<[0-9a-fA-F\-]+>        @de.htwg.seapal.web.controllers.MainAPI.getByParent(document: String, parent: String, id: UUID)
 POST          /api/$document<(boat|mark|route|trip|waypoint|person)>        @de.htwg.seapal.web.controllers.MainAPI.createDocument(document: String)
 GET           /api/account        @de.htwg.seapal.web.controllers.AccountAPI.account()
 GET           /api/sendFriendRequest/$id<[0-9a-fA-F\-]+>        @de.htwg.seapal.web.controllers.MainAPI.sendFriendRequest(id: UUID)
 GET           /api/sendFriendRequestMail/:mail        @de.htwg.seapal.web.controllers.MainAPI.sendFriendRequestMail(mail: String)
 GET           /api/abortFriendRequest/$id<[0-9a-fA-F\-]+>        @de.htwg.seapal.web.controllers.MainAPI.abortFriendRequest(id: UUID)
-GET           /api/all/$scope<(all|friends|foreign|asking|own)>        @de.htwg.seapal.web.controllers.MainAPI.all(scope: String)
+GET        /api/all/$scope<(all|friends|own)>        @de.htwg.seapal.web.controllers.MainAPI.all(scope: String)
+GET        /api/all/$id<[0-9a-fA-F\-]+>        @de.htwg.seapal.web.controllers.MainAPI.allofFriend(user: UUID)
 
 # authentication
 GET           /login                                                                                                  de.htwg.seapal.web.controllers.Application.login()
