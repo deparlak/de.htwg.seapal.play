@@ -529,7 +529,8 @@
             DESELECTED              : 19,
             SWITCHED_BOAT           : 20,
             SWITCHED_PERSON         : 21,
-            EDIT_WAYPOINT           : 22
+            EDIT_WAYPOINT           : 22,
+            SHOW_IMAGE              : 23
         };
 		        
         var options = $.seamap.options;
@@ -2199,9 +2200,10 @@
             });
 			/* check if the marker has a image */
 			if (marker.image_thumb) {
-				google.maps.event.addListener(onMap, 'click', function(event) {
+				google.maps.event.addListener(onMap, 'click', function(e) {
 					if(!supressClick) {
-						openFancybox(marker.image_big, new Date(marker.date).toLocaleString());
+                        /* callback to show image */
+                        dataCallback([event.SHOW_IMAGE], marker);
 					}
 				});
 			}
@@ -2236,25 +2238,6 @@
             }
         }
 		
-        /* Opens a fancybox with the image */
-        function openFancybox(picture, text) {
-            $.fancybox({
-                'autoScale': true,
-                'transitionIn': 'elastic',
-                'transitionOut': 'elastic',
-                'speedIn': 500,
-                'speedOut': 300,
-                'autoDimensions': true,
-                'centerOnScroll': true,
-                'title' : text,
-                'helpers' : {
-                    title : {
-                        type : 'over'
-                    }   
-                },
-                'href' : picture
-            });
-        }
         /* Gets the current date and time in a string */
         function getCurrentDateTime() {
             var currentdate = new Date(); 
