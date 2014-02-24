@@ -259,15 +259,14 @@ $(document).ready(function() {
     $('#modal-form_waypoint').submit(function() {
         var boundData = Handlebars.getBoundData(tmpWaypoint);
         boundData.name = boundData.title;
-        console.log(boundData);
         map.set('waypoint', boundData);
         $('#modal-form_waypoint').modal('hide');
+        $("."+tmpWaypoint.type+tmpWaypoint.id).text(boundData.title);
         return false;
     });
 
     $('#modal-form_track').submit(function() {
         var boundData = Handlebars.getBoundData(tmpTrack);
-        console.log(boundData);
         map.set('trip', boundData);
         $('#modal-form_track').modal('hide');
         return false;
