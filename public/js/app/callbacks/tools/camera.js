@@ -25,28 +25,33 @@ $(document).ready(function() {
 
     /* Opens a fancybox with the image */
     function openFancybox(picture, text) {
+        $.fancybox({
+            'autoScale': true,
+            'transitionIn': 'elastic',
+            'transitionOut': 'elastic',
+            'speedIn': 500,
+            'speedOut': 300,
+            'autoDimensions': true,
+            'centerOnScroll': true,
+            'title' : text,
+            'helpers' : {
+                title : {
+                    type : 'over'
+                }
+            },
+            'href' : picture
+        });
+    }
+
+    /* Opens a fancybox with the image */
+    function loadToFancybox(blob, text) {
         var reader = new FileReader();
 
         reader.onloadend = function(event) {
-            $.fancybox({
-                'autoScale': true,
-                'transitionIn': 'elastic',
-                'transitionOut': 'elastic',
-                'speedIn': 500,
-                'speedOut': 300,
-                'autoDimensions': true,
-                'centerOnScroll': true,
-                'title' : text,
-                'helpers' : {
-                    title : {
-                        type : 'over'
-                    }
-                },
-                'href' : event.target.result
-            });
+            openFancybox(event.target.result, text);
         };
 
-        reader.readAsDataURL(picture);
+        reader.readAsDataURL(blob);
     }
 
 	/* this callback will be called if an object was loaded from the server */
@@ -54,30 +59,11 @@ $(document).ready(function() {
         /* is picture already there? */
         if (null != self.image_big) {
             console.log(self);
-            openFancybox(self.image_big, new Date(self.date).toLocaleString());
+            loadToFancybox(self.image_big, new Date(self.date).toLocaleString());
             return;
         }
 
-        /* get image from the server */
-        request = $.ajax({
-            url         : "api/photo/"+self._id+"/"+self.type,
-            type        : "get"
-        });
-
-        /* callback handler that will be called on success */
-        request.done(function (response, textStatus, jqXHR){
-            console.log(response);
-            self.image_big = response;
-            map.set(self.type, self);
-            openFancybox(self.image_big, new Date(self.date).toLocaleString());
-        });
-
-        /* callback handler that will be called on failure */
-        request.fail(function (jqXHR, textStatus, errorThrown){
-			console.log(jqXHR);
-			console.log(textStatus);
-			console.log(errorThrown);
-			console.log("error");
-        });
+        var image = "api/photo/"+self._id+"/"+self.type+".jpg"
+        openFancybox(image, new Date(self.date).toLocaleString());
     });
 });
