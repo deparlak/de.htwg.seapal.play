@@ -2,12 +2,12 @@
  * camera.js
  *
  * Define the actions for the camera modal.
- * 
+ *
  */
- 
-$(document).ready(function() {    
+
+$(document).ready(function() {
     /**
-      * Closes the connection to the camera when photo modal is closed 
+      * Closes the connection to the camera when photo modal is closed
       */
     $('#modal-photo').on('hidden.bs.modal', function() {
         window.camera.disable_camera();
@@ -20,9 +20,9 @@ $(document).ready(function() {
         var image = window.camera.captureImage();
         map.setImageMark(image);
     });
-    
+
     events = map.getEvents();
-    
+
     /* Opens a fancybox with the image */
     function openFancybox(picture, text) {
         var reader = new FileReader();
@@ -40,7 +40,7 @@ $(document).ready(function() {
                 'helpers' : {
                     title : {
                         type : 'over'
-                    }   
+                    }
                 },
                 'href' : event.target.result
             });
@@ -48,7 +48,7 @@ $(document).ready(function() {
 
         reader.readAsDataURL(picture);
     }
-    
+
 	/* this callback will be called if an object was loaded from the server */
     map.addCallback([events.SHOW_IMAGE], function (self) {
         /* is picture already there? */
@@ -57,7 +57,7 @@ $(document).ready(function() {
             openFancybox(self.image_big, new Date(self.date).toLocaleString());
             return;
         }
-        
+
         /* get image from the server */
         request = $.ajax({
             url         : "api/photo/"+self._id+"/"+self.type,
