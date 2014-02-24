@@ -245,14 +245,30 @@ $(document).ready(function() {
         tmpWaypoint.title = tmpWaypoint.name;
         tmpWaypoint.position = coord.getCoordinatesAsString(tmpWaypoint.lat, tmpWaypoint.lng);
         console.log(tmpWaypoint);
-        var template = Handlebars.compile($('#waypoint_Template').text());
-        var html = template(tmpWaypoint);
-        $('#waypointInputForm').html(html);
 
-        if(!map.checkTracking()) {                
-            return;
+        if(tmpWaypoint.image_thumb != null) {
+            /* get image from the server */
+            request = $.ajax({
+                url         : "api/photo/" + tmpWaypoint.id,
+                type        : "get"
+            });
+
+            /* callback handler that will be called on success */
+            request.done(function (response, textStatus, jqXHR){            
+                tmpWaypoint.image = response;
+                //map.set(marker.type, marker);
+                var template = Handlebars.compile($('#waypoint_Template').text());
+                var html = template(tmpWaypoint);
+                $('#waypointInputForm').html(html);                
+                $('#modal-form_waypoint').modal('show');
+            });
+        } else {
+            tmpWaypoint.image = "/assets/images/no_image.png";
+            var template = Handlebars.compile($('#waypoint_Template').text());
+            var html = template(tmpWaypoint);
+            $('#waypointInputForm').html(html);            
+            $('#modal-form_waypoint').modal('show');
         }
-        $('#modal-form_waypoint').modal('show');
     }
 
     $('#modal-form_waypoint').submit(function() {
