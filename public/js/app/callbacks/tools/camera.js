@@ -60,7 +60,7 @@ $(document).ready(function() {
         
         /* get image from the server */
         request = $.ajax({
-            url         : "api/photo/"+self._id,
+            url         : "api/photo/"+self._id+"/"+self.type,
             type        : "get"
         });
 
