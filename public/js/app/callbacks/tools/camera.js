@@ -58,12 +58,10 @@ $(document).ready(function() {
     map.addCallback([events.SHOW_IMAGE], function (self) {
         /* is picture already there? */
         if (null != self.image_big) {
-            console.log(self);
             loadToFancybox(self.image_big, new Date(self.date).toLocaleString());
-            return;
+        } else {
+            var url = "api/photo/"+self._id+"/"+self.type+".jpg";
+            openFancybox(url, new Date(self.date).toLocaleString());
         }
-
-        var image = "api/photo/"+self._id+"/"+self.type+".jpg"
-        openFancybox(image, new Date(self.date).toLocaleString());
     });
 });
