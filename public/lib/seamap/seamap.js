@@ -2113,7 +2113,7 @@
 				obj.image_big = image[1];
 			}
             obj.onMap = getOnMapMark(obj);
-			obj.owner = data.person.active.owner;
+			obj.owner = data.person.active != null ? data.person.active.owner : "Someone";
             data.mark.list[obj.id] = obj;
             data.mark.count++;
             dataCallback([event.SERVER_CREATE, event.CREATED_MARK], obj);
@@ -2147,7 +2147,7 @@
                     obj.image_big = image[1];
                 }
                 obj.onMap = getOnMapMark(obj);
-                obj.owner = data.person.active.owner;
+                obj.owner = data.person.active != null ? data.person.active.owner : "Someone";;
                 data.waypoint.list[obj.id] = obj;
                 data.waypoint.count++;
                 dataCallback([event.SERVER_CREATE, event.CREATED_WAYPOINT], obj);
