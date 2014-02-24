@@ -60,13 +60,13 @@ $(document).ready(function() {
         
         /* get image from the server */
         request = $.ajax({
-            url         : "api/photo/"+self._id,
+            url         : "api/photo/"+self._id+"/"+self.type,
             type        : "get"
         });
 
         /* callback handler that will be called on success */
         request.done(function (response, textStatus, jqXHR){
-            console.log("download and show");
+            console.log(response);
             self.image_big = response;
             map.set(self.type, self);
             openFancybox(self.image_big, new Date(self.date).toLocaleString());
