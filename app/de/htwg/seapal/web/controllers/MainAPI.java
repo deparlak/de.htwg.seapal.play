@@ -8,6 +8,7 @@ import de.htwg.seapal.model.IModel;
 import de.htwg.seapal.model.IPerson;
 import de.htwg.seapal.model.ModelDocument;
 import de.htwg.seapal.model.impl.*;
+import org.apache.commons.io.IOUtils;
 import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.node.ObjectNode;
 import play.data.Form;
@@ -17,9 +18,7 @@ import play.mvc.Http;
 import play.mvc.Result;
 import play.mvc.Security;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.InputStream;
+import java.io.*;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -199,7 +198,11 @@ public final class MainAPI
         String session = session(IAccountController.AUTHN_COOKIE_KEY);
         InputStream s = controller.getPhoto(session, id, type);
         if (s != null) {
-            return ok(s).as("image/jpeg");
+            try {
+                return ok(new ByteArrayInputStream(IOUtils.toByteArray(s))).as("image/jpeg");
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
 
         return internalServerError();
