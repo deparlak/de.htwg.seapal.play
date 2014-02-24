@@ -276,7 +276,7 @@
             } else if (obj.id == null && obj._id == null && obj._rev == null) {
                 console.log("added from client");
                 newObj = self.getTemplate(type);
-                newObj.id = data[type].count.toString();
+                newObj.id = (idCounter++).toString();
                 data[type].list[newObj.id] = newObj;
                 data[type].count++;
                 copyObjAttr(type, newObj, obj);
@@ -756,6 +756,8 @@
 
         /* save the self reference, because this cannot used in each context for the seamap */
 		var self = this;
+        /* counter to create unique id's */
+        var idCounter = 0;
 		
 		/* 
 		   return a copy of a obj with the specified type and id to all event listeners.
@@ -774,7 +776,7 @@
 			}
 		};		
 		
-		var data = {
+		var data = {        
             person : {
                 template : templatePerson,
 				list : {},
@@ -830,38 +832,24 @@
 		data.route.removeMethod = function(id) {
 			/* check if the route is active */
 			if (data.route.active && data.route.active.id == id) {
-				data.route.active = null;
-				if (state == States.ROUTE) {
-					state = States.NORMAL;
-				}
-			}
-			/* check if the route is visible on the map. The route can
-			   be not the active route but still have a reference on the map (so it's only hidden)
-			   Because of this we have to check here if the route is "onMap" 
-			*/
-			if (data.route.list[id].onMap) {
-				data.route.list[id].onMap.remove();
-			}
-            return true;
+				hideActiveRoute();
+                return true;
+			} else if (undefined !== data.route.list[id]) {
+                return true;
+            }
+            return false;
 		};
 		
 		/* define the remove method for the trip */
 		data.trip.removeMethod = function(id) {
 			/* check if the track is active */
 			if (data.trip.active && data.trip.active.id == id) {
-				data.trip.active = null;
-				if (state == States.TRACK) {
-					state = States.NORMAL;
-				}
-			}
-			/* check if the track is visible on the map. The track can
-			   be not the active track but still have a reference on the map (so it's only hidden)
-			   Because of this we have to check here if the track is "onMap" 
-			*/
-			if (data.trip.list[id].onMap) {
-				data.trip.list[id].onMap.remove();
-			}
-            return true;
+                hideActiveTrack();
+                return true;
+			} else if (undefined !== data.trip.list[id]) {
+                return true;
+            }
+            return false;
 		};
 		
         /* define a select method for a boat */
@@ -1691,7 +1679,7 @@
 
             var obj = self.getTemplate('route');
 			obj.date = new Date().getTime();
-            obj.id = data.route.count.toString();
+            obj.id = (idCounter++).toString();
             obj.name = "Route "+data.route.count;
             obj.update = true;
 			obj.onMap = getOnMapRoute(obj);
@@ -1850,7 +1838,7 @@
         */
         function handleAddNewTrack() {
             var obj = self.getTemplate('trip');;
-            obj.id = data.trip.count.toString();
+            obj.id = (idCounter++).toString();
 			obj.startDate = new Date().getTime();
             obj.name = "Track " + data.trip.count;
             obj.onMap = getOnMapTrack(obj);
@@ -2103,7 +2091,7 @@
         */
         function addNewMark(position, image) {
             var obj = self.getTemplate('mark');
-            obj.id = data.mark.count.toString();
+            obj.id = (idCounter++).toString();
             obj.name = "Mark "+data.mark.count;
 			obj.lat = position.lat();
 			obj.lng = position.lng();
@@ -2113,7 +2101,7 @@
 				obj.image_big = image[1];
 			}
             obj.onMap = getOnMapMark(obj);
-			obj.owner = data.person.active.owner;
+			obj.owner = data.person.active != null ? data.person.active.owner : "Someone";
             data.mark.list[obj.id] = obj;
             data.mark.count++;
             dataCallback([event.SERVER_CREATE, event.CREATED_MARK], obj);
@@ -2135,7 +2123,7 @@
                 var obj = self.getTemplate('waypoint');
                 obj.trip = data.trip.active._id;
                 
-                obj.id = data.waypoint.count.toString();
+                obj.id = (idCounter++).toString();
                 obj.name = "Waypoint "+data.waypoint.count;
                 obj.lat = boat.pos.lat();
                 obj.lng = boat.pos.lng();
@@ -2147,7 +2135,7 @@
                     obj.image_big = image[1];
                 }
                 obj.onMap = getOnMapMark(obj);
-                obj.owner = data.person.active.owner;
+                obj.owner = data.person.active != null ? data.person.active.owner : "Someone";;
                 data.waypoint.list[obj.id] = obj;
                 data.waypoint.count++;
                 dataCallback([event.SERVER_CREATE, event.CREATED_WAYPOINT], obj);
