@@ -172,7 +172,7 @@ public final class MainAPI
     }
 
     @play.mvc.Security.Authenticated(AccountAPI.SecuredAPI.class)
-    public Result addPhoto(UUID uuid) throws FileNotFoundException {
+    public Result addPhoto(UUID uuid, String type) throws FileNotFoundException {
         String session = session(IAccountController.AUTHN_COOKIE_KEY);
 
         Http.Request s2 = request();
@@ -183,7 +183,7 @@ public final class MainAPI
         if (picture != null) {
             String contentType = picture.getContentType();
             File file = picture.getFile();
-            if (controller.addPhoto(session, uuid, contentType, file)) {
+            if (controller.addPhoto(session, uuid, contentType, file, type)) {
                 return ok();
             } else {
                 return internalServerError(FILE_UPLOAD_FAILED);
@@ -194,9 +194,9 @@ public final class MainAPI
     }
 
     @play.mvc.Security.Authenticated(AccountAPI.SecuredAPI.class)
-    public Result getPhoto(UUID id) throws FileNotFoundException {
+    public Result getPhoto(UUID id, String type) throws FileNotFoundException {
         String session = session(IAccountController.AUTHN_COOKIE_KEY);
-        return ok(controller.getPhoto(session, id));
+        return ok(controller.getPhoto(session, id, type));
     }
 
     public Result names() {
