@@ -244,31 +244,16 @@ $(document).ready(function() {
         tmpWaypoint = map.get('waypoint', id);
         tmpWaypoint.title = tmpWaypoint.name;
         tmpWaypoint.position = coord.getCoordinatesAsString(tmpWaypoint.lat, tmpWaypoint.lng);
-        console.log(tmpWaypoint);
 
-        if(tmpWaypoint.image_thumb != null) {
-            /* get image from the server */
-            request = $.ajax({
-                url         : "api/photo/" + tmpWaypoint._id,
-                type        : "get"
-            });
-
-            /* callback handler that will be called on success */
-            request.done(function (response, textStatus, jqXHR){            
-                tmpWaypoint.image = response;
-                //map.set(marker.type, marker);
-                var template = Handlebars.compile($('#waypoint_Template').text());
-                var html = template(tmpWaypoint);
-                $('#waypointInputForm').html(html);                
-                $('#modal-form_waypoint').modal('show');
-            });
+        if(tmpWaypoint.image_thumb != null) {                       
+            tmpWaypoint.image = "api/photo/"+tmpWaypoint._id+"/"+tmpWaypoint.type+".jpg";
         } else {
             tmpWaypoint.image = "/assets/images/no_image.png";
-            var template = Handlebars.compile($('#waypoint_Template').text());
-            var html = template(tmpWaypoint);
-            $('#waypointInputForm').html(html);            
-            $('#modal-form_waypoint').modal('show');
         }
+        var template = Handlebars.compile($('#waypoint_Template').text());
+        var html = template(tmpWaypoint);
+        $('#waypointInputForm').html(html);            
+        $('#modal-form_waypoint').modal('show');
     }
 
     $('#modal-form_waypoint').submit(function() {
