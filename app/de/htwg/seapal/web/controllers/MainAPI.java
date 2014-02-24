@@ -4,6 +4,8 @@ import com.google.inject.Inject;
 import de.htwg.seapal.controller.IAccountController;
 import de.htwg.seapal.controller.IMainController;
 import de.htwg.seapal.controller.impl.AccountController;
+import de.htwg.seapal.model.IModel;
+import de.htwg.seapal.model.IPerson;
 import de.htwg.seapal.model.ModelDocument;
 import de.htwg.seapal.model.impl.*;
 import org.codehaus.jackson.JsonNode;
@@ -17,6 +19,7 @@ import play.mvc.Security;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -137,15 +140,7 @@ public final class MainAPI
                 return internalServerError(form2.errorsAsJson());
             }
             ModelDocument doc = form2.get();
-            if (document.equals("mark")) {
-                Mark mark = (Mark) doc;
-                mark.setLongitude(Double.valueOf(form2.data().get("lng")));
-                mark.setLatitude(Double.valueOf(form2.data().get("lat")));
-            } else if (document.equals("waypoint")) {
-                Waypoint waypoint = (Waypoint) doc;
-                waypoint.setLongitude(Double.valueOf(form2.data().get("lng")));
-                waypoint.setLatitude(Double.valueOf(form2.data().get("lat")));
-            }
+
             /*
                account has to be set here, because it will not mapped automatically.
                TODO : check why auto mapping is not working
@@ -202,5 +197,31 @@ public final class MainAPI
     public Result getPhoto(UUID id) throws FileNotFoundException {
         String session = session(IAccountController.AUTHN_COOKIE_KEY);
         return ok(controller.getPhoto(session, id));
+    }
+
+    public Result names() {
+        Http.RequestBody body = request().body();
+        JsonNode jsonNode = Json.parse(body.asText());
+        if (jsonNode == null || !jsonNode.isArray()) {
+            return internalServerError();
+        }
+
+
+        ObjectNode response = Json.newObject();
+        for (int i = 0; i < jsonNode.size(); i++) {
+            String uuid = jsonNode.get(i).asText();
+
+            Collection<? extends IModel> result = controller.getOwnDocuments("person", uuid);
+            if (result.size() != 1) {
+                continue;
+            }
+
+            IPerson person = (IPerson) result.toArray()[0];
+            System.out.println(person);
+            String[] name = new String[]{person.getFirstname(), person.getLastname()};
+            response.put(uuid, Json.toJson(name));
+        }
+
+        return ok(response);
     }
 }

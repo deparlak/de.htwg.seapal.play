@@ -91,8 +91,8 @@ public class HelpAPI
 
         IMark mark = new Mark();
         mark.setAccount(owner);
-        mark.setLatitude(3.4);
-        mark.setLongitude(5.6);
+        mark.setLat(3.4);
+        mark.setLng(5.6);
         mainController.creatDocument("mark", (ModelDocument) mark, owner);
         dom.put("mark", Json.toJson(mainController.getSingleDocument("mark", owner, mark.getUUID())));
 

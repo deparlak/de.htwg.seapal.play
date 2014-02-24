@@ -312,6 +312,5 @@ public class AccountAPI
 
             return unauthorized(response);
         }
-
     }
 }
