@@ -60,14 +60,12 @@ public class AccountAPI
         Form<SignupAccount> filledForm = DynamicForm.form(SignupAccount.class).bindFromRequest();
         ObjectNode response = Json.newObject();
         if (filledForm.hasErrors()) {
-            response.put("success", false);
-            response.put("errors", filledForm.errorsAsJson());
+            flash("errors", filledForm.errorsAsJson().toString());
             return badRequest(signUpSeapal.render(filledForm, routes.AccountAPI.signup()));
         }
 
         SignupAccount account = filledForm.get();
         if (controller.accountExists(account.getEmail())) {
-            response.put("success", false);
             flash("errors", "Account already exists");
             return badRequest(signUpSeapal.render(filledForm, routes.AccountAPI.signup()));
         }
@@ -96,16 +94,14 @@ public class AccountAPI
         Form<Account> filledForm = DynamicForm.form(Account.class).bindFromRequest();
         ObjectNode response = Json.newObject();
         if (filledForm.hasErrors()) {
-            response.put("success", false);
-            response.put("errors", filledForm.errorsAsJson());
+            flash("errors", filledForm.errorsAsJson().toString());
             return badRequest(signInSeapal.render(filledForm, routes.AccountAPI.login()));
         }
 
         IAccount account = controller.authenticate(filledForm.get());
 
         if (account == null) {
-            response.put("success", false);
-            response.put("errors", "Authentication failed");
+            flash("errors", "Authentication failed");
             return badRequest(signInSeapal.render(filledForm, routes.AccountAPI.login()));
         }
 
