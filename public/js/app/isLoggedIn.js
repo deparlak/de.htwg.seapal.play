@@ -43,9 +43,8 @@ $(document).ready(function() {
 
             request = $.ajax({
                 url         : "api/names",
-                type        : "post",
-                contentType : "application/json",
-                data        : JSON.stringify(names)
+                type        : "get",
+                contentType : "application/json"
             });
             
             request.done(function (personResponse, textStatus, jqXHR){
