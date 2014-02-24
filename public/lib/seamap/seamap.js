@@ -276,7 +276,7 @@
             } else if (obj.id == null && obj._id == null && obj._rev == null) {
                 console.log("added from client");
                 newObj = self.getTemplate(type);
-                newObj.id = data[type].count.toString();
+                newObj.id = (idCounter++).toString();
                 data[type].list[newObj.id] = newObj;
                 data[type].count++;
                 copyObjAttr(type, newObj, obj);
@@ -756,6 +756,8 @@
 
         /* save the self reference, because this cannot used in each context for the seamap */
 		var self = this;
+        /* counter to create unique id's */
+        var idCounter = 0;
 		
 		/* 
 		   return a copy of a obj with the specified type and id to all event listeners.
@@ -774,7 +776,7 @@
 			}
 		};		
 		
-		var data = {
+		var data = {        
             person : {
                 template : templatePerson,
 				list : {},
@@ -1691,7 +1693,7 @@
 
             var obj = self.getTemplate('route');
 			obj.date = new Date().getTime();
-            obj.id = data.route.count.toString();
+            obj.id = (idCounter++).toString();
             obj.name = "Route "+data.route.count;
             obj.update = true;
 			obj.onMap = getOnMapRoute(obj);
@@ -1850,7 +1852,7 @@
         */
         function handleAddNewTrack() {
             var obj = self.getTemplate('trip');;
-            obj.id = data.trip.count.toString();
+            obj.id = (idCounter++).toString();
 			obj.startDate = new Date().getTime();
             obj.name = "Track " + data.trip.count;
             obj.onMap = getOnMapTrack(obj);
@@ -2103,7 +2105,7 @@
         */
         function addNewMark(position, image) {
             var obj = self.getTemplate('mark');
-            obj.id = data.mark.count.toString();
+            obj.id = (idCounter++).toString();
             obj.name = "Mark "+data.mark.count;
 			obj.lat = position.lat();
 			obj.lng = position.lng();
@@ -2135,7 +2137,7 @@
                 var obj = self.getTemplate('waypoint');
                 obj.trip = data.trip.active._id;
                 
-                obj.id = data.waypoint.count.toString();
+                obj.id = (idCounter++).toString();
                 obj.name = "Waypoint "+data.waypoint.count;
                 obj.lat = boat.pos.lat();
                 obj.lng = boat.pos.lng();
