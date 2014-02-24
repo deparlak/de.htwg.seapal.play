@@ -16,12 +16,29 @@ $(document).ready(function() {
     /* method to call friend request list cylic */
     var friendRequest = function(){
         request = $.ajax({
-            url         : "api/all/asking",
+            url         : "api/account",
             type        : "get",
             contentType : "application/json",
         });
 
         request.done(function (response, textStatus, jqXHR){
+            console.log(response);
+            
+            request = $.ajax({
+                url         : "api/names",
+                type        : "post",
+                contentType : "application/json",
+                data        : JSON.stringify(["f67c5322-c246-4149-8c1b-6cda3efbfd79"])
+            });
+            
+            request.done(function (response, textStatus, jqXHR){
+                console.log("DATA");
+                console.log(response);
+                console.log("DATA");
+            });
+            
+            
+            return;
             /* run through all requests and check if they will already be displayed. */
             for (var i in response.person_info) {
                 if (!receivedRequests[response.person_info[i].owner]) {
@@ -126,9 +143,9 @@ $(document).ready(function() {
             map.select('person', response.person_info[0]._id);
         }
         /* trigger friend list */
-        //friendRequest();
+        friendRequest();
         /* sset cylcic friend request every minute */
-        //setInterval(friendRequest, 6000);
+        setInterval(friendRequest, 6000);
     });
 
     /* callback handler that will be called on failure */
@@ -288,7 +305,7 @@ $(document).ready(function() {
                 formData.append("picture", image_big);
 
                 var xhr = new XMLHttpRequest();
-                xhr.open("POST", "/api/photo/"+response._id);
+                xhr.open("POST", "/api/photo/"+response._id+"/"+self.type);
                 xhr.send(formData);
             }
         });

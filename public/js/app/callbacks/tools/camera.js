@@ -67,7 +67,7 @@ $(document).ready(function() {
         /* callback handler that will be called on success */
         request.done(function (response, textStatus, jqXHR){
             console.log("download and show");
-            self.image_big = response.image_big;
+            self.image_big = response;
             map.set(self.type, self);
             openFancybox(self.image_big, new Date(self.date).toLocaleString());
         });

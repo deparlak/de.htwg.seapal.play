@@ -249,7 +249,7 @@ $(document).ready(function() {
         if(tmpWaypoint.image_thumb != null) {
             /* get image from the server */
             request = $.ajax({
-                url         : "api/photo/" + tmpWaypoint.id,
+                url         : "api/photo/" + tmpWaypoint._id,
                 type        : "get"
             });
 
