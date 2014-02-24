@@ -4,8 +4,6 @@ import com.google.inject.Inject;
 import de.htwg.seapal.controller.IAccountController;
 import de.htwg.seapal.controller.IMainController;
 import de.htwg.seapal.controller.impl.AccountController;
-import de.htwg.seapal.model.IModel;
-import de.htwg.seapal.model.IPerson;
 import de.htwg.seapal.model.ModelDocument;
 import de.htwg.seapal.model.impl.*;
 import org.apache.commons.io.IOUtils;
@@ -19,7 +17,6 @@ import play.mvc.Result;
 import play.mvc.Security;
 
 import java.io.*;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -208,29 +205,8 @@ public final class MainAPI
         return internalServerError();
     }
 
+    @play.mvc.Security.Authenticated(AccountAPI.SecuredAPI.class)
     public Result names() {
-        Http.RequestBody body = request().body();
-        JsonNode jsonNode = body.asJson();
-        if (jsonNode == null || !jsonNode.isArray()) {
-            return internalServerError();
-        }
-
-
-        ObjectNode response = Json.newObject();
-        for (int i = 0; i < jsonNode.size(); i++) {
-            String uuid = jsonNode.get(i).asText();
-
-            Collection<? extends IModel> result = controller.getOwnDocuments("person", uuid);
-            if (result.size() != 1) {
-                continue;
-            }
-
-            IPerson person = (IPerson) result.toArray()[0];
-            System.out.println(person);
-            String[] name = new String[]{person.getFirstname(), person.getLastname()};
-            response.put(uuid, Json.toJson(name));
-        }
-
-        return ok(response);
+        return ok(Json.toJson(controller.getAskingPerson(session(IAccountController.AUTHN_COOKIE_KEY))));
     }
 }
