@@ -713,7 +713,7 @@
             "skipper"       : "",
             "duration"      : "",
             "endDate"       : "",
-            "crewMembers"   : "",
+            "crew"          : "",
             "notes"         : "",
             "boat"          : null,
 			"_id" 			: null,
