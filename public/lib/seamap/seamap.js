@@ -832,38 +832,24 @@
 		data.route.removeMethod = function(id) {
 			/* check if the route is active */
 			if (data.route.active && data.route.active.id == id) {
-				data.route.active = null;
-				if (state == States.ROUTE) {
-					state = States.NORMAL;
-				}
-			}
-			/* check if the route is visible on the map. The route can
-			   be not the active route but still have a reference on the map (so it's only hidden)
-			   Because of this we have to check here if the route is "onMap" 
-			*/
-			if (data.route.list[id].onMap) {
-				data.route.list[id].onMap.remove();
-			}
-            return true;
+				hideActiveRoute();
+                return true;
+			} else if (undefined !== data.route.list[id]) {
+                return true;
+            }
+            return false;
 		};
 		
 		/* define the remove method for the trip */
 		data.trip.removeMethod = function(id) {
 			/* check if the track is active */
 			if (data.trip.active && data.trip.active.id == id) {
-				data.trip.active = null;
-				if (state == States.TRACK) {
-					state = States.NORMAL;
-				}
-			}
-			/* check if the track is visible on the map. The track can
-			   be not the active track but still have a reference on the map (so it's only hidden)
-			   Because of this we have to check here if the track is "onMap" 
-			*/
-			if (data.trip.list[id].onMap) {
-				data.trip.list[id].onMap.remove();
-			}
-            return true;
+                hideActiveTrack();
+                return true;
+			} else if (undefined !== data.trip.list[id]) {
+                return true;
+            }
+            return false;
 		};
 		
         /* define a select method for a boat */
