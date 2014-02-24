@@ -20,45 +20,49 @@ $(document).ready(function() {
             type        : "get",
             contentType : "application/json",
         });
-
         request.done(function (response, textStatus, jqXHR){
-            var names = [];
-            
             /* check if friend_list changed */
             if (friend_list.length != response.friend_list) {
-                for (var i in response.friend_list) {
-                    if (-1 == names.indexOf(response.friend_list[i])) {
-                        names.push(response.friend_list[i]);
+                request = $.ajax({
+                    url         : "api/person/friends",
+                    type        : "get",
+                    contentType : "application/json"
+                });
+                
+                request.done(function (friendResponse, textStatus, jqXHR){
+                    for (var i in friendResponse) {
+                        /* friend entry not exist, download the info about the new friend now. */
+                        if (-1 == friend_list.indexOf(friendResponse[i]._id)) {
+                            friend_list.push(friendResponse[i]._id);
+                            map.set('person', friendResponse[i]);
+                        }
                     }
-                }
+                });
             }
             /* check if a friend request occurred */
             if (receivedRequests.length != response.receivedRequests) {
-                for (var i in response.receivedRequests) {
-                    if (-1 == names.indexOf(response.receivedRequests[i])) {
-                        names.push(response.receivedRequests[i]);
+                request = $.ajax({
+                    url         : "api/names",
+                    type        : "get",
+                    contentType : "application/json"
+                });
+                
+                request.done(function (personResponse, textStatus, jqXHR){
+                    /* run through all requests and check if they will already be displayed. */
+                    for (var i in personResponse) {
+                        if (-1 == receivedRequests.indexOf(personResponse[i].owner)) {
+                            $("#friendRequests").append(templateFriendRequests(personResponse[i]));
+                            receivedRequests.push(personResponse[i].owner);
+                        }
                     }
-                }
+                    /* there are no friend requests */
+                    if (0 == receivedRequests.length) {
+                        $("#logbook-friendRequests").hide();
+                    } else {
+                        $("#logbook-friendRequests").show();
+                    }
+                });
             }
-
-            request = $.ajax({
-                url         : "api/names",
-                type        : "get",
-                contentType : "application/json"
-            });
-            
-            request.done(function (personResponse, textStatus, jqXHR){
-                for (var i in personResponse) { 
-                    if (-1 != response.receivedRequests.indexOf(i)) {
-                        receivedRequests.push(i);
-
-                        //$("#friendRequests").append(templateFriendRequests(response.person_info[i]));
-                        //receivedRequests[response.person_info[i].owner] = response.person_info[i];
-                        console.log(i);
-                    }
-            
-                }
-            });
         });
     };
 
@@ -191,8 +195,13 @@ $(document).ready(function() {
             /* callback handler that will be called on success */
             request.done(function (response, textStatus, jqXHR){
                 $("#friendRequests"+self.data('id')).remove();
-                delete receivedRequests[self.data('id')];
-                friendRequest();
+                if (-1 != receivedRequests.indexOf(self.data('id'))) {
+                    receivedRequests.splice(receivedRequests.indexOf(self.data('id')), 1);
+                    if (0 == receivedRequests.length) {
+                        friendRequest();
+                        $("#logbook-friendRequests").hide();
+                    }
+                }
             });
         });
 
@@ -206,8 +215,13 @@ $(document).ready(function() {
             /* callback handler that will be called on success */
             request.done(function (response, textStatus, jqXHR){
                 $("#friendRequests"+self.data('id')).remove();
-                delete receivedRequests[self.data('id')];
-                friendRequest();
+                if (-1 != receivedRequests.indexOf(self.data('id'))) {
+                    receivedRequests.splice(receivedRequests.indexOf(self.data('id')), 1);
+                    if (0 == receivedRequests.length) {
+                        friendRequest();
+                        $("#logbook-friendRequests").hide();
+                    }
+                }
             });
         });
     });
