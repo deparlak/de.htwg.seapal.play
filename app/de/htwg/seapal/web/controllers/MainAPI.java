@@ -19,6 +19,7 @@ import play.mvc.Security;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.InputStream;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -196,12 +197,17 @@ public final class MainAPI
     @play.mvc.Security.Authenticated(AccountAPI.SecuredAPI.class)
     public Result getPhoto(UUID id, String type) throws FileNotFoundException {
         String session = session(IAccountController.AUTHN_COOKIE_KEY);
-        return ok(controller.getPhoto(session, id, type));
+        InputStream s = controller.getPhoto(session, id, type);
+        if (s != null) {
+            return ok(s).as("image/jpeg");
+        }
+
+        return internalServerError();
     }
 
     public Result names() {
         Http.RequestBody body = request().body();
-        JsonNode jsonNode = Json.parse(body.asText());
+        JsonNode jsonNode = body.asJson();
         if (jsonNode == null || !jsonNode.isArray()) {
             return internalServerError();
         }
