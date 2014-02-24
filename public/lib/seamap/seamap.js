@@ -1928,6 +1928,9 @@
         * *********************************************************************************
         */
         function handleExitTrackCreation() {
+            if (data.trip.active != null) {
+                data.trip.active.endDate = new Date().getTime();
+            }
             uploadTrackUpdate();
             state = States.NORMAL;
         }
