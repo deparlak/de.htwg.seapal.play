@@ -249,7 +249,6 @@
 
             /* if there is no client id, but a server id the object just has to be added */
             if ((!obj.id || obj.id == null) && obj._id != null && obj._rev != null) {
-                console.log("loaded from server");
                 newObj = self.getTemplate(type);
                 newObj.id = obj._id;
                 data[type].list[newObj.id] = newObj;
@@ -261,7 +260,6 @@
                 }
             /* if the object already exist, go to the entry and update all entry's */
             } else if (obj.id != null){
-                console.log("updated");
                 checkId(type, obj.id);
                 var modified = copyObjAttr(type, data[type].list[obj.id], obj);
 
@@ -274,7 +272,6 @@
                     dataCallback([event.UPDATED_FROM_CLIENT, event.SERVER_CREATE], obj);
                 }
             } else if (obj.id == null && obj._id == null && obj._rev == null) {
-                console.log("added from client");
                 newObj = self.getTemplate(type);
                 newObj.id = (idCounter++).toString();
                 data[type].list[newObj.id] = newObj;
@@ -460,7 +457,6 @@
         }
 
         this.switchBoatMarker = function() {
-            console.log(boatMarker.icon);
             isSatelliteView = !isSatelliteView;
             boatMarker.setMap(null);
             if(isSatelliteView) {
@@ -505,32 +501,37 @@
         /* All available events where a callback will be fired. */
         var event = 
         {
-            //TODO
-			LOADED_FROM_SERVER      : 0,
-            ADDED_FROM_CLIENT       : 1,
-            UPDATED_FROM_CLIENT     : 2,
-            CREATED_ROUTE           : 3,
-            CREATED_MARK            : 5,
-            NO_GEO_SUPPORT          : 7,
-            BOAT_POS_UPDATE         : 8,
-            CREATED_TRACK           : 9,
-            
-            ERROR                   : 10,
-            WARNING                 : 11,
-            INFO                    : 12,
-            
-            LEFT_SECURITY_CIRCLE    : 13,
-			SERVER_CREATE			: 14,
-			SERVER_REMOVE			: 15,
-            CREATED_WAYPOINT        : 16,
-            EDIT_MARK               : 17,
-            
-            SELECTED                : 18,
-            DESELECTED              : 19,
-            SWITCHED_BOAT           : 20,
-            SWITCHED_PERSON         : 21,
-            EDIT_WAYPOINT           : 22,
-            SHOW_IMAGE              : 23
+            /* standard callbacks */
+            ERROR                   : 0,
+            WARNING                 : 1,
+            INFO                    : 2,
+            /* callbacks which will be fired by a action of the server or a action to the server */
+			LOADED_FROM_SERVER      : 10,
+			SERVER_CREATE			: 11,
+			SERVER_REMOVE			: 12,
+            /* client side callbacks */
+            ADDED_FROM_CLIENT       : 20,
+            UPDATED_FROM_CLIENT     : 21,
+            /* creation element */
+            CREATED_ROUTE           : 30,
+            CREATED_MARK            : 31,
+            CREATED_WAYPOINT        : 32,
+            CREATED_TRACK           : 33,
+            /* edit a element */
+            EDIT_MARK               : 40,
+            EDIT_WAYPOINT           : 41,
+            /* information about some special actions */
+            NO_GEO_SUPPORT          : 50,
+            BOAT_POS_UPDATE         : 51,
+            LEFT_SECURITY_CIRCLE    : 52,
+            /* select or deselect any item (boat, trip, route, mark) */
+            SELECTED                : 60,
+            DESELECTED              : 61,
+            /* switched boat, will be additionally fired to the select method */
+            SWITCHED_BOAT           : 70,
+            /* switched person, will be additionally fired to the select method */
+            SWITCHED_PERSON         : 80,
+            SHOW_IMAGE              : 81
         };
 		        
         var options = $.seamap.options;
