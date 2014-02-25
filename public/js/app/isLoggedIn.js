@@ -141,7 +141,7 @@ $(document).ready(function() {
 
     /* callback handler that will be called on failure */
     request.fail(function (jqXHR, textStatus, errorThrown){
-        output.error(textStatus);
+        output.error(errorThrown);
     });
 
     /* callback for adding a crew member */
@@ -167,7 +167,7 @@ $(document).ready(function() {
 
         /* callback handler that will be called on failure */
         request.fail(function (jqXHR, textStatus, errorThrown){
-			output.error("Friend request failed: "+textStatus);
+			output.error("Friend request failed: "+errorThrown);
         });
         return false;
     });
@@ -242,7 +242,7 @@ $(document).ready(function() {
 
         /* callback handler that will be called on failure */
         request.fail(function (jqXHR, textStatus, errorThrown){
-			output.error(textStatus);
+			output.error(errorThrown);
         });
     });
 
@@ -293,7 +293,7 @@ $(document).ready(function() {
 
         /* callback handler that will be called on failure */
         request.fail(function (jqXHR, textStatus, errorThrown){
-            output.error(textStatus);
+            output.error(errorThrown);
         });
     });
 });
