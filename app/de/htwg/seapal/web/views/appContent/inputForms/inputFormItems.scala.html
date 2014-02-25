@@ -311,17 +311,13 @@
             <div class="col-sm-12">
         {{/if}}
             <div class="row">
-            {{#if waypoint}}
-                <div class="col-12 col-sm-1 font-light no_padding">
-            {{else}}
                 <div class="col-12 col-sm-1 font-light">
-            {{/if}}
                     <label for="track_title">Titel</label>
                 </div>
-                <div class="col-12 col-sm-5 font-light no_padding">
+                <div class="col-12 col-sm-5 font-light">
                     <input type="text" name="track_title" tabindex="1" required {{bindData "name"}} value="{{name}}" />
                 </div>
-                <div class="col-12 col-sm-2 font-light some_left_padding">
+                <div class="col-12 col-sm-2 font-light">
                     <label for="track_skipper">Skipper</label>
                 </div>
                 <div class="col-12 col-sm-4 font-light">
@@ -329,17 +325,13 @@
                 </div>
             </div>
             <div class="row">
-            {{#if waypoint}}
-                <div class="col-12 col-sm-1 font-light no_padding">
-            {{else}}
                 <div class="col-12 col-sm-1 font-light">
-            {{/if}}
                     <label for="track_startDestination">From</label>
                 </div>
-                <div class="col-12 col-sm-5 font-light no_padding">
+                <div class="col-12 col-sm-5 font-light">
                     <input type="text" name="track_startDestination" tabindex="4" required {{bindData "from"}} value="{{from}}" />
                 </div>
-                <div class="col-12 col-sm-2 font-light some_left_padding">
+                <div class="col-12 col-sm-2 font-light">
                     <label for="track_endDestination">To</label>
                 </div>
                 <div class="col-12 col-sm-4 font-light">
@@ -347,45 +339,37 @@
                 </div>
             </div>
             <div class="row">
-            {{#if waypoint}}
-                <div class="col-12 col-sm-1 font-light no_padding">
-            {{else}}
                 <div class="col-12 col-sm-1 font-light">
-            {{/if}}
                     <label for="track_startDate">Start</label>
                 </div>
-                <div class="col-12 col-sm-2 font-light no_padding">
+                <div class="col-12 col-sm-3 font-light">
                     <input type="text" class="datepicker" data-date-format="dd.mm.yyyy" name="track_startDate" tabindex="6" readonly required {{bindData "startDate"}} value="{{dateToString startDate}}" />
                 </div>
-                <div class="col-12 col-sm-1 font-light some_left_padding">
+                <div class="col-12 col-sm-1 font-light">
                     <label for="track_endDate">End</label>
                 </div>
-                <div class="col-12 col-sm-2 font-light no_padding">
+                <div class="col-12 col-sm-3 font-light">
                     <input type="text" class="datepicker" data-date-format="dd.mm.yyyy" name="track_endDate" tabindex="7" readonly {{bindData "endDate"}} value="{{dateToString endDate}}" />
                 </div>
-                <div class="col-12 col-sm-2 font-light some_left_padding">
+                <div class="col-12 col-sm-2 font-light">
                     <label for="track_duration">Duration</label>
                 </div>
-                <div class="col-12 col-sm-4 font-light">
+                <div class="col-12 col-sm-2 font-light">
                     <input type="text" name="track_duration" tabindex="8" {{bindData "duration"}} value="{{duration}}" />
                 </div>
             </div>
             <div class="row"><br></div>
             <div class="row">
-            {{#if waypoint}}
-                <div class="col-12 col-sm-1 font-light no_padding">
-            {{else}}
                 <div class="col-12 col-sm-1 font-light">
-            {{/if}}
                     <label for="track_crew">Crew</label>
                 </div>
-                <div class="col-12 col-sm-5 font-light no_padding">                            
+                <div class="col-12 col-sm-5 font-light">                            
                     <textarea name="track_crew" rows="10" tabindex="9" {{bindData "crew"}}>{{crew}}</textarea>
                 </div>
-                <div class="col-12 col-sm-1 font-light no_padding">
+                <div class="col-12 col-sm-1 font-light">
                     <label for="track_notes">Notes</label>
                 </div>
-                <div class="col-12 col-sm-5 font-light no_padding">                            
+                <div class="col-12 col-sm-5 font-light">                            
                     <textarea name="track_notes" rows="10" tabindex="10" {{bindData "notes"}}>{{notes}}</textarea>
                 </div>
             </div>
