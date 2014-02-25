@@ -11,7 +11,7 @@ $(document).ready(function() {
     var rev = 0;
     
 	menu.addCallback('leftclick', 'logbookCrewAdd', function (self) {
-        output.warning("You are not logged in!");
+        output.warning("You are not logged in. Please log in to add a new crew member.");
     });
     
  	/* if a track was created and no user is logged in, we have to set an _id, to simulate that the trip was saved to the server. */
