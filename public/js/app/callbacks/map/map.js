@@ -84,8 +84,7 @@ $(document).ready(function() {
 	
 	/* this callback will be called if GEO location is not supported */
     map.addCallback(events.NO_GEO_SUPPORT, function (self) {
-        alert(self);
-        console.log(self);
+        output.warning(self.msg);
     });
 	
     /* this callback will be called when the boat position changed */
