@@ -188,6 +188,11 @@ $(document).ready(function() {
     menu.addCallback('rightclick', ['icon-notSelected-trip', 'icon-selected-trip'], function (self) {
         tmpTrack = map.get(self.data('type'), self.data('id'));
         tmpTrack.waypoint = map.getWaypoints(tmpTrack.id);
+        var duration = tmpTrack.endDate - tmpTrack.startDate;
+        var seconds = Math.round((duration / 1000)) % 60;
+        var minutes = Math.round((duration / (1000 * 60))) % 60
+        var hours = Math.round(duration / (1000*60*60))
+        tmpTrack.duration = minutes+":"+seconds;
         openTrackTripModal(tmpTrack);
     });
 
