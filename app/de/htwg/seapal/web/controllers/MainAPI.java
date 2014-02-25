@@ -4,6 +4,7 @@ import com.google.inject.Inject;
 import de.htwg.seapal.controller.IAccountController;
 import de.htwg.seapal.controller.IMainController;
 import de.htwg.seapal.controller.impl.AccountController;
+import de.htwg.seapal.model.IModel;
 import de.htwg.seapal.model.ModelDocument;
 import de.htwg.seapal.model.impl.*;
 import de.htwg.seapal.utils.logging.ILogger;
@@ -19,6 +20,7 @@ import play.mvc.Security;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -112,6 +114,13 @@ public final class MainAPI
                 return internalServerError(form2.errorsAsJson());
             }
             ModelDocument doc = form2.get();
+
+            Collection<? extends IModel> collection = controller.getOwnDocuments("setting", session(IAccountController.AUTHN_COOKIE_KEY));
+            if (collection.size() == 1) {
+                Setting setting = (Setting) collection.toArray()[0];
+                doc.setRevision(setting.getRevision());
+                doc.setId(setting.getId());
+            }
 
             doc.setAccount(session(IAccountController.AUTHN_COOKIE_KEY));
 
