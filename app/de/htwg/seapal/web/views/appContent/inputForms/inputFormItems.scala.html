@@ -294,16 +294,22 @@
 <!-- track template -->
 <script type="text/x-handlebars" id ="track_Template">
     <div class="row wrap_scrollable">
-        <div class="col-sm-3 scroll_table" id="track_WaypointList">
-            <table>
-                <tbody>
-                    {{#each waypoint}}
-                        <tr><th class="disable-select {{type}}{{id}}" data-id='{{id}}' data-type='{{type}}'>{{name}}</th></tr>   
-                    {{/each}}                    
-                </tbody>
-            </table>
-        </div>
-        <div class="col-sm-9">
+        {{#if waypoint}}
+            <div class="col-sm-3 scroll_table" id="track_WaypointList">
+                <table>
+                    <tbody>
+                        {{#each waypoint}}
+                            <tr><th class="disable-select {{type}}{{id}}" data-id='{{id}}' data-type='{{type}}'>{{name}}</th></tr>   
+                        {{/each}}                    
+                    </tbody>
+                </table>
+            </div>
+        {{/if}}
+        {{#if waypoint}}
+            <div class="col-sm-9">
+        {{else}}
+            <div class="col-sm-12">
+        {{/if}}
             <div class="row">
                 <div class="col-12 col-sm-1 font-light no_padding">
                     <label for="track_title">Titel</label>
