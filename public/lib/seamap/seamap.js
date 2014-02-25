@@ -318,7 +318,17 @@
 			if (undefined === data[type].template) {
 				throw("There is no template available for the type "+type);
 			}
-			return jQuery.extend(true, {}, data[type].template);
+            /* get a copy of the template */
+            var obj = jQuery.extend(true, {}, data[type].template);
+            
+            /* check if some information has to be set like the active boat or the active person */
+            if (undefined !== obj.boat && null != data.boat.active && null != data.boat.active._id) {
+                obj.boat = data.boat.active._id;
+            }
+            if (undefined !== obj.trip && null != data.trip.active && null != data.trip.active._id) {
+                obj.trip = data.trip.active._id;
+            } 
+			return obj;
         };
 		/* select the object with the given type and id */
         this.select = function(type, id) {
@@ -1844,7 +1854,6 @@
             obj.name = "Track " + data.trip.count;
             obj.onMap = getOnMapTrack(obj);
             obj.update = true;
-            obj.boat = data.boat.active._id;
             obj.owner = data.person.active != null ? data.person.active.owner : "Someone";
             data.trip.list[obj.id] = obj;        
             activateTrack(obj.id); 
@@ -2125,8 +2134,6 @@
             if (null != data.trip.active && null != data.trip.active._id && null != data.boat.active && null != data.boat.active._id) {
                 var boat = getCurrentBoatInformation();
                 var obj = self.getTemplate('waypoint');
-                obj.trip = data.trip.active._id;
-                obj.boat = data.boat.active._id;
                 obj.id = (idCounter++).toString();
                 obj.name = "Waypoint "+data.waypoint.count;
                 obj.lat = boat.pos.lat();
