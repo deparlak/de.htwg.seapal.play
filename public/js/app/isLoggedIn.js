@@ -312,6 +312,7 @@ $(document).ready(function() {
         });
         
         request.done(function (response, textStatus, jqXHR){
+            /* set response from server back to settings, because the _id and _rev changed. */
             map.initGlobalSettings(response);
         });
     });
