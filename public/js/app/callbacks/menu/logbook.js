@@ -188,6 +188,7 @@ $(document).ready(function() {
     menu.addCallback('rightclick', ['icon-notSelected-trip', 'icon-selected-trip'], function (self) {
         tmpTrack = map.get(self.data('type'), self.data('id'));
         tmpTrack.waypoint = map.getWaypoints(tmpTrack.id);
+        tmpTrack.duration = new dateHelpers().getDateDifference(tmpTrack.startDate, tmpTrack.endDate);
         openTrackTripModal(tmpTrack);
     });
 
