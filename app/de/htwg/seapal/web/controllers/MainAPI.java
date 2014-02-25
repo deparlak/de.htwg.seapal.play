@@ -6,7 +6,6 @@ import de.htwg.seapal.controller.IMainController;
 import de.htwg.seapal.controller.impl.AccountController;
 import de.htwg.seapal.model.ModelDocument;
 import de.htwg.seapal.model.impl.*;
-import org.apache.commons.io.IOUtils;
 import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.node.ObjectNode;
 import play.data.Form;
@@ -16,7 +15,9 @@ import play.mvc.Http;
 import play.mvc.Result;
 import play.mvc.Security;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -24,8 +25,8 @@ import java.util.UUID;
 public final class MainAPI
         extends Controller {
 
-    private static final JsonNode success = Json.parse("{\"success\":true}");
-    private static final JsonNode fail = Json.parse("{\"success\":false}");
+    private static final JsonNode SUCCESS = Json.parse("{\"success\":true}");
+    private static final JsonNode FAIL = Json.parse("{\"success\":false}");
     private static final JsonNode EMPTY = Json.parse("{\"error\":\"no such document\"}");
     private static final JsonNode FILE_UPLOAD_FAILED = Json.parse("{\"error\":\"file upload failed\"}");
 
@@ -35,15 +36,15 @@ public final class MainAPI
     @Inject
     private AccountController accountController;
 
-    private Map<String, Class<? extends ModelDocument>> forms;
+    private Map<String, Class<? extends ModelDocument>> classes;
 
     public MainAPI() {
-        forms = new HashMap<>();
-        forms.put("boat", Boat.class);
-        forms.put("mark", Mark.class);
-        forms.put("route", Route.class);
-        forms.put("trip", Trip.class);
-        forms.put("waypoint", Waypoint.class);
+        classes = new HashMap<>();
+        classes.put("boat", Boat.class);
+        classes.put("mark", Mark.class);
+        classes.put("route", Route.class);
+        classes.put("trip", Trip.class);
+        classes.put("waypoint", Waypoint.class);
     }
 
     @play.mvc.Security.Authenticated(AccountAPI.SecuredAPI.class)
@@ -58,7 +59,7 @@ public final class MainAPI
             node.put("account_info", Json.toJson(account));
         }
 
-        for (String type : forms.keySet()) {
+        for (String type : classes.keySet()) {
             node.put(type, Json.toJson(controller.getDocuments(type, session, user.toString(), "own")));
         }
 
@@ -84,7 +85,7 @@ public final class MainAPI
 
         node.put("account_info", Json.toJson(accountController.getInternalInfo(session, session)));
 
-        for (String type: forms.keySet()) {
+        for (String type : classes.keySet()) {
             node.put(type, Json.toJson(controller.getDocuments(type, session, session, scope)));
         }
 
@@ -103,9 +104,9 @@ public final class MainAPI
         String session = session(IAccountController.AUTHN_COOKIE_KEY);
 
         if (controller.deleteDocument(document, session, id)) {
-            return ok(success);
+            return ok(SUCCESS);
         } else {
-            return unauthorized(fail);
+            return unauthorized(FAIL);
         }
     }
 
@@ -130,7 +131,7 @@ public final class MainAPI
     @play.mvc.Security.Authenticated(AccountAPI.SecuredAPI.class)
     public Result createDocument(String document) {
         try {
-            Class<? extends ModelDocument> cla = forms.get(document);
+            Class<? extends ModelDocument> cla = classes.get(document);
             Form<? extends ModelDocument> form2 = new Form<>(cla).bindFromRequest();
 
             if (form2.hasErrors()) {
@@ -138,10 +139,6 @@ public final class MainAPI
             }
             ModelDocument doc = form2.get();
 
-            /*
-               account has to be set here, because it will not mapped automatically.
-               TODO : check why auto mapping is not working
-            */
             doc.setAccount(form2.data().get("owner"));
 
             return ok(Json.toJson(controller.creatDocument(document, doc, session(IAccountController.AUTHN_COOKIE_KEY))));
@@ -172,8 +169,7 @@ public final class MainAPI
     public Result addPhoto(UUID uuid, String type) throws FileNotFoundException {
         String session = session(IAccountController.AUTHN_COOKIE_KEY);
 
-        Http.Request s2 = request();
-        Http.RequestBody s = s2.body();
+        Http.RequestBody s = request().body();
 
         Http.MultipartFormData body = s.asMultipartFormData();
         Http.MultipartFormData.FilePart picture = body.getFile("picture");
@@ -195,11 +191,7 @@ public final class MainAPI
         String session = session(IAccountController.AUTHN_COOKIE_KEY);
         InputStream s = controller.getPhoto(session, id, type);
         if (s != null) {
-            try {
-                return ok(new ByteArrayInputStream(IOUtils.toByteArray(s))).as("image/jpeg");
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+            return ok(s).as("image/jpeg");
         }
 
         return internalServerError();
