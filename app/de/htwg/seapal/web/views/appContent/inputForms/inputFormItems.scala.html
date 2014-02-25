@@ -311,7 +311,11 @@
             <div class="col-sm-12">
         {{/if}}
             <div class="row">
+            {{#if waypoint}}
                 <div class="col-12 col-sm-1 font-light no_padding">
+            {{else}}
+                <div class="col-12 col-sm-1 font-light">
+            {{/if}}
                     <label for="track_title">Titel</label>
                 </div>
                 <div class="col-12 col-sm-5 font-light no_padding">
@@ -325,7 +329,11 @@
                 </div>
             </div>
             <div class="row">
+            {{#if waypoint}}
                 <div class="col-12 col-sm-1 font-light no_padding">
+            {{else}}
+                <div class="col-12 col-sm-1 font-light">
+            {{/if}}
                     <label for="track_startDestination">From</label>
                 </div>
                 <div class="col-12 col-sm-5 font-light no_padding">
@@ -339,7 +347,11 @@
                 </div>
             </div>
             <div class="row">
+            {{#if waypoint}}
                 <div class="col-12 col-sm-1 font-light no_padding">
+            {{else}}
+                <div class="col-12 col-sm-1 font-light">
+            {{/if}}
                     <label for="track_startDate">Start</label>
                 </div>
                 <div class="col-12 col-sm-2 font-light no_padding">
@@ -360,7 +372,11 @@
             </div>
             <div class="row"><br></div>
             <div class="row">
+            {{#if waypoint}}
                 <div class="col-12 col-sm-1 font-light no_padding">
+            {{else}}
+                <div class="col-12 col-sm-1 font-light">
+            {{/if}}
                     <label for="track_crew">Crew</label>
                 </div>
                 <div class="col-12 col-sm-5 font-light no_padding">                            
