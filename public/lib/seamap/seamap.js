@@ -2122,11 +2122,11 @@
             /* add the waypoint only if a track is active and the track is already stored on the server
                Also a boat has to be selected.
             */
-            if (null != data.trip.active && null != data.trip.active._id) {
+            if (null != data.trip.active && null != data.trip.active._id && null != data.boat.active && null != data.boat.active._id) {
                 var boat = getCurrentBoatInformation();
                 var obj = self.getTemplate('waypoint');
                 obj.trip = data.trip.active._id;
-                
+                obj.boat = data.boat.active._id;
                 obj.id = (idCounter++).toString();
                 obj.name = "Waypoint "+data.waypoint.count;
                 obj.lat = boat.pos.lat();
