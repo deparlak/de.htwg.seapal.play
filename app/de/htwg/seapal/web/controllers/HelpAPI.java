@@ -1,7 +1,9 @@
 package de.htwg.seapal.web.controllers;
 
 import com.google.inject.Inject;
-import de.htwg.seapal.controller.*;
+import de.htwg.seapal.controller.IAccountController;
+import de.htwg.seapal.controller.IMainController;
+import de.htwg.seapal.controller.IPersonController;
 import de.htwg.seapal.model.*;
 import de.htwg.seapal.model.impl.*;
 import de.htwg.seapal.utils.logging.ILogger;
@@ -11,8 +13,6 @@ import play.libs.Json;
 import play.mvc.Controller;
 import play.mvc.Result;
 
-import java.security.NoSuchAlgorithmException;
-import java.security.spec.InvalidKeySpecException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -32,8 +32,7 @@ public class HelpAPI
     private IPersonController controller;
 
 
-    public Result help()
-            throws InvalidKeySpecException, NoSuchAlgorithmException {
+    public Result help() {
         ObjectNode node = Json.newObject();
         Map<String, JsonNode> dom = new HashMap<>();
         Map<String, JsonNode> domACL = new HashMap<>();

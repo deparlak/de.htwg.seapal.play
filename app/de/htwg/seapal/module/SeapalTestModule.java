@@ -41,8 +41,10 @@ public class SeapalTestModule extends SeapalBaseTestModule {
 		bind(IRouteDatabase.class).to(RouteDatabase.class);
 		bind(String.class).annotatedWith(Names.named("databaseOfMark")).toInstance("seapal_mark_db");
 		bind(IMarkDatabase.class).to(MarkDatabase.class);
-		bind(String.class).annotatedWith(Names.named("databaseOfRace")).toInstance("seapal_race_db");
-		bind(IRaceDatabase.class).to(RaceDatabase.class);
+        bind(String.class).annotatedWith(Names.named("databaseOfRace")).toInstance("seapal_race_db");
+        bind(IRaceDatabase.class).to(RaceDatabase.class);
+        bind(String.class).annotatedWith(Names.named("databaseOfSetting")).toInstance("seapal_setting_db");
+        bind(ISettingDatabase.class).to(SettingDatabase.class);
 
         bind(IMainController.class).to(MainController.class).in(Singleton.class);
 	}
@@ -94,4 +96,10 @@ public class SeapalTestModule extends SeapalBaseTestModule {
 	CouchDbConnector getRaceStdCouchDbConnector(@Named("databaseOfRace") String databaseName, CouchDbInstance couchDbInstance) {
 		return new StdCouchDbConnector(databaseName, couchDbInstance);
 	}
+
+    @Provides
+    @Named("settingCouchDbConnector")
+    CouchDbConnector getSettingStdCouchDbConnector(@Named("databaseOfSetting") String databaseName, CouchDbInstance couchDbInstance) {
+        return new StdCouchDbConnector(databaseName, couchDbInstance);
+    }
 }

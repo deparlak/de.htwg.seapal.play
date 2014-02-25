@@ -22,7 +22,7 @@ public class SeapalGlobal
      *
      * @return The Google Guice injector.
      */
-    public static Injector createInjector() {
+    private static Injector createInjector() {
         return Guice.createInjector(new SeapalTestModule());
     }
 

@@ -1,40 +1,41 @@
 # Routes
 
 # Static pages
-GET           /                                                                                                       de.htwg.seapal.web.controllers.Application.index()
-GET           /impressum                                                                                              de.htwg.seapal.web.controllers.Application.impressum()
-GET           /app                                                                                                    de.htwg.seapal.web.controllers.Application.app()
+GET           /                                                                                         de.htwg.seapal.web.controllers.Application.index()
+GET           /impressum                                                                                de.htwg.seapal.web.controllers.Application.impressum()
+GET           /app                                                                                      de.htwg.seapal.web.controllers.Application.app()
 
 GET           /api/$document<(boat|mark|route|trip|waypoint|person)>/$id<[0-9a-fA-F\-]+>        @de.htwg.seapal.web.controllers.MainAPI.singleDocument(id: UUID, document: String)
 DELETE        /api/$document<(boat|mark|route|trip|waypoint)>/$id<[0-9a-fA-F\-]+>        @de.htwg.seapal.web.controllers.MainAPI.deleteDocument(id: UUID, document: String)
 GET           /api/$document<(boat|mark|route|trip|waypoint|person)>/$scope<(all|friends|own)>        @de.htwg.seapal.web.controllers.MainAPI.getDocuments(document: String, scope: String)
 GET           /api/$document<(trip|waypoint)>/byparent/$parent<(boat|trip)>/$id<[0-9a-fA-F\-]+>        @de.htwg.seapal.web.controllers.MainAPI.getByParent(document: String, parent: String, id: UUID)
-POST          /api/$document<(boat|mark|route|trip|waypoint|person)>        @de.htwg.seapal.web.controllers.MainAPI.createDocument(document: String)
+POST          /api/$document<(boat|mark|route|trip|waypoint)>        @de.htwg.seapal.web.controllers.MainAPI.createDocument(document: String)
+POST          /api/settings        @de.htwg.seapal.web.controllers.MainAPI.saveSettings()
 GET           /api/account        @de.htwg.seapal.web.controllers.AccountAPI.account()
 GET           /api/names        @de.htwg.seapal.web.controllers.MainAPI.names()
 GET           /api/sendFriendRequest/$id<[0-9a-fA-F\-]+>        @de.htwg.seapal.web.controllers.MainAPI.sendFriendRequest(id: UUID)
 GET           /api/sendFriendRequestMail/:mail        @de.htwg.seapal.web.controllers.MainAPI.sendFriendRequestMail(mail: String)
 GET           /api/abortFriendRequest/$id<[0-9a-fA-F\-]+>        @de.htwg.seapal.web.controllers.MainAPI.abortFriendRequest(id: UUID)
-GET        /api/all/$scope<(all|friends|own)>        @de.htwg.seapal.web.controllers.MainAPI.all(scope: String)
-GET        /api/all/$id<[0-9a-fA-F\-]+>        @de.htwg.seapal.web.controllers.MainAPI.allofFriend(id: UUID)
+GET           /api/all/$scope<(all|friends|own)>        @de.htwg.seapal.web.controllers.MainAPI.all(scope: String)
+GET           /api/all/$id<[0-9a-fA-F\-]+>        @de.htwg.seapal.web.controllers.MainAPI.allofFriend(id: UUID)
 
 # authentication
-GET           /login                                                                                                  de.htwg.seapal.web.controllers.Application.login()
+GET           /login                                                                                    de.htwg.seapal.web.controllers.Application.login()
 POST          /login        @de.htwg.seapal.web.controllers.AccountAPI.login()
 GET           /logout        @de.htwg.seapal.web.controllers.AccountAPI.logout()
-GET           /signup                                                                                                 de.htwg.seapal.web.controllers.Application.signup()
+GET           /signup                                                                                   de.htwg.seapal.web.controllers.Application.signup()
 POST          /signup        @de.htwg.seapal.web.controllers.AccountAPI.signup()
 # reset PW
-GET           /forgottenForm                                                                                          de.htwg.seapal.web.controllers.Application.forgotten()
-GET           /pwreset/$token<-?[0-9]{1,10}>                                                                          de.htwg.seapal.web.controllers.Application.resetForm(token: Int)
+GET           /forgottenForm                                                                            de.htwg.seapal.web.controllers.Application.forgotten()
+GET           /pwreset/$token<-?[0-9]{1,10}>                                                            de.htwg.seapal.web.controllers.Application.resetForm(token: Int)
 POST          /forgotten        @de.htwg.seapal.web.controllers.AccountAPI.requestNewPassword()
 POST          /reset        @de.htwg.seapal.web.controllers.AccountAPI.resetPassword()
 
 # Javascript routing
-GET           /assets/javascripts/routes                                                                              de.htwg.seapal.web.controllers.Application.javascriptRoutes()
+GET           /assets/javascripts/routes                                                                de.htwg.seapal.web.controllers.Application.javascriptRoutes()
 
 # Map static resources from the /public folder to the /assets URL path
-GET           /assets/*file                                                                                           controllers.Assets.at(path="/public", file)
+GET           /assets/*file                                                                             controllers.Assets.at(path="/public", file)
 
 GET           /help        @de.htwg.seapal.web.controllers.HelpAPI.help()
 GET           /openID/auth        @de.htwg.seapal.web.controllers.AccountAPI.auth()
