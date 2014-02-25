@@ -133,6 +133,10 @@ $(document).ready(function() {
         if (response.person_info.length) {
             map.select('person', response.person_info[0]._id);
         }
+        /* check if settings are available */
+        if (response.setting_info.length) {
+            map.initGlobalSettings(response.setting_info[0]);
+        }
         /* trigger friend list */
         friendRequest();
         /* set cylcic friend request every minute */
@@ -294,6 +298,20 @@ $(document).ready(function() {
         /* callback handler that will be called on failure */
         request.fail(function (jqXHR, textStatus, errorThrown){
             output.error(errorThrown);
+        });
+    });
+    
+    map.addCallback(events.UPDATED_SETTINGS, function (self) {
+        request = $.ajax({
+            url         : "/api/settings",
+            type        : "post",
+            contentType : "application/json",
+            data        : JSON.stringify(self),
+        });
+        
+        request.done(function (response, textStatus, jqXHR){
+            /* set response from server back to settings, because the _id and _rev changed. */
+            map.initGlobalSettings(response);
         });
     });
 });

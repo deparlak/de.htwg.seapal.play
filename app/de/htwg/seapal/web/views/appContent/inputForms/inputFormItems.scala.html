@@ -5,11 +5,11 @@
             <label for="distanceUnit">Unit for distance</label>
         </div>
         <div class="col-12 col-sm-4">
-            <select name="distanceUnit" tabindex="1" {{bindData "DISTANCE_UNIT"}}>
-                {{#select DISTANCE_UNIT}}
-                <option value="globalSettings_nautmil">Naut. miles</option>
-                <option value="globalSettings_km">Kilometer</option>
-                <option value="globalSettings_mil">Miles</option>
+            <select name="distanceUnit" tabindex="1" {{bindData "distanceUnit"}}>
+                {{#select distanceUnit}}
+                <option value="nautmil">Naut. miles</option>
+                <option value="km">Kilometer</option>
+                <option value="mil">Miles</option>
                 {{/select}}
             </select>
         </div>
@@ -19,11 +19,11 @@
             <label for="temperatureUnit">Unit for temperature</label>
         </div>
         <div class="col-12 col-sm-4">
-            <select name="temperatureUnit" tabindex="2" {{bindData "TEMPERATURE_UNIT"}}>
-                {{#select TEMPERATURE_UNIT}}
-                <option value="globalSettings_celsius">°C</option>
-                <option value="globalSettings_fahrenheit">°F</option>
-                <option value="globalSettings_kelvin">°K</option>
+            <select name="temperatureUnit" tabindex="2" {{bindData "temperatureUnit"}}>
+                {{#select temperatureUnit}}
+                <option value="celsius">°C</option>
+                <option value="fahrenheit">°F</option>
+                <option value="kelvin">°K</option>
                 {{/select}}
             </select>
         </div>
@@ -33,7 +33,7 @@
             <label for="trackInteral">Track record interval [s]</label>
         </div>
         <div class="col-12 col-sm-4">
-            <input type="number" min="1" step="1" name="trackInteral" tabindex="3" {{bindData "TRACKING_DELAY"}} value={{TRACKING_DELAY}} required />
+            <input type="number" min="1" step="1" name="trackInteral" tabindex="3" {{bindData "trackingDelay"}} value={{trackingDelay}} required />
         </div>
     </div>
     <div class="row">
@@ -41,7 +41,7 @@
             <label for="waypointDelay">Waypoint record interval [min]</label>
         </div>
         <div class="col-12 col-sm-4">
-            <input type="number" min="1" step="1" name="waypointDelay" tabindex="4" {{bindData "WAYPOINT_DELAY"}} value={{WAYPOINT_DELAY}} required />
+            <input type="number" min="1" step="1" name="waypointDelay" tabindex="4" {{bindData "waypointDelay"}} value={{waypointDelay}} required />
         </div>
     </div>
     <div class="row">
@@ -49,7 +49,7 @@
             <label for="historyTrend">History trend for dashboard [s]</label>
         </div>
         <div class="col-12 col-sm-4">
-            <input type="number" min="1" step="1" name="historyTrend" tabindex="5" {{bindData "HISTORY_TREND"}} value={{HISTORY_TREND}} required />
+            <input type="number" min="1" step="1" name="historyTrend" tabindex="5" {{bindData "historyTrend"}} value={{historyTrend}} required />
         </div>
     </div>
     <div class="row">
@@ -57,7 +57,7 @@
             <label for="circleRadius">Security circle radius [m]</label>
         </div>
         <div class="col-12 col-sm-4">
-            <input type="number" min="1" step="1" name="circleRadius" tabindex="6" {{bindData "CIRCLE_RADIUS"}} value={{CIRCLE_RADIUS}} required />
+            <input type="number" min="1" step="1" name="circleRadius" tabindex="6" {{bindData "circleRadius"}} value={{circleRadius}} required />
         </div>
     </div>
     <div class="inputForm-footer">
@@ -254,16 +254,16 @@
 <!-- marker template -->
 <script type="text/x-handlebars" id ="marker_Template">
     <div class="row">
-        <div class="some_left_padding col-12 col-sm-1">
+        <div class="col-12 col-sm-1">
             <label for="marker_titel">Titel</label>
         </div>
-        <div class="no_padding col-12 col-sm-6">
+        <div class="col-12 col-sm-5">
             <input type="text" name="marker_titel" tabindex="1" required {{bindData "name"}} value="{{name}}" />
         </div>
-        <div class="some_left_padding col-12 col-sm-2">
+        <div class="col-12 col-sm-2">
             <label for="marker_pos">Position</label>
         </div>
-        <div class="no_padding col-12 col-sm-3">
+        <div class="col-12 col-sm-4">
             <input type="search" class="latlngInput" name="marker_pos" {{bindData "position"}} value="{{position}}" {{#unless this.image_thumb}}disabled{{/unless}}/>
         </div>
     </div>
@@ -277,10 +277,10 @@
 <!-- route template -->
 <script type="text/x-handlebars" id ="route_Template">
     <div class="row">
-        <div class="some_left_padding col-12 col-sm-4">
+        <div class="col-12 col-sm-4">
             <label for="route_titel">Titel</label>
         </div>
-        <div class="no_padding col-12 col-sm-8">
+        <div class="col-12 col-sm-8">
             <input type="text" name="route_titel" tabindex="1" required {{bindData "name"}} value="{{name}}" />
         </div>
     </div>
@@ -294,24 +294,30 @@
 <!-- track template -->
 <script type="text/x-handlebars" id ="track_Template">
     <div class="row wrap_scrollable">
-        <div class="col-sm-3 scroll_table" id="track_WaypointList">
-            <table>
-                <tbody>
-                    {{#each waypoint}}
-                        <tr><th class="disable-select {{type}}{{id}}" data-id='{{id}}' data-type='{{type}}'>{{name}}</th></tr>   
-                    {{/each}}                    
-                </tbody>
-            </table>
-        </div>
-        <div class="col-sm-9">
+        {{#if waypoint}}
+            <div class="col-sm-3 scroll_table" id="track_WaypointList">
+                <table>
+                    <tbody>
+                        {{#each waypoint}}
+                            <tr><th class="disable-select {{type}}{{id}}" data-id='{{id}}' data-type='{{type}}'>{{name}}</th></tr>   
+                        {{/each}}                    
+                    </tbody>
+                </table>
+            </div>
+        {{/if}}
+        {{#if waypoint}}
+            <div class="col-sm-9">
+        {{else}}
+            <div class="col-sm-12">
+        {{/if}}
             <div class="row">
-                <div class="col-12 col-sm-1 font-light no_padding">
+                <div class="col-12 col-sm-1 font-light">
                     <label for="track_title">Titel</label>
                 </div>
-                <div class="col-12 col-sm-5 font-light no_padding">
+                <div class="col-12 col-sm-5 font-light">
                     <input type="text" name="track_title" tabindex="1" required {{bindData "name"}} value="{{name}}" />
                 </div>
-                <div class="col-12 col-sm-2 font-light some_left_padding">
+                <div class="col-12 col-sm-2 font-light">
                     <label for="track_skipper">Skipper</label>
                 </div>
                 <div class="col-12 col-sm-4 font-light">
@@ -319,13 +325,13 @@
                 </div>
             </div>
             <div class="row">
-                <div class="col-12 col-sm-1 font-light no_padding">
+                <div class="col-12 col-sm-1 font-light">
                     <label for="track_startDestination">From</label>
                 </div>
-                <div class="col-12 col-sm-5 font-light no_padding">
+                <div class="col-12 col-sm-5 font-light">
                     <input type="text" name="track_startDestination" tabindex="4" required {{bindData "from"}} value="{{from}}" />
                 </div>
-                <div class="col-12 col-sm-2 font-light some_left_padding">
+                <div class="col-12 col-sm-2 font-light">
                     <label for="track_endDestination">To</label>
                 </div>
                 <div class="col-12 col-sm-4 font-light">
@@ -333,37 +339,37 @@
                 </div>
             </div>
             <div class="row">
-                <div class="col-12 col-sm-1 font-light no_padding">
+                <div class="col-12 col-sm-1 font-light">
                     <label for="track_startDate">Start</label>
                 </div>
-                <div class="col-12 col-sm-2 font-light no_padding">
+                <div class="col-12 col-sm-3 font-light">
                     <input type="text" class="datepicker" data-date-format="dd.mm.yyyy" name="track_startDate" tabindex="6" readonly required {{bindData "startDate"}} value="{{dateToString startDate}}" />
                 </div>
-                <div class="col-12 col-sm-1 font-light some_left_padding">
+                <div class="col-12 col-sm-1 font-light">
                     <label for="track_endDate">End</label>
                 </div>
-                <div class="col-12 col-sm-2 font-light no_padding">
+                <div class="col-12 col-sm-3 font-light">
                     <input type="text" class="datepicker" data-date-format="dd.mm.yyyy" name="track_endDate" tabindex="7" readonly {{bindData "endDate"}} value="{{dateToString endDate}}" />
                 </div>
-                <div class="col-12 col-sm-2 font-light some_left_padding">
+                <div class="col-12 col-sm-2 font-light">
                     <label for="track_duration">Duration</label>
                 </div>
-                <div class="col-12 col-sm-4 font-light">
+                <div class="col-12 col-sm-2 font-light">
                     <input type="text" name="track_duration" tabindex="8" {{bindData "duration"}} value="{{duration}}" />
                 </div>
             </div>
             <div class="row"><br></div>
             <div class="row">
-                <div class="col-12 col-sm-1 font-light no_padding">
+                <div class="col-12 col-sm-1 font-light">
                     <label for="track_crew">Crew</label>
                 </div>
-                <div class="col-12 col-sm-5 font-light no_padding">                            
+                <div class="col-12 col-sm-5 font-light">                            
                     <textarea name="track_crew" rows="10" tabindex="9" {{bindData "crew"}}>{{crew}}</textarea>
                 </div>
-                <div class="col-12 col-sm-1 font-light no_padding">
+                <div class="col-12 col-sm-1 font-light">
                     <label for="track_notes">Notes</label>
                 </div>
-                <div class="col-12 col-sm-5 font-light no_padding">                            
+                <div class="col-12 col-sm-5 font-light">                            
                     <textarea name="track_notes" rows="10" tabindex="10" {{bindData "notes"}}>{{notes}}</textarea>
                 </div>
             </div>
@@ -378,56 +384,56 @@
 <!-- Waypoint template -->
 <script type="text/x-handlebars" id="waypoint_Template">
     <div class="row">
-        <div class="some_left_padding col-12 col-sm-1">
+        <div class="col-12 col-sm-1">
             <label for="waypoint_titel">Titel</label>
         </div>
-        <div class="no_padding col-12 col-sm-3">
+        <div class="col-12 col-sm-3">
             <input type="text" name="waypoint_titel" tabindex="1" {{bindData "title"}} value="{{title}}" />
         </div>
-        <div class="some_left_padding col-12 col-sm-1">
+        <div class="col-12 col-sm-1">
             <label for="waypoint_pos">Pos.</label>
         </div>
-        <div class="no_padding col-12 col-sm-3">
+        <div class="col-12 col-sm-3">
             <input type="search" class="latlngInput" name="waypoint_pos" {{bindData "position"}} value="{{position}}" tabindex="2" disabled/>
         </div>
-        <div class="some_left_padding col-12 col-sm-1">
+        <div class="col-12 col-sm-1">
             <label for="waypoint_date">Date</label>
         </div>
-        <div class="no_padding col-12 col-sm-3">
+        <div class="col-12 col-sm-3">
             <input type="text" name="waypoint_date" tabindex="3" readonly value="{{timeDateToString date}}" />
         </div>
     </div>
     <div class="row">
-        <div class="some_left_padding col-12 col-sm-1">
+        <div class="col-12 col-sm-1">
             <label for="waypoint_COG">COG</label>
         </div>
-        <div class="no_padding col-12 col-sm-1">
+        <div class="col-12 col-sm-2">
             <input type="text" name="waypoint_COG" tabindex="4" readonly {{bindData "cog"}} value="{{cog}}" />
         </div>
-        <div class="some_left_padding col-12 col-sm-1">
+        <div class="col-12 col-sm-1">
             <label for="waypoint_SOG">SOG</label>
         </div>
-        <div class="no_padding col-12 col-sm-1">
+        <div class="col-12 col-sm-2">
             <input type="text" name="waypoint_SOG" tabindex="5" readonly {{bindData "sog"}} value="{{sog}}" />
         </div>
-        <div class="some_left_padding col-12 col-sm-1">
+        <div class="col-12 col-sm-1">
             <label for="waypoint_BTM">BTM</label>
         </div>
-        <div class="no_padding col-12 col-sm-1">
+        <div class="col-12 col-sm-2">
             <input type="text" name="waypoint_BTM" tabindex="6" readonly {{bindData "btm"}} value="{{btm}}" />
         </div>
-        <div class="some_left_padding col-12 col-sm-1">
+        <div class="col-12 col-sm-1">
             <label for="waypoint_DTM">DTM</label>
         </div>
-        <div class="no_padding col-12 col-sm-1">
+        <div class="col-12 col-sm-2">
             <input type="text" name="waypoint_DTM" tabindex="7" readonly {{bindData "dtm"}} value="{{dtm}}" />
         </div>        
     </div>
     <div class="row">
-        <div class="some_left_padding col-12 col-sm-2">
+        <div class="col-12 col-sm-2">
             <label for="waypoint_maneuver">Maneuver</label>
         </div>
-        <div class="no_padding col-12 col-sm-2">
+        <div class="col-12 col-sm-2">
             <select name="waypoint_maneuver" tabindex="9" {{bindData "maneuver"}}>
                 {{#select maneuver}}
                 <option value="NONE">-</option>
@@ -438,10 +444,10 @@
                 {{/select}}
             </select>
         </div>
-        <div class="some_left_padding col-12 col-sm-2">
+        <div class="col-12 col-sm-2">
             <label for="waypoint_headsail">Headsail</label>
         </div>
-        <div class="no_padding no_padding col-12 col-sm-2">
+        <div class="col-12 col-sm-2">
             <select name="waypoint_headsail" tabindex="10" {{bindData "foresail"}}>
                 {{#select foresail}}
                 <option value="NONE">-</option>
@@ -451,10 +457,10 @@
                 {{/select}}
             </select>
         </div>
-        <div class="some_left_padding col-12 col-sm-2">
+        <div class="col-12 col-sm-2">
             <label for="waypoint_mainsail">Mainsail</label>
         </div>
-        <div class="no_padding col-12 col-sm-2">
+        <div class="col-12 col-sm-2">
             <select name="waypoint_mainsail" tabindex="11" {{bindData "mainsail"}}>
                 {{#select mainsail}}
                 <option value="NONE">-</option>
@@ -465,13 +471,13 @@
         </div>
     </div>
     <div class="row">
-        <div class="some_left_padding col-12 col-sm-1">
+        <div class="col-12 col-sm-1">
             <label for="waypoint_Notes">Notes</label>
         </div>
-        <div class="no_padding col-12 col-sm-5">                            
+        <div class="col-12 col-sm-5">                            
             <textarea name="waypoint_Notes" rows="10" tabindex="9"{{bindData "note"}} value="{{note}}" ></textarea>
         </div>
-        <div class="no_padding col-12 col-sm-6">                            
+        <div class="col-12 col-sm-6">                            
             <img src="{{image}}">
         </div>
     </div>
@@ -484,7 +490,7 @@
 <!-- Confirm crew request template -->
 <script type="text/x-handlebars" id ="confirmCrewRequest_Template">
     <div class="row">
-        <div class="some_left_padding col-12 col-sm-12">
+        <div class="col-12 col-sm-12">
             <label>Would you like to add</label>
             <label>{{firstname}} {{lastname}}</label>
             <label>to your crew?</label>
