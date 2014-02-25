@@ -239,7 +239,6 @@
             if (ok) {
                 /* remove the element now from the list */
                 dataCallback([event.SERVER_REMOVE], data[type].list[id]);
-                delete data[type].list[data[type].list[id]["_id"]];
                 delete data[type].list[id];
             }
         };
@@ -2176,7 +2175,7 @@
         function handleAddNewWaypoint() {
             if (isTracking) {
                 addNewWaypoint();
-                setTimeout(handleAddNewWaypoint, globalSettings.waypointDelay * 60000);
+                setTimeout(handleAddNewWaypoint, globalSettings.waypointDelay * 6000);
                 //TODO : check if cyclic track upload should be done.
                 //uploadTrackUpdate();
             }

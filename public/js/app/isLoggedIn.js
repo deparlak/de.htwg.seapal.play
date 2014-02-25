@@ -10,7 +10,7 @@ $(document).ready(function() {
     var templateFriendRequests = Handlebars.compile($("#template-friendRequests").html());
 
     /* local list to store friend requests */
-    var receivedRequests = [];
+    var receivedRequests = {};
     /* local friend list, which can be checked for new friends */
     var friend_list = [];
     /* method to call friend request list cylic */
@@ -40,7 +40,7 @@ $(document).ready(function() {
                 });
             }
             /* check if a friend request occurred */
-            if (receivedRequests.length != response.receivedRequests.length) {
+            if (Object.keys(receivedRequests).length != response.receivedRequests.length) {
                 request = $.ajax({
                     url         : "api/names",
                     type        : "get",
@@ -50,13 +50,13 @@ $(document).ready(function() {
                 request.done(function (personResponse, textStatus, jqXHR){
                     /* run through all requests and check if they will already be displayed. */
                     for (var i in personResponse) {
-                        if (-1 == receivedRequests.indexOf(personResponse[i].owner)) {
+                        if (undefined === receivedRequests[personResponse[i].owner]) {
                             $("#friendRequests").append(templateFriendRequests(personResponse[i]));
-                            receivedRequests.push(personResponse[i].owner);
+                            receivedRequests[personResponse[i].owner] = personResponse[i];
                         }
                     }
                     /* there are no friend requests */
-                    if (0 == receivedRequests.length) {
+                    if (0 == Object.keys(receivedRequests).length) {
                         $("#logbook-friendRequests").hide();
                     } else {
                         $("#logbook-friendRequests").show();
@@ -83,30 +83,10 @@ $(document).ready(function() {
 
         /* callback handler that will be called on success */
         request.done(function (response, textStatus, jqXHR){
-            response.boat.map( function(item) {
-                if (item.owner == self.owner) {
-                    map.set('boat', item);
-                }
-            });
-            response.mark.map( function(item) {
-                if (item.owner == self.owner) {
-                    map.set('mark', item);
-                }
-            });
-            response.route.map( function(item) {
-                if (item.owner == self.owner) {
-                    map.set('route', item);
-                }
-            });
-            response.trip.map( function(item) {
-                if (item.owner == self.owner) {
-                    map.set('trip', item);
-                }
-            });
-            response.waypoint.map( function(item) {
-                if (item.owner == self.owner) {
-                    map.set('waypoint', item);
-                }
+            ['boat', 'route', 'mark', 'trip', 'waypoint'].forEach(function(type) {
+                response[type].map( function(item) {
+                    map.set(type, item);
+                });
             });
         });
     });
@@ -130,7 +110,7 @@ $(document).ready(function() {
         /* trigger friend list */
         friendRequest();
         /* set cylcic friend request every minute */
-        setInterval(friendRequest, 60000);
+        setInterval(friendRequest, 6000);
     });
 
     /* callback handler that will be called on failure */
@@ -185,12 +165,10 @@ $(document).ready(function() {
             /* callback handler that will be called on success */
             request.done(function (response, textStatus, jqXHR){
                 $("#friendRequests"+self.data('id')).remove();
-                if (-1 != receivedRequests.indexOf(self.data('id'))) {
-                    receivedRequests.splice(receivedRequests.indexOf(self.data('id')), 1);
-                    if (0 == receivedRequests.length) {
-                        friendRequest();
-                        $("#logbook-friendRequests").hide();
-                    }
+                delete receivedRequests[self.data('id')];
+                if (0 == Object.keys(receivedRequests).length) {
+                    friendRequest();
+                    $("#logbook-friendRequests").hide();
                 }
             });
         });
@@ -205,12 +183,10 @@ $(document).ready(function() {
             /* callback handler that will be called on success */
             request.done(function (response, textStatus, jqXHR){
                 $("#friendRequests"+self.data('id')).remove();
-                if (-1 != receivedRequests.indexOf(self.data('id'))) {
-                    receivedRequests.splice(receivedRequests.indexOf(self.data('id')), 1);
-                    if (0 == receivedRequests.length) {
-                        friendRequest();
-                        $("#logbook-friendRequests").hide();
-                    }
+                delete receivedRequests[self.data('id')];
+                if (0 == Object.keys(receivedRequests).length) {
+                    friendRequest();
+                    $("#logbook-friendRequests").hide();
                 }
             });
         });
