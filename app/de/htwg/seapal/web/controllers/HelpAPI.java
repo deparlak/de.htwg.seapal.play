@@ -3,7 +3,6 @@ package de.htwg.seapal.web.controllers;
 import com.google.inject.Inject;
 import de.htwg.seapal.controller.IAccountController;
 import de.htwg.seapal.controller.IMainController;
-import de.htwg.seapal.controller.IPersonController;
 import de.htwg.seapal.model.*;
 import de.htwg.seapal.model.impl.*;
 import de.htwg.seapal.utils.logging.ILogger;
@@ -28,9 +27,6 @@ public class HelpAPI
     @Inject
     private ILogger logger;
 
-    @Inject
-    private IPersonController controller;
-
 
     public Result help() {
         ObjectNode node = Json.newObject();
@@ -45,7 +41,7 @@ public class HelpAPI
         SignupAccount save = new SignupAccount(crewMember1, "Alfred", "von Tirpitz");
         AccountController.saveAccount(save, true);
         domACL.put("crewMember1", Json.toJson(AccountController.getInternalInfo(String.valueOf(crewMember1.getUUID()), crewMember1.getUUID().toString())));
-        domACLPerson.put("crewMember1", Json.toJson(controller.getByAccount(crewMember1.getUUID())));
+        domACLPerson.put("crewMember1", Json.toJson(mainController.getDocuments("person", crewMember1.getUUID().toString(), crewMember1.getUUID().toString(), "own")));
 
         IAccount crewMember2 = new Account();
         crewMember2.setAccount(crewMember2.getUUID().toString());
@@ -54,7 +50,7 @@ public class HelpAPI
         SignupAccount save2 = new SignupAccount(crewMember2, "Ernst", "Lindemann");
         AccountController.saveAccount(save2, true);
         domACL.put("crewMember2", Json.toJson(AccountController.getInternalInfo(String.valueOf(crewMember2.getUUID()), String.valueOf(crewMember2.getUUID()))));
-        domACLPerson.put("crewMember2", Json.toJson(controller.getByAccount(crewMember2.getUUID())));
+        domACLPerson.put("crewMember1", Json.toJson(mainController.getDocuments("person", crewMember2.getUUID().toString(), crewMember2.getUUID().toString(), "own")));
 
         IAccount account = new Account();
         account.setAccount(account.getUUID().toString());
@@ -65,7 +61,7 @@ public class HelpAPI
         SignupAccount save3 = new SignupAccount(account, "Karl", "Dönitz");
         AccountController.saveAccount(save3, true);
         domACL.put("captain", Json.toJson(AccountController.getInternalInfo(String.valueOf(account.getUUID()), String.valueOf(account.getUUID()))));
-        domACLPerson.put("captain", Json.toJson(controller.getByAccount(account.getUUID())));
+        domACLPerson.put("crewMember1", Json.toJson(mainController.getDocuments("person", account.getUUID().toString(), account.getUUID().toString(), "own")));
 
         ObjectNode nodeInner = Json.newObject();
         nodeInner.putAll(domACL);
