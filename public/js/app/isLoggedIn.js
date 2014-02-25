@@ -135,8 +135,8 @@ $(document).ready(function() {
         }
         /* trigger friend list */
         friendRequest();
-        /* sst cylcic friend request every minute */
-        setInterval(friendRequest, 6000);
+        /* set cylcic friend request every minute */
+        setInterval(friendRequest, 60000);
     });
 
     /* callback handler that will be called on failure */
