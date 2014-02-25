@@ -1,5 +1,5 @@
 {
-   "_id": "_design/Settings",
+   "_id": "_design/Setting",
    "language": "coffeescript",
    "views": {
        "own": {

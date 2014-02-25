@@ -88,7 +88,7 @@ public final class MainAPI
         ObjectNode node = Json.newObject();
         node.put("person_info", Json.toJson(controller.getDocuments("person", session, session, scope)));
 
-        node.put("setting", Json.toJson(controller.getOwnDocuments("setting", session)));
+        node.put("setting_info", Json.toJson(controller.getOwnDocuments("setting", session)));
 
         node.put("account_info", Json.toJson(accountController.getInternalInfo(session, session)));
 
