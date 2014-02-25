@@ -16,8 +16,10 @@ $(document).ready(function() {
     
  	/* if a track was created and no user is logged in, we have to set an _id, to simulate that the trip was saved to the server. */
     map.addCallback([events.SERVER_CREATE], function (self) {
-        self._id = 'SIMULATED_SERVER_ID_'+id++;
-        self._rev = 'SIMULATED_SERVER_REV_'+rev++;
+        if (null == self._id) {
+            self._id = 'SIMULATED_SERVER_ID_'+id++;
+            self._rev = 'SIMULATED_SERVER_REV_'+rev++;
+        }
         map.set(self.type, self);
     });
 });
