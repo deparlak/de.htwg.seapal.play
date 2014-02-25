@@ -5,8 +5,8 @@
             <label for="distanceUnit">Unit for distance</label>
         </div>
         <div class="col-12 col-sm-4">
-            <select name="distanceUnit" tabindex="1" {{bindData "DISTANCE_UNIT"}}>
-                {{#select DISTANCE_UNIT}}
+            <select name="distanceUnit" tabindex="1" {{bindData "distanceUnit"}}>
+                {{#select distanceUnit}}
                 <option value="globalSettings_nautmil">Naut. miles</option>
                 <option value="globalSettings_km">Kilometer</option>
                 <option value="globalSettings_mil">Miles</option>
@@ -19,8 +19,8 @@
             <label for="temperatureUnit">Unit for temperature</label>
         </div>
         <div class="col-12 col-sm-4">
-            <select name="temperatureUnit" tabindex="2" {{bindData "TEMPERATURE_UNIT"}}>
-                {{#select TEMPERATURE_UNIT}}
+            <select name="temperatureUnit" tabindex="2" {{bindData "temperatureUnit"}}>
+                {{#select temperatureUnit}}
                 <option value="globalSettings_celsius">°C</option>
                 <option value="globalSettings_fahrenheit">°F</option>
                 <option value="globalSettings_kelvin">°K</option>
@@ -33,7 +33,7 @@
             <label for="trackInteral">Track record interval [s]</label>
         </div>
         <div class="col-12 col-sm-4">
-            <input type="number" min="1" step="1" name="trackInteral" tabindex="3" {{bindData "TRACKING_DELAY"}} value={{TRACKING_DELAY}} required />
+            <input type="number" min="1" step="1" name="trackInteral" tabindex="3" {{bindData "trackingDelay"}} value={{trackingDelay}} required />
         </div>
     </div>
     <div class="row">
@@ -41,7 +41,7 @@
             <label for="waypointDelay">Waypoint record interval [min]</label>
         </div>
         <div class="col-12 col-sm-4">
-            <input type="number" min="1" step="1" name="waypointDelay" tabindex="4" {{bindData "WAYPOINT_DELAY"}} value={{WAYPOINT_DELAY}} required />
+            <input type="number" min="1" step="1" name="waypointDelay" tabindex="4" {{bindData "waypointDelay"}} value={{waypointDelay}} required />
         </div>
     </div>
     <div class="row">
@@ -49,7 +49,7 @@
             <label for="historyTrend">History trend for dashboard [s]</label>
         </div>
         <div class="col-12 col-sm-4">
-            <input type="number" min="1" step="1" name="historyTrend" tabindex="5" {{bindData "HISTORY_TREND"}} value={{HISTORY_TREND}} required />
+            <input type="number" min="1" step="1" name="historyTrend" tabindex="5" {{bindData "historyTrend"}} value={{historyTrend}} required />
         </div>
     </div>
     <div class="row">
@@ -57,7 +57,7 @@
             <label for="circleRadius">Security circle radius [m]</label>
         </div>
         <div class="col-12 col-sm-4">
-            <input type="number" min="1" step="1" name="circleRadius" tabindex="6" {{bindData "CIRCLE_RADIUS"}} value={{CIRCLE_RADIUS}} required />
+            <input type="number" min="1" step="1" name="circleRadius" tabindex="6" {{bindData "circleRadius"}} value={{circleRadius}} required />
         </div>
     </div>
     <div class="inputForm-footer">

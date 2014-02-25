@@ -83,6 +83,7 @@ $(document).ready(function() {
 
         /* callback handler that will be called on success */
         request.done(function (response, textStatus, jqXHR){
+        console.log(response);
             var firstBoat = null;
             response.boat.map( function(item) {
                 if (item.owner == self.owner) {
@@ -126,12 +127,17 @@ $(document).ready(function() {
 
     /* callback handler that will be called on success */
     request.done(function (response, textStatus, jqXHR){
+        console.log(response);
         response.person_info.map( function(item) {
             map.set('person', item);
         });
         /* select the default person */
         if (response.person_info.length) {
             map.select('person', response.person_info[0]._id);
+        }
+        /* check if settings are available */
+        if (response.setting_info.length) {
+            map.initGlobalSettings(response.setting_info[0]);
         }
         /* trigger friend list */
         friendRequest();
@@ -294,6 +300,19 @@ $(document).ready(function() {
         /* callback handler that will be called on failure */
         request.fail(function (jqXHR, textStatus, errorThrown){
             output.error(errorThrown);
+        });
+    });
+    
+    map.addCallback(events.UPDATED_SETTINGS, function (self) {
+        request = $.ajax({
+            url         : "/api/settings",
+            type        : "post",
+            contentType : "application/json",
+            data        : JSON.stringify(self),
+        });
+        
+        request.done(function (response, textStatus, jqXHR){
+            map.initGlobalSettings(response);
         });
     });
 });

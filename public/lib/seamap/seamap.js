@@ -446,6 +446,11 @@
             displaySecurityCircyle = !displaySecurityCircyle;  
         }
 
+        /* init the global settings */
+        this.initGlobalSettings = function(settings) {
+            globalSettings = settings;
+        }
+        
         /* Gets the global settings */
         this.getGlobalSettings = function() {
             return globalSettings;
@@ -454,6 +459,7 @@
         /* Sets the global settings */
         this.setGlobalSettings = function(settings) {
             globalSettings = settings;
+            callbacks[event.UPDATED_SETTINGS].fire(jQuery.extend(true, {}, globalSettings));
         }
 
         /* Gets the settings for the alarms */
@@ -493,12 +499,12 @@
 
         /* THe global settings object */
         var globalSettings = {
-            DISTANCE_UNIT       : "globalSettings_nautmil",
-            TEMPERATURE_UNIT    : "globalSettings_celsius",
-            TRACKING_DELAY      : 2,
-            WAYPOINT_DELAY      : 4, 
-            HISTORY_TREND       : 1,
-            CIRCLE_RADIUS       : 250
+            distanceUnit       : "globalSettings_nautmil",
+            temperatureUnit    : "globalSettings_celsius",
+            trackingDelay      : 2,
+            waypointDelay      : 4, 
+            historyTrend       : 1,
+            circleRadius       : 250
         };
 
         /* The settings for the alarms */
@@ -541,7 +547,9 @@
             SWITCHED_BOAT           : 70,
             /* switched person, will be additionally fired to the select method */
             SWITCHED_PERSON         : 80,
-            SHOW_IMAGE              : 81
+            SHOW_IMAGE              : 81,
+            /* updated settigns */
+            UPDATED_SETTINGS        : 90
         };
 		        
         var options = $.seamap.options;
@@ -1024,7 +1032,7 @@
                 fillOpacity: 0.35,
                 map: map,
                 center: currentPosition,
-                radius: globalSettings.CIRCLE_RADIUS
+                radius: globalSettings.circleRadius
             };
             activeSecurityCircle = new google.maps.Circle(circleOptions);
         }
@@ -1054,7 +1062,7 @@
         this.distance = function(lat1,lon1,lat2,lon2) {
             var R = null;
 
-            switch(globalSettings.DISTANCE_UNIT)
+            switch(globalSettings.distanceUnit)
             {
                 case "globalSettings_mil":
                     R = 3958.8;
@@ -1076,7 +1084,7 @@
 
             var result = Math.round(d * 1);
 
-            switch(globalSettings.DISTANCE_UNIT)
+            switch(globalSettings.distanceUnit)
             {
                 case "globalSettings_mil":
                     return (Math.round(d * 1760) / 1760);
@@ -1302,7 +1310,7 @@
         function handleLeaveSecurityCircle() {
             if(alarmsSettings.LEAVE_SECURITY_CIRCLE && activeSecurityCircle) {
                 var dist = getDistanceFromCircle();
-                if(dist > globalSettings.CIRCLE_RADIUS) {
+                if(dist > globalSettings.circleRadius) {
                     callbacks[event.LEFT_SECURITY_CIRCLE].fire({msg : "You have left the security circle!"});
                 }
             }
@@ -2160,7 +2168,7 @@
         function handleAddNewWaypoint() {
             if (isTracking) {
                 addNewWaypoint();
-                setTimeout(handleAddNewWaypoint, globalSettings.WAYPOINT_DELAY * 1000 );
+                setTimeout(handleAddNewWaypoint, globalSettings.waypointDelay * 1000 );
                 //TODO : check if cyclic track upload should be done.
                 //uploadTrackUpdate();
             }
@@ -2174,7 +2182,7 @@
         function handleAddTrackpoint() {
             if (isTracking) {
                 addTrackpoint(currentPosition);
-                setTimeout(handleAddTrackpoint, globalSettings.TRACKING_DELAY * 1000);
+                setTimeout(handleAddTrackpoint, globalSettings.trackingDelay * 1000);
             }
         }
 
@@ -2618,7 +2626,7 @@
                 }
             }
 
-            switch(map.getGlobalSettings().DISTANCE_UNIT)
+            switch(map.getGlobalSettings().distanceUnit)
             {
                 case "globalSettings_mil":
                     return dist.toFixed(2) + "mi";
