@@ -258,6 +258,10 @@
                 if ('trip' != newObj.type || (null != data.boat.active && newObj.boat == data.boat.active._id)) {
                     dataCallback([event.LOADED_FROM_SERVER], newObj);
                 }
+                /* if it is the first boat or person which was added, we select it */
+                if (('boat' == type || 'person' == type) && 2 == data[type].count) {
+                    self.select(type, newObj.id);
+                }
             /* if the object already exist, go to the entry and update all entry's */
             } else if (obj.id != null){
                 checkId(type, obj.id);
@@ -281,6 +285,10 @@
                     newObj.owner = data.person.active.owner;
                 }
                 dataCallback([event.ADDED_FROM_CLIENT, event.SERVER_CREATE], newObj);
+                /* if it is the first boat or person which was added, we select it */
+                if (('boat' == type || 'person' == type) && 2 == data[type].count) {
+                    self.select(type, newObj.id);
+                }
             } else {
                 throw("Not expected case in map.set(..)");
             }
@@ -501,8 +509,8 @@
         var globalSettings = {
             distanceUnit       : "nautmil",
             temperatureUnit    : "celsius",
-            trackingDelay      : 2,
-            waypointDelay      : 4, 
+            trackingDelay      : 5,
+            waypointDelay      : 1, 
             historyTrend       : 1,
             circleRadius       : 250
         };
@@ -2168,7 +2176,7 @@
         function handleAddNewWaypoint() {
             if (isTracking) {
                 addNewWaypoint();
-                setTimeout(handleAddNewWaypoint, globalSettings.waypointDelay * 1000 );
+                setTimeout(handleAddNewWaypoint, globalSettings.waypointDelay * 60000);
                 //TODO : check if cyclic track upload should be done.
                 //uploadTrackUpdate();
             }

@@ -83,17 +83,11 @@ $(document).ready(function() {
 
         /* callback handler that will be called on success */
         request.done(function (response, textStatus, jqXHR){
-            var firstBoat = null;
             response.boat.map( function(item) {
                 if (item.owner == self.owner) {
                     map.set('boat', item);
-                    firstBoat = (null == firstBoat) ? item._id : firstBoat;
                 }
             });
-            /* select the default boat */
-            if (null != firstBoat) {
-                map.select('boat', firstBoat);
-            }
             response.mark.map( function(item) {
                 if (item.owner == self.owner) {
                     map.set('mark', item);
@@ -129,10 +123,6 @@ $(document).ready(function() {
         response.person_info.map( function(item) {
             map.set('person', item);
         });
-        /* select the default person */
-        if (response.person_info.length) {
-            map.select('person', response.person_info[0]._id);
-        }
         /* check if settings are available */
         if (response.setting_info.length) {
             map.initGlobalSettings(response.setting_info[0]);
