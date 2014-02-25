@@ -30,7 +30,7 @@ public class AccountAPI
         extends Controller {
 
     private static final long TIMEOUT = 60 * 60 * 1000;
-    private static Form<Account> form = Form.form(Account.class);
+    private static final Form<Account> form = Form.form(Account.class);
     private static final Pattern EMAIL_PATTERN = Pattern.compile("^[_A-Za-z0-9-\\+]+(\\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$");
     private static final int MIN_LENGTH = 8;
 
@@ -58,7 +58,6 @@ public class AccountAPI
      */
     public Result signup() {
         Form<SignupAccount> filledForm = DynamicForm.form(SignupAccount.class).bindFromRequest();
-        ObjectNode response = Json.newObject();
         if (filledForm.hasErrors()) {
             flash("errors", filledForm.errorsAsJson().toString());
             return badRequest(signUpSeapal.render(filledForm, routes.AccountAPI.signup()));
@@ -92,7 +91,6 @@ public class AccountAPI
      */
     public Result login() {
         Form<Account> filledForm = DynamicForm.form(Account.class).bindFromRequest();
-        ObjectNode response = Json.newObject();
         if (filledForm.hasErrors()) {
             flash("errors", filledForm.errorsAsJson().toString());
             return badRequest(signInSeapal.render(filledForm, routes.AccountAPI.login()));
@@ -278,7 +276,7 @@ public class AccountAPI
         }
     }
 
-    public static class Secured
+    private static class Secured
             extends Security.Authenticator {
 
         @Override

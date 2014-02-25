@@ -36,7 +36,7 @@ public final class MainAPI
     @Inject
     private AccountController accountController;
 
-    private Map<String, Class<? extends ModelDocument>> classes;
+    private final Map<String, Class<? extends ModelDocument>> classes;
 
     public MainAPI() {
         classes = new HashMap<>();
@@ -47,6 +47,11 @@ public final class MainAPI
         classes.put("waypoint", Waypoint.class);
     }
 
+    /**
+     * route for receiving all documents of one friend.
+     * @param user
+     * @return
+     */
     @play.mvc.Security.Authenticated(AccountAPI.SecuredAPI.class)
     public Result allofFriend(UUID user) {
         String session = session(IAccountController.AUTHN_COOKIE_KEY);
@@ -83,6 +88,8 @@ public final class MainAPI
         ObjectNode node = Json.newObject();
         node.put("person_info", Json.toJson(controller.getDocuments("person", session, session, scope)));
 
+        node.put("setting", Json.toJson(controller.getOwnDocuments("setting", session)));
+
         node.put("account_info", Json.toJson(accountController.getInternalInfo(session, session)));
 
         for (String type : classes.keySet()) {
@@ -90,6 +97,24 @@ public final class MainAPI
         }
 
         return ok(node);
+    }
+
+    @play.mvc.Security.Authenticated(AccountAPI.SecuredAPI.class)
+    public Result saveSettings() {
+        try {
+            Form<? extends ModelDocument> form2 = new Form<>(Setting.class).bindFromRequest();
+
+            if (form2.hasErrors()) {
+                return internalServerError(form2.errorsAsJson());
+            }
+            ModelDocument doc = form2.get();
+
+            doc.setAccount(session(IAccountController.AUTHN_COOKIE_KEY));
+
+            return ok(Json.toJson(controller.creatDocument("setting", doc, session(IAccountController.AUTHN_COOKIE_KEY))));
+        } catch (NullPointerException e) {
+            return internalServerError(EMPTY);
+        }
     }
 
     @Security.Authenticated(AccountAPI.SecuredAPI.class)
