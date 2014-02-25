@@ -22,7 +22,7 @@ $(document).ready(function() {
         });
         request.done(function (response, textStatus, jqXHR){
             /* check if friend_list changed */
-            if (friend_list.length != response.friend_list) {
+            if (friend_list.length != response.friend_list.length) {
                 request = $.ajax({
                     url         : "api/person/friends",
                     type        : "get",
@@ -40,7 +40,7 @@ $(document).ready(function() {
                 });
             }
             /* check if a friend request occurred */
-            if (receivedRequests.length != response.receivedRequests) {
+            if (receivedRequests.length != response.receivedRequests.length) {
                 request = $.ajax({
                     url         : "api/names",
                     type        : "get",
