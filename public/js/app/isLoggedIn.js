@@ -83,7 +83,6 @@ $(document).ready(function() {
 
         /* callback handler that will be called on success */
         request.done(function (response, textStatus, jqXHR){
-        console.log(response);
             var firstBoat = null;
             response.boat.map( function(item) {
                 if (item.owner == self.owner) {
@@ -127,7 +126,6 @@ $(document).ready(function() {
 
     /* callback handler that will be called on success */
     request.done(function (response, textStatus, jqXHR){
-        console.log(response);
         response.person_info.map( function(item) {
             map.set('person', item);
         });

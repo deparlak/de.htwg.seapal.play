@@ -499,8 +499,8 @@
 
         /* THe global settings object */
         var globalSettings = {
-            distanceUnit       : "globalSettings_nautmil",
-            temperatureUnit    : "globalSettings_celsius",
+            distanceUnit       : "nautmil",
+            temperatureUnit    : "celsius",
             trackingDelay      : 2,
             waypointDelay      : 4, 
             historyTrend       : 1,
@@ -1064,10 +1064,10 @@
 
             switch(globalSettings.distanceUnit)
             {
-                case "globalSettings_mil":
+                case "mil":
                     R = 3958.8;
                     break;
-                case "globalSettings_nautmil":
+                case "nautmil":
                     R = 3440.04622;
                     break;
                 default:                
@@ -1086,9 +1086,9 @@
 
             switch(globalSettings.distanceUnit)
             {
-                case "globalSettings_mil":
+                case "mil":
                     return (Math.round(d * 1760) / 1760);
-                case "globalSettings_nautmil":
+                case "nautmil":
                     return (Math.round(d * 2025.38276) / 2025.38276);
                 default:                
                     return (Math.round(d * 1000) / 1000);
@@ -2628,9 +2628,9 @@
 
             switch(map.getGlobalSettings().distanceUnit)
             {
-                case "globalSettings_mil":
+                case "mil":
                     return dist.toFixed(2) + "mi";
-                case "globalSettings_nautmil":
+                case "nautmil":
                     return dist.toFixed(2) + "nm";
                 default:                
                     return dist.toFixed(2) + "km";             
