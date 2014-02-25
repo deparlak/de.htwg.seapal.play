@@ -17,7 +17,6 @@ $(document).ready(function() {
 var removeItem = (function () {    
         var enabled = false;
         var removeElements = {};
-        
         /**
         * *************************************************************************************
         * public methods

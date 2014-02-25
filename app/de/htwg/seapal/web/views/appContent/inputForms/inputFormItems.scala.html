@@ -298,7 +298,7 @@
             <table>
                 <tbody>
                     {{#each waypoint}}
-                        <tr><th class="disable-select" data-id='{{id}}' data-type='{{type}}'>{{name}}</th></tr>   
+                        <tr><th class="disable-select {{type}}{{id}}" data-id='{{id}}' data-type='{{type}}'>{{name}}</th></tr>   
                     {{/each}}                    
                 </tbody>
             </table>
@@ -358,7 +358,7 @@
                     <label for="track_crew">Crew</label>
                 </div>
                 <div class="col-12 col-sm-5 font-light no_padding">                            
-                    <textarea name="track_crew" rows="10" tabindex="9" {{bindData "crewMembers"}}>{{crewMembers}}</textarea>
+                    <textarea name="track_crew" rows="10" tabindex="9" {{bindData "crew"}}>{{crew}}</textarea>
                 </div>
                 <div class="col-12 col-sm-1 font-light no_padding">
                     <label for="track_notes">Notes</label>

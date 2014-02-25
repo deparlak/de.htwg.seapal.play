@@ -58,7 +58,7 @@ $(document).ready(function() {
         $("."+self.type+self.id).text(self.name);
     });
     
-	/* this callback will be called if an object was updated by a user */
+	/* this callback a boat was switched */
     map.addCallback([events.SWITCHED_BOAT], function (self) {
         $("#tracks").html("");
         $("#logbook-trips").html("");

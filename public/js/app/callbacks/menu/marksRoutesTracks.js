@@ -22,9 +22,16 @@ $(document).ready(function() {
     /* when we open marksRoutesTracks submenu, we have to visible the footer for the submenu */
     menu.addCallback('leftclick', 'icon-marksRoutesTracks', function (self) {
         removeItem.disable();
+        $('#menu-marksRoutesTracks-footer').removeClass('hidden').addClass('visible');
+    });
+    
+    menu.addCallback('leftclick', 'marksRoutesTracksRemove', function (self) {
+        removeItem.enable();
     });
 
     menu.addCallback('leftclick', 'marksRoutesTracks', function (self) {
+        /* disable remove item */
+        removeItem.disable();
         self.button('toggle');
         $('.active-marksRoutesTracks').removeClass('active-marksRoutesTracks').addClass('inactive-marksRoutesTracks');
         $(self.data('name')).removeClass('inactive-marksRoutesTracks').addClass('active-marksRoutesTracks');
@@ -33,7 +40,6 @@ $(document).ready(function() {
         active = self.data('name');
         $('#search-marksRoutesTracks').val(lastSearch[active]);
         /* be sure that the default footer is visible */
-        $('.menu-footer').removeClass('visible').addClass('hidden');
         $('#menu-marksRoutesTracks-footer').removeClass('hidden').addClass('visible');
     });
     
@@ -53,7 +59,7 @@ $(document).ready(function() {
     });
 
     /* handle leftclick events on a not selected mark, route,... */
-    menu.addCallback('leftclick', ['icon-notSelected-mark', 'icon-notSelected-route'], function (self) {
+    menu.addCallback('leftclick', ['icon-notSelected-mark', 'icon-notSelected-route', 'icon-notSelected-trip'], function (self) {
         if (removeItem.isEnabled()) {
             removeItem.select(self);
         } else {
