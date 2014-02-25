@@ -1,18 +1,18 @@
 package de.htwg.seapal.web.models;
 
+import org.apache.commons.lang3.StringUtils;
+
 import java.net.URI;
 import java.net.URISyntaxException;
 
-import org.apache.commons.lang3.StringUtils;
-
 public class MenuItem {
-	public String name;
+	public final String name;
 	public URI uri;
 
 	public MenuItem(String uri){
 		this("", uri);
 	}
-	
+
 	public MenuItem(String name, String uri){
 		this.name = name;
 
@@ -25,7 +25,7 @@ public class MenuItem {
 
 	public boolean sameURI(String uriString){
 			String path = this.uri.getPath();
-			
+
 			if(StringUtils.countMatches(uriString, "/") > 1 && !path.equals("/"))
 				return uriString.startsWith(path);
 			else
