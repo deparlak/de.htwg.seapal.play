@@ -651,6 +651,9 @@
 
         // The selected route point when right clicking on it
         var activeRoutePoint;
+
+        // Is used to prevent click even
+        this.longpressPressed = false;
         
         var templatePerson =
         {
@@ -1225,6 +1228,10 @@
             });
             // left click
             google.maps.event.addListener(map, 'click', function(event) {
+                if(self.longpressPressed) {
+                    return;
+                }
+
                 hideCrosshairMarker(crosshairMarker);
                 hideContextMenu();
                 
@@ -2691,13 +2698,17 @@
 
     LongPress.prototype.onMouseUp_ = function(e) {
         clearTimeout(this.timeoutId_);
+        setTimeout(function() {
+            self.map.longpressPressed = false;
+        }, 50);
     };
 
-    LongPress.prototype.onMouseDown_ = function(e) {
+    LongPress.prototype.onMouseDown_ = function(e) {        
         clearTimeout(this.timeoutId_);
         var map = this.map_;
         var event = e;
         this.timeoutId_ = setTimeout(function() {
+            self.map.longpressPressed = true;
             google.maps.event.trigger(map, 'longpress', event);
         }, this.length_);
     };
