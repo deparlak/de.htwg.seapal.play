@@ -136,16 +136,13 @@ $(document).ready(function() {
         }
         /* trigger friend list */
         friendRequest();
-        /* sset cylcic friend request every minute */
+        /* sst cylcic friend request every minute */
         setInterval(friendRequest, 6000);
     });
 
     /* callback handler that will be called on failure */
     request.fail(function (jqXHR, textStatus, errorThrown){
-        console.log(jqXHR);
-        console.log(textStatus);
-        console.log(errorThrown);
-        console.log("error");
+        output.error(textStatus);
     });
 
     /* callback for adding a crew member */
@@ -239,27 +236,18 @@ $(document).ready(function() {
 		console.log("-----------------");
 		console.log(self);
 		console.log("-----------------");
-        /*
-            if there is no _id from the server, this object wasn't yet uploaded, so we can't delete it.
-        */
+        /* if there is no _id from the server, this object was not uploaded, so we do not send a server request. */
         if (null == self._id) return;
+        
         /* post to server */
         request = $.ajax({
             url         : "api/"+self.type+"/"+self._id,
             type        : "delete"
         });
 
-        /* callback handler that will be called on success */
-        request.done(function (response, textStatus, jqXHR){
-            console.log("delete success");
-        });
-
         /* callback handler that will be called on failure */
         request.fail(function (jqXHR, textStatus, errorThrown){
-			console.log(jqXHR);
-			console.log(textStatus);
-			console.log(errorThrown);
-			console.log("error");
+			output.error(textStatus);
         });
     });
 
@@ -314,10 +302,7 @@ $(document).ready(function() {
 
         /* callback handler that will be called on failure */
         request.fail(function (jqXHR, textStatus, errorThrown){
-			console.log(jqXHR);
-			console.log(textStatus);
-			console.log(errorThrown);
-			console.log("error");
+            output.error(textStatus);
         });
     });
 });
