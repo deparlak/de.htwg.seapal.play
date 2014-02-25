@@ -276,7 +276,7 @@ public class AccountAPI
         }
     }
 
-    private static class Secured
+    public static class Secured
             extends Security.Authenticator {
 
         @Override

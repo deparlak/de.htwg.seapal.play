@@ -6,6 +6,7 @@ import de.htwg.seapal.controller.IMainController;
 import de.htwg.seapal.controller.impl.AccountController;
 import de.htwg.seapal.model.ModelDocument;
 import de.htwg.seapal.model.impl.*;
+import de.htwg.seapal.utils.logging.ILogger;
 import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.node.ObjectNode;
 import play.data.Form;
@@ -32,6 +33,9 @@ public final class MainAPI
 
     @Inject
     private IMainController controller;
+
+    @Inject
+    private ILogger logger;
 
     @Inject
     private AccountController accountController;

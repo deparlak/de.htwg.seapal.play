@@ -178,6 +178,10 @@ $(document).ready(function() {
 
     menu.addCallback('leftclick', 'logbookTrackAdd', function (self) {        
         tmpTrack = map.getTemplate('trip');
+        if(tmpTrack.boat == null) {
+            output.warning("No boat selected. Please select a boat to create a trip!");
+            return;
+        }
         openTrackTripModal(tmpTrack);
     });
     
