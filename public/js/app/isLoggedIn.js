@@ -83,7 +83,6 @@ $(document).ready(function() {
 
         /* callback handler that will be called on success */
         request.done(function (response, textStatus, jqXHR){
-            console.log(response);
             var firstBoat = null;
             response.boat.map( function(item) {
                 if (item.owner == self.owner) {
@@ -136,16 +135,13 @@ $(document).ready(function() {
         }
         /* trigger friend list */
         friendRequest();
-        /* sset cylcic friend request every minute */
-        setInterval(friendRequest, 6000);
+        /* set cylcic friend request every minute */
+        setInterval(friendRequest, 60000);
     });
 
     /* callback handler that will be called on failure */
     request.fail(function (jqXHR, textStatus, errorThrown){
-        console.log(jqXHR);
-        console.log(textStatus);
-        console.log(errorThrown);
-        console.log("error");
+        output.error(textStatus);
     });
 
     /* callback for adding a crew member */
@@ -235,40 +231,23 @@ $(document).ready(function() {
 
 	/* this callback will be called if marks where loaded from the server */
     map.addCallback(events.SERVER_REMOVE, function (self) {
-		console.log("delete "+self.type);
-		console.log("-----------------");
-		console.log(self);
-		console.log("-----------------");
-        /*
-            if there is no _id from the server, this object wasn't yet uploaded, so we can't delete it.
-        */
+        /* if there is no _id from the server, this object was not uploaded, so we do not send a server request. */
         if (null == self._id) return;
+        
         /* post to server */
         request = $.ajax({
             url         : "api/"+self.type+"/"+self._id,
             type        : "delete"
         });
 
-        /* callback handler that will be called on success */
-        request.done(function (response, textStatus, jqXHR){
-            console.log("delete success");
-        });
-
         /* callback handler that will be called on failure */
         request.fail(function (jqXHR, textStatus, errorThrown){
-			console.log(jqXHR);
-			console.log(textStatus);
-			console.log(errorThrown);
-			console.log("error");
+			output.error(textStatus);
         });
     });
 
 	/* this callback will be called if marks where loaded from the server */
     map.addCallback(events.SERVER_CREATE, function (self) {
-        console.log("create "+self.type);
-		console.log("-----------------");
-		console.log(self);
-		console.log("-----------------");
         /*
             we set the id which will be used by the client as a handle for the object to null,
             because the server will interpret an 'id' as a '_id'.
@@ -314,10 +293,7 @@ $(document).ready(function() {
 
         /* callback handler that will be called on failure */
         request.fail(function (jqXHR, textStatus, errorThrown){
-			console.log(jqXHR);
-			console.log(textStatus);
-			console.log(errorThrown);
-			console.log("error");
+            output.error(textStatus);
         });
     });
 });

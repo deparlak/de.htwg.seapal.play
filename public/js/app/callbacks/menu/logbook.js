@@ -134,7 +134,6 @@ $(document).ready(function() {
 
     function setToVal(marker) {
         actMark.name = marker.name;
-        console.log(marker.position);
         var obj = coord.LatLngToDecimal(marker.position);
         
         if (obj.error) {
@@ -163,7 +162,6 @@ $(document).ready(function() {
 
     $('#modal-form_route').submit(function() {
         var boundData = Handlebars.getBoundData(tmpRoute);
-        console.log(boundData);
         map.set('route', boundData);
         $('#modal-form_route').modal('hide');
         return false;
