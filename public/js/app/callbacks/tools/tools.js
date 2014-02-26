@@ -5,12 +5,11 @@
  * 
  */
  
-$(document).ready(function() {    
+$(document).ready(function() {
+    events = map.getEvents();
+
     tools.addCallback('leftclick', 'icon-startLogging', function (self) {
-        if(map.startTracking()) {
-            self.text("Stop Logging");
-            self.removeClass('icon-startLogging').addClass('icon-stopLogging');
-        }
+        startTracking(self);
     });
 
     tools.addCallback('leftclick', 'icon-stopLogging', function (self) {
@@ -58,5 +57,16 @@ $(document).ready(function() {
 
     tools.addCallback('leftclick', 'icon-discardTarget', function (self) {
         map.discardTarget();
+    });
+
+    function startTracking(button) {
+        if(map.startTracking()) {
+            button.text("Stop Logging");
+            button.removeClass('icon-startLogging').addClass('icon-stopLogging');
+        }
+    }
+
+    map.addCallback([events.MAN_OVERBOARD], function(event) {
+        startTracking($('.icon-startLogging'));
     });
 });
