@@ -121,7 +121,8 @@ $(document).ready(function() {
 
     /* callback handler that will be called on failure */
     request.fail(function (jqXHR, textStatus, errorThrown){
-        output.error(errorThrown);
+        var res = JSON.parse(jqXHR.responseText);
+        output.error(res.error);
     });
 
     /* callback for adding a crew member */
@@ -147,7 +148,8 @@ $(document).ready(function() {
 
         /* callback handler that will be called on failure */
         request.fail(function (jqXHR, textStatus, errorThrown){
-			output.error("Friend request failed: "+errorThrown);
+            var res = JSON.parse(jqXHR.responseText);            
+			output.error("Friend request failed: " + res.error);
         });
         return false;
     });
@@ -218,7 +220,8 @@ $(document).ready(function() {
 
         /* callback handler that will be called on failure */
         request.fail(function (jqXHR, textStatus, errorThrown){
-			output.error(errorThrown);
+			var res = JSON.parse(jqXHR.responseText);
+            output.error(res.error);
         });
     });
 
@@ -277,7 +280,8 @@ $(document).ready(function() {
 
         /* callback handler that will be called on failure */
         request.fail(function (jqXHR, textStatus, errorThrown){
-            output.error(errorThrown);
+            var res = JSON.parse(jqXHR.responseText);
+            output.error(res.error);
         });
     });
 
