@@ -15,6 +15,7 @@ $(document).ready(function() {
     tools.addCallback('leftclick', 'icon-stopLogging', function (self) {
         self.text("Start Logging");
         self.removeClass('icon-stopLogging').addClass('icon-startLogging');
+        $('.fa-stop').removeClass('fa-stop').addClass('fa-play');
         map.stopTracking();
     });
     
@@ -62,7 +63,10 @@ $(document).ready(function() {
         if(map.startTracking()) {
             button.text("Stop Logging");
             button.removeClass('icon-startLogging').addClass('icon-stopLogging');
+            $('.fa-play').removeClass('fa-play').addClass('fa-stop');
+            return true;
         }
+        return false;
     }
 
     function takePhoto() {
@@ -83,6 +87,9 @@ $(document).ready(function() {
     });
 
     $('#trackIcon').click(function() {
-        startTracking($('.icon-startLogging'));
+        if(!startTracking($('.icon-startLogging'))) {
+            map.stopTracking();
+            $('.fa-stop').removeClass('fa-stop').addClass('fa-play');
+        }
     });
 });

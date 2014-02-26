@@ -1442,7 +1442,7 @@
         */
         this.startTracking = function() {
             if(isTracking) {
-                return;
+                return false;
             }
             
             if (data.boat.active == null) {
