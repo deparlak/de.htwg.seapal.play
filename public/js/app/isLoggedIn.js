@@ -28,7 +28,7 @@ $(document).ready(function() {
                     type        : "get",
                     contentType : "application/json"
                 });
-                
+
                 request.done(function (friendResponse, textStatus, jqXHR){
                     for (var i in friendResponse) {
                         /* friend entry not exist, download the info about the new friend now. */
@@ -46,7 +46,7 @@ $(document).ready(function() {
                     type        : "get",
                     contentType : "application/json"
                 });
-                
+
                 request.done(function (personResponse, textStatus, jqXHR){
                     /* run through all requests and check if they will already be displayed. */
                     for (var i in personResponse) {
@@ -203,7 +203,7 @@ $(document).ready(function() {
     map.addCallback(events.SERVER_REMOVE, function (self) {
         /* if there is no _id from the server, this object was not uploaded, so we do not send a server request. */
         if (null == self._id) return;
-        
+
         /* post to server */
         request = $.ajax({
             url         : "api/"+self.type+"/"+self._id,
@@ -256,6 +256,18 @@ $(document).ready(function() {
                 formData.append("picture", image_big);
 
                 var xhr = new XMLHttpRequest();
+                xhr.onreadystatechange = function () {
+                    if (xhr.readyState == 4) {
+                        var json = JSON.parse(xhr.responseText);
+                        /* guys, check this! we cannot edit documents with attachements, since adding an attachement
+                         changes the revision. maybe this code here helps
+                        console.log(self);
+                        self._rev = json._rev;
+                        map.set(self.type, self);
+                        */
+                        console.log("TODO // TODO // TODO // TODO // TODO // TODO // TODO // TODO // TODO // TODO");
+                    }
+                }
                 xhr.open("POST", "/api/photo/"+response._id+"/"+self.type);
                 xhr.send(formData);
             }
@@ -266,7 +278,7 @@ $(document).ready(function() {
             output.error(errorThrown);
         });
     });
-    
+
     map.addCallback(events.UPDATED_SETTINGS, function (self) {
         request = $.ajax({
             url         : "/api/settings",
@@ -274,7 +286,7 @@ $(document).ready(function() {
             contentType : "application/json",
             data        : JSON.stringify(self),
         });
-        
+
         request.done(function (response, textStatus, jqXHR){
             /* set response from server back to settings, because the _id and _rev changed. */
             map.initGlobalSettings(response);

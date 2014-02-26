@@ -110,10 +110,9 @@ public class WaypointDatabase extends CouchDbRepositorySupport<Waypoint> impleme
     }
 
     @Override
-    public boolean addPhoto(IWaypoint mark, String contentType, File file) throws FileNotFoundException {
+    public String addPhoto(IWaypoint mark, String contentType, File file) throws FileNotFoundException {
         AttachmentInputStream a = new AttachmentInputStream("photo", new FileInputStream(file), contentType);
-        db.createAttachment(mark.getUUID().toString(), mark.getRevision(), a);
-        return true;
+        return db.createAttachment(mark.getUUID().toString(), mark.getRevision(), a);
     }
 
     @Override

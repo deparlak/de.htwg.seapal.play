@@ -112,10 +112,9 @@ public class MarkDatabase extends CouchDbRepositorySupport<Mark> implements
     }
 
     @Override
-    public boolean addPhoto(IMark mark, String contentType, File file) throws FileNotFoundException {
+    public String addPhoto(IMark mark, String contentType, File file) throws FileNotFoundException {
         AttachmentInputStream a = new AttachmentInputStream("photo", new FileInputStream(file), contentType);
-        db.createAttachment(mark.getUUID().toString(), mark.getRevision(), a);
-        return true;
+        return db.createAttachment(mark.getUUID().toString(), mark.getRevision(), a);
     }
 
     @Override

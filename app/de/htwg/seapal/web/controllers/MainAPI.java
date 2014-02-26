@@ -214,8 +214,9 @@ public final class MainAPI
         if (picture != null) {
             String contentType = picture.getContentType();
             File file = picture.getFile();
-            if (controller.addPhoto(session, uuid, contentType, file, type)) {
-                return ok();
+            String revision = controller.addPhoto(session, uuid, contentType, file, type);
+            if (revision != null) {
+                return ok(Json.parse(String.format("{\"_rev\": \"%s\"}", revision)));
             } else {
                 return internalServerError(FILE_UPLOAD_FAILED);
             }
