@@ -500,6 +500,15 @@
                 });
             }
         };
+        
+        this.followPosition = function() {
+            if (null == currentPosition) {
+                callbacks[event.ERROR].fire({msg : "Could not get actual position."});
+                return false;
+            }
+            map.setCenter(currentPosition);
+            return true;
+        };
 
         /* The security circle on the map */
         var activeSecurityCircle = null;
