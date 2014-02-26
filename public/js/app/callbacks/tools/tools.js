@@ -20,8 +20,7 @@ $(document).ready(function() {
     
     tools.addCallback('leftclick', 'icon-takePhoto', function (self) {
         menu.closeMenu();        
-        window.camera.setup("photo-video", "photo-button");
-        $('#modal-photo').modal('show');
+        takePhoto();
     });
     
     tools.addCallback('leftclick', 'icon-setMark', function (self) {
@@ -66,7 +65,24 @@ $(document).ready(function() {
         }
     }
 
+    function takePhoto() {
+        window.camera.setup("photo-video", "photo-button");
+        $('#modal-photo').modal('show');
+    }
+
     map.addCallback([events.MAN_OVERBOARD], function(event) {
+        startTracking($('.icon-startLogging'));
+    });
+
+    $('#positionIcon').click(function() {
+        console.log("position");
+    });
+
+    $('#photoIcon').click(function() {
+        takePhoto();
+    });
+
+    $('#trackIcon').click(function() {
         startTracking($('.icon-startLogging'));
     });
 });
