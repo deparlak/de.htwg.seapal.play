@@ -75,7 +75,7 @@ $(document).ready(function() {
     });
 
     $('#positionIcon').click(function() {
-        console.log("position");
+        map.followPosition();
     });
 
     $('#photoIcon').click(function() {
