@@ -8,75 +8,40 @@
 $(document).ready(function() {
 
     var active = "#account";
-    var states = {normal : 0, remove : 1};
-    var state = states.normal;
-    var removeElements = {};
     var coord = new coordinateHelpers();
 
-    /* calling initState will clear the list of items which shall be removed and set the state back to normal */
-    function initState(){
-        for (var i in removeElements) {
-            removeElements[i].removeClass('remove');
-        }
-        removeElements = {};
-        state = states.normal;
-    };
-    
-    function selectToRemove(self) {
-        if (self.hasClass('remove')) {
-            self.removeClass('remove');
-            delete removeElements[self.data('id')];
-        } else {
-            self.addClass('remove');
-            removeElements[self.data('id')] = self;
-        }
-    };
-    
-    function removeSelection() {
-        for (var i in removeElements) {
-            map.remove(removeElements[i].data('type'), removeElements[i].data('id'));
-        }
-        state = states.normal;
-    };
-    
     menu.addCallback('leftclick', 'logbookRemove', function (self) {
-        $(active+"-footer").removeClass('visible').addClass('hidden');
-        $('#logbookRemove-footer').removeClass('hidden').addClass('visible');
-        state = states.remove;    
-    });
-    
-    menu.addCallback('leftclick', 'logbookRemoveOk', function (self) {
-        removeSelection();
-        state = states.normal;
-        $('#logbookRemove-footer').removeClass('visible').addClass('hidden');
-        $(active+"-footer").removeClass('hidden').addClass('visible');
-    });
-    
-    menu.addCallback('leftclick', 'logbookRemoveCancel', function (self) {
-        initState();
-        $('#logbookRemove-footer').removeClass('visible').addClass('hidden');
-        $(active+"-footer").removeClass('hidden').addClass('visible');
+        removeItem.enable();
     });
     
     /* when we open logbook submenu, we have to visible the footer for the submenu */
     menu.addCallback('leftclick', 'icon-logbook', function (self) {
-        initState();
+        removeItem.disable();
         $(active+"-footer").removeClass('hidden').addClass('visible'); 
     });
     
     /* when we swith one of the submenus */
     menu.addCallback('leftclick', 'logbook', function (self) {
-        initState();
+        /* disable remove item */
+        removeItem.disable();
         self.button('toggle');
         $('.active-logbook').removeClass('active-logbook').addClass('inactive-logbook');
         $(self.data('name')).removeClass('inactive-logbook').addClass('active-logbook');
         /* hide the other footer and visible the now active */
         $(active+"-footer").removeClass('visible').addClass('hidden');
         active = self.data('name');
+        /* be sure that the default footer is visible */
         $(active+"-footer").removeClass('hidden').addClass('visible'); 
-        /* hide the remove footer */
-        $('#logbookRemove-footer').removeClass('visible').addClass('hidden');
     });
+    
+    menu.addCallback('leftclick', ['icon-notSelected-boat', 'icon-notSelected-person'], function (self) {
+        if (removeItem.isEnabled()) {
+            removeItem.select(self);
+        } else {
+            map.select(self.data('type'), self.data('id'));
+        }
+    });
+    
     /* START-------------------------- person ------------------------------- */
     
     menu.addCallback('leftclick', 'icon-notSelectedPerson', function (self) {
@@ -169,7 +134,6 @@ $(document).ready(function() {
 
     function setToVal(marker) {
         actMark.name = marker.name;
-        console.log(marker.position);
         var obj = coord.LatLngToDecimal(marker.position);
         
         if (obj.error) {
@@ -198,7 +162,6 @@ $(document).ready(function() {
 
     $('#modal-form_route').submit(function() {
         var boundData = Handlebars.getBoundData(tmpRoute);
-        console.log(boundData);
         map.set('route', boundData);
         $('#modal-form_route').modal('hide');
         return false;
@@ -215,12 +178,17 @@ $(document).ready(function() {
 
     menu.addCallback('leftclick', 'logbookTrackAdd', function (self) {        
         tmpTrack = map.getTemplate('trip');
+        if(tmpTrack.boat == null) {
+            output.warning("No boat selected. Please select a boat to create a trip!");
+            return;
+        }
         openTrackTripModal(tmpTrack);
     });
     
     menu.addCallback('rightclick', ['icon-notSelected-trip', 'icon-selected-trip'], function (self) {
         tmpTrack = map.get(self.data('type'), self.data('id'));
         tmpTrack.waypoint = map.getWaypoints(tmpTrack.id);
+        tmpTrack.duration = new dateHelpers().getDateDifference(tmpTrack.startDate, tmpTrack.endDate);
         openTrackTripModal(tmpTrack);
     });
 
@@ -244,29 +212,29 @@ $(document).ready(function() {
         tmpWaypoint = map.get('waypoint', id);
         tmpWaypoint.title = tmpWaypoint.name;
         tmpWaypoint.position = coord.getCoordinatesAsString(tmpWaypoint.lat, tmpWaypoint.lng);
-        console.log(tmpWaypoint);
+
+        if(tmpWaypoint.image_thumb != null) {                       
+            tmpWaypoint.image = "api/photo/"+tmpWaypoint._id+"/"+tmpWaypoint.type+".jpg";
+        } else {
+            tmpWaypoint.image = "/assets/images/no_image.png";
+        }
         var template = Handlebars.compile($('#waypoint_Template').text());
         var html = template(tmpWaypoint);
-        $('#waypointInputForm').html(html);
-
-        if(!map.checkTracking()) {                
-            return;
-        }
+        $('#waypointInputForm').html(html);            
         $('#modal-form_waypoint').modal('show');
     }
 
     $('#modal-form_waypoint').submit(function() {
         var boundData = Handlebars.getBoundData(tmpWaypoint);
         boundData.name = boundData.title;
-        console.log(boundData);
         map.set('waypoint', boundData);
         $('#modal-form_waypoint').modal('hide');
+        $("."+tmpWaypoint.type+tmpWaypoint.id).text(boundData.title);
         return false;
     });
 
     $('#modal-form_track').submit(function() {
         var boundData = Handlebars.getBoundData(tmpTrack);
-        console.log(boundData);
         map.set('trip', boundData);
         $('#modal-form_track').modal('hide');
         return false;
@@ -295,14 +263,6 @@ $(document).ready(function() {
         }
         menu.closeMenu();
         window.location = "/logout";
-    });
-    
-    menu.addCallback('leftclick', ['icon-notSelected-trip', 'icon-notSelected-boat', 'icon-notSelected-person'], function (self) {
-        if (state == states.normal) {
-            map.select(self.data('type'), self.data('id'));
-        } else if (state == states.remove) {
-            selectToRemove(self);
-        }
     });
 
     /*

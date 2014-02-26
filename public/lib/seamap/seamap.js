@@ -239,7 +239,6 @@
             if (ok) {
                 /* remove the element now from the list */
                 dataCallback([event.SERVER_REMOVE], data[type].list[id]);
-                delete data[type].list[data[type].list[id]["_id"]];
                 delete data[type].list[id];
             }
         };
@@ -249,7 +248,6 @@
 
             /* if there is no client id, but a server id the object just has to be added */
             if ((!obj.id || obj.id == null) && obj._id != null && obj._rev != null) {
-                console.log("loaded from server");
                 newObj = self.getTemplate(type);
                 newObj.id = obj._id;
                 data[type].list[newObj.id] = newObj;
@@ -259,9 +257,12 @@
                 if ('trip' != newObj.type || (null != data.boat.active && newObj.boat == data.boat.active._id)) {
                     dataCallback([event.LOADED_FROM_SERVER], newObj);
                 }
+                /* if it is the first boat or person which was added, we select it */
+                if (('boat' == type || 'person' == type) && 2 == data[type].count) {
+                    self.select(type, newObj.id);
+                }
             /* if the object already exist, go to the entry and update all entry's */
             } else if (obj.id != null){
-                console.log("updated");
                 checkId(type, obj.id);
                 var modified = copyObjAttr(type, data[type].list[obj.id], obj);
 
@@ -274,9 +275,8 @@
                     dataCallback([event.UPDATED_FROM_CLIENT, event.SERVER_CREATE], obj);
                 }
             } else if (obj.id == null && obj._id == null && obj._rev == null) {
-                console.log("added from client");
                 newObj = self.getTemplate(type);
-                newObj.id = data[type].count.toString();
+                newObj.id = (idCounter++).toString();
                 data[type].list[newObj.id] = newObj;
                 data[type].count++;
                 copyObjAttr(type, newObj, obj);
@@ -284,6 +284,10 @@
                     newObj.owner = data.person.active.owner;
                 }
                 dataCallback([event.ADDED_FROM_CLIENT, event.SERVER_CREATE], newObj);
+                /* if it is the first boat or person which was added, we select it */
+                if (('boat' == type || 'person' == type) && 2 == data[type].count) {
+                    self.select(type, newObj.id);
+                }
             } else {
                 throw("Not expected case in map.set(..)");
             }
@@ -321,7 +325,17 @@
 			if (undefined === data[type].template) {
 				throw("There is no template available for the type "+type);
 			}
-			return jQuery.extend(true, {}, data[type].template);
+            /* get a copy of the template */
+            var obj = jQuery.extend(true, {}, data[type].template);
+            
+            /* check if some information has to be set like the active boat or the active person */
+            if (undefined !== obj.boat && null != data.boat.active && null != data.boat.active._id) {
+                obj.boat = data.boat.active._id;
+            }
+            if (undefined !== obj.trip && null != data.trip.active && null != data.trip.active._id) {
+                obj.trip = data.trip.active._id;
+            } 
+			return obj;
         };
 		/* select the object with the given type and id */
         this.select = function(type, id) {
@@ -439,6 +453,11 @@
             displaySecurityCircyle = !displaySecurityCircyle;  
         }
 
+        /* init the global settings */
+        this.initGlobalSettings = function(settings) {
+            globalSettings = settings;
+        }
+        
         /* Gets the global settings */
         this.getGlobalSettings = function() {
             return globalSettings;
@@ -447,6 +466,7 @@
         /* Sets the global settings */
         this.setGlobalSettings = function(settings) {
             globalSettings = settings;
+            callbacks[event.UPDATED_SETTINGS].fire(jQuery.extend(true, {}, globalSettings));
         }
 
         /* Gets the settings for the alarms */
@@ -460,7 +480,6 @@
         }
 
         this.switchBoatMarker = function() {
-            console.log(boatMarker.icon);
             isSatelliteView = !isSatelliteView;
             boatMarker.setMap(null);
             if(isSatelliteView) {
@@ -481,18 +500,27 @@
                 });
             }
         };
+        
+        this.followPosition = function() {
+            if (null == currentPosition) {
+                callbacks[event.ERROR].fire({msg : "Could not get actual position."});
+                return false;
+            }
+            map.setCenter(currentPosition);
+            return true;
+        };
 
         /* The security circle on the map */
         var activeSecurityCircle = null;
 
         /* THe global settings object */
         var globalSettings = {
-            DISTANCE_UNIT       : "globalSettings_nautmil",
-            TEMPERATURE_UNIT    : "globalSettings_celsius",
-            TRACKING_DELAY      : 2,
-            WAYPOINT_DELAY      : 4, 
-            HISTORY_TREND       : 1,
-            CIRCLE_RADIUS       : 250
+            distanceUnit       : "nautmil",
+            temperatureUnit    : "celsius",
+            trackingDelay      : 5,
+            waypointDelay      : 1, 
+            historyTrend       : 1,
+            circleRadius       : 250
         };
 
         /* The settings for the alarms */
@@ -505,31 +533,40 @@
         /* All available events where a callback will be fired. */
         var event = 
         {
-            //TODO
-			LOADED_FROM_SERVER      : 0,
-            ADDED_FROM_CLIENT       : 1,
-            UPDATED_FROM_CLIENT     : 2,
-            CREATED_ROUTE           : 3,
-            CREATED_MARK            : 5,
-            NO_GEO_SUPPORT          : 7,
-            BOAT_POS_UPDATE         : 8,
-            CREATED_TRACK           : 9,
-            
-            ERROR                   : 10,
-            WARNING                 : 11,
-            INFO                    : 12,
-            
-            LEFT_SECURITY_CIRCLE    : 13,
-			SERVER_CREATE			: 14,
-			SERVER_REMOVE			: 15,
-            CREATED_WAYPOINT        : 16,
-            EDIT_MARK               : 17,
-            
-            SELECTED                : 18,
-            DESELECTED              : 19,
-            SWITCHED_BOAT           : 20,
-            SWITCHED_PERSON         : 21,
-            EDIT_WAYPOINT           : 22
+            /* standard callbacks */
+            ERROR                   : 0,
+            WARNING                 : 1,
+            INFO                    : 2,
+            /* callbacks which will be fired by a action of the server or a action to the server */
+			LOADED_FROM_SERVER      : 10,
+			SERVER_CREATE			: 11,
+			SERVER_REMOVE			: 12,
+            /* client side callbacks */
+            ADDED_FROM_CLIENT       : 20,
+            UPDATED_FROM_CLIENT     : 21,
+            /* creation element */
+            CREATED_ROUTE           : 30,
+            CREATED_MARK            : 31,
+            CREATED_WAYPOINT        : 32,
+            CREATED_TRACK           : 33,
+            /* edit a element */
+            EDIT_MARK               : 40,
+            EDIT_WAYPOINT           : 41,
+            /* information about some special actions */
+            NO_GEO_SUPPORT          : 50,
+            BOAT_POS_UPDATE         : 51,
+            LEFT_SECURITY_CIRCLE    : 52,
+            MAN_OVERBOARD           : 53,
+            /* select or deselect any item (boat, trip, route, mark) */
+            SELECTED                : 60,
+            DESELECTED              : 61,
+            /* switched boat, will be additionally fired to the select method */
+            SWITCHED_BOAT           : 70,
+            /* switched person, will be additionally fired to the select method */
+            SWITCHED_PERSON         : 80,
+            SHOW_IMAGE              : 81,
+            /* updated settigns */
+            UPDATED_SETTINGS        : 90
         };
 		        
         var options = $.seamap.options;
@@ -624,6 +661,9 @@
 
         // The selected route point when right clicking on it
         var activeRoutePoint;
+
+        // Is used to prevent click even
+        this.longpressPressed = false;
         
         var templatePerson =
         {
@@ -712,7 +752,7 @@
             "skipper"       : "",
             "duration"      : "",
             "endDate"       : "",
-            "crewMembers"   : "",
+            "crew"          : "",
             "notes"         : "",
             "boat"          : null,
 			"_id" 			: null,
@@ -755,6 +795,8 @@
 
         /* save the self reference, because this cannot used in each context for the seamap */
 		var self = this;
+        /* counter to create unique id's */
+        var idCounter = 0;
 		
 		/* 
 		   return a copy of a obj with the specified type and id to all event listeners.
@@ -773,7 +815,7 @@
 			}
 		};		
 		
-		var data = {
+		var data = {        
             person : {
                 template : templatePerson,
 				list : {},
@@ -829,38 +871,24 @@
 		data.route.removeMethod = function(id) {
 			/* check if the route is active */
 			if (data.route.active && data.route.active.id == id) {
-				data.route.active = null;
-				if (state == States.ROUTE) {
-					state = States.NORMAL;
-				}
-			}
-			/* check if the route is visible on the map. The route can
-			   be not the active route but still have a reference on the map (so it's only hidden)
-			   Because of this we have to check here if the route is "onMap" 
-			*/
-			if (data.route.list[id].onMap) {
-				data.route.list[id].onMap.remove();
-			}
-            return true;
+				hideActiveRoute();
+                return true;
+			} else if (undefined !== data.route.list[id]) {
+                return true;
+            }
+            return false;
 		};
 		
 		/* define the remove method for the trip */
 		data.trip.removeMethod = function(id) {
 			/* check if the track is active */
 			if (data.trip.active && data.trip.active.id == id) {
-				data.trip.active = null;
-				if (state == States.TRACK) {
-					state = States.NORMAL;
-				}
-			}
-			/* check if the track is visible on the map. The track can
-			   be not the active track but still have a reference on the map (so it's only hidden)
-			   Because of this we have to check here if the track is "onMap" 
-			*/
-			if (data.trip.list[id].onMap) {
-				data.trip.list[id].onMap.remove();
-			}
-            return true;
+                hideActiveTrack();
+                return true;
+			} else if (undefined !== data.trip.list[id]) {
+                return true;
+            }
+            return false;
 		};
 		
         /* define a select method for a boat */
@@ -1024,7 +1052,7 @@
                 fillOpacity: 0.35,
                 map: map,
                 center: currentPosition,
-                radius: globalSettings.CIRCLE_RADIUS
+                radius: globalSettings.circleRadius
             };
             activeSecurityCircle = new google.maps.Circle(circleOptions);
         }
@@ -1054,12 +1082,12 @@
         this.distance = function(lat1,lon1,lat2,lon2) {
             var R = null;
 
-            switch(globalSettings.DISTANCE_UNIT)
+            switch(globalSettings.distanceUnit)
             {
-                case "globalSettings_mil":
+                case "mil":
                     R = 3958.8;
                     break;
-                case "globalSettings_nautmil":
+                case "nautmil":
                     R = 3440.04622;
                     break;
                 default:                
@@ -1076,11 +1104,11 @@
 
             var result = Math.round(d * 1);
 
-            switch(globalSettings.DISTANCE_UNIT)
+            switch(globalSettings.distanceUnit)
             {
-                case "globalSettings_mil":
+                case "mil":
                     return (Math.round(d * 1760) / 1760);
-                case "globalSettings_nautmil":
+                case "nautmil":
                     return (Math.round(d * 2025.38276) / 2025.38276);
                 default:                
                     return (Math.round(d * 1000) / 1000);
@@ -1210,6 +1238,10 @@
             });
             // left click
             google.maps.event.addListener(map, 'click', function(event) {
+                if(self.longpressPressed) {
+                    return;
+                }
+
                 hideCrosshairMarker(crosshairMarker);
                 hideContextMenu();
                 
@@ -1302,7 +1334,7 @@
         function handleLeaveSecurityCircle() {
             if(alarmsSettings.LEAVE_SECURITY_CIRCLE && activeSecurityCircle) {
                 var dist = getDistanceFromCircle();
-                if(dist > globalSettings.CIRCLE_RADIUS) {
+                if(dist > globalSettings.circleRadius) {
                     callbacks[event.LEFT_SECURITY_CIRCLE].fire({msg : "You have left the security circle!"});
                 }
             }
@@ -1409,6 +1441,10 @@
         * *********************************************************************************
         */
         this.startTracking = function() {
+            if(isTracking) {
+                return false;
+            }
+            
             if (data.boat.active == null) {
                 callbacks[event.WARNING].fire({msg : "No Boat for tracking selected! Please select a Boat from the logbook."});
                 return false;
@@ -1447,6 +1483,7 @@
                 isShowingTargetLine = true;
                 targetLineDestination = currentPosition;
                 drawSetAsDestination();
+                callbacks[event.MAN_OVERBOARD].fire();
             } else {
                 removeManOverboardMark();
             }
@@ -1690,7 +1727,7 @@
 
             var obj = self.getTemplate('route');
 			obj.date = new Date().getTime();
-            obj.id = data.route.count.toString();
+            obj.id = (idCounter++).toString();
             obj.name = "Route "+data.route.count;
             obj.update = true;
 			obj.onMap = getOnMapRoute(obj);
@@ -1849,12 +1886,11 @@
         */
         function handleAddNewTrack() {
             var obj = self.getTemplate('trip');;
-            obj.id = data.trip.count.toString();
+            obj.id = (idCounter++).toString();
 			obj.startDate = new Date().getTime();
             obj.name = "Track " + data.trip.count;
             obj.onMap = getOnMapTrack(obj);
             obj.update = true;
-            obj.boat = data.boat.active._id;
             obj.owner = data.person.active != null ? data.person.active.owner : "Someone";
             data.trip.list[obj.id] = obj;        
             activateTrack(obj.id); 
@@ -1939,6 +1975,9 @@
         * *********************************************************************************
         */
         function handleExitTrackCreation() {
+            if (data.trip.active != null) {
+                data.trip.active.endDate = new Date().getTime();
+            }
             uploadTrackUpdate();
             state = States.NORMAL;
         }
@@ -2102,7 +2141,7 @@
         */
         function addNewMark(position, image) {
             var obj = self.getTemplate('mark');
-            obj.id = data.mark.count.toString();
+            obj.id = (idCounter++).toString();
             obj.name = "Mark "+data.mark.count;
 			obj.lat = position.lat();
 			obj.lng = position.lng();
@@ -2112,7 +2151,7 @@
 				obj.image_big = image[1];
 			}
             obj.onMap = getOnMapMark(obj);
-			obj.owner = data.person.active.owner;
+			obj.owner = data.person.active != null ? data.person.active.owner : "Someone";
             data.mark.list[obj.id] = obj;
             data.mark.count++;
             dataCallback([event.SERVER_CREATE, event.CREATED_MARK], obj);
@@ -2129,12 +2168,10 @@
             /* add the waypoint only if a track is active and the track is already stored on the server
                Also a boat has to be selected.
             */
-            if (null != data.trip.active && null != data.trip.active._id) {
+            if (null != data.trip.active && null != data.trip.active._id && null != data.boat.active && null != data.boat.active._id) {
                 var boat = getCurrentBoatInformation();
                 var obj = self.getTemplate('waypoint');
-                obj.trip = data.trip.active._id;
-                
-                obj.id = data.waypoint.count.toString();
+                obj.id = (idCounter++).toString();
                 obj.name = "Waypoint "+data.waypoint.count;
                 obj.lat = boat.pos.lat();
                 obj.lng = boat.pos.lng();
@@ -2146,7 +2183,7 @@
                     obj.image_big = image[1];
                 }
                 obj.onMap = getOnMapMark(obj);
-                obj.owner = data.person.active.owner;
+                obj.owner = data.person.active != null ? data.person.active.owner : "Someone";;
                 data.waypoint.list[obj.id] = obj;
                 data.waypoint.count++;
                 dataCallback([event.SERVER_CREATE, event.CREATED_WAYPOINT], obj);
@@ -2160,7 +2197,7 @@
         function handleAddNewWaypoint() {
             if (isTracking) {
                 addNewWaypoint();
-                setTimeout(handleAddNewWaypoint, globalSettings.WAYPOINT_DELAY * 1000 );
+                setTimeout(handleAddNewWaypoint, globalSettings.waypointDelay * 60000);
                 //TODO : check if cyclic track upload should be done.
                 //uploadTrackUpdate();
             }
@@ -2174,7 +2211,7 @@
         function handleAddTrackpoint() {
             if (isTracking) {
                 addTrackpoint(currentPosition);
-                setTimeout(handleAddTrackpoint, globalSettings.TRACKING_DELAY * 1000);
+                setTimeout(handleAddTrackpoint, globalSettings.trackingDelay * 1000);
             }
         }
 
@@ -2199,9 +2236,10 @@
             });
 			/* check if the marker has a image */
 			if (marker.image_thumb) {
-				google.maps.event.addListener(onMap, 'click', function(event) {
+				google.maps.event.addListener(onMap, 'click', function(e) {
 					if(!supressClick) {
-						openFancybox(marker.image_big, new Date(marker.date).toLocaleString());
+                        /* callback to show image */
+                        dataCallback([event.SHOW_IMAGE], marker);
 					}
 				});
 			}
@@ -2236,25 +2274,6 @@
             }
         }
 		
-        /* Opens a fancybox with the image */
-        function openFancybox(picture, text) {
-            $.fancybox({
-                'autoScale': true,
-                'transitionIn': 'elastic',
-                'transitionOut': 'elastic',
-                'speedIn': 500,
-                'speedOut': 300,
-                'autoDimensions': true,
-                'centerOnScroll': true,
-                'title' : text,
-                'helpers' : {
-                    title : {
-                        type : 'over'
-                    }   
-                },
-                'href' : picture
-            });
-        }
         /* Gets the current date and time in a string */
         function getCurrentDateTime() {
             var currentdate = new Date(); 
@@ -2414,8 +2433,8 @@
         this.markers = [];
         this.label = null;
         this.notinteractive = (obj.type == 'trip') ? true : false;
-		options = $.seamap.options[obj.type];
-        init = false;
+		this.options = $.seamap.options[obj.type];
+        this.init = false;
         		
         // internal data
         var eventListener = {
@@ -2426,7 +2445,7 @@
             rightclick  : []
         };
         	
-        this.path = new google.maps.Polyline(options.polyOptions);
+        this.path = new google.maps.Polyline(this.options.polyOptions);
         this.path.setMap(this.googlemaps);
         
         /**
@@ -2474,15 +2493,15 @@
             /* check if no elements are on the map, so we have to set them back to map */
             if (0 == this.markers.length && 0 < obj.marks.length) {
                 if(this.path == null) {
-                    this.path = new google.maps.Polyline(options.polyOptions);
+                    this.path = new google.maps.Polyline(this.options.polyOptions);
                     this.path.setMap(this.googlemaps);
                 }
                 tmp = obj.marks.splice(0, obj.marks.length);
-                init = true;
+                this.init = true;
                 for (var i=0, l=tmp.length; i<l; i+=2) {
                     this.addMarker(new google.maps.LatLng(tmp[i], tmp[i + 1]));
                 }
-                init = false;
+                this.init = false;
             } else {
                 $.each(this.markers, function(){
                     this.setVisible(true);
@@ -2501,7 +2520,7 @@
         */
         this.addMarker = function(position) {
             var $this = this;
-            options = $.seamap.options[obj.type];
+            var options = $.seamap.options[obj.type];
             // check if the position did not changed, so we do not safe this position.
             if (1 < obj.marks.length && position.lat() == obj.marks[obj.marks.length - 2] && position.lng() == obj.marks[obj.marks.length - 1]) {
                 return null;
@@ -2552,7 +2571,7 @@
                     $this.notify("click", marker, event);
                 });
             }
-            if (!init) {
+            if (!this.init) {
                 this.notify("add");
             }
 			$this.drawPath();
@@ -2636,11 +2655,11 @@
                 }
             }
 
-            switch(map.getGlobalSettings().DISTANCE_UNIT)
+            switch(map.getGlobalSettings().distanceUnit)
             {
-                case "globalSettings_mil":
+                case "mil":
                     return dist.toFixed(2) + "mi";
-                case "globalSettings_nautmil":
+                case "nautmil":
                     return dist.toFixed(2) + "nm";
                 default:                
                     return dist.toFixed(2) + "km";             
@@ -2694,13 +2713,17 @@
 
     LongPress.prototype.onMouseUp_ = function(e) {
         clearTimeout(this.timeoutId_);
+        setTimeout(function() {
+            self.map.longpressPressed = false;
+        }, 50);
     };
 
-    LongPress.prototype.onMouseDown_ = function(e) {
+    LongPress.prototype.onMouseDown_ = function(e) {        
         clearTimeout(this.timeoutId_);
         var map = this.map_;
         var event = e;
         this.timeoutId_ = setTimeout(function() {
+            self.map.longpressPressed = true;
             google.maps.event.trigger(map, 'longpress', event);
         }, this.length_);
     };

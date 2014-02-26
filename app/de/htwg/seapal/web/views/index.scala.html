@@ -18,9 +18,9 @@
 			<div class="nav-collapse collapse navbar-responsive-collapse">
 				<ul class="nav row">
 					<li data-slide="1" class="col-12 col-sm-1_a"><a id="menu-link-1" href="#slide-1"><span class="icon icon-home"></span> <span class="text">HOME</span></a></li>					
-					<li data-slide="2" class="col-12 col-sm-1_a"><a id="menu-link-2" href="#slide-2"><span class="icon icon-book"></span> <span class="text">USER GUIDE</span></a></li>
-					<li data-slide="3" class="col-12 col-sm-1_a"><a id="menu-link-3" href="#slide-3"><span class="icon icon-picture"></span> <span class="text">SCREENSHOTS</span></a></li>
 					<li data-slide="4" class="col-12 col-sm-1_a"><a id="menu-link-4" href="#slide-4"><span class="icon icon-info-sign"></span> <span class="text">ABOUT</span></a></li>
+					<li data-slide="3" class="col-12 col-sm-1_a"><a id="menu-link-3" href="#slide-3"><span class="icon icon-picture"></span> <span class="text">SCREENSHOTS</span></a></li>		
+					<li data-slide="2" class="col-12 col-sm-1_a"><a id="menu-link-2" href="#slide-2"><span class="icon icon-book"></span> <span class="text">USER GUIDE</span></a></li>
 					<li data-slide="5" class="col-12 col-sm-1_a"><a id="menu-link-5" href="#slide-5"><span class="icon icon-envelope"></span> <span class="text">CONTACT</span></a></li>
 					<li data-slide="6" class="col-12 col-sm-1_a"><a class="regular-link" href="@de.htwg.seapal.web.controllers.routes.Application.app()"><span class="icon icon-laptop"></span> <span class="text">APP</span></a></li>
 					<li data-slide="2" class="col-12 col-sm-1_a"><a class="regular-link" href="@de.htwg.seapal.web.controllers.routes.Application.impressum()"><span class="icon icon-certificate"></span> <span class="text">IMPRESSUM</span></a></li>
@@ -64,6 +64,59 @@
 			</div><!-- /row -->
 		</div><!-- /container -->
 	</div><!-- /slide1 -->
+
+	<!-- === Slide 4 - About === -->
+	<div class="slide story" id="slide-4" data-slide="4">
+		<div class="container">
+			<div class="row title-row">
+				<div class="col-12 font-thin">About <span class="font-semibold">SeaPal</span></div>
+			</div><!-- /row -->
+			<div class="row line-row">
+				<div class="hr">&nbsp;</div>
+			</div><!-- /row -->
+			<div class="row subtitle-row">
+				<div class="col-12 col-sm-12 font-light">
+					<h4 class="font-thin">The <span class="font-semibold">SeaPal</span> application was developed in a cooperation between the IBN publishing house and the HTWG Constance University.</h4>
+					<h4 class="font-thin">IBN is a publishing house specialized in sailing and boating in the southern part of Germany. IBN has a long tradition of providing high quality maps, harbor guides and news for sailors for the lake Constance and the south of Germany. IBN initiated this project to bring their content to new mobile platforms like the iPad and the iPhone.</h4>
+					<h4 class="font-thin">The University HTWG Constance is a University of Applied Sciences located in Constance right on the shores of the lake. Prof. Dr. Marko Boger leads the project and did the original concept. He works in the computer science department as professor for Software Architecture and Software Engineering. Software development for mobile platforms as well as for the web are included in this research and teaching. He is also an active sailor with more than 5,000 nm of experience in all waters of Europe.</h4>
+					<h4 class="font-thin">These two partners initiated this project as an open cooperation to provide a modern, simple, yet powerful application for mobile devices. It is our goal to provide a base version of SeaPal free of charge with free online maps to sailors around the world. We also provide extensions to finance this project. Please view purchases as sponsoring to help advance our ambitious project. It will be used to further advance and develop this app.</h4>
+					<h4 class="font-thin">The development is partly done by a team of experienced software developers and partly in research and study groups at the University.</h4>
+					<h4 class="font-thin">Our cooperation is also open for other partners. If you are interested to join our partnership, to provide further content or develop extension, please contact us. You can also sponsor the development of specific functionalities or extensions.</h4>
+				</div>
+				<div class="col-sm-1 hidden-sm">&nbsp;</div>
+			</div><!-- /row -->
+		</div><!-- /container -->
+	</div><!-- /slide4 -->
+	
+	<!-- === SLide 3 - Screenshots -->
+	<div class="slide story" id="slide-3" data-slide="3">
+		<div class="row">
+			<div class="col-12 col-sm-6 col-lg-2"><a data-fancybox-group="screenshots" class="fancybox" href="@routes.Assets.at("images/screenshots/01-big.jpg")"><img class="thumb" src="@routes.Assets.at("images/screenshots/small/01-small.jpg")" alt=""></a></div>
+			<div class="col-12 col-sm-6 col-lg-2"><a data-fancybox-group="screenshots" class="fancybox" href="@routes.Assets.at("images/screenshots/02-big.jpg")"><img class="thumb" src="@routes.Assets.at("images/screenshots/small/02-small.jpg")" alt=""></a></div>
+			<div class="col-12 col-sm-6 col-lg-2"><a data-fancybox-group="screenshots" class="fancybox" href="@routes.Assets.at("images/screenshots/03-big.jpg")"><img class="thumb" src="@routes.Assets.at("images/screenshots/small/03-small.jpg")" alt=""></a></div>
+			<div class="col-12 col-sm-6 col-lg-2"><a data-fancybox-group="screenshots" class="fancybox" href="@routes.Assets.at("images/screenshots/04-big.jpg")"><img class="thumb" src="@routes.Assets.at("images/screenshots/small/04-small.jpg")" alt=""></a></div>
+			<div class="col-12 col-sm-6 col-lg-2"><a data-fancybox-group="screenshots" class="fancybox" href="@routes.Assets.at("images/screenshots/05-big.jpg")"><img class="thumb" src="@routes.Assets.at("images/screenshots/small/05-small.jpg")" alt=""></a></div>
+			<div class="col-12 col-sm-6 col-lg-2"><a data-fancybox-group="screenshots" class="fancybox" href="@routes.Assets.at("images/screenshots/06-big.jpg")"><img class="thumb" src="@routes.Assets.at("images/screenshots/small/06-small.jpg")" alt=""></a></div>
+			<div class="col-12 col-sm-6 col-lg-2"><a data-fancybox-group="screenshots" class="fancybox" href="@routes.Assets.at("images/screenshots/07-big.jpg")"><img class="thumb" src="@routes.Assets.at("images/screenshots/small/07-small.jpg")" alt=""></a></div>
+			<div class="col-12 col-sm-6 col-lg-2"><a data-fancybox-group="screenshots" class="fancybox" href="@routes.Assets.at("images/screenshots/08-big.jpg")"><img class="thumb" src="@routes.Assets.at("images/screenshots/small/08-small.jpg")" alt=""></a></div>
+			<div class="col-12 col-sm-6 col-lg-2"><a data-fancybox-group="screenshots" class="fancybox" href="@routes.Assets.at("images/screenshots/09-big.jpg")"><img class="thumb" src="@routes.Assets.at("images/screenshots/small/09-small.jpg")" alt=""></a></div>
+			<div class="col-12 col-sm-6 col-lg-2"><a data-fancybox-group="screenshots" class="fancybox" href="@routes.Assets.at("images/screenshots/10-big.jpg")"><img class="thumb" src="@routes.Assets.at("images/screenshots/small/10-small.jpg")" alt=""></a></div>
+			<div class="col-12 col-sm-6 col-lg-2"><a data-fancybox-group="screenshots" class="fancybox" href="@routes.Assets.at("images/screenshots/11-big.jpg")"><img class="thumb" src="@routes.Assets.at("images/screenshots/small/11-small.jpg")" alt=""></a></div>
+			<div class="col-12 col-sm-6 col-lg-2"><a data-fancybox-group="screenshots" class="fancybox" href="@routes.Assets.at("images/screenshots/12-big.jpg")"><img class="thumb" src="@routes.Assets.at("images/screenshots/small/12-small.jpg")" alt=""></a></div>
+			<div class="col-12 col-sm-6 col-lg-2"><a data-fancybox-group="screenshots" class="fancybox" href="@routes.Assets.at("images/screenshots/13-big.jpg")"><img class="thumb" src="@routes.Assets.at("images/screenshots/small/13-small.jpg")" alt=""></a></div>
+			<div class="col-12 col-sm-6 col-lg-2"><a data-fancybox-group="screenshots" class="fancybox" href="@routes.Assets.at("images/screenshots/14-big.jpg")"><img class="thumb" src="@routes.Assets.at("images/screenshots/small/14-small.jpg")" alt=""></a></div>
+			<div class="col-12 col-sm-6 col-lg-2"><a data-fancybox-group="screenshots" class="fancybox" href="@routes.Assets.at("images/screenshots/15-big.jpg")"><img class="thumb" src="@routes.Assets.at("images/screenshots/small/15-small.jpg")" alt=""></a></div>
+			<div class="col-12 col-sm-6 col-lg-2"><a data-fancybox-group="screenshots" class="fancybox" href="@routes.Assets.at("images/screenshots/16-big.jpg")"><img class="thumb" src="@routes.Assets.at("images/screenshots/small/16-small.jpg")" alt=""></a></div>
+			<div class="col-12 col-sm-6 col-lg-2"><a data-fancybox-group="screenshots" class="fancybox" href="@routes.Assets.at("images/screenshots/17-big.jpg")"><img class="thumb" src="@routes.Assets.at("images/screenshots/small/17-small.jpg")" alt=""></a></div>
+			<div class="col-12 col-sm-6 col-lg-2"><a data-fancybox-group="screenshots" class="fancybox" href="@routes.Assets.at("images/screenshots/18-big.jpg")"><img class="thumb" src="@routes.Assets.at("images/screenshots/small/18-small.jpg")" alt=""></a></div>
+			<div class="col-12 col-sm-6 col-lg-2"><a data-fancybox-group="screenshots" class="fancybox" href="@routes.Assets.at("images/screenshots/19-big.jpg")"><img class="thumb" src="@routes.Assets.at("images/screenshots/small/19-small.jpg")" alt=""></a></div>
+			<div class="col-12 col-sm-6 col-lg-2"><a data-fancybox-group="screenshots" class="fancybox" href="@routes.Assets.at("images/screenshots/20-big.jpg")"><img class="thumb" src="@routes.Assets.at("images/screenshots/small/20-small.jpg")" alt=""></a></div>
+			<div class="col-12 col-sm-6 col-lg-2"><a data-fancybox-group="screenshots" class="fancybox" href="@routes.Assets.at("images/screenshots/21-big.jpg")"><img class="thumb" src="@routes.Assets.at("images/screenshots/small/21-small.jpg")" alt=""></a></div>
+			<div class="col-12 col-sm-6 col-lg-2"><a data-fancybox-group="screenshots" class="fancybox" href="@routes.Assets.at("images/screenshots/22-big.jpg")"><img class="thumb" src="@routes.Assets.at("images/screenshots/small/22-small.jpg")" alt=""></a></div>
+			<div class="col-12 col-sm-6 col-lg-2"><a data-fancybox-group="screenshots" class="fancybox" href="@routes.Assets.at("images/screenshots/23-big.jpg")"><img class="thumb" src="@routes.Assets.at("images/screenshots/small/23-small.jpg")" alt=""></a></div>
+			<div class="col-12 col-sm-6 col-lg-2"><a data-fancybox-group="screenshots" class="fancybox" href="@routes.Assets.at("images/screenshots/24-big.jpg")"><img class="thumb" src="@routes.Assets.at("images/screenshots/small/24-small.jpg")" alt=""></a></div>
+		</div><!-- /row -->
+	</div><!-- /slide3 -->
 	
 	<!-- === Slide 2 - User guide === -->
 	<div class="slide story" id="slide-2" data-slide="2">
@@ -124,59 +177,6 @@
 			</div>
 		</div><!-- /container -->
 	</div><!-- /slide2 -->
-	
-	<!-- === SLide 3 - Screenshots -->
-	<div class="slide story" id="slide-3" data-slide="3">
-		<div class="row">
-			<div class="col-12 col-sm-6 col-lg-2"><a data-fancybox-group="screenshots" class="fancybox" href="@routes.Assets.at("images/screenshots/01-big.jpg")"><img class="thumb" src="@routes.Assets.at("images/screenshots/small/01-small.jpg")" alt=""></a></div>
-			<div class="col-12 col-sm-6 col-lg-2"><a data-fancybox-group="screenshots" class="fancybox" href="@routes.Assets.at("images/screenshots/02-big.jpg")"><img class="thumb" src="@routes.Assets.at("images/screenshots/small/02-small.jpg")" alt=""></a></div>
-			<div class="col-12 col-sm-6 col-lg-2"><a data-fancybox-group="screenshots" class="fancybox" href="@routes.Assets.at("images/screenshots/03-big.jpg")"><img class="thumb" src="@routes.Assets.at("images/screenshots/small/03-small.jpg")" alt=""></a></div>
-			<div class="col-12 col-sm-6 col-lg-2"><a data-fancybox-group="screenshots" class="fancybox" href="@routes.Assets.at("images/screenshots/04-big.jpg")"><img class="thumb" src="@routes.Assets.at("images/screenshots/small/04-small.jpg")" alt=""></a></div>
-			<div class="col-12 col-sm-6 col-lg-2"><a data-fancybox-group="screenshots" class="fancybox" href="@routes.Assets.at("images/screenshots/05-big.jpg")"><img class="thumb" src="@routes.Assets.at("images/screenshots/small/05-small.jpg")" alt=""></a></div>
-			<div class="col-12 col-sm-6 col-lg-2"><a data-fancybox-group="screenshots" class="fancybox" href="@routes.Assets.at("images/screenshots/06-big.jpg")"><img class="thumb" src="@routes.Assets.at("images/screenshots/small/06-small.jpg")" alt=""></a></div>
-			<div class="col-12 col-sm-6 col-lg-2"><a data-fancybox-group="screenshots" class="fancybox" href="@routes.Assets.at("images/screenshots/07-big.jpg")"><img class="thumb" src="@routes.Assets.at("images/screenshots/small/07-small.jpg")" alt=""></a></div>
-			<div class="col-12 col-sm-6 col-lg-2"><a data-fancybox-group="screenshots" class="fancybox" href="@routes.Assets.at("images/screenshots/08-big.jpg")"><img class="thumb" src="@routes.Assets.at("images/screenshots/small/08-small.jpg")" alt=""></a></div>
-			<div class="col-12 col-sm-6 col-lg-2"><a data-fancybox-group="screenshots" class="fancybox" href="@routes.Assets.at("images/screenshots/09-big.jpg")"><img class="thumb" src="@routes.Assets.at("images/screenshots/small/09-small.jpg")" alt=""></a></div>
-			<div class="col-12 col-sm-6 col-lg-2"><a data-fancybox-group="screenshots" class="fancybox" href="@routes.Assets.at("images/screenshots/10-big.jpg")"><img class="thumb" src="@routes.Assets.at("images/screenshots/small/10-small.jpg")" alt=""></a></div>
-			<div class="col-12 col-sm-6 col-lg-2"><a data-fancybox-group="screenshots" class="fancybox" href="@routes.Assets.at("images/screenshots/11-big.jpg")"><img class="thumb" src="@routes.Assets.at("images/screenshots/small/11-small.jpg")" alt=""></a></div>
-			<div class="col-12 col-sm-6 col-lg-2"><a data-fancybox-group="screenshots" class="fancybox" href="@routes.Assets.at("images/screenshots/12-big.jpg")"><img class="thumb" src="@routes.Assets.at("images/screenshots/small/12-small.jpg")" alt=""></a></div>
-			<div class="col-12 col-sm-6 col-lg-2"><a data-fancybox-group="screenshots" class="fancybox" href="@routes.Assets.at("images/screenshots/13-big.jpg")"><img class="thumb" src="@routes.Assets.at("images/screenshots/small/13-small.jpg")" alt=""></a></div>
-			<div class="col-12 col-sm-6 col-lg-2"><a data-fancybox-group="screenshots" class="fancybox" href="@routes.Assets.at("images/screenshots/14-big.jpg")"><img class="thumb" src="@routes.Assets.at("images/screenshots/small/14-small.jpg")" alt=""></a></div>
-			<div class="col-12 col-sm-6 col-lg-2"><a data-fancybox-group="screenshots" class="fancybox" href="@routes.Assets.at("images/screenshots/15-big.jpg")"><img class="thumb" src="@routes.Assets.at("images/screenshots/small/15-small.jpg")" alt=""></a></div>
-			<div class="col-12 col-sm-6 col-lg-2"><a data-fancybox-group="screenshots" class="fancybox" href="@routes.Assets.at("images/screenshots/16-big.jpg")"><img class="thumb" src="@routes.Assets.at("images/screenshots/small/16-small.jpg")" alt=""></a></div>
-			<div class="col-12 col-sm-6 col-lg-2"><a data-fancybox-group="screenshots" class="fancybox" href="@routes.Assets.at("images/screenshots/17-big.jpg")"><img class="thumb" src="@routes.Assets.at("images/screenshots/small/17-small.jpg")" alt=""></a></div>
-			<div class="col-12 col-sm-6 col-lg-2"><a data-fancybox-group="screenshots" class="fancybox" href="@routes.Assets.at("images/screenshots/18-big.jpg")"><img class="thumb" src="@routes.Assets.at("images/screenshots/small/18-small.jpg")" alt=""></a></div>
-			<div class="col-12 col-sm-6 col-lg-2"><a data-fancybox-group="screenshots" class="fancybox" href="@routes.Assets.at("images/screenshots/19-big.jpg")"><img class="thumb" src="@routes.Assets.at("images/screenshots/small/19-small.jpg")" alt=""></a></div>
-			<div class="col-12 col-sm-6 col-lg-2"><a data-fancybox-group="screenshots" class="fancybox" href="@routes.Assets.at("images/screenshots/20-big.jpg")"><img class="thumb" src="@routes.Assets.at("images/screenshots/small/20-small.jpg")" alt=""></a></div>
-			<div class="col-12 col-sm-6 col-lg-2"><a data-fancybox-group="screenshots" class="fancybox" href="@routes.Assets.at("images/screenshots/21-big.jpg")"><img class="thumb" src="@routes.Assets.at("images/screenshots/small/21-small.jpg")" alt=""></a></div>
-			<div class="col-12 col-sm-6 col-lg-2"><a data-fancybox-group="screenshots" class="fancybox" href="@routes.Assets.at("images/screenshots/22-big.jpg")"><img class="thumb" src="@routes.Assets.at("images/screenshots/small/22-small.jpg")" alt=""></a></div>
-			<div class="col-12 col-sm-6 col-lg-2"><a data-fancybox-group="screenshots" class="fancybox" href="@routes.Assets.at("images/screenshots/23-big.jpg")"><img class="thumb" src="@routes.Assets.at("images/screenshots/small/23-small.jpg")" alt=""></a></div>
-			<div class="col-12 col-sm-6 col-lg-2"><a data-fancybox-group="screenshots" class="fancybox" href="@routes.Assets.at("images/screenshots/24-big.jpg")"><img class="thumb" src="@routes.Assets.at("images/screenshots/small/24-small.jpg")" alt=""></a></div>
-		</div><!-- /row -->
-	</div><!-- /slide3 -->
-	
-	<!-- === Slide 4 - About === -->
-	<div class="slide story" id="slide-4" data-slide="4">
-		<div class="container">
-			<div class="row title-row">
-				<div class="col-12 font-thin">About <span class="font-semibold">SeaPal</span></div>
-			</div><!-- /row -->
-			<div class="row line-row">
-				<div class="hr">&nbsp;</div>
-			</div><!-- /row -->
-			<div class="row subtitle-row">
-				<div class="col-12 col-sm-12 font-light">
-					<h4 class="font-thin">The <span class="font-semibold">SeaPal</span> application was developed in a cooperation between the IBN publishing house and the HTWG Constance University.</h4>
-					<h4 class="font-thin">IBN is a publishing house specialized in sailing and boating in the southern part of Germany. IBN has a long tradition of providing high quality maps, harbor guides and news for sailors for the lake Constance and the south of Germany. IBN initiated this project to bring their content to new mobile platforms like the iPad and the iPhone.</h4>
-					<h4 class="font-thin">The University HTWG Constance is a University of Applied Sciences located in Constance right on the shores of the lake. Prof. Dr. Marko Boger leads the project and did the original concept. He works in the computer science department as professor for Software Architecture and Software Engineering. Software development for mobile platforms as well as for the web are included in this research and teaching. He is also an active sailor with more than 5,000 nm of experience in all waters of Europe.</h4>
-					<h4 class="font-thin">These two partners initiated this project as an open cooperation to provide a modern, simple, yet powerful application for mobile devices. It is our goal to provide a base version of SeaPal free of charge with free online maps to sailors around the world. We also provide extensions to finance this project. Please view purchases as sponsoring to help advance our ambitious project. It will be used to further advance and develop this app.</h4>
-					<h4 class="font-thin">The development is partly done by a team of experienced software developers and partly in research and study groups at the University.</h4>
-					<h4 class="font-thin">Our cooperation is also open for other partners. If you are interested to join our partnership, to provide further content or develop extension, please contact us. You can also sponsor the development of specific functionalities or extensions.</h4>
-				</div>
-				<div class="col-sm-1 hidden-sm">&nbsp;</div>
-			</div><!-- /row -->
-		</div><!-- /container -->
-	</div><!-- /slide4 -->
 	
 	<!-- === Slide 5 - Contact === -->
 	<div class="slide story" id="slide-5" data-slide="5">

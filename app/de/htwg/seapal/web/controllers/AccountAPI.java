@@ -4,6 +4,7 @@ import com.google.inject.Inject;
 import de.htwg.seapal.controller.IAccountController;
 import de.htwg.seapal.model.IAccount;
 import de.htwg.seapal.model.impl.Account;
+import de.htwg.seapal.model.impl.PublicPerson;
 import de.htwg.seapal.model.impl.SignupAccount;
 import de.htwg.seapal.utils.logging.ILogger;
 import de.htwg.seapal.web.controllers.helpers.Menus;
@@ -29,7 +30,7 @@ public class AccountAPI
         extends Controller {
 
     private static final long TIMEOUT = 60 * 60 * 1000;
-    private static Form<Account> form = Form.form(Account.class);
+    private static final Form<Account> form = Form.form(Account.class);
     private static final Pattern EMAIL_PATTERN = Pattern.compile("^[_A-Za-z0-9-\\+]+(\\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$");
     private static final int MIN_LENGTH = 8;
 
@@ -39,6 +40,12 @@ public class AccountAPI
     @Inject
     private ILogger logger;
 
+    /**
+     * validate the account information sb wants to create.
+     *
+     * @param account the account to be validated.
+     * @return null, if it suceeded or a string determining the error.
+     */
     private static String validate(SignupAccount account) {
         if (!EMAIL_PATTERN.matcher(account.getEmail()).matches()) {
             return "Please enter a valid email adress!";
@@ -53,20 +60,17 @@ public class AccountAPI
 
     /**
      * Method signup gets called, when the user clicks the 'create new account' button on the signup page.
-     * @return
+     * @return redirect to the app or to the form telling why it failed.
      */
     public Result signup() {
         Form<SignupAccount> filledForm = DynamicForm.form(SignupAccount.class).bindFromRequest();
-        ObjectNode response = Json.newObject();
         if (filledForm.hasErrors()) {
-            response.put("success", false);
-            response.put("errors", filledForm.errorsAsJson());
+            flash("errors", filledForm.errorsAsJson().toString());
             return badRequest(signUpSeapal.render(filledForm, routes.AccountAPI.signup()));
         }
 
         SignupAccount account = filledForm.get();
         if (controller.accountExists(account.getEmail())) {
-            response.put("success", false);
             flash("errors", "Account already exists");
             return badRequest(signUpSeapal.render(filledForm, routes.AccountAPI.signup()));
         }
@@ -89,22 +93,19 @@ public class AccountAPI
 
     /**
      * Method signup gets called, when the user clicks the 'sign in' button on the login page.
-     * @return
+     * @return a redirect to the app or to the form telling why it failed.
      */
     public Result login() {
         Form<Account> filledForm = DynamicForm.form(Account.class).bindFromRequest();
-        ObjectNode response = Json.newObject();
         if (filledForm.hasErrors()) {
-            response.put("success", false);
-            response.put("errors", filledForm.errorsAsJson());
+            flash("errors", filledForm.errorsAsJson().toString());
             return badRequest(signInSeapal.render(filledForm, routes.AccountAPI.login()));
         }
 
         IAccount account = controller.authenticate(filledForm.get());
 
         if (account == null) {
-            response.put("success", false);
-            response.put("errors", "Authentication failed");
+            flash("errors", "Authentication failed");
             return badRequest(signInSeapal.render(filledForm, routes.AccountAPI.login()));
         }
 
@@ -116,7 +117,7 @@ public class AccountAPI
 
     /**
      * this method gets called, when the user clicks the 'send link to reset password' on the request new password page.
-     * @return
+     * @return a redirect to the form.
      */
     public Result requestNewPassword() {
         Form<Account> filledForm = form.bindFromRequest();
@@ -146,6 +147,7 @@ public class AccountAPI
         controller.saveAccount(account, false);
 
         /*
+        // mail code and server needed.
             MailerAPI mail = play.Play.application().plugin(MailerPlugin.class).email();
             mail.setSubject("request for password change");
             logger.error("AccountName", account.getAccountName());
@@ -159,8 +161,8 @@ public class AccountAPI
     }
 
     /**
-     * this route gets called when the user actually entered his new password
-     * @return
+     * this route gets called when the user actually entered his new password.
+     * @return a redirect to the reset form and a message telling if it suceeded.
      */
     public Result resetPassword() {
         Map<String, String[]> form = request().body().asFormUrlEncoded();
@@ -208,7 +210,7 @@ public class AccountAPI
 
     /**
      * this route redirects the user to the Google servers for OpenID authentication
-     * @return
+     * @return the redirect.
      */
     public Result auth() {
         String providerUrl = "https://www.google.com/accounts/o8/id";
@@ -224,7 +226,7 @@ public class AccountAPI
 
     /**
      * this route handles the OpenID authN request, when the user gets redirected back from Google servers to us.
-     * @return
+     * @return a redirect to the app or the signupform with an error message.
      */
     public Result verify() {
         String[] modes = request().queryString().get("openid.mode");
@@ -253,7 +255,7 @@ public class AccountAPI
 
     /**
      * logout route, clear session cookie.
-     * @return
+     * @return a redirect to the landing page.
      */
     @play.mvc.Security.Authenticated(AccountAPI.Secured.class)
     public Result logout() {
@@ -263,14 +265,22 @@ public class AccountAPI
     }
 
     /**
-     * retrieve account data (id, friendlists)
-     * @return
+     * retrieve the public account information, such as email and friend lists.
+     * @return the public information.
      */
     @play.mvc.Security.Authenticated(AccountAPI.SecuredAPI.class)
     public Result account() {
         String session = session(IAccountController.AUTHN_COOKIE_KEY);
 
-        return ok(Json.toJson(controller.getInternalInfo(session)));
+        PublicPerson s = controller.getInternalInfo(session, session);
+        if (s != null) {
+            return ok(Json.toJson(s));
+        } else {
+            ObjectNode response = Json.newObject();
+            response.put("error", "unauthorized");
+
+            return unauthorized(response);
+        }
     }
 
     public static class Secured
@@ -303,6 +313,5 @@ public class AccountAPI
 
             return unauthorized(response);
         }
-
     }
 }

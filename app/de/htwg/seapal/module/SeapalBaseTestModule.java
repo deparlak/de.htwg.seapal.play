@@ -7,10 +7,8 @@ import com.google.inject.name.Named;
 import com.google.inject.name.Names;
 import de.htwg.seapal.controller.IAccountController;
 import de.htwg.seapal.controller.IMainController;
-import de.htwg.seapal.controller.IPersonController;
 import de.htwg.seapal.controller.impl.AccountController;
 import de.htwg.seapal.controller.impl.MainController;
-import de.htwg.seapal.controller.impl.PersonController;
 import org.ektorp.CouchDbInstance;
 import org.ektorp.http.HttpClient;
 import org.ektorp.http.StdHttpClient;
@@ -29,7 +27,6 @@ public abstract class SeapalBaseTestModule extends AbstractModule {
 	}
 
 	private void configureControllers() {
-        bind(IPersonController.class).to(PersonController.class).in(Singleton.class);
         bind(IAccountController.class).to(AccountController.class).in(Singleton.class);
         bind(IMainController.class).to(MainController.class).in(Singleton.class);
     }

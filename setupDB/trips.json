@@ -12,5 +12,8 @@
          "map":"(doc)->\n if doc? and doc.boat? and doc.owner.length? and doc.owner.length > 0 and doc.boat.length? and doc.boat.length > 0\n  emit \"#{doc.owner}#{doc.boat}\", doc"
        }
    },
+   "filters": {
+       "owner": "(doc,req)->\n return doc.owner == req.query.owner"
+   },
    "validate_doc_update": "(newDoc,oldDoc,userCtx)->\n if oldDoc? and !newDoc._deleted? and newDoc.owner isnt oldDoc.owner\n  throw forbidden: 'old and new user dont match'"
 }
