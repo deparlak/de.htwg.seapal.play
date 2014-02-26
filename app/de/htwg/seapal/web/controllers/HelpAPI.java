@@ -58,7 +58,7 @@ public class HelpAPI
         crewMember1.addFriend(account);
         account.setEmail("account@123.de");
         account.setPassword("test");
-        SignupAccount save3 = new SignupAccount(account, "Karl", "Dönitz");
+        SignupAccount save3 = new SignupAccount(account, "Karl", "Doenitz");
         AccountController.saveAccount(save3, true);
         domACL.put("captain", Json.toJson(AccountController.getInternalInfo(String.valueOf(account.getUUID()), String.valueOf(account.getUUID()))));
         domACLPerson.put("crewMember1", Json.toJson(mainController.getDocuments("person", account.getUUID().toString(), account.getUUID().toString(), "own")));
