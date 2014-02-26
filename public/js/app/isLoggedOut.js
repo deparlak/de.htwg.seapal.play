@@ -69,7 +69,7 @@ $(document).ready(function() {
         output.warning("You are not logged in. Please log in to add a new crew member.");
     });
     
- 	/* if a track was created and no user is logged in, we have to set an _id, to simulate that the trip was saved to the server. */
+ 	/* simulate object storage on server */
     map.addCallback([events.SERVER_CREATE], function (self) {
         if (null == self._id) {
             self._id = 'SIMULATED_SERVER_ID_'+id++;
@@ -78,6 +78,13 @@ $(document).ready(function() {
         map.set(self.type, self);
         self.id = null;
         store[self.owner][self._id] = self;
+    });
+    
+ 	/* simulate object deletion on server */
+    map.addCallback([events.SERVER_REMOVE], function (self) {
+        if (null != self._id && null != self.owner) {
+            delete store[self.owner][self._id];
+        }
     });
     
  	/* this callback will be called if an object was updated by a user */
