@@ -49,3 +49,30 @@ This document is used to exctract the information a user is able to see from an 
 
 ### de.htwg.seapal.model.impl.Person
 This class just contains all the public data of a users profile the user is able to change directly.
+
+## Replication
+
+The following script starts a replication. It is just a prove of concept. It has to be started for every database (mark, trip, waypoint, etc.) and for every account (own account and every friend).
+
+TODO: create database user, which is only allowed to read from the databases except the _users and the seapal_account_db databases. But how do we update documents from client to server?
+
+```
+#!/bin/bash
+$USER=pakohan
+$PASSWORD=pakohan
+$SOURCE=141.70.111.17
+$DATABASE=seapal_mark_db
+$TARGET=127.0.0.1
+$ACCOUNT_ID=123
+curl -H 'Content-Type: application/json' -X POST http://$USER:$PASSWORD@$TARGET:5984/_replicate -d \
+'{
+    "source":"http://$USER:$PASSWORD@$SOURCE:5984/$DATABASE",
+    "create_target":true,
+    "continuous":true,
+    "target":"http://$USER:$PASSWORD@$TARGET:5984/$DATABASE",
+    "filter":"Mark/owner",
+    "query_params": {
+        "owner":"$ACCOUNT_ID"
+    }
+}'
+```
