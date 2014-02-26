@@ -34,12 +34,13 @@ This document describe the struture of the Web APP.
 
 - Start your CouchDB
 - Change username and password in ```app.de.htwg.seapal.database.module.SeapalBaseTestModule.java``` to your couchDB admin username and password.
-- run the setup script ```setupDB.sh``` in the folder ```setupDB```
+- Change the password and username in ```setup.DB``` to your couchDB admin username and password.
+- Run the setup script ```setupDB.sh``` in the folder ```setupDB```.
 - Start the Play project with ```play run``` and you are ready to go.
 
 ###3. Server side controll flow
 
-The server side stuff is stored under the 'app' folder. The reachable routes can be found in the 'conf\routes' file. The html is stored under 'de.htwg.seapal.play\app\de\htwg\seapal\web\views' where we difide into the homepage files stored in 'pageContent' and the app files stored in 'appContent'.
+The server side stuff is stored under the 'app' folder. The reachable routes can be found in the 'conf\routes' file. The html is stored under 'de.htwg.seapal.play\app\de\htwg\seapal\web\views' where we divide into the homepage files stored in 'pageContent' and the app files stored in 'appContent'.
 
 ###4. Client side controll flow
 
