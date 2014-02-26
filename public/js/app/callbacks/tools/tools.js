@@ -90,6 +90,7 @@ $(document).ready(function() {
         if(!startTracking($('.icon-startLogging'))) {
             map.stopTracking();
             $('.fa-stop').removeClass('fa-stop').addClass('fa-play');
+            $('.icon-stopLogging').removeClass('icon-stopLogging').addClass('icon-startLogging');
         }
     });
 });
