@@ -547,6 +547,7 @@
             NO_GEO_SUPPORT          : 50,
             BOAT_POS_UPDATE         : 51,
             LEFT_SECURITY_CIRCLE    : 52,
+            MAN_OVERBOARD           : 53,
             /* select or deselect any item (boat, trip, route, mark) */
             SELECTED                : 60,
             DESELECTED              : 61,
@@ -1431,6 +1432,10 @@
         * *********************************************************************************
         */
         this.startTracking = function() {
+            if(isTracking) {
+                return;
+            }
+            
             if (data.boat.active == null) {
                 callbacks[event.WARNING].fire({msg : "No Boat for tracking selected! Please select a Boat from the logbook."});
                 return false;
@@ -1469,6 +1474,7 @@
                 isShowingTargetLine = true;
                 targetLineDestination = currentPosition;
                 drawSetAsDestination();
+                callbacks[event.MAN_OVERBOARD].fire();
             } else {
                 removeManOverboardMark();
             }
