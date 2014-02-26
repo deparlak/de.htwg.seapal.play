@@ -31,11 +31,17 @@ $(document).ready(function() {
 
                 request.done(function (friendResponse, textStatus, jqXHR){
                     for (var i in friendResponse) {
-                        /* friend entry not exist, download the info about the new friend now. */
+                        /* friend entry not exist, set the info about the new friend now. */
                         if (-1 == friend_list.indexOf(friendResponse[i]._id)) {
                             friend_list.push(friendResponse[i]._id);
                             map.set('person', friendResponse[i]);
                         }
+                        /* delete the new friend from the receivedRequests if it was already stored there */
+                        $("#friendRequests"+friendResponse[i].owner).remove();
+                        delete receivedRequests[friendResponse[i].owner];
+                        if (0 == Object.keys(receivedRequests).length) {
+                            $("#logbook-friendRequests").hide();
+                        } 
                     }
                 });
             }
@@ -249,7 +255,7 @@ $(document).ready(function() {
 			response.id = objectId;
             response.type = self.type;
             response.image_big = null;
-			map.set(self.type, response);
+			map.set(response.type, response);
             /* If we have uploaded an item with an image (mark, waypoint, ...) we have to upload the image file now */
             if (image_big) {
                 var formData = new FormData();
@@ -259,13 +265,9 @@ $(document).ready(function() {
                 xhr.onreadystatechange = function () {
                     if (xhr.readyState == 4) {
                         var json = JSON.parse(xhr.responseText);
-                        /* guys, check this! we cannot edit documents with attachements, since adding an attachement
-                         changes the revision. maybe this code here helps
-                        console.log(self);
-                        self._rev = json._rev;
-                        map.set(self.type, self);
-                        */
-                        console.log("TODO // TODO // TODO // TODO // TODO // TODO // TODO // TODO // TODO // TODO");
+                        /* Adding an attachement changes the revision, so we have to set the revision */
+                        response._rev = json._rev;
+                        map.set(response.type, response);
                     }
                 }
                 xhr.open("POST", "/api/photo/"+response._id+"/"+self.type);
