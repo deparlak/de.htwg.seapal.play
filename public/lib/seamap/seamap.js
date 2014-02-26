@@ -2188,7 +2188,7 @@
         function handleAddNewWaypoint() {
             if (isTracking) {
                 addNewWaypoint();
-                setTimeout(handleAddNewWaypoint, globalSettings.waypointDelay * 6000);
+                setTimeout(handleAddNewWaypoint, globalSettings.waypointDelay * 60000);
                 //TODO : check if cyclic track upload should be done.
                 //uploadTrackUpdate();
             }

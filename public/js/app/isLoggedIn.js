@@ -116,7 +116,7 @@ $(document).ready(function() {
         /* trigger friend list */
         friendRequest();
         /* set cylcic friend request every minute */
-        setInterval(friendRequest, 6000);
+        setInterval(friendRequest, 60000);
     });
 
     /* callback handler that will be called on failure */
