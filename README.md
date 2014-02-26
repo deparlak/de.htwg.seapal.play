@@ -5,10 +5,6 @@
 3. run the setup script ```setupDB.sh``` in the Folder ```setupDB```.
 4. now you can run the play project and access it with your web browser via ```localhost:9000```
 
-# Documentation
-
-This documentation is an addition to the javadoc in the important classes.
-
 ## Special classes in the web project
 
 These classes are important for the logic of the play project.
