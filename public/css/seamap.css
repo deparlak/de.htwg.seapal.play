@@ -20,6 +20,27 @@ body.googlemaps
     margin-bottom: -20px;
 }
 
+#positionIcon {
+  position: fixed;
+  top: 70px;
+  left: 5px;
+  z-index: 1;
+}
+
+#photoIcon {
+  position: fixed;
+  top: 70px;
+  right: 5px;
+  z-index: 1;
+}
+
+#trackIcon {
+  position: fixed;
+  bottom: 10px;
+  left: 5px;
+  z-index: 1;
+}
+
 #infoBar {
   text-align: center;
   left:20%;
