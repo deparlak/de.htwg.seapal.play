@@ -40,6 +40,12 @@ public class AccountAPI
     @Inject
     private ILogger logger;
 
+    /**
+     * validate the account information sb wants to create.
+     *
+     * @param account the account to be validated.
+     * @return null, if it suceeded or a string determining the error.
+     */
     private static String validate(SignupAccount account) {
         if (!EMAIL_PATTERN.matcher(account.getEmail()).matches()) {
             return "Please enter a valid email adress!";
@@ -54,7 +60,7 @@ public class AccountAPI
 
     /**
      * Method signup gets called, when the user clicks the 'create new account' button on the signup page.
-     * @return
+     * @return redirect to the app or to the form telling why it failed.
      */
     public Result signup() {
         Form<SignupAccount> filledForm = DynamicForm.form(SignupAccount.class).bindFromRequest();
@@ -87,7 +93,7 @@ public class AccountAPI
 
     /**
      * Method signup gets called, when the user clicks the 'sign in' button on the login page.
-     * @return
+     * @return a redirect to the app or to the form telling why it failed.
      */
     public Result login() {
         Form<Account> filledForm = DynamicForm.form(Account.class).bindFromRequest();
@@ -111,7 +117,7 @@ public class AccountAPI
 
     /**
      * this method gets called, when the user clicks the 'send link to reset password' on the request new password page.
-     * @return
+     * @return a redirect to the form.
      */
     public Result requestNewPassword() {
         Form<Account> filledForm = form.bindFromRequest();
@@ -141,6 +147,7 @@ public class AccountAPI
         controller.saveAccount(account, false);
 
         /*
+        // mail code and server needed.
             MailerAPI mail = play.Play.application().plugin(MailerPlugin.class).email();
             mail.setSubject("request for password change");
             logger.error("AccountName", account.getAccountName());
@@ -154,8 +161,8 @@ public class AccountAPI
     }
 
     /**
-     * this route gets called when the user actually entered his new password
-     * @return
+     * this route gets called when the user actually entered his new password.
+     * @return a redirect to the reset form and a message telling if it suceeded.
      */
     public Result resetPassword() {
         Map<String, String[]> form = request().body().asFormUrlEncoded();
@@ -203,7 +210,7 @@ public class AccountAPI
 
     /**
      * this route redirects the user to the Google servers for OpenID authentication
-     * @return
+     * @return the redirect.
      */
     public Result auth() {
         String providerUrl = "https://www.google.com/accounts/o8/id";
@@ -219,7 +226,7 @@ public class AccountAPI
 
     /**
      * this route handles the OpenID authN request, when the user gets redirected back from Google servers to us.
-     * @return
+     * @return a redirect to the app or the signupform with an error message.
      */
     public Result verify() {
         String[] modes = request().queryString().get("openid.mode");
@@ -248,7 +255,7 @@ public class AccountAPI
 
     /**
      * logout route, clear session cookie.
-     * @return
+     * @return a redirect to the landing page.
      */
     @play.mvc.Security.Authenticated(AccountAPI.Secured.class)
     public Result logout() {
@@ -258,8 +265,8 @@ public class AccountAPI
     }
 
     /**
-     * retrieve account data (id, friendlists)
-     * @return
+     * retrieve the public account information, such as email and friend lists.
+     * @return the public information.
      */
     @play.mvc.Security.Authenticated(AccountAPI.SecuredAPI.class)
     public Result account() {
