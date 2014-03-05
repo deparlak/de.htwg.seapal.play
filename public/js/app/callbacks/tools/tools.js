@@ -5,24 +5,23 @@
  * 
  */
  
-$(document).ready(function() {    
+$(document).ready(function() {
+    events = map.getEvents();
+
     tools.addCallback('leftclick', 'icon-startLogging', function (self) {
-        if(map.startTracking()) {
-            self.text("Stop Logging");
-            self.removeClass('icon-startLogging').addClass('icon-stopLogging');
-        }
+        startTracking(self);
     });
 
     tools.addCallback('leftclick', 'icon-stopLogging', function (self) {
         self.text("Start Logging");
         self.removeClass('icon-stopLogging').addClass('icon-startLogging');
+        $('.fa-stop').removeClass('fa-stop').addClass('fa-play');
         map.stopTracking();
     });
     
     tools.addCallback('leftclick', 'icon-takePhoto', function (self) {
         menu.closeMenu();        
-        window.camera.setup("photo-video", "photo-button");
-        $('#modal-photo').modal('show');
+        takePhoto();
     });
     
     tools.addCallback('leftclick', 'icon-setMark', function (self) {
@@ -58,5 +57,40 @@ $(document).ready(function() {
 
     tools.addCallback('leftclick', 'icon-discardTarget', function (self) {
         map.discardTarget();
+    });
+
+    function startTracking(button) {
+        if(map.startTracking()) {
+            button.text("Stop Logging");
+            button.removeClass('icon-startLogging').addClass('icon-stopLogging');
+            $('.fa-play').removeClass('fa-play').addClass('fa-stop');
+            return true;
+        }
+        return false;
+    }
+
+    function takePhoto() {
+        window.camera.setup("photo-video", "photo-button");
+        $('#modal-photo').modal('show');
+    }
+
+    map.addCallback([events.MAN_OVERBOARD], function(event) {
+        startTracking($('.icon-startLogging'));
+    });
+
+    $('#positionIcon').click(function() {
+        map.followPosition();
+    });
+
+    $('#photoIcon').click(function() {
+        takePhoto();
+    });
+
+    $('#trackIcon').click(function() {
+        if(!startTracking($('.icon-startLogging'))) {
+            map.stopTracking();
+            $('.fa-stop').removeClass('fa-stop').addClass('fa-play');
+            $('.icon-stopLogging').removeClass('icon-stopLogging').addClass('icon-startLogging');
+        }
     });
 });

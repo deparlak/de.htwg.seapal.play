@@ -2,36 +2,29 @@ package de.htwg.seapal.database.impl;
 
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
-import de.htwg.seapal.database.IMarkDatabase;
-import de.htwg.seapal.model.IMark;
+import de.htwg.seapal.database.ISettingDatabase;
+import de.htwg.seapal.model.ISetting;
 import de.htwg.seapal.model.ModelDocument;
-import de.htwg.seapal.model.impl.Mark;
+import de.htwg.seapal.model.impl.Setting;
 import de.htwg.seapal.utils.logging.ILogger;
-import org.ektorp.AttachmentInputStream;
 import org.ektorp.CouchDbConnector;
 import org.ektorp.CouchDbInstance;
 import org.ektorp.DocumentNotFoundException;
 import org.ektorp.impl.StdCouchDbConnector;
 import org.ektorp.support.CouchDbRepositorySupport;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
 
-public class MarkDatabase extends CouchDbRepositorySupport<Mark> implements
-        IMarkDatabase {
-
+public final class SettingDatabase extends CouchDbRepositorySupport<Setting> implements ISettingDatabase {
     private final ILogger logger;
     private final StdCouchDbConnector connector;
 
     @Inject
-    protected MarkDatabase(@Named("markCouchDbConnector") CouchDbConnector db, ILogger logger, CouchDbInstance dbInstance) {
-        super(Mark.class, db, true);
+    protected SettingDatabase(@Named("settingCouchDbConnector") CouchDbConnector db, ILogger logger, CouchDbInstance dbInstance) {
+        super(Setting.class, db, true);
         super.initStandardDesignDocument();
         this.logger = logger;
         connector = new StdCouchDbConnector(db.getDatabaseName(), dbInstance);
@@ -39,7 +32,7 @@ public class MarkDatabase extends CouchDbRepositorySupport<Mark> implements
 
     @Override
     public boolean open() {
-        logger.info("MarkDatabase", "Database connection opened");
+        logger.info("SettingDatabase", "Database connection opened");
         return true;
     }
 
@@ -49,8 +42,8 @@ public class MarkDatabase extends CouchDbRepositorySupport<Mark> implements
     }
 
     @Override
-    public boolean save(IMark data) {
-        Mark entity = (Mark) data;
+    public boolean save(ISetting data) {
+        Setting entity = (Setting) data;
 
         if (entity.isNew()) {
             // ensure that the id is generated and revision is null for saving a new entity
@@ -60,13 +53,13 @@ public class MarkDatabase extends CouchDbRepositorySupport<Mark> implements
             return true;
         }
 
-        logger.info("MarkDatabase", "Updating entity with UUID: " + entity.getId());
+        logger.info("SettingDatabase", "Updating entity with UUID: " + entity.getId());
         update(entity);
         return false;
     }
 
     @Override
-    public IMark get(UUID id) {
+    public ISetting get(UUID id) {
         try {
             return get(id.toString());
         } catch (DocumentNotFoundException e) {
@@ -75,16 +68,16 @@ public class MarkDatabase extends CouchDbRepositorySupport<Mark> implements
     }
 
     @Override
-    public List<IMark> loadAll() {
-        List<IMark> marks = new LinkedList<IMark>(getAll());
-        logger.info("MarkDatabase", "Loaded entities. Count: " + marks.size());
-        return marks;
+    public List<ISetting> loadAll() {
+        List<ISetting> Settings = new LinkedList<ISetting>(getAll());
+        logger.info("SettingDatabase", "Loaded entities. Count: " + Settings.size());
+        return Settings;
     }
 
     @Override
     public void delete(UUID id) {
-        logger.info("MarkDatabase", "Removing entity with UUID: " + id.toString());
-        remove((Mark) get(id));
+        logger.info("SettingDatabase", "Removing entity with UUID: " + id.toString());
+        remove((Setting) get(id));
     }
 
     @Override
@@ -93,7 +86,12 @@ public class MarkDatabase extends CouchDbRepositorySupport<Mark> implements
     }
 
     @Override
-    public List<? extends IMark> queryViews(final String viewName, final String key) {
+    public List<? extends ISetting> queryViews(final String viewName, final String key) {
+        return super.queryView(viewName, key);
+    }
+
+    @Override
+    public List<Setting> queryView(final String viewName, final String key) {
         try {
             return super.queryView(viewName, key);
         } catch (DocumentNotFoundException e) {
@@ -109,16 +107,5 @@ public class MarkDatabase extends CouchDbRepositorySupport<Mark> implements
     @Override
     public void update(ModelDocument document) {
         connector.update(document);
-    }
-
-    @Override
-    public String addPhoto(IMark mark, String contentType, File file) throws FileNotFoundException {
-        AttachmentInputStream a = new AttachmentInputStream("photo", new FileInputStream(file), contentType);
-        return db.createAttachment(mark.getUUID().toString(), mark.getRevision(), a);
-    }
-
-    @Override
-    public InputStream getPhoto(UUID uuid) {
-        return db.getAttachment(uuid.toString(), "photo");
     }
 }

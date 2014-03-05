@@ -3,7 +3,7 @@
     "language": "coffeescript",
     "views": {
         "by_email": {
-            "map": "(doc)->\n emit doc.email, doc"
+            "map": "(doc)->\n emit doc.email.toUpperCase(), doc"
         },
         "friends": {
             "map": "(doc)->\n for friend in doc.friendList\n  emit friend, doc._id"
@@ -12,7 +12,7 @@
             "map": "(doc)->\n emit doc._id, doc"
         },
         "resetToken": {
-            "map": "(doc)->\n ptrn = /^\\s*-?[0-9]{1,10}\\s*$/;\n if doc? and doc.resetToken? and ptrn.exec doc.resetToken and doc.resetToken != 0\n  emit doc.resetToken, doc\n"
+            "map": "(doc)->\n ptrn = /^\\s*-?[0-9]{1,10}\\s*$/;\n if doc? and doc.resetToken? and doc.resetToken != 0 and ptrn.exec doc.resetToken\n  emit doc.resetToken, doc"
         },
         "googleID": {
             "map": "(doc)->\n if doc? and doc.googleID? != \"\" and doc.googleID.length > 0\n  emit doc.googleID, doc\n"

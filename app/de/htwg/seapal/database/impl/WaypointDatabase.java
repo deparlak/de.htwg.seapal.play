@@ -7,12 +7,17 @@ import de.htwg.seapal.model.IWaypoint;
 import de.htwg.seapal.model.ModelDocument;
 import de.htwg.seapal.model.impl.Waypoint;
 import de.htwg.seapal.utils.logging.ILogger;
+import org.ektorp.AttachmentInputStream;
 import org.ektorp.CouchDbConnector;
 import org.ektorp.CouchDbInstance;
 import org.ektorp.DocumentNotFoundException;
 import org.ektorp.impl.StdCouchDbConnector;
 import org.ektorp.support.CouchDbRepositorySupport;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -102,5 +107,16 @@ public class WaypointDatabase extends CouchDbRepositorySupport<Waypoint> impleme
     @Override
     public void update(ModelDocument document) {
         connector.update(document);
+    }
+
+    @Override
+    public String addPhoto(IWaypoint mark, String contentType, File file) throws FileNotFoundException {
+        AttachmentInputStream a = new AttachmentInputStream("photo", new FileInputStream(file), contentType);
+        return db.createAttachment(mark.getUUID().toString(), mark.getRevision(), a);
+    }
+
+    @Override
+    public InputStream getPhoto(UUID uuid) {
+        return db.getAttachment(uuid.toString(), "photo");
     }
 }

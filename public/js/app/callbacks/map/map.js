@@ -23,7 +23,10 @@ $(document).ready(function() {
         if (self.type == 'route') {
             $("#routes").append(templateLoadedRoute(self));
         } else if (self.type == 'trip') {
-            $("#tracks").append(templateLoadedTrip(self));
+            /* a trip is only a track if there are some marks */
+            if (self.marks.length > 0) {
+                $("#tracks").append(templateLoadedTrip(self));
+            }
             $("#logbook-trips").append(templateLoadedTrip(self));
         } else if (self.type == 'mark') {
             $("#marks").append(templateLoadedMark(self));
@@ -58,7 +61,7 @@ $(document).ready(function() {
         $("."+self.type+self.id).text(self.name);
     });
     
-	/* this callback will be called if an object was updated by a user */
+	/* this callback a boat was switched */
     map.addCallback([events.SWITCHED_BOAT], function (self) {
         $("#tracks").html("");
         $("#logbook-trips").html("");
@@ -84,8 +87,7 @@ $(document).ready(function() {
 	
 	/* this callback will be called if GEO location is not supported */
     map.addCallback(events.NO_GEO_SUPPORT, function (self) {
-        alert(self);
-        console.log(self);
+        output.warning(self.msg);
     });
 	
     /* this callback will be called when the boat position changed */

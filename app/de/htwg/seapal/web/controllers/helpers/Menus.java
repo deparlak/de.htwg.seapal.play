@@ -17,7 +17,7 @@ public class Menus extends Action.Simple {
     }
 
 	public static List<MenuItem> createMainNavi(String url){
-		List<MenuItem> menu = new LinkedList<MenuItem>();
+		List<MenuItem> menu = new LinkedList<>();
 
 		menu.add(new MenuItem("Start", "/"));
 		menu.add(new MenuItem("How To", "/user_guide"));
@@ -30,7 +30,7 @@ public class Menus extends Action.Simple {
 	}
 
 	public static List<MenuItem> createSubNavi(String url){
-		List<MenuItem> menu = new LinkedList<MenuItem>();
+		List<MenuItem> menu = new LinkedList<>();
 
 		menu.add(new MenuItem("Boat Info", "/boat_info"));
 		menu.add(new MenuItem("Trip List", ""));

@@ -82,7 +82,7 @@ public final class AccountDatabase extends CouchDbRepositorySupport<Account>
 
     @Override
     public void create(ModelDocument document) {
-        //To change body of implemented methods use File | Settings | File Templates.
+        throw new RuntimeException("not implemented");
     }
 
     @Override
@@ -96,7 +96,7 @@ public final class AccountDatabase extends CouchDbRepositorySupport<Account>
 
     @Override
     public void update(ModelDocument document) {
-        //To change body of implemented methods use File | Settings | File Templates.
+        throw new RuntimeException("not implemented");
     }
 
     @Override

@@ -106,15 +106,12 @@ $(document).ready(function() {
 
         $('#globalSettingsInputForm').html(html);
         $('#modal-form_globalSettings').modal('show');
-
-        if(!alreadySetGlobalSettingsFlag) {
-            alreadySetGlobalSettingsFlag = true;
-            $('#modal-form_globalSettings').submit(function() {
-                var boundData = Handlebars.getBoundData(settings);                
-                map.setGlobalSettings(boundData);
-                $('#modal-form_globalSettings').modal('hide');
-                return false;
-            });
-        }
+    });
+    
+    $('#modal-form_globalSettings').submit(function() {
+        var boundData = Handlebars.getBoundData(map.getGlobalSettings());                
+        map.setGlobalSettings(boundData);
+        $('#modal-form_globalSettings').modal('hide');
+        return false;
     });
 });
