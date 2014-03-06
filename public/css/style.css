@@ -17,6 +17,12 @@
 	font-weight: 600;
 }
 
+.font-semibold-title {
+	font-family: "Titillium Web", sans-serif;
+	font-weight: 600;
+	color: #34495e;
+}
+
 .font-light {
 	font-family: "Titillium Web", sans-serif;
 	font-weight: 300;

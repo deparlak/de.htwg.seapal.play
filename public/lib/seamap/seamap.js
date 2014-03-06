@@ -2293,16 +2293,16 @@
             obj.pos = currentPosition;
             obj.latStr = toLatLngString(obj.pos.lat(), "lat");
             obj.lngStr = toLatLngString(obj.pos.lng(), "lng");
-            obj.html = "COG " + obj.course + "° SOG " + obj.speed + "kn " + getCoordinatesAsString(obj.pos.lat(), obj.pos.lng());
+            obj.html = "<div id='infobox'><div id='boatinfo'>COG <b>" + obj.course + "°</b> SOG <b>" + obj.speed + " kn</b> </div><div id='positioninfo'>" + getCoordinatesAsString(obj.pos.lat(), obj.pos.lng()) + "</div></div>";
             return obj;
         }
         /* Converts kmh to knots */
         function kmhToKn(speed) {
-            return (speed * KMH_TO_KNOTS).toFixed(4);
+            return (speed * KMH_TO_KNOTS).toFixed(2);
         }        
         /* Gets the current coordinates in a human readable format */
         function getCoordinatesAsString(lat, lng) {
-            return toLatLngString(lat, "lat") + " " + toLatLngString(lng, "lng");
+            return "Lat <b>" + toLatLngString(lat, "lat") + "</b> Lon <b>" + toLatLngString(lng, "lng") + "</b>";
         }
         /* Gets the current coordinates in a human readable format array for use in the specific forms */
         function toLatLngArray(dms, type) {
@@ -2333,6 +2333,7 @@
             
             return result;
         }
+        
         /* Gets the current coordinates in a human readable format in a complete string*/
         function toLatLngString(dms, type) {
             var tmp = toLatLngArray(dms, type);

@@ -1,6 +1,6 @@
 #!/bin/bash
 HOST=localhost:5984
-#USERNAME=marko.boger
+#USERNAME=markoboger
 #PASSWORD=imnottelling
 
 curl -s -X DELETE http://$USERNAME:$PASSWORD@$HOST/seapal_boat_db/
