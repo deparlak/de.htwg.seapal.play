@@ -12,6 +12,7 @@ import de.htwg.seapal.web.views.html.appContent.signInSeapal;
 import de.htwg.seapal.web.views.html.appContent.signUpSeapal;
 import de.htwg.seapal.web.views.html.impressum;
 import de.htwg.seapal.web.views.html.index;
+import de.htwg.seapal.web.views.html.logbook;
 import play.Routes;
 import play.data.DynamicForm;
 import play.mvc.Controller;
@@ -35,6 +36,10 @@ public class Application
 
     public static Result app() {
         return ok(app.render());
+    }
+
+    public static Result logbook(){
+        return ok(logbook.render());
     }
 
     public static Result login() {

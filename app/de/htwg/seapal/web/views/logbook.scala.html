@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+    <head lang="en">
+        @logbookContent.header()
+        <script type="text/javascript">
+            $(function() {
+                $('#accordion').accordion();
+                $('#flipster').flipster({
+                    style : "coverflow"
+                });
+            });
+        </script>
+    </head>
+    <body>
+        <div class="container">
+            <div class="row">
+                <div class="span5">
+                    @logbookContent.entry()
+                </div>
+                <div class="span5">
+                    @logbookContent.details()
+                </div>
+            </div>
+            <div class="row">
+                <div class="span12">
+                    @logbookContent.pictures()
+                </div>
+            </div>
+        </div>
+        @logbookContent.footer()
+    </body>
+</html>
