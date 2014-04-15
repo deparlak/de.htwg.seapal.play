@@ -8,6 +8,7 @@
                 $('#flipster').flipster({
                     style : "coverflow"
                 });
+                $('.fixed' ).stick_in_parent();
             });
         </script>
     </head>
@@ -17,7 +18,7 @@
                 <div class="span5">
                     @logbookContent.entry()
                 </div>
-                <div class="span5">
+                <div class="span5 fixed">
                     @logbookContent.details()
                 </div>
             </div>
