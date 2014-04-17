@@ -1,0 +1,40 @@
+{
+    "timeline":
+    {
+        "headline":"Johnny B Goode",
+        "type":"default",
+        "startDate":"2009,1",
+        "text":"<i><span class='c1'>Designer</span> & <span class='c2'>Developer</span></i>",
+
+        "date": [
+            {
+                "startDate":"2009,2"
+            },
+            {
+                "startDate":"2009,5",
+                "headline":"Redesign of my portfolio",
+                "text":""
+            },
+            {
+                "startDate":"2009,7",
+                "headline":"Another time-lapse experiment",
+                "text":""
+            },
+            {
+                "startDate":"2009,10",
+                "headline":"Developed a Gmail Client",
+                "text":""
+            },
+            {
+                "startDate":"2010,3",
+                "headline":"Logo Design for a pet shop",
+                "text":""
+            },
+            {
+                "startDate":"2010,4",
+                "headline":"Developed an iPad newspaper application",
+                "text":"It was a challenge to create both the design and code in a week."
+            }
+        ]
+    }
+}

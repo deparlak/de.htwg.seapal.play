@@ -1,0 +1,37 @@
+<div>
+
+    <div class="logbookEntry">
+        <b>Logbucheintrag vom 01.02.2014</b><br><br>
+        <div class="row">
+            <div class="span2">
+                <a href='@routes.Assets.at("images/dummy_pic_1.jpg")' data-gallery="multiimages" data-toggle="lightbox">
+                    <img src='@routes.Assets.at("images/dummy_pic_1.jpg")' alt="Map dummy" >
+                </a>
+            </div>
+            <div class="span2">
+                <a href='@routes.Assets.at("images/dummy_pic_2.jpg")' data-gallery="multiimages" data-toggle="lightbox">
+                    <img src='@routes.Assets.at("images/dummy_pic_2.jpg")' alt="Map dummy" >
+                </a>
+            </div>
+            <div class="span2">
+                <a href='@routes.Assets.at("images/dummy_pic_3.jpg")' data-gallery="multiimages" data-toggle="lightbox">
+                    <img src='@routes.Assets.at("images/dummy_pic_3.jpg")' alt="Map dummy" >
+                </a>
+            </div>
+
+        </div>
+
+        <p>
+                lindtexte werden ebenfalls zur Demonstration der Gestalt verschiedener Schrifttypen und zu Layoutzwecken verwendet. Sie ergeben in der Regel keinen inhaltlichen Sinn. Aufgrund ihrer verbreiteten Funktion als Fülltext für das Layout kommt einer Nicht-Lesbarkeit besondere Bedeutung zu, da die menschliche Wahrnehmung u.a. mehr…
+        </p>
+    </div>
+
+    @for(i <- 2 to 6){
+        <div class="logbookEntry">
+            <b>Logbucheintrag vom @i.02.2014</b><br><br>
+            <p>
+                lindtexte werden ebenfalls zur Demonstration der Gestalt verschiedener Schrifttypen und zu Layoutzwecken verwendet. Sie ergeben in der Regel keinen inhaltlichen Sinn. Aufgrund ihrer verbreiteten Funktion als Fülltext für das Layout kommt einer Nicht-Lesbarkeit besondere Bedeutung zu, da die menschliche Wahrnehmung u.a. mehr…
+            </p>
+        </div>
+    }
+</div>

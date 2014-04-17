@@ -14,10 +14,10 @@ $(document).ready(function() {
         removeItem.enable();
     });
     
-    /* when we open logbook submenu, we have to visible the footer for the submenu */
+    /* when we open logbook submenu, we have to visible the timeline for the submenu */
     menu.addCallback('leftclick', 'icon-logbook', function (self) {
         removeItem.disable();
-        $(active+"-footer").removeClass('hidden').addClass('visible'); 
+        $(active+"-timeline").removeClass('hidden').addClass('visible');
     });
     
     /* when we swith one of the submenus */
@@ -27,11 +27,11 @@ $(document).ready(function() {
         self.button('toggle');
         $('.active-logbook').removeClass('active-logbook').addClass('inactive-logbook');
         $(self.data('name')).removeClass('inactive-logbook').addClass('active-logbook');
-        /* hide the other footer and visible the now active */
-        $(active+"-footer").removeClass('visible').addClass('hidden');
+        /* hide the other timeline and visible the now active */
+        $(active+"-timeline").removeClass('visible').addClass('hidden');
         active = self.data('name');
-        /* be sure that the default footer is visible */
-        $(active+"-footer").removeClass('hidden').addClass('visible'); 
+        /* be sure that the default timeline is visible */
+        $(active+"-timeline").removeClass('hidden').addClass('visible');
     });
     
     menu.addCallback('leftclick', ['icon-notSelected-boat', 'icon-notSelected-person'], function (self) {

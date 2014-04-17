@@ -19,7 +19,7 @@ $(document).ready(function() {
             }
         });
     };
-    /* when we open marksRoutesTracks submenu, we have to visible the footer for the submenu */
+    /* when we open marksRoutesTracks submenu, we have to visible the timeline for the submenu */
     menu.addCallback('leftclick', 'icon-marksRoutesTracks', function (self) {
         removeItem.disable();
         $('#menu-marksRoutesTracks-footer').removeClass('hidden').addClass('visible');
@@ -39,7 +39,7 @@ $(document).ready(function() {
         lastSearch[active] = $('#search-marksRoutesTracks').val();
         active = self.data('name');
         $('#search-marksRoutesTracks').val(lastSearch[active]);
-        /* be sure that the default footer is visible */
+        /* be sure that the default timeline is visible */
         $('#menu-marksRoutesTracks-footer').removeClass('hidden').addClass('visible');
     });
     

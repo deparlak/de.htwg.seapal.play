@@ -1,0 +1,30 @@
+#menu_bar{
+    background: #2fd1ff;
+    top: 0px;
+    position: fixed;
+}
+
+#pictures {
+    background: #FFFFFF;
+    bottom: 0px;
+    position: fixed;
+    max-height: 25%;
+}
+
+.logbookEntry {
+    padding-bottom: 100px;
+}
+
+.logbookEntry-active {
+
+}
+
+.logbookEntry img {
+    max-width: 100%;
+    max-height: 100%;
+}
+
+#details img {
+   max-width: 100%;
+   max-height: 100%;
+}
