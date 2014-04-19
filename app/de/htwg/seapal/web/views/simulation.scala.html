@@ -1,0 +1,52 @@
+@(Model: de.htwg.seapal.web.models.TripGeneratorArgs, Message: String)
+
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv='content-type' content='text/html; charset=utf-8' />
+	<link type="text/css" rel="stylesheet" href="@routes.Assets.at("lib/bootstrap/css/bootstrap.min.css")" />
+	<script type="text/javascript" src="@routes.Assets.at("lib/jquery.js")"></script>
+	<script type="text/javascript" src="@routes.Assets.at("lib/bootstrap/js/bootstrap.min.js")"></script>
+	<title>Simulation</title>
+</head>
+<body>
+
+<div class="container">
+<h1>Trip Generator</h1>
+<br />
+@if(Message != null) {
+	<div class="alert alert-info">@Message</div>
+}
+<br />
+ @helper.form(action = de.htwg.seapal.web.controllers.routes.SimulationAPI.generateTrip()) {
+ 	<label for="WaypointCount">Count of random waypoints</label>
+ 	<input type="text" class="form-control" name="WaypointCount" value="@Model.getWaypointCount()">
+ 	<br />
+ 	<label for="PicturesDir">Directory of photos</label>
+	<input type="text" class="form-control" name="PicturesDir" value="@Model.getPicturesDir()">
+	<br />
+	<label for="ThumbsDir">Directory of thumb images for pictures (same filenames!)</label>
+	<input type="text" class="form-control" name="ThumbsDir" value="@Model.getThumbsDir()">
+	<br />
+	<label for="RouteFile">Geolocations to choose from (one LAT,LNG tuple per line)</label>
+	<input type="text" class="form-control" name="RouteFile" value="@Model.getRouteFile()">
+	<br />
+	<label for="NotesFile">File with random notes (one note per file)</label>
+	<input type="text" class="form-control" name="NotesFile" value="@Model.getNotesFile()">
+	<br />
+	<label for="BoatId">ID of boat</label>
+	<input type="text" class="form-control" name="BoatId" value="@Model.getBoatId()">
+	<br />
+	<label for="PhotoFactor">Chance to take a photo (0 - 100)</label>
+	<input type="text" class="form-control" name="PhotoFactor" value="@Model.getPhotoFactor()">
+	<br /><br />
+	<div style="text-align: right">
+	<button class="btn btn-default btn-primary" type="submit">Generate Trip!</button>
+	</div>
+	
+ }
+
+</div>
+</body>
+</html>
