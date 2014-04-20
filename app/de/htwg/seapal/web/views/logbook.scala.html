@@ -11,9 +11,39 @@
                 $('#details' ).stick_in_parent();
 
                 $('#accordion').accordion();
-                $('#flipster').flipster({
-                    style : "coverflow"
+                
+                // copy template to flipster bar
+        		$('#flipsterContainer').html($('#flipsterTemplate').html());
+        		// enable coverflow
+        		$('#flipsterContainer div').flipster({
+                    style : "coverflow",
+                    start: 0
                 });
+            });
+            
+            $(document).ready(function () {
+            	
+            	function onReceivedTripPhotos(tripId, pictures) {
+            		var picturesCount = $('#flipsterContainer div').children().length;
+            		// appended newly loaded pictures to flipster template
+            		$.each(pictures, function (index, value) {
+            			var imgId = 'img' + value.waypointId;
+            			var imgNode = $('<li><img id="' + imgId + '" /></li>');
+            			$('#flipsterTemplate ul').append(imgNode);
+            			$('#' + imgId).attr('src', value.thumbPicture);
+            		});
+            		// copy template to flipster bar
+            		$('#flipsterContainer').html($('#flipsterTemplate').html());
+            		// enable coverflow
+            		$('#flipsterContainer div').flipster({
+                        style: "coverflow",
+                        start: picturesCount - 1
+                    });
+            	}
+            	
+            	$('#btnApiTest').click(function () {
+            		getTripPhotos('3df40ddb-ece7-479c-9039-d87c77e456c4', 0, 5, onReceivedTripPhotos);
+            	})
             });
         </script>
     </head>
@@ -23,7 +53,9 @@
                 <div id="menu_bar" class="span10">
                 @logbookContent.menubar()
                 </div>
+                <button id="btnApiTest">API test</button>
             </div>
+            <div id="apiTestContent"></div>
             <div class="row">
                 <div id="entries" class="span5">
                     @logbookContent.entries()

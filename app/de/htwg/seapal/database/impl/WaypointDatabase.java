@@ -2,15 +2,20 @@ package de.htwg.seapal.database.impl;
 
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
+
 import de.htwg.seapal.database.IWaypointDatabase;
 import de.htwg.seapal.model.IWaypoint;
 import de.htwg.seapal.model.ModelDocument;
 import de.htwg.seapal.model.impl.Waypoint;
 import de.htwg.seapal.utils.logging.ILogger;
+
 import org.ektorp.AttachmentInputStream;
 import org.ektorp.CouchDbConnector;
 import org.ektorp.CouchDbInstance;
 import org.ektorp.DocumentNotFoundException;
+import org.ektorp.ViewQuery;
+import org.ektorp.ViewResult;
+import org.ektorp.ViewResult.Row;
 import org.ektorp.impl.StdCouchDbConnector;
 import org.ektorp.support.CouchDbRepositorySupport;
 
@@ -27,6 +32,29 @@ public class WaypointDatabase extends CouchDbRepositorySupport<Waypoint> impleme
 
 	private final ILogger logger;
     private final StdCouchDbConnector connector;
+    
+    
+    public static class WaypointPictureBean {
+    	private String waypointId;
+    	private String thumbPicture;
+		
+		public String getWaypointId() {
+			return waypointId;
+		}
+		public void setWaypointId(String waypointId) {
+			this.waypointId = waypointId;
+		}
+		/**
+		 * Returns the thumb image data in the form "data:image/jpg;base64,[binaryData]"
+		 * to be set as img-Tag directly.
+		 */
+		public String getThumbPicture() {
+			return thumbPicture;
+		}
+		public void setThumbPicture(String thumbPicture) {
+			this.thumbPicture = thumbPicture;
+		}
+    }
 
     @Inject
 	protected WaypointDatabase(@Named("waypointCouchDbConnector") CouchDbConnector db, ILogger logger, CouchDbInstance dbInstance) {
@@ -119,4 +147,30 @@ public class WaypointDatabase extends CouchDbRepositorySupport<Waypoint> impleme
     public InputStream getPhoto(UUID uuid) {
         return db.getAttachment(uuid.toString(), "photo");
     }
+    
+    /**
+     * Gets all waypoints of a trip which have a picture assigned.
+     * Returns a list of JSON objects of the form {waypointId, thumbImage}.
+     * thumbImage is of the form "data:image/jpg;base64,[binaryData]" for direct use as src of image tags.
+     * @param startIndex Number of entries to skip before returning the values.
+     * @author Lukas
+     */
+    public List<WaypointPictureBean> getPhotosByTripId(UUID tripId, int startIndex, int count) {
+    	// the pictures view contains entries of the form   (tripID  ->  {wayPointId: ..., thumbImage: ...})
+    	// for all waypoints which have a picture assigned
+    	ViewQuery query = new ViewQuery()
+   	    .designDocId("_design/Waypoint")
+   	    .viewName("pictures")
+   	    .key(tripId.toString())
+   	    .skip(startIndex)
+   	    .limit(count);
+    	
+//    	ViewResult result = connector.queryView(query);
+//    	List<String> retVal = new ArrayList<String>(result.getSize());
+//       	for (Row row : result.getRows()) {
+//    		retVal.add(row.getValueAsNode());
+//    	}
+//   	 return retVal;
+   	 return connector.queryView(query, WaypointPictureBean.class);
+   }
 }

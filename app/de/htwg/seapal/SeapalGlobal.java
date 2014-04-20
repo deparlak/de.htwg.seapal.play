@@ -25,7 +25,16 @@ public class SeapalGlobal
     private static Injector createInjector() {
         return Guice.createInjector(new SeapalTestModule());
     }
-
+    
+    /**
+     * Returns Guice instance.  +TODO  Hack for LogbookAPI until core classes can be modified... 
+     * @author Lukas
+     */
+    @Deprecated
+    public static Injector getInjector() {
+    	return INJECTOR;
+    }
+    
     @Override
     public <A> A getControllerInstance(Class<A> controllerClass)
             throws Exception {
