@@ -31,13 +31,13 @@ import java.util.UUID;
 public class WaypointDatabase extends CouchDbRepositorySupport<Waypoint> implements IWaypointDatabase {
 
 	private final ILogger logger;
-    private final StdCouchDbConnector connector;
-    
-    
-    public static class WaypointPictureBean {
-    	private String waypointId;
-    	private String thumbPicture;
-		
+	private final StdCouchDbConnector connector;
+
+
+	public static class WaypointPictureBean {
+		private String waypointId;
+		private String thumbPicture;
+
 		public String getWaypointId() {
 			return waypointId;
 		}
@@ -54,15 +54,15 @@ public class WaypointDatabase extends CouchDbRepositorySupport<Waypoint> impleme
 		public void setThumbPicture(String thumbPicture) {
 			this.thumbPicture = thumbPicture;
 		}
-    }
+	}
 
-    @Inject
+	@Inject
 	protected WaypointDatabase(@Named("waypointCouchDbConnector") CouchDbConnector db, ILogger logger, CouchDbInstance dbInstance) {
 		super(Waypoint.class, db, true);
 		super.initStandardDesignDocument();
 		this.logger = logger;
-        connector = new StdCouchDbConnector(db.getDatabaseName(), dbInstance);
-    }
+		connector = new StdCouchDbConnector(db.getDatabaseName(), dbInstance);
+	}
 
 	@Override
 	public boolean open() {
@@ -94,12 +94,12 @@ public class WaypointDatabase extends CouchDbRepositorySupport<Waypoint> impleme
 
 	@Override
 	public Waypoint get(UUID id) {
-        try {
-            return get(id.toString());
-        } catch (DocumentNotFoundException e) {
-            return null;
-        }
-    }
+		try {
+			return get(id.toString());
+		} catch (DocumentNotFoundException e) {
+			return null;
+		}
+	}
 
 	@Override
 	public List<IWaypoint> loadAll() {
@@ -118,59 +118,70 @@ public class WaypointDatabase extends CouchDbRepositorySupport<Waypoint> impleme
 	public boolean close() {
 		return true;
 	}
-    @Override
-    public List<? extends IWaypoint> queryViews(final String viewName, final String key) {
-        try {
-            return super.queryView(viewName, key);
-        } catch (DocumentNotFoundException e) {
-            return new ArrayList<>();
-        }
-    }
+	@Override
+	public List<? extends IWaypoint> queryViews(final String viewName, final String key) {
+		try {
+			return super.queryView(viewName, key);
+		} catch (DocumentNotFoundException e) {
+			return new ArrayList<>();
+		}
+	}
 
-    @Override
-    public void create(ModelDocument doc) {
-        connector.create(doc);
-    }
+	@Override
+	public void create(ModelDocument doc) {
+		connector.create(doc);
+	}
 
-    @Override
-    public void update(ModelDocument document) {
-        connector.update(document);
-    }
+	@Override
+	public void update(ModelDocument document) {
+		connector.update(document);
+	}
 
-    @Override
-    public String addPhoto(IWaypoint mark, String contentType, File file) throws FileNotFoundException {
-        AttachmentInputStream a = new AttachmentInputStream("photo", new FileInputStream(file), contentType);
-        return db.createAttachment(mark.getUUID().toString(), mark.getRevision(), a);
-    }
+	@Override
+	public String addPhoto(IWaypoint mark, String contentType, File file) throws FileNotFoundException {
+		AttachmentInputStream a = new AttachmentInputStream("photo", new FileInputStream(file), contentType);
+		return db.createAttachment(mark.getUUID().toString(), mark.getRevision(), a);
+	}
 
-    @Override
-    public InputStream getPhoto(UUID uuid) {
-        return db.getAttachment(uuid.toString(), "photo");
-    }
-    
-    /**
-     * Gets all waypoints of a trip which have a picture assigned.
-     * Returns a list of JSON objects of the form {waypointId, thumbImage}.
-     * thumbImage is of the form "data:image/jpg;base64,[binaryData]" for direct use as src of image tags.
-     * @param startIndex Number of entries to skip before returning the values.
-     * @author Lukas
-     */
-    public List<WaypointPictureBean> getPhotosByTripId(UUID tripId, int startIndex, int count) {
-    	// the pictures view contains entries of the form   (tripID  ->  {wayPointId: ..., thumbImage: ...})
-    	// for all waypoints which have a picture assigned
-    	ViewQuery query = new ViewQuery()
-   	    .designDocId("_design/Waypoint")
-   	    .viewName("pictures")
-   	    .key(tripId.toString())
-   	    .skip(startIndex)
-   	    .limit(count);
-    	
-//    	ViewResult result = connector.queryView(query);
-//    	List<String> retVal = new ArrayList<String>(result.getSize());
-//       	for (Row row : result.getRows()) {
-//    		retVal.add(row.getValueAsNode());
-//    	}
-//   	 return retVal;
-   	 return connector.queryView(query, WaypointPictureBean.class);
-   }
+	@Override
+	public InputStream getPhoto(UUID uuid) {
+		return db.getAttachment(uuid.toString(), "photo");
+	}
+
+	/**
+	 * Gets all waypoints of a trip which have a picture assigned.
+	 * Returns a list of JSON objects of the form {waypointId, thumbImage}.
+	 * thumbImage is of the form "data:image/jpg;base64,[binaryData]" for direct use as src of image tags.
+	 * @param startIndex Number of entries to skip before returning the values.
+	 * @author Lukas
+	 */
+	public List<WaypointPictureBean> getPhotosByTripId(UUID tripId, int startIndex, int count) {
+		// the pictures view contains entries of the form   (tripID  ->  {wayPointId: ..., thumbImage: ...})
+		// for all waypoints which have a picture assigned
+		ViewQuery query = new ViewQuery()
+		.designDocId("_design/Waypoint")
+		.viewName("pictures")
+		.key(tripId.toString())
+		.skip(startIndex)
+		.limit(count);
+
+		return connector.queryView(query, WaypointPictureBean.class);
+	}
+
+	/**
+	 * Gets the waypoints objects of a trip.
+	 * @param startIndex Number of entries to skip before returning the values.
+	 * @author Lukas
+	 */
+	public List<? extends IWaypoint> getWaypointsByTripId(UUID tripId, int startIndex, int count) {
+		ViewQuery query = new ViewQuery()
+		.designDocId("_design/Waypoint")
+		.viewName("byTrip")
+		.key(tripId.toString())
+		.skip(startIndex)
+		.limit(count);
+
+		return connector.queryView(query, Waypoint.class);
+	}
+
 }

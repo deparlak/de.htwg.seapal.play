@@ -55,3 +55,4 @@ POST          /simulation/generateTrip                                          
 #GET           /logbook/$tripId<[0-9a-fA-F\-]+>                                                           @de.htwg.seapal.web.controllers.JournalAPI.index(tripId: UUID)
 GET           /logbook/tripData/$tripId<[0-9a-fA-F\-]+>	                                                  @de.htwg.seapal.web.controllers.LogbookAPI.getTripById(tripId: UUID)
 GET           /logbook/tripPhotos/$tripId<[0-9a-fA-F\-]+>/$startIndex<[0-9]+>/$count<[0-9]+>              @de.htwg.seapal.web.controllers.LogbookAPI.getPhotosOfTrip(tripId: UUID, startIndex: Int, count: Int)
+GET           /logbook/tripWaypoints/$tripId<[0-9a-fA-F\-]+>/$startIndex<[0-9]+>/$count<[0-9]+>           @de.htwg.seapal.web.controllers.LogbookAPI.getWaypointsOfTrip(tripId: UUID, startIndex: Int, count: Int)

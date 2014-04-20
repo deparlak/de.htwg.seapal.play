@@ -41,12 +41,15 @@ public class LogbookAPI extends Controller {
 		return ok(Json.toJson(trip));
 	}
 	
-	
 	@play.mvc.Security.Authenticated(AccountAPI.SecuredAPI.class)
 	public Result getPhotosOfTrip(UUID tripId, int startIndex, int count) {
 		WaypointDatabase db = SeapalGlobal.getInjector().getInstance(WaypointDatabase.class);
 		return ok(Json.toJson(db.getPhotosByTripId(tripId, startIndex, count)));
 	}
 	
-	
+	@play.mvc.Security.Authenticated(AccountAPI.SecuredAPI.class)
+	public Result getWaypointsOfTrip(UUID tripId, int startIndex, int count) {
+		WaypointDatabase db = SeapalGlobal.getInjector().getInstance(WaypointDatabase.class);
+		return ok(Json.toJson(db.getWaypointsByTripId(tripId, startIndex, count)));
+	}
 }

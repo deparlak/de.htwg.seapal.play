@@ -23,6 +23,9 @@
             
             $(document).ready(function () {
             	
+            	/*  ---------------  backend tests  -------------- */
+                    
+            	// callback for logbook.getTripPhotos()
             	function onReceivedTripPhotos(tripId, pictures) {
             		var picturesCount = $('#flipsterContainer div').children().length;
             		// appended newly loaded pictures to flipster template
@@ -41,12 +44,33 @@
                     });
             	}
             	
+            	// callback for logbook.getTripWaypoints()
+            	function onReceivedWaypoints(tripId, waypoints) {
+            		alert('count: ' + waypoints.length);
+            	}
+            	
             	$('#btnPicApiTest').click(function () {
-            		getTripPhotos('3df40ddb-ece7-479c-9039-d87c77e456c4', 0, 5, onReceivedTripPhotos);
+            		logbook.getTripPhotos($('#txtTripId').val(), 0, 5, onReceivedTripPhotos);
+            	});
+            	
+            	$('#btnTripApiTest').click(function () { 
+            		logbook.getTripData($('#txtTripId').val(), function (tripId, tripData) {
+            			alert(JSON.stringify(tripData));
+            		})
+            	});
+            	
+            	$('#btnTripApiTest2').click(function () { 
+            		logbook.getTripWaypoints($('#txtTripId').val(), 0, 5, onReceivedWaypoints);
+            	});
+            	
+            	$('#btnTripApiTest3').click(function () { 
+            		logbook.getWaypointData($('#txtTripId').val(), function (waypointId, waypointData) {
+            			alert(JSON.stringify(waypointData));
+            		});
             	});
             	
             	$('#flipsterContainer').on('click', '.waypointImg', function () {
-            		var url = getPhotoOfWaypoint($(this).attr('data-waypoint'));
+            		var url = logbook.getPhotoOfWaypoint($(this).attr('data-waypoint'));
             		window.location = url;
             	});
             });
