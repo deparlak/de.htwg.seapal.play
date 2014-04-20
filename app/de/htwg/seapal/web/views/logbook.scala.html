@@ -28,7 +28,7 @@
             		// appended newly loaded pictures to flipster template
             		$.each(pictures, function (index, value) {
             			var imgId = 'img' + value.waypointId;
-            			var imgNode = $('<li><img id="' + imgId + '" /></li>');
+            			var imgNode = $('<li><img id="' + imgId + '" data-waypoint="' + value.waypointId + '" class="waypointImg"/></li>');
             			$('#flipsterTemplate ul').append(imgNode);
             			$('#' + imgId).attr('src', value.thumbPicture);
             		});
@@ -41,9 +41,14 @@
                     });
             	}
             	
-            	$('#btnApiTest').click(function () {
+            	$('#btnPicApiTest').click(function () {
             		getTripPhotos('3df40ddb-ece7-479c-9039-d87c77e456c4', 0, 5, onReceivedTripPhotos);
-            	})
+            	});
+            	
+            	$('#flipsterContainer').on('click', '.waypointImg', function () {
+            		var url = getPhotoOfWaypoint($(this).attr('data-waypoint'));
+            		window.location = url;
+            	});
             });
         </script>
     </head>
@@ -53,7 +58,6 @@
                 <div id="menu_bar" class="span10">
                 @logbookContent.menubar()
                 </div>
-                <button id="btnApiTest">API test</button>
             </div>
             <div id="apiTestContent"></div>
             <div class="row">
