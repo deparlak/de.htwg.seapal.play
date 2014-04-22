@@ -1,3 +1,17 @@
-<div>
-    <img src='@routes.Assets.at("images/dummy_timeline.png")' alt="Timeline dummy" >
-</div>
+<ul class="timeline">
+
+    @for(i <- 1 to 6){
+
+        <li class="@{if(i%2 == 0) "timeline-inverted";}" >
+            <div class="timeline-panel" id="0@i-02-2014">
+                <div class="timeline-heading">
+                    <h4>0@i.02.2014</h4>
+                </div>
+                <div class="timeline-body">
+                    <p>sample entry</p>
+                </div>
+            </div>
+        </li>
+
+    }
+</ul>
