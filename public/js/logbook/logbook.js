@@ -17,7 +17,7 @@ logbook.getTripPhotos = function(tripId, startIndex, count, callback) {
 	.done(function (result) {
 		callback(tripId, result);
 	})
-	.fail(function () { window.alert(ajaxErrorMsg);	});
+	.fail(handleAjaxError);
 };
 
 /**
@@ -36,7 +36,7 @@ logbook.getTripData = function(tripId, callback) {
 	.done(function (result) {
 		callback(tripId, result);
 	})
-	.fail(function () { window.alert(ajaxErrorMsg);	});
+	.fail(handleAjaxError);
 };
 
 /**
@@ -48,7 +48,7 @@ logbook.getTripWaypoints = function(tripId, startIndex, count, callback) {
 	.done(function (result) {
 		callback(tripId, result);
 	})
-	.fail(function () { window.alert(ajaxErrorMsg);	});
+	.fail(handleAjaxError);
 };
 
 /**
@@ -60,5 +60,12 @@ logbook.getWaypointData = function(waypointId, callback) {
 	.done(function (result) {
 		callback(waypointId, result);
 	})
-	.fail(function () { window.alert(ajaxErrorMsg);	});
+	.fail(handleAjaxError);
 };
+
+/**
+ * Internal AJAX error handler
+ */
+function handleAjaxError(jqXHR, textStatus, errorThrown ) {
+	window.alert(ajaxErrorMsg + ' (' + errorThrown + ').');
+}
