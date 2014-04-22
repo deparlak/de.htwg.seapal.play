@@ -1,3 +1,41 @@
-<div>
-    <img src='@routes.Assets.at("images/dummy_timeline.png")' alt="Timeline dummy" >
+<div id="viewport">
+    <ul id="base" class="timeline dragger">
+
+       <li class="timeline-seperator">
+               <span>Februar 2014</span>
+       </li>
+        @for(i <- 1 to 28){
+
+            <li class="@{if(i%2 == 0) "timeline-inverted";}" >
+                <div class="timeline-panel" id="0@i-02-2014">
+                    <div class="timeline-heading">
+                        <b>0@i.02.2014</b>
+                    </div>
+                    <div class="timeline-body">
+                        sample entry
+                            <img src='@routes.Assets.at("images/dummy_pic_1.jpg")'alt="dummy pic 1" width="32px" height="32px"/>
+                    </div>
+                </div>
+            </li>
+
+        }
+        <li class="timeline-seperator">
+            <span>März 2014</span>
+        </li>
+        @for(i <- 1 to 31){
+
+            <li class="@{if(i%2 == 0) "timeline-inverted";}" >
+                <div class="timeline-panel" id="0@i-03-2014">
+                    <div class="timeline-heading">
+                        <b>0@i.03.2014</b>
+                    </div>
+                    <div class="timeline-body">
+                        sample entry
+                        <img src='@routes.Assets.at("images/dummy_pic_1.jpg")'alt="dummy pic 1" width="32px" height="32px"/>
+                    </div>
+                </div>
+            </li>
+
+        }
+    </ul>
 </div>

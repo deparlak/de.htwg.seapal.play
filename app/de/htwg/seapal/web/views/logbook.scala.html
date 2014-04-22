@@ -3,23 +3,6 @@
     <head lang="en">
         @logbookContent.header()
         <script type="text/javascript">
-            $(function() {
-                $('#entries' ).css('padding-bottom', $('#pictures' ).css('height'));
-                $('#entries' ).css('padding-top', $('#menu_bar' ).css('height'));
-                $('#details' ).css('padding-top', $('#menu_bar' ).css('height'));
-
-                $('#details' ).stick_in_parent();
-
-                $('#accordion').accordion();
-                
-                // copy template to flipster bar
-        		$('#flipsterContainer').html($('#flipsterTemplate').html());
-        		// enable coverflow
-        		$('#flipsterContainer div').flipster({
-                    style : "coverflow",
-                    start: 0
-                });
-            });
             
             $(document).ready(function () {
             	
@@ -73,31 +56,48 @@
             		var url = logbook.getPhotoOfWaypoint($(this).attr('data-waypoint'));
             		window.location = url;
             	});
+
+                // actual script
+                $('#entries' ).css('padding-top', $('#menu_bar' ).css('height'));
+                $('#details' ).css('padding-top', $('#menu_bar' ).css('height'));
+                $('#timeline_col' ).css('padding-top', $('#menu_bar' ).css('height'));
+
+                $('.sticky' ).stick_in_parent();
+
+                $('#accordion').accordion();
+
+                $(".timeline-panel" ).each(function(){
+                    $(this ).click(function(){
+                        var date = $(this).attr("id");
+                        var targetOffset = $("#entry-"+date).offset().top - 50;
+                        $('html,body').animate({
+                            scrollTop: targetOffset
+                        },
+                        'slow'
+                        );
+                    });
+                });
+
+                $('#viewport').dragscrollable();
             });
         </script>
     </head>
     <body>
+        <div id="menu_bar">
+            @logbookContent.menubar()
+        </div>
+        <div id="timeline_col">
+            @logbookContent.timeline()
+        </div>
         <div class="container">
             <div class="row">
-                <div id="menu_bar" class="span10">
-                @logbookContent.menubar()
+                <div id="entries" class="span6">
+                @logbookContent.entries()
                 </div>
-            </div>
-            <div id="apiTestContent"></div>
-            <div class="row">
-                <div id="entries" class="span5">
-                    @logbookContent.entries()
-                </div>
-                <div id="details" class="span5">
-                    @logbookContent.details()
-                </div>
-            </div>
-            <div class="row">
-                <div id="pictures" class="span10">
-                    @logbookContent.pictures()
+                <div id="details" class="span4 sticky">
+                @logbookContent.details()
                 </div>
             </div>
         </div>
-
     </body>
 </html>
