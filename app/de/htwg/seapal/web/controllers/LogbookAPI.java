@@ -28,7 +28,7 @@ public class LogbookAPI extends Controller {
 	@play.mvc.Security.Authenticated(AccountAPI.SecuredAPI.class)
 	public Result index(UUID tripId) {
 		String userId = session(IAccountController.AUTHN_COOKIE_KEY);
-		return ok("logbook"); //de.htwg.seapal.web.views.html.journal.render(tripId));
+		return ok(de.htwg.seapal.web.views.html.scrolldemo.render(tripId.toString()));
 	}
 	
 	@play.mvc.Security.Authenticated(AccountAPI.SecuredAPI.class)

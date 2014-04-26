@@ -13,7 +13,7 @@ var ajaxErrorMsg = "Error loading data!";
  * thumbPicture can be assigned as src of <img> tags directly.
  */	
 logbook.getTripPhotos = function(tripId, startIndex, count, callback) {
-	$.getJSON('logbook/tripPhotos/' + tripId + '/' + startIndex + '/' + count)
+	$.getJSON('/logbook/tripPhotos/' + tripId + '/' + startIndex + '/' + count)
 	.done(function (result) {
 		callback(tripId, result);
 	})
@@ -24,7 +24,7 @@ logbook.getTripPhotos = function(tripId, startIndex, count, callback) {
  * Returns the URL to the full-size picture of the specified waypoint.
  */
 logbook.getPhotoOfWaypoint = function(waypointId) {
-	return 'api/photo/' + waypointId + '/waypoint.jpg';
+	return '/api/photo/' + waypointId + '/waypoint.jpg';
 };
 
 /**
@@ -32,7 +32,7 @@ logbook.getPhotoOfWaypoint = function(waypointId) {
  * callback function of the form f(tripId, tripData).
  */
 logbook.getTripData = function(tripId, callback) {
-	$.getJSON('api/trip/' + tripId)
+	$.getJSON('/api/trip/' + tripId)
 	.done(function (result) {
 		callback(tripId, result);
 	})
@@ -44,7 +44,7 @@ logbook.getTripData = function(tripId, callback) {
  * Passes the used trip ID and the waypoint array to a callback function f(tripId, waypoints).
  */
 logbook.getTripWaypoints = function(tripId, startIndex, count, callback) {
-	$.getJSON('logbook/tripWaypoints/' + tripId + '/' + startIndex + '/' + count)
+	$.getJSON('/logbook/tripWaypoints/' + tripId + '/' + startIndex + '/' + count)
 	.done(function (result) {
 		callback(tripId, result);
 	})
@@ -56,7 +56,7 @@ logbook.getTripWaypoints = function(tripId, startIndex, count, callback) {
  * to a callback function f(waypointId, waypointData).
  */
 logbook.getWaypointData = function(waypointId, callback) {
-	$.getJSON('api/waypoint/' + waypointId)
+	$.getJSON('/api/waypoint/' + waypointId)
 	.done(function (result) {
 		callback(waypointId, result);
 	})
