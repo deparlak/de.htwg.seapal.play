@@ -1,44 +1,54 @@
-<br /><b>API Test (requires login):</b><br />
-Object ID: <input type="text" id="txtTripId" value="3df40ddb-ece7-479c-9039-d87c77e456c4" style="width: 25em"/><br />
-<button id="btnPicApiTest">load pics of trip</button>
-<button id="btnTripApiTest">get data of trip</button>
-<button id="btnTripApiTest2">get waypoints of trip</button>
-<button id="btnTripApiTest3">get data of waypoint</button>
-<br /><br />
 <div>
-@for(i <- 1 to 6){
-    <div class="logbookEntry" id="entry-0@i-02-2014">
-        <div class="row">
-            <div class="span6">
-                <b>Logbucheintrag vom @i.02.2014</b><br><br>
-            </div>
-        </div>
-        <div class="row">
-            <div class="span2">
-                <a href='@routes.Assets.at("images/dummy_pic_1.jpg")' data-gallery="multiimages" data-toggle="lightbox">
-                    <img src='@routes.Assets.at("images/dummy_pic_1.jpg")' alt="Map dummy" >
-                </a>
-            </div>
-            <div class="span2">
-                <a href='@routes.Assets.at("images/dummy_pic_2.jpg")' data-gallery="multiimages" data-toggle="lightbox">
-                    <img src='@routes.Assets.at("images/dummy_pic_2.jpg")' alt="Map dummy" >
-                </a>
-            </div>
-            <div class="span2">
-                <a href='@routes.Assets.at("images/dummy_pic_3.jpg")' data-gallery="multiimages" data-toggle="lightbox">
-                    <img src='@routes.Assets.at("images/dummy_pic_3.jpg")' alt="Map dummy" >
-                </a>
-            </div>
+    <b>API Test (requires login):</b> <br />
+    Object ID: <input type="text" id="txtTripId" value="3df40ddb-ece7-479c-9039-d87c77e456c4" style="width : 25 em"/> <br />
+    <button id="btnPicApiTest">load pics of trip</button>
+    <button id="btnTripApiTest">get data of trip</button>
+    <button id="btnTripApiTest2">get waypoints of trip</button>
+    <button id="btnTripApiTest3">get data of waypoint</button>
+    <br /> <br />
+</div>
+
+<div>
+    @for(i <- 1 to 5) {
+        <div id="trip_@i">
+            @for(j <- 1 to 6) {
+                <div class="logbookEntry" id="trip_@i-entry_@j">
+                    <div class="row">
+                        <div class="span6">
+                            <b>Logbucheintrag vom @j.@i.2014</b> <br> <br>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="span2">
+                            <a href='@routes.Assets.at("images/dummy_pic_1.jpg")' data-gallery="multiimages" data-toggle="lightbox">
+                                <img src='@routes.Assets.at("images/dummy_pic_1.jpg")' alt="Map dummy" >
+                            </a>
+                        </div>
+                        <div class="span2">
+                            <a href='@routes.Assets.at("images/dummy_pic_2.jpg")' data-gallery="multiimages" data-toggle="lightbox">
+                                <img src='@routes.Assets.at("images/dummy_pic_2.jpg")' alt="Map dummy" >
+                            </a>
+                        </div>
+                        <div class="span2">
+                            <a href='@routes.Assets.at("images/dummy_pic_3.jpg")' data-gallery="multiimages" data-toggle="lightbox">
+                                <img src='@routes.Assets.at("images/dummy_pic_3.jpg")' alt="Map dummy" >
+                            </a>
+                        </div>
+
+                    </div>
+
+                    <div class="row">
+                        <div class="span6">
+                            <p>
+                                lindtexte werden ebenfalls zur Demonstration der Gestalt verschiedener Schrifttypen und zu Layoutzwecken verwendet.
+                                Sie ergeben in der Regel keinen inhaltlichen Sinn. Aufgrund ihrer verbreiteten Funktion als Fülltext für das Layout
+                                kommt einer Nicht-Lesbarkeit besondere Bedeutung zu, da die menschliche Wahrnehmung u.a. mehr…
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            }
 
         </div>
-
-        <div class="row">
-            <div class="span6">
-                <p>
-                lindtexte werden ebenfalls zur Demonstration der Gestalt verschiedener Schrifttypen und zu Layoutzwecken verwendet. Sie ergeben in der Regel keinen inhaltlichen Sinn. Aufgrund ihrer verbreiteten Funktion als Fülltext für das Layout kommt einer Nicht-Lesbarkeit besondere Bedeutung zu, da die menschliche Wahrnehmung u.a. mehr…
-                </p>
-            </div>
-        </div>
-    </div>
-}
+    }
 </div>

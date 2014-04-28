@@ -64,17 +64,34 @@
 
                 $('.sticky' ).stick_in_parent();
 
-                $('#accordion').accordion();
+                $('#accordion .head').click(function() {
+                    $(this).next().toggle("slow");
+                    return false;
+                });
 
-                $(".timeline-panel" ).each(function(){
+                //timeline
+                $(".timeline-panel.clickable" ).each(function(){
                     $(this ).click(function(){
-                        var date = $(this).attr("id");
-                        var targetOffset = $("#entry-"+date).offset().top - 50;
+                        var index = $(this).attr("id");
+                        index = index.replace('timeline-','');
+                        //console.log("index: "+index);
+                        var targetOffset = $("#"+index).offset().top - 50;
+
                         $('html,body').animate({
                             scrollTop: targetOffset
                         },
                         'slow'
                         );
+                    });
+                });
+
+                $(".timeline-panel.expandable" ).each(function(){
+                    $(this ).click(function(){
+                        var index = $(this).attr("id");
+                        index = index.replace('timeline-','');
+                        //console.log("index: "+index);
+
+                        $('#expandable-'+index ).toggle("slow");
                     });
                 });
 
@@ -92,10 +109,10 @@
         <div class="container">
             <div class="row">
                 <div id="entries" class="span6">
-                @logbookContent.entries()
+                    @logbookContent.entries()
                 </div>
                 <div id="details" class="span4 sticky">
-                @logbookContent.details()
+                    @logbookContent.details()
                 </div>
             </div>
         </div>
