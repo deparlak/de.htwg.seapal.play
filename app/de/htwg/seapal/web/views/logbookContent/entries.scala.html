@@ -1,4 +1,4 @@
-<div>
+<div style="display: none">
     <b>API Test (requires login):</b> <br />
     Object ID: <input type="text" id="txtTripId" value="3df40ddb-ece7-479c-9039-d87c77e456c4" style="width : 25 em"/> <br />
     <button id="btnPicApiTest">load pics of trip</button>
@@ -8,7 +8,7 @@
     <br /> <br />
 </div>
 
-<div>
+<div id="entries">
     @for(i <- 1 to 5) {
         <div id="trip_@i">
             @for(j <- 1 to 6) {
@@ -20,18 +20,18 @@
                     </div>
                     <div class="row">
                         <div class="span2">
-                            <a href='@routes.Assets.at("images/dummy_pic_1.jpg")' data-gallery="multiimages" data-toggle="lightbox">
-                                <img src='@routes.Assets.at("images/dummy_pic_1.jpg")' alt="Map dummy" >
+                            <a href='@routes.Assets.at("images/dummy_pic_1.jpg")' data-lightbox="trip_@i-entry_@j" data-title="dummy pic 1">
+                                <img src='@routes.Assets.at("images/dummy_pic_1.jpg")' alt="Map dummy" class="img-responsive">
                             </a>
                         </div>
                         <div class="span2">
-                            <a href='@routes.Assets.at("images/dummy_pic_2.jpg")' data-gallery="multiimages" data-toggle="lightbox">
-                                <img src='@routes.Assets.at("images/dummy_pic_2.jpg")' alt="Map dummy" >
+                            <a href='@routes.Assets.at("images/dummy_pic_2.jpg")' data-lightbox="trip_@i-entry_@j" data-title="dummy pic 2">
+                                <img src='@routes.Assets.at("images/dummy_pic_2.jpg")' alt="Map dummy" class="img-responsive">
                             </a>
                         </div>
                         <div class="span2">
-                            <a href='@routes.Assets.at("images/dummy_pic_3.jpg")' data-gallery="multiimages" data-toggle="lightbox">
-                                <img src='@routes.Assets.at("images/dummy_pic_3.jpg")' alt="Map dummy" >
+                            <a href='@routes.Assets.at("images/dummy_pic_3.jpg")' data-lightbox="trip_@i-entry_@j" data-title="dummy pic 3">
+                                <img src='@routes.Assets.at("images/dummy_pic_3.jpg")' alt="Map dummy" class="img-responsive">
                             </a>
                         </div>
 

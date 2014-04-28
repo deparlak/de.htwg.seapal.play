@@ -57,14 +57,16 @@
             		window.location = url;
             	});
 
+
+
                 // actual script
-                $('#entries' ).css('padding-top', $('#menu_bar' ).css('height'));
-                $('#details' ).css('padding-top', $('#menu_bar' ).css('height'));
+                $('#entries_col' ).css('padding-top', $('#menu_bar' ).css('height'));
+                $('#details_col' ).css('padding-top', $('#menu_bar' ).css('height'));
                 $('#timeline_col' ).css('padding-top', $('#menu_bar' ).css('height'));
 
                 $('.sticky' ).stick_in_parent();
 
-                $('#accordion .head').click(function() {
+                $('.accordion .head').click(function() {
                     $(this).next().toggle("slow");
                     return false;
                 });
@@ -74,11 +76,14 @@
                     $(this ).click(function(){
                         var index = $(this).attr("id");
                         index = index.replace('timeline-','');
+                        var entry = $("#"+index);
                         //console.log("index: "+index);
-                        var targetOffset = $("#"+index).offset().top - 50;
+                        var targetOffset = entry.offset().top - 50;
 
                         $('html,body').animate({
                             scrollTop: targetOffset
+                        },{
+                            complete: function() { activeEntryChanged(entry); }
                         },
                         'slow'
                         );
@@ -90,13 +95,38 @@
                         var index = $(this).attr("id");
                         index = index.replace('timeline-','');
                         //console.log("index: "+index);
-
                         $('#expandable-'+index ).toggle("slow");
                     });
                 });
 
                 $('#viewport').dragscrollable();
+
+                //waypoint - detect, which entry is active
+                var offset_up = $('#menu_bar' ).height()-1;
+                var offset_down = offset_up+parseInt($('.logbookEntry').css('min-height'));
+
+                $('.logbookEntry' ).waypoint(function(direction) {
+                    if(direction == "down"){
+                        activeEntryChanged($(this));
+                    }
+                }, { offset: offset_down });
+
+                $('.logbookEntry' ).waypoint(function(direction) {
+                    if(direction == "up"){
+                        activeEntryChanged($(this));
+                    }
+                }, { offset: offset_up });
+
+                if($('.logbookEntry.active').length <= 0){
+                    activeEntryChanged($('.logbookEntry' ).first());
+                }
             });
+
+            function activeEntryChanged(activeEntry){
+                //console.log("active entry: "+activeEntry.attr("id"));
+                $('.logbookEntry').removeClass("active");
+                activeEntry.addClass("active");
+            }
         </script>
     </head>
     <body>
@@ -108,10 +138,10 @@
         </div>
         <div class="container">
             <div class="row">
-                <div id="entries" class="span6">
+                <div id="entries_col" class="span6">
                     @logbookContent.entries()
                 </div>
-                <div id="details" class="span4 sticky">
+                <div id="details_col" class="span4 sticky">
                     @logbookContent.details()
                 </div>
             </div>

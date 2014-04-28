@@ -14,11 +14,16 @@
 }
 
 .logbookEntry {
-    padding-bottom: 100px;
+    min-height: 100px;
+    margin-top: 30px;
+    margin-bottom: 30px;
+    padding-top: 20px;
+    padding-bottom: 20px;
+    opacity: 0.15;
 }
 
-.logbookEntry-active {
-
+.logbookEntry.active {
+    opacity: 1;
 }
 
 .logbookEntry img {
@@ -45,4 +50,24 @@
 #viewport {
     overflow: hidden;
     height: 100vh;
+}
+
+
+@media (max-width: 1600px) {
+    #timeline_col {
+        display: none;
+    }
+}
+
+@media (max-width: 925px) {
+    #details_col {
+        display: none;
+    }
+    #menu_bar {
+        display: none;
+        height: 0px;
+    }
+    .logbookEntry {
+        opacity: 1;
+    }
 }
