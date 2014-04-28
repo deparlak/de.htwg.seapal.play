@@ -45,3 +45,14 @@ GET           /openID/verify                                                    
 
 GET           /api/photo/$id<[0-9a-fA-F\-]+>/$document<(mark|waypoint)>.jpg                             @de.htwg.seapal.web.controllers.MainAPI.getPhoto(id: UUID, document: String)
 POST          /api/photo/$id<[0-9a-fA-F\-]+>/$document<(mark|waypoint)>                                 @de.htwg.seapal.web.controllers.MainAPI.addPhoto(id: UUID, document: String)
+
+# Simulator routes
+GET           /simulation/prepareTrip                                                    @de.htwg.seapal.web.controllers.SimulationAPI.prepareTrip()
+GET           /simulation/generateTrip                                                   @de.htwg.seapal.web.controllers.SimulationAPI.prepareTrip()
+POST          /simulation/generateTrip                                                   @de.htwg.seapal.web.controllers.SimulationAPI.generateTrip()
+
+# Logbook routes
+#GET           /logbook/$tripId<[0-9a-fA-F\-]+>                                                           @de.htwg.seapal.web.controllers.JournalAPI.index(tripId: UUID)
+GET           /logbook/tripData/$tripId<[0-9a-fA-F\-]+>	                                                  @de.htwg.seapal.web.controllers.LogbookAPI.getTripById(tripId: UUID)
+GET           /logbook/tripPhotos/$tripId<[0-9a-fA-F\-]+>/$startIndex<[0-9]+>/$count<[0-9]+>              @de.htwg.seapal.web.controllers.LogbookAPI.getPhotosOfTrip(tripId: UUID, startIndex: Int, count: Int)
+GET           /logbook/tripWaypoints/$tripId<[0-9a-fA-F\-]+>/$startIndex<[0-9]+>/$count<[0-9]+>           @de.htwg.seapal.web.controllers.LogbookAPI.getWaypointsOfTrip(tripId: UUID, startIndex: Int, count: Int)

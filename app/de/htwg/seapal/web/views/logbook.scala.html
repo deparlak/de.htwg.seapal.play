@@ -4,40 +4,97 @@
         @logbookContent.header()
         <script type="text/javascript">
             $(function() {
+                $('#entries' ).css('padding-bottom', $('#pictures' ).css('height'));
                 $('#entries' ).css('padding-top', $('#menu_bar' ).css('height'));
                 $('#details' ).css('padding-top', $('#menu_bar' ).css('height'));
-                $('#timeline_col' ).css('padding-top', $('#menu_bar' ).css('height'));
 
-                $('.sticky' ).stick_in_parent();
+                $('#details' ).stick_in_parent();
 
                 $('#accordion').accordion();
-
-                $(".timeline-panel" ).each(function(){
-                    $(this ).click(function(){
-                        var date = $(this).attr("id");
-                        $('html,body').animate({
-                            scrollTop: $("#entry-"+date).offset().top},
-                            'slow'
-                        );
-                    });
+                
+                // copy template to flipster bar
+        		$('#flipsterContainer').html($('#flipsterTemplate').html());
+        		// enable coverflow
+        		$('#flipsterContainer div').flipster({
+                    style : "coverflow",
+                    start: 0
                 });
+            });
+            
+            $(document).ready(function () {
+            	
+            	/*  ---------------  backend tests  -------------- */
+                    
+            	// callback for logbook.getTripPhotos()
+            	function onReceivedTripPhotos(tripId, pictures) {
+            		var picturesCount = $('#flipsterContainer div').children().length;
+            		// appended newly loaded pictures to flipster template
+            		$.each(pictures, function (index, value) {
+            			var imgId = 'img' + value.waypointId;
+            			var imgNode = $('<li><img id="' + imgId + '" data-waypoint="' + value.waypointId + '" class="waypointImg"/></li>');
+            			$('#flipsterTemplate ul').append(imgNode);
+            			$('#' + imgId).attr('src', value.thumbPicture);
+            		});
+            		// copy template to flipster bar
+            		$('#flipsterContainer').html($('#flipsterTemplate').html());
+            		// enable coverflow
+            		$('#flipsterContainer div').flipster({
+                        style: "coverflow",
+                        start: picturesCount - 1
+                    });
+            	}
+            	
+            	// callback for logbook.getTripWaypoints()
+            	function onReceivedWaypoints(tripId, waypoints) {
+            		alert('count: ' + waypoints.length);
+            	}
+            	
+            	$('#btnPicApiTest').click(function () {
+            		logbook.getTripPhotos($('#txtTripId').val(), 0, 5, onReceivedTripPhotos);
+            	});
+            	
+            	$('#btnTripApiTest').click(function () { 
+            		logbook.getTripData($('#txtTripId').val(), function (tripId, tripData) {
+            			alert(JSON.stringify(tripData));
+            		})
+            	});
+            	
+            	$('#btnTripApiTest2').click(function () { 
+            		logbook.getTripWaypoints($('#txtTripId').val(), 0, 5, onReceivedWaypoints);
+            	});
+            	
+            	$('#btnTripApiTest3').click(function () { 
+            		logbook.getWaypointData($('#txtTripId').val(), function (waypointId, waypointData) {
+            			alert(JSON.stringify(waypointData));
+            		});
+            	});
+            	
+            	$('#flipsterContainer').on('click', '.waypointImg', function () {
+            		var url = logbook.getPhotoOfWaypoint($(this).attr('data-waypoint'));
+            		window.location = url;
+            	});
             });
         </script>
     </head>
     <body>
-        <div id="menu_bar">
-            @logbookContent.menubar()
-        </div>
-        <div id="timeline_col">
-            @logbookContent.timeline()
-        </div>
         <div class="container">
             <div class="row">
-                <div id="entries" class="span6">
+                <div id="menu_bar" class="span10">
+                @logbookContent.menubar()
+                </div>
+            </div>
+            <div id="apiTestContent"></div>
+            <div class="row">
+                <div id="entries" class="span5">
                     @logbookContent.entries()
                 </div>
-                <div id="details" class="span4 sticky">
+                <div id="details" class="span5">
                     @logbookContent.details()
+                </div>
+            </div>
+            <div class="row">
+                <div id="pictures" class="span10">
+                    @logbookContent.pictures()
                 </div>
             </div>
         </div>

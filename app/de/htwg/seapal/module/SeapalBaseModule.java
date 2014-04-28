@@ -5,10 +5,16 @@ import com.google.inject.Provides;
 import com.google.inject.Singleton;
 import com.google.inject.name.Named;
 import com.google.inject.name.Names;
+
 import de.htwg.seapal.controller.IAccountController;
 import de.htwg.seapal.controller.IMainController;
 import de.htwg.seapal.controller.impl.AccountController;
 import de.htwg.seapal.controller.impl.MainController;
+import de.htwg.seapal.web.controllers.SimulationAPI;
+import de.htwg.seapal.web.controllers.helpers.ISimulator;
+import de.htwg.seapal.web.controllers.helpers.SimpleSimulator;
+import de.htwg.seapal.web.controllers.impl.SimulationAPIFake;
+
 import org.ektorp.CouchDbInstance;
 import org.ektorp.http.HttpClient;
 import org.ektorp.http.StdHttpClient;
@@ -25,6 +31,10 @@ public abstract class SeapalBaseModule
         bind(String.class).annotatedWith(Names.named("databaseHost")).toInstance("roroettg.iriscouch.com");
         bind(Integer.class).annotatedWith(Names.named("databasePort")).toInstance(80);
         bind(String.class).annotatedWith(Names.named("databaseURL")).toInstance("http://roroettg.iriscouch.com");
+        
+        // Use an empty implementation of the test data generator in production mode
+        bind(ISimulator.class).to(SimpleSimulator.class);
+        bind(SimulationAPI.class).to(SimulationAPIFake.class).in(Singleton.class);
     }
 
     private void configureControllers() {
