@@ -1,17 +1,40 @@
-<ul class="timeline">
+<div id="viewport">
+    <ul id="base" class="timeline dragger">
 
-    @for(i <- 1 to 6){
-
-        <li class="@{if(i%2 == 0) "timeline-inverted";}" >
-            <div class="timeline-panel" id="0@i-02-2014">
-                <div class="timeline-heading">
-                    <h4>0@i.02.2014</h4>
+        <!--
+       <li class="timeline-seperator">
+               <span>Februar 2014</span>
+       </li>
+       -->
+        @for(i <- 1 to 5) {
+            <li>
+                <div class="timeline-panel expandable" id="timeline-trip_@i">
+                    <div class="timeline-heading">
+                        <b>@i.2014</b>
+                    </div>
+                    <div class="timeline-body">
+                        Trip @i
+                        <img src='@routes.Assets.at("images/dummy_pic_1.jpg")' alt="dummy pic 1" width="32px" height="32px"/>
+                    </div>
                 </div>
-                <div class="timeline-body">
-                    <p>sample entry</p>
-                </div>
-            </div>
-        </li>
-
-    }
-</ul>
+            </li>
+            <li>
+                <ul class="timeline" id="expandable-trip_@i">
+                    @for(j <- 1 to 6) {
+                        <li class="timeline-inverted">
+                            <div class="timeline-panel clickable" id="timeline-trip_@i-entry_@j">
+                                <div class="timeline-heading">
+                                    <b>@j.@i.2014</b>
+                                </div>
+                                <div class="timeline-body">
+                                    sample entry
+                                    <img src='@routes.Assets.at("images/dummy_pic_1.jpg")' alt="dummy pic 1" width="32px" height="32px"/>
+                                </div>
+                            </div>
+                        </li>
+                    }
+                </ul>
+            </li>
+        }
+    </ul>
+</div>

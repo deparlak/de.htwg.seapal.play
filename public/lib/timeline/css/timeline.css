@@ -1,6 +1,6 @@
 .timeline {
     list-style: none;
-    padding: 5px 0 5px;
+    padding: 20px 0 20px;
     position: relative;
 }
 
@@ -16,7 +16,7 @@
 }
 
 .timeline > li {
-    margin-bottom: 5px;
+    margin-bottom: 2px;
     position: relative;
 }
 
@@ -45,7 +45,8 @@
     float: left;
     border: 1px solid #d4d4d4;
     border-radius: 2px;
-    padding: 5px;
+    padding: 2px;
+    margin-bottom: 10px;
     position: relative;
     -webkit-box-shadow: 0 1px 6px rgba(0, 0, 0, 0.175);
     box-shadow: 0 1px 6px rgba(0, 0, 0, 0.175);
@@ -53,7 +54,7 @@
 
 .timeline > li > .timeline-panel:before {
     position: absolute;
-    top: 26px;
+    top: 10px;
     right: -15px;
     display: inline-block;
     border-top: 15px solid transparent;
@@ -65,7 +66,7 @@
 
 .timeline > li > .timeline-panel:after {
     position: absolute;
-    top: 27px;
+    top: 10px;
     right: -14px;
     display: inline-block;
     border-top: 14px solid transparent;
@@ -146,6 +147,20 @@
     margin-top: 5px;
 }
 
+.timeline-panel {
+    cursor: pointer;
+}
+
+.timeline-seperator{
+    text-align: center;
+    margin-top: 20px;
+}
+
+.timeline-seperator span{
+    background: #2fd1ff;
+    padding: 2px;
+}
+
 @media (max-width: 767px) {
     ul.timeline:before {
         left: 40px;
@@ -155,16 +170,13 @@
         width: calc(100% - 90px);
         width: -moz-calc(100% - 90px);
         width: -webkit-calc(100% - 90px);
+        float: right;
     }
 
     ul.timeline > li > .timeline-badge {
         left: 15px;
         margin-left: 0;
         top: 16px;
-    }
-
-    ul.timeline > li > .timeline-panel {
-        float: right;
     }
 
     ul.timeline > li > .timeline-panel:before {
@@ -181,3 +193,4 @@
         right: auto;
     }
 }
+
