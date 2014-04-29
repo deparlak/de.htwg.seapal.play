@@ -1,5 +1,7 @@
 package de.htwg.seapal.module;
 
+import java.net.MalformedURLException;
+
 import org.ektorp.CouchDbInstance;
 import org.ektorp.http.HttpClient;
 import org.ektorp.http.StdHttpClient;
@@ -27,10 +29,10 @@ public abstract class SeapalBaseTestModule extends AbstractModule {
 		configureControllers();
 
 		// configure database configuration
-		bind(String.class).annotatedWith(Names.named("databaseHost")).toInstance("localhost");
-		bind(Integer.class).annotatedWith(Names.named("databasePort")).toInstance(5984);
-		bind(String.class).annotatedWith(Names.named("databaseURL")).toInstance("http://localhost");
-
+		bind(String.class).annotatedWith(Names.named("databaseURL")).toInstance("https://seapaldev.couchappy.com");
+		bind(String.class).annotatedWith(Names.named("databaseUser")).toInstance("admin");
+		bind(String.class).annotatedWith(Names.named("databasePw")).toInstance("testtesttest123");
+		
 		// Use an active implementation of the test data generator
 		bind(ISimulator.class).to(SimpleSimulator.class);
 		bind(SimulationAPI.class).to(SimulationAPIImpl.class).in(Singleton.class);
@@ -42,8 +44,8 @@ public abstract class SeapalBaseTestModule extends AbstractModule {
 	}
 
 	@Provides
-	HttpClient getHttpClient(@Named("databaseHost") String databaseHost, @Named("databasePort") int databasePort) {
-		return new StdHttpClient.Builder().host(databaseHost).port(databasePort).username("bjoern").password("seapal42").build();
+	HttpClient getHttpClient(@Named("databaseURL") String databaseURL, @Named("databaseUser") String user, @Named("databasePw") String password) throws MalformedURLException {
+		return new StdHttpClient.Builder().url(databaseURL).username(user).password(password).build();
 	}
 
 	@Provides
