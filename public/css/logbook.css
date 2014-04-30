@@ -1,3 +1,10 @@
+#entries_col {
+    margin-left: 25%;
+    margin-right: 30%;
+    width: 45%;
+    max-width: 45%;
+}
+
 #menu_bar{
     background: #2fd1ff;
     top: 0px;
@@ -26,13 +33,29 @@
     opacity: 1;
 }
 
+.imageholder {
+    display: inline;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.imageholder a img{
+    max-width: 45%;
+    display:inline;
+}
+
 .logbookEntry img {
     max-width: 100%;
     max-height: 100%;
+    display: inline;
 }
 
-#details {
-    position: relative;
+#details_col {
+    position: fixed;
+    bottom: 0px;
+    right: 0px;
+    left: 70%;
+    padding-right: 10px;
 }
 
 #details img {
@@ -42,8 +65,9 @@
 
 #timeline_col {
     position: fixed;
-    width: 18%;
-    float: left;
+    bottom: 0px;
+    left: 0px;
+    right: 80%;
     padding-left: 10px;
 }
 
@@ -53,13 +77,23 @@
 }
 
 
-@media (max-width: 1600px) {
+@media (max-width: 1500px) {
+    #entries_col {
+        margin-left: auto;
+        width: 70%;
+        max-width: 70%;
+    }
     #timeline_col {
         display: none;
     }
 }
 
-@media (max-width: 925px) {
+@media (max-width: 1024px) {
+    #entries_col {
+        margin-right: auto;
+        width: 100%;
+        max-width: 100%;
+    }
     #details_col {
         display: none;
     }

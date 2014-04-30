@@ -13,42 +13,27 @@
         <div id="trip_@i">
             @for(j <- 1 to 6) {
                 <div class="logbookEntry" id="trip_@i-entry_@j">
-                    <div class="row">
-                        <div class="span6">
+                        <div>
                             <b>Logbucheintrag vom @j.@i.2014</b> <br> <br>
                         </div>
-                    </div>
-                    <div class="row">
-                        <div class="span2">
+                        <div class="imageholder">
                             <a href='@routes.Assets.at("images/dummy_pic_1.jpg")' data-lightbox="trip_@i-entry_@j" data-title="dummy pic 1">
                                 <img src='@routes.Assets.at("images/dummy_pic_1.jpg")' alt="Map dummy" class="img-responsive">
                             </a>
-                        </div>
-                        <div class="span2">
-                            <a href='@routes.Assets.at("images/dummy_pic_2.jpg")' data-lightbox="trip_@i-entry_@j" data-title="dummy pic 2">
-                                <img src='@routes.Assets.at("images/dummy_pic_2.jpg")' alt="Map dummy" class="img-responsive">
-                            </a>
-                        </div>
-                        <div class="span2">
                             <a href='@routes.Assets.at("images/dummy_pic_3.jpg")' data-lightbox="trip_@i-entry_@j" data-title="dummy pic 3">
                                 <img src='@routes.Assets.at("images/dummy_pic_3.jpg")' alt="Map dummy" class="img-responsive">
                             </a>
                         </div>
 
-                    </div>
-
-                    <div class="row">
-                        <div class="span6">
+                        <div>
                             <p>
                                 lindtexte werden ebenfalls zur Demonstration der Gestalt verschiedener Schrifttypen und zu Layoutzwecken verwendet.
                                 Sie ergeben in der Regel keinen inhaltlichen Sinn. Aufgrund ihrer verbreiteten Funktion als Fülltext für das Layout
                                 kommt einer Nicht-Lesbarkeit besondere Bedeutung zu, da die menschliche Wahrnehmung u.a. mehr…
                             </p>
                         </div>
-                    </div>
                 </div>
             }
-
         </div>
     }
 </div>

@@ -60,9 +60,11 @@
 
 
                 // actual script
-                $('#entries_col' ).css('padding-top', $('#menu_bar' ).css('height'));
-                $('#details_col' ).css('padding-top', $('#menu_bar' ).css('height'));
-                $('#timeline_col' ).css('padding-top', $('#menu_bar' ).css('height'));
+                var padding = $(window).height() - parseInt($('.logbookEntry').css('min-height'));
+                $('#entries_col' ).css('top', $('#menu_bar' ).css('height'));
+                $('#entries_col' ).css('padding-bottom',  (padding - 1));
+                $('#details_col' ).css('top', $('#menu_bar' ).css('height'));
+                $('#timeline_col' ).css('top', $('#menu_bar' ).css('height'));
 
                 $('.sticky' ).stick_in_parent();
 
@@ -102,7 +104,7 @@
                 $('#viewport').dragscrollable();
 
                 //waypoint - detect, which entry is active
-                var offset_up = $('#menu_bar' ).height()-1;
+                var offset_up = $('#menu_bar' ).height()-50;
                 var offset_down = offset_up+parseInt($('.logbookEntry').css('min-height'));
 
                 $('.logbookEntry' ).waypoint(function(direction) {
@@ -133,18 +135,18 @@
         <div id="menu_bar">
             @logbookContent.menubar()
         </div>
+
+
         <div id="timeline_col">
             @logbookContent.timeline()
         </div>
-        <div class="container">
-            <div class="row">
-                <div id="entries_col" class="span6">
-                    @logbookContent.entries()
-                </div>
-                <div id="details_col" class="span4 sticky">
-                    @logbookContent.details()
-                </div>
-            </div>
+        <div id="entries_col">
+            @logbookContent.entries()
         </div>
+
+        <div id="details_col">
+            @logbookContent.details()
+        </div>
+
     </body>
 </html>
