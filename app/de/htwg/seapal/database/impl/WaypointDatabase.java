@@ -177,7 +177,8 @@ public class WaypointDatabase extends CouchDbRepositorySupport<Waypoint> impleme
 		ViewQuery query = new ViewQuery()
 		.designDocId("_design/Waypoint")
 		.viewName("byTrip")
-		.key(tripId.toString())
+		.startKey(tripId.toString())
+		.endKey(tripId.toString() + "\ufff0")  // append high unicode character for string ranges, see http://wiki.apache.org/couchdb/View_collation
 		.skip(startIndex)
 		.limit(count);
 

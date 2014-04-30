@@ -13,13 +13,22 @@
     max-height: 25%;
 }
 
+h3 {
+	padding-top: 0;
+	margin-top: 0;
+}
+
+.tripHeader {
+	background: #2fd1ff;
+	padding: 1em;
+}
+
 .logbookEntry {
     min-height: 100px;
-    margin-top: 30px;
-    margin-bottom: 30px;
-    padding-top: 20px;
-    padding-bottom: 20px;
+    padding: 2em 1em;
     opacity: 0.15;
+    border-top: 1px solid lightgray;
+    cursor: pointer;
 }
 
 .logbookEntry.active {
@@ -29,10 +38,23 @@
 .logbookEntry img {
     max-width: 100%;
     max-height: 100%;
+    margin-right: 1em;
+}
+
+.logbookEntry:hover {
+	background-color: lightgray;
+}
+
+.logbookEntry:last-child {
+	padding-bottom: 5em
 }
 
 #details {
-    position: relative;
+    position: fixed;
+	right: 0;
+	top: 50px;
+	bottom: 0;
+	left: 70%;
 }
 
 #details img {
