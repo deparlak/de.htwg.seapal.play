@@ -11,8 +11,10 @@ import com.google.inject.Inject;
 import de.htwg.seapal.SeapalGlobal;
 import de.htwg.seapal.controller.IAccountController;
 import de.htwg.seapal.controller.IMainController;
+import de.htwg.seapal.database.impl.TripDatabase;
 import de.htwg.seapal.database.impl.WaypointDatabase;
 import de.htwg.seapal.model.IModel;
+import de.htwg.seapal.model.ITrip;
 
 /**
  * Handles http requests to /LogbookAPI
@@ -33,8 +35,9 @@ public class LogbookAPI extends Controller {
 	
 	@play.mvc.Security.Authenticated(AccountAPI.SecuredAPI.class)
 	public Result getTripById(UUID tripId) {
-		String userId = session(IAccountController.AUTHN_COOKIE_KEY);
-		IModel trip = mainController.getSingleDocument("trip", userId, tripId);
+		TripDatabase db = SeapalGlobal.getInjector().getInstance(TripDatabase.class);
+		ITrip trip = db.get(tripId);
+		
 		if (trip == null)
 			return notFound();
 		
