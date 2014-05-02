@@ -157,32 +157,10 @@
 
                 $('#viewport').dragscrollable();
 
-                //waypoint - detect, which entry is active
-                var offset_up = $('#menu_bar' ).height()-50;
-                var offset_down = offset_up+parseInt($('.logbookEntry').css('min-height'));
-
-                $('.logbookEntry' ).waypoint(function(direction) {
-                    if(direction == "down"){
-                        activeEntryChanged($(this));
-                    }
-                }, { offset: offset_down });
-
-                $('.logbookEntry' ).waypoint(function(direction) {
-                    if(direction == "up"){
-                        activeEntryChanged($(this));
-                    }
-                }, { offset: offset_up });
-
                 if($('.logbookEntry.active').length <= 0){
                     activeEntryChanged($('.logbookEntry' ).first());
                 }
             });
-
-            function activeEntryChanged(activeEntry){
-                //console.log("active entry: "+activeEntry.attr("id"));
-                $('.logbookEntry').removeClass("active");
-                activeEntry.addClass("active");
-            }
         </script>
     </head>
     <body>

@@ -32,7 +32,7 @@ logbook.getPhotoOfWaypoint = function(waypointId) {
  * callback function of the form f(tripId, tripData).
  */
 logbook.getTripData = function(tripId, callback) {
-	$.getJSON('/api/trip/' + tripId)
+	$.getJSON('/logbook/tripData/' + tripId)
 	.done(function (result) {
 		callback(tripId, result);
 	})
