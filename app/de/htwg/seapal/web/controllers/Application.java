@@ -1,10 +1,12 @@
 package de.htwg.seapal.web.controllers;
 
 import com.google.inject.Inject;
+
 import de.htwg.seapal.model.impl.Account;
 import de.htwg.seapal.model.impl.SignupAccount;
 import de.htwg.seapal.utils.logging.ILogger;
 import de.htwg.seapal.web.controllers.helpers.Menus;
+import de.htwg.seapal.web.models.Logbook;
 import de.htwg.seapal.web.views.html.app;
 import de.htwg.seapal.web.views.html.appContent.forgottenPassword;
 import de.htwg.seapal.web.views.html.appContent.reset;
@@ -39,7 +41,7 @@ public class Application
     }
 
     public static Result logbook(){
-        return ok(logbook.render());
+        return ok(logbook.render(new Logbook("4c2e18b8-cf96-4651-a396-21badc7ad770")));
     }
 
     public static Result login() {

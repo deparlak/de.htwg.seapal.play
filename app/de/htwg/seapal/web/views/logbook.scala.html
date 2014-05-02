@@ -1,3 +1,5 @@
+@(Model : de.htwg.seapal.web.models.Logbook)
+
 <!DOCTYPE html>
 <html>
     <head lang="en">
@@ -5,60 +7,104 @@
         <script type="text/javascript">
             
             $(document).ready(function () {
-            	
-            	/*  ---------------  backend tests  -------------- */
+                var initialTripId = '@Model.getInitialTripId()';
+
+                // compile the HTML templates with Handlebars lib
+                var tripTemplate = Handlebars.compile($('#tripTemplate').html());
+                var waypointTemplate = Handlebars.compile($('#waypointTemplate').html());
+                var ajaxLoaderTemplate = Handlebars.compile($('#ajaxLoaderTemplate').html());
+                var loadMoreEntriesTemplate = Handlebars.compile($('#loadMoreEntriesTemplate').html());
+                var entryDetailsTemplate = Handlebars.compile($('#entryDetailsTemplate').html());
+                
+                // load the initial trip
+                $('#entries').html(ajaxLoaderTemplate({loaderId: 'tripLoader'}));
+                logbook.getTripData(initialTripId, onReceivedTrip);
+
+                function initWaypoint(item, callback) {
+                    var offset_up = $('#menu_bar' ).height()-1;
+                    var offset_down = offset_up+parseInt($('.logbookEntry').css('min-height'));
                     
-            	// callback for logbook.getTripPhotos()
-            	function onReceivedTripPhotos(tripId, pictures) {
-            		var picturesCount = $('#flipsterContainer div').children().length;
-            		// appended newly loaded pictures to flipster template
-            		$.each(pictures, function (index, value) {
-            			var imgId = 'img' + value.waypointId;
-            			var imgNode = $('<li><img id="' + imgId + '" data-waypoint="' + value.waypointId + '" class="waypointImg"/></li>');
-            			$('#flipsterTemplate ul').append(imgNode);
-            			$('#' + imgId).attr('src', value.thumbPicture);
-            		});
-            		// copy template to flipster bar
-            		$('#flipsterContainer').html($('#flipsterTemplate').html());
-            		// enable coverflow
-            		$('#flipsterContainer div').flipster({
-                        style: "coverflow",
-                        start: picturesCount - 1
-                    });
-            	}
-            	
-            	// callback for logbook.getTripWaypoints()
+                    $(item).waypoint(function(direction) {
+                        if(direction == "down"){
+                        	callback($(this));
+                        }
+                    }, { offset: offset_down });
+
+                    $(item).waypoint(function(direction) {
+                        if(direction == "up"){
+                        	callback($(this));
+                        }
+                    }, { offset: offset_up }); 
+                }
+
+                // callback of getTripData()
+				function onReceivedTrip(tripId, tripData) {
+					$('#tripLoader').remove();
+					
+					// create the container for this trip
+					$('#entries').append(tripTemplate(tripData));
+					
+					// get the first 5 waypoints of this trip
+					loadMoreEntries(tripId, 5);
+				}
+                
+				// callback of getTripWaypoints()
             	function onReceivedWaypoints(tripId, waypoints) {
-            		alert('count: ' + waypoints.length);
+            		var tripContainer = $('#trip_' + tripId);
+                	// hide ajax loader in this trip container
+                	$('#entryLoader' + tripId).remove();
+                	// iterate all received waypoints and append the template to the container of the trip
+                	$.each(waypoints, function (index, waypointData) {
+                    	tripContainer.append(waypointTemplate(waypointData));
+                    	var entryNode = $('#trip_' + tripId + "-entry_" + waypointData._id);
+                    	
+                    	initWaypoint(entryNode, onScrolledToWaypoint);
+                    	entryNode.data('waypointData', waypointData);
+                    });
+
+                	// not last set of waypoints of the trip? show "load more" button
+                	if (waypoints.length != 0) {
+                		tripContainer.append(loadMoreEntriesTemplate({ tripId: tripId }));
+                		initWaypoint(tripContainer.children('.loadMoreSection').get(0), onScrolledToLoadMore);
+                	}
+
+                	// refresh waypoint handlers to new positions of elements
+                	window.setTimeout(function() {$.waypoints('refresh'); }, 200);
             	}
-            	
-            	$('#btnPicApiTest').click(function () {
-            		logbook.getTripPhotos($('#txtTripId').val(), 0, 5, onReceivedTripPhotos);
-            	});
-            	
-            	$('#btnTripApiTest').click(function () { 
-            		logbook.getTripData($('#txtTripId').val(), function (tripId, tripData) {
-            			alert(JSON.stringify(tripData));
-            		})
-            	});
-            	
-            	$('#btnTripApiTest2').click(function () { 
-            		logbook.getTripWaypoints($('#txtTripId').val(), 0, 5, onReceivedWaypoints);
-            	});
-            	
-            	$('#btnTripApiTest3').click(function () { 
-            		logbook.getWaypointData($('#txtTripId').val(), function (waypointId, waypointData) {
-            			alert(JSON.stringify(waypointData));
-            		});
-            	});
-            	
-            	$('#flipsterContainer').on('click', '.waypointImg', function () {
-            		var url = logbook.getPhotoOfWaypoint($(this).attr('data-waypoint'));
-            		window.location = url;
-            	});
 
+				// loads and appends waypoint entries to a trip
+            	function loadMoreEntries(tripId, count) {
+            		var tripContainer = $('#trip_' + tripId);
+            		var loadedEntriesCount = tripContainer.children('.logbookEntry').length;
 
+            		// remove "load more" button
+            		tripContainer.children('.loadMoreSection').remove();
+            		// show loader for entries:
+            		tripContainer.append(ajaxLoaderTemplate({loaderId: 'entryLoader' + tripId}));
 
+            		// get the next waypoints of this trip
+					logbook.getTripWaypoints(tripId, loadedEntriesCount, count, onReceivedWaypoints);
+                }
+
+                // handle clicks on "load more" button
+                $('#entries').on('click', 'a.btnLoadMoreEntries', function () {
+                	loadMoreEntries($(this).attr('data-tripid'), 5);
+                	return false;
+                });
+
+            	// handle scrolling to "load more" button
+            	function onScrolledToLoadMore(node) {
+            		loadMoreEntries(node.attr('data-tripid'), 5);
+            	}
+
+				// callback for trip container when scrolled to
+            	function onScrolledToWaypoint(node) {
+            		 $('.logbookEntry').removeClass("active");
+            		 node.addClass("active");
+
+            		 $('#detailsText').html(entryDetailsTemplate(node.data('waypointData')));
+                }
+            	
                 // actual script
                 var padding = $(window).height() - parseInt($('.logbookEntry').css('min-height'));
                 $('#entries_col' ).css('top', $('#menu_bar' ).css('height'));
@@ -72,6 +118,8 @@
                     $(this).next().toggle("slow");
                     return false;
                 });
+
+                $('#entries').css('margin-bottom', $.waypoints('viewportHeight') + 'px');
 
                 //timeline
                 $(".timeline-panel.clickable" ).each(function(){
@@ -149,4 +197,43 @@
         </div>
 
     </body>
+    
+    <script type="x/handlebars-template" id="tripTemplate">
+	<div class="tripContainer" id="trip_{{_id}}">
+		<div class="tripHeader">
+			<h3>{{name}}</h3>
+			<b>Skipper:</b> {{skipper}} (Crew: {{crew}})
+		</div>
+	</div>
+	</script>
+
+    <script type="x/handlebars-template" id="waypointTemplate">
+	<div class="logbookEntry" id="trip_{{trip}}-entry_{{_id}}">
+	<b>{{name}}</b><br />
+
+ 	{{#if image_thumb}}
+  		<img src="{{image_thumb}}" alt="" style="float: left" />
+  	{{/if}}
+
+	<span>{{note}}</span>
+    <br style="clear: both" />
+	</div>
+	</script>
+	
+	<script type="x/handlebars-template" id="ajaxLoaderTemplate">
+		<div id="{{loaderId}}" class="ajaxLoader" style="text-align: center">
+			<img src="@routes.Assets.at("images/logbook/ajax-loader.gif")" />
+		</div>
+	</script>
+	
+	<script type="x/handlebars-template" id="loadMoreEntriesTemplate">
+		<div class="loadMoreSection" data-tripid="{{tripId}}" style="text-align: center">
+			<a data-tripid="{{tripId}}" href="#" class="btn btn-primary btnLoadMoreEntries">Load more...</a>
+		</div>
+	</script>
+	
+	<script type="x/handlebars-template" id="entryDetailsTemplate">
+		<b>Lng</b> {{lng}} <b>Lat</b> {{lat}}
+	</script>
+	
 </html>
