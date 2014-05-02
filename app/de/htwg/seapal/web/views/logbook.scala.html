@@ -15,6 +15,7 @@
                 var ajaxLoaderTemplate = Handlebars.compile($('#ajaxLoaderTemplate').html());
                 var loadMoreEntriesTemplate = Handlebars.compile($('#loadMoreEntriesTemplate').html());
                 var entryDetailsTemplate = Handlebars.compile($('#entryDetailsTemplate').html());
+                var isLoadingWaypoints = false;
                 
                 // load the initial trip
                 $('#entries').html(ajaxLoaderTemplate({loaderId: 'tripLoader'}));
@@ -70,10 +71,15 @@
 
                 	// refresh waypoint handlers to new positions of elements
                 	window.setTimeout(function() {$.waypoints('refresh'); }, 200);
+                	isLoadingWaypoints = false;
             	}
 
 				// loads and appends waypoint entries to a trip
             	function loadMoreEntries(tripId, count) {
+                	if (isLoadingWaypoints)
+                    	return;
+                	
+            		isLoadingWaypoints = true;
             		var tripContainer = $('#trip_' + tripId);
             		var loadedEntriesCount = tripContainer.children('.logbookEntry').length;
 
