@@ -145,60 +145,60 @@ body {
 }
 
 @media (max-width: 767px) {
-	
+
 	.nav li {
 		text-align: left;
 		white-space: nowrap;
 	}
-	
+
 	.navbar-responsive-collapse  {
 		width: 100%;
 	}
-	
+
 	.active-menu {
 		display: none !important;
 	}
-	
+
 	.navbar-toggle {
 		margin-right: 10px;
 	}
-	
+
 	.navbar {
 		background-color: #e4e6e5 !important;
 		padding: 0;
 	}
-	
+
 	.navbar .nav a {
 		color: #e4e6e5;
 		font-size: 16px;
 		padding-left: 0;
 	}
-	
+
 	.icon {
 		margin-right: 12px;
 	}
-			
+
 	.nav li[data-slide="1"],
 	.nav li[data-slide="6"] {
 		background-color: #2f2f2f;
 	}
-	
+
 	.nav li[data-slide="2"] {
 		background-color: #2A7364;
 	}
-	
+
 	.nav li[data-slide="3"] {
 		background-color: #e74c3c;
 	}
-	
+
 	.nav li[data-slide="4"] {
 		background-color: #34495e;
 	}
-	
+
 	.nav li[data-slide="5"] {
 		background-color: #e67e22;
 	}
-	
+
 	.navbar-brand {
 		margin: 0;
 		text-align: left;

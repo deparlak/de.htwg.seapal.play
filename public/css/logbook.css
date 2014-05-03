@@ -6,11 +6,11 @@
 }
 
 #menu_bar{
-    background: #2fd1ff;
     top: 0px;
     position: fixed;
     width: 100%;
     text-align: center;
+    z-index: 1;
 }
 
 #pictures {
@@ -105,10 +105,6 @@ h3 {
     }
     #details_col {
         display: none;
-    }
-    #menu_bar {
-        display: none;
-        height: 0px;
     }
     .logbookEntry {
         opacity: 1;

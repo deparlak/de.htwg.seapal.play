@@ -95,7 +95,7 @@
                 // handle clicks on "load more" button
                 $('#entries').on('click', 'a.btnLoadMoreEntries', function () {
                 	loadMoreEntries($(this).attr('data-tripid'), 5);
-                	return false;
+                	return true;
                 });
 
             	// handle scrolling to "load more" button
@@ -113,16 +113,15 @@
             	
                 // actual script
                 var padding = $(window).height() - parseInt($('.logbookEntry').css('min-height'));
-                $('#entries_col' ).css('top', $('#menu_bar' ).css('height'));
                 $('#entries_col' ).css('padding-bottom',  (padding - 1));
+                $('#entries_col' ).css('margin-top', $('#menu_bar' ).css('height'));
+                $('#entries_col' ).css('top', $('#menu_bar' ).css('height'));
                 $('#details_col' ).css('top', $('#menu_bar' ).css('height'));
                 $('#timeline_col' ).css('top', $('#menu_bar' ).css('height'));
 
-                $('.sticky' ).stick_in_parent();
-
                 $('.accordion .head').click(function() {
                     $(this).next().toggle("slow");
-                    return false;
+                    return true;
                 });
 
                 $('#entries').css('margin-bottom', $.waypoints('viewportHeight') + 'px');
@@ -139,10 +138,11 @@
                         $('html,body').animate({
                             scrollTop: targetOffset
                         },{
-                            complete: function() { activeEntryChanged(entry); }
+                            complete: function() { onScrolledToWaypoint(entry); }
                         },
                         'slow'
                         );
+                        return true;
                     });
                 });
 
@@ -152,15 +152,71 @@
                         index = index.replace('timeline-','');
                         //console.log("index: "+index);
                         $('#expandable-'+index ).toggle("slow");
+                        return true;
                     });
                 });
 
                 $('#viewport').dragscrollable();
 
                 if($('.logbookEntry.active').length <= 0){
-                    activeEntryChanged($('.logbookEntry' ).first());
+                    onScrolledToWaypoint($('.logbookEntry' ).first());
                 }
+
+                //navbar
+                menu_hover();
+                var lis = $('.nav > li');
+                menu_focus( lis[2], 3 );
+
+                //hotfix: hrefs didn't work anymore (click returns false anywere?!)
+                $('.navbar .nav a').click(function(event) {
+                    var url = $(this ).attr('href');
+                    //console.log(url);
+                    window.location = url;
+                    return true;
+                });
             });
+
+            function menu_hover(){
+                var menu_item = $('.nav').find('li');
+
+                menu_item.hover(
+                    function(e) {
+                        var icon = $(this).find('.icon');
+
+                        var left_pos = icon.offset().left - $('.nav').offset().left;
+                        var el_width = icon.width() + $(this).find('.text').width() + 10;
+
+                        var hover_bar = $('<div class="active-menu special-active-menu"></div>')
+                            .css('left', left_pos)
+                            .css('width', el_width)
+                            .attr('id', 'special-active-menu-' + $(this).data('slide') );
+
+                        $('.active-menu').after( hover_bar );
+                    },
+                    function(e) {
+                        $('.special-active-menu').remove();
+                    }
+                );
+            }
+
+            function menu_focus( element, i ) {
+                $('.nav > li').removeClass('active');
+                $(element).addClass('active');
+
+                var icon = $(element).find('.icon');
+
+                var left_pos = icon.offset().left - $('.nav').offset().left;
+                var el_width = icon.width() + $(element).find('.text').width() + 10;
+
+                $('.active-menu').stop(false, false).animate(
+                    {
+                        left: left_pos,
+                        width: el_width
+                    },
+                    1500,
+                    'easeInOutQuart'
+                );
+            }
         </script>
     </head>
     <body>
