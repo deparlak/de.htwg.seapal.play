@@ -33,7 +33,7 @@ h3 {
 .logbookEntry {
     min-height: 100px;
     padding: 2em 1em;
-    opacity: 0.15;
+    opacity: 0.5;
     border-top: 1px solid lightgray;
     cursor: pointer;
 }
@@ -86,7 +86,7 @@ h3 {
 }
 
 
-@media (max-width: 1500px) {
+@media (max-width: 1200px) {
     #entries_col {
         margin-left: auto;
         width: 70%;
