@@ -11,11 +11,11 @@ var ajaxErrorMsg = "Error loading data!";
  * Passes the specified tripId and an array 'pictures' of (waypointId, thumbPicture) objects
  * to a callback function of the form f(tripId, pictures).
  * thumbPicture can be assigned as src of <img> tags directly.
- */	
-logbook.getTripPhotos = function(tripId, startIndex, count, callback) {
-	$.getJSON('/logbook/tripPhotos/' + tripId + '/' + startIndex + '/' + count)
+ */
+logbook.getTripPhotos = function (tripId, startIndex, count, callback) {
+    $.getJSON('/logbook/tripPhotos/' + tripId + '/' + startIndex + '/' + count)
 	.done(function (result) {
-		callback(tripId, result);
+	    callback(tripId, result);
 	})
 	.fail(handleAjaxError);
 };
@@ -23,18 +23,18 @@ logbook.getTripPhotos = function(tripId, startIndex, count, callback) {
 /**
  * Returns the URL to the full-size picture of the specified waypoint.
  */
-logbook.getPhotoOfWaypoint = function(waypointId) {
-	return '/api/photo/' + waypointId + '/waypoint.jpg';
+logbook.getPhotoOfWaypoint = function (waypointId) {
+    return '/api/photo/' + waypointId + '/waypoint.jpg';
 };
 
 /**
  * Gets a trip object from the database and passes it to a
  * callback function of the form f(tripId, tripData).
  */
-logbook.getTripData = function(tripId, callback) {
-	$.getJSON('/logbook/tripData/' + tripId)
+logbook.getTripData = function (tripId, callback) {
+    $.getJSON('/logbook/tripData/' + tripId)
 	.done(function (result) {
-		callback(tripId, result);
+	    callback(tripId, result);
 	})
 	.fail(handleAjaxError);
 };
@@ -43,10 +43,10 @@ logbook.getTripData = function(tripId, callback) {
  * Gets a range of waypoint objects of a trip.
  * Passes the used trip ID and the waypoint array to a callback function f(tripId, waypoints).
  */
-logbook.getTripWaypoints = function(tripId, startIndex, count, callback) {
-	$.getJSON('/logbook/tripWaypoints/' + tripId + '/' + startIndex + '/' + count)
+logbook.getTripWaypoints = function (tripId, startIndex, count, callback) {
+    $.getJSON('/logbook/tripWaypoints/' + tripId + '/' + startIndex + '/' + count)
 	.done(function (result) {
-		callback(tripId, result);
+	    callback(tripId, result);
 	})
 	.fail(handleAjaxError);
 };
@@ -55,17 +55,43 @@ logbook.getTripWaypoints = function(tripId, startIndex, count, callback) {
  * Gets a waypoint object from the database and passes it
  * to a callback function f(waypointId, waypointData).
  */
-logbook.getWaypointData = function(waypointId, callback) {
-	$.getJSON('/api/waypoint/' + waypointId)
+logbook.getWaypointData = function (waypointId, callback) {
+    $.getJSON('/api/waypoint/' + waypointId)
 	.done(function (result) {
-		callback(waypointId, result);
+	    callback(waypointId, result);
 	})
 	.fail(handleAjaxError);
 };
 
 /**
+* Returns a set of trips of a boat ordered by the startDate (timestamp).
+*/
+logbook.getTripsOfBoat = function (boat, startDate, skip, count, descending, callback) {
+    var desc = 'false';
+    if (descending && descending == 'true') {
+        desc = 'true';
+    }
+    $.getJSON('/logbook/getTrips/' + boat + '/' + startDate + '/' + skip + '/' + count + '/' + desc)
+    .done(function (result) {
+        callback(result);
+    })
+    .fail(handleAjaxError);
+}
+
+/**
+* Returns all trips of the specified boat. Note that not all attributes are initialized.
+*/
+logbook.getAllTripsOfBoat = function (boat, callback) {
+    $.getJSON('/logbook/allTrips/' + boat)
+        .done(function (result) {
+            callback(result);
+        })
+        .fail(handleAjaxError);
+}
+
+/**
  * Internal AJAX error handler
  */
-function handleAjaxError(jqXHR, textStatus, errorThrown ) {
-	window.alert(ajaxErrorMsg + ' (' + errorThrown + ').');
+function handleAjaxError(jqXHR, textStatus, errorThrown) {
+    window.alert(ajaxErrorMsg + ' (' + errorThrown + ').');
 }

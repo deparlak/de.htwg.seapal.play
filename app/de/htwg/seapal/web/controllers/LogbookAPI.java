@@ -1,5 +1,6 @@
 package de.htwg.seapal.web.controllers;
 
+import java.util.List;
 import java.util.UUID;
 
 import play.libs.Json;
@@ -54,5 +55,19 @@ public class LogbookAPI extends Controller {
 	public Result getWaypointsOfTrip(UUID tripId, int startIndex, int count) {
 		WaypointDatabase db = SeapalGlobal.getInjector().getInstance(WaypointDatabase.class);
 		return ok(Json.toJson(db.getWaypointsByTripId(tripId, startIndex, count)));
+	}
+	
+	public Result getTrips(UUID boat, long startDate, int skip, int count, String desc) {
+		TripDatabase tripsDb = SeapalGlobal.getInjector().getInstance(TripDatabase.class);
+		List<? extends ITrip> result = tripsDb.getTrips(boat.toString(), startDate, skip, count, "true".equals(desc));
+		
+		return ok(Json.toJson(result));
+	}
+	
+	public Result getAllTrips(UUID boat) {
+		TripDatabase tripsDb = SeapalGlobal.getInjector().getInstance(TripDatabase.class);
+		List<? extends ITrip> result = tripsDb.getAllTrips(boat.toString());
+		
+		return ok(Json.toJson(result));
 	}
 }
