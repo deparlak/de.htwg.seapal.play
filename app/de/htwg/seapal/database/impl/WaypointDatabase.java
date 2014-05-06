@@ -184,5 +184,19 @@ public class WaypointDatabase extends CouchDbRepositorySupport<Waypoint> impleme
 
 		return connector.queryView(query, Waypoint.class);
 	}
+	
+	/**
+	 * Returns all waypoints of the specified trip. Note that not all properties get initialized!
+	 * @author Lukas
+	 */
+	public List<? extends IWaypoint> getAllWaypointsOfTrip(UUID tripId) {
+		ViewQuery query = new ViewQuery()
+		.designDocId("_design/Waypoint")
+		.viewName("byTripMinimalData")
+		.startKey(tripId.toString())
+		.endKey(tripId.toString() + "\ufff0");  // append high unicode character for string ranges, see http://wiki.apache.org/couchdb/View_collation
+		
+		return connector.queryView(query, Waypoint.class);
+	}
 
 }

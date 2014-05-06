@@ -64,10 +64,15 @@ public class LogbookAPI extends Controller {
 		return ok(Json.toJson(result));
 	}
 	
-	public Result getAllTrips(UUID boat) {
+	public Result getAllTrips(UUID boatId) {
 		TripDatabase tripsDb = SeapalGlobal.getInjector().getInstance(TripDatabase.class);
-		List<? extends ITrip> result = tripsDb.getAllTrips(boat.toString());
+		List<? extends ITrip> result = tripsDb.getAllTrips(boatId.toString());
 		
 		return ok(Json.toJson(result));
+	}
+	
+	public Result getAllWaypoints(UUID tripId) {
+		WaypointDatabase db = SeapalGlobal.getInjector().getInstance(WaypointDatabase.class);
+		return ok(Json.toJson(db.getAllWaypointsOfTrip(tripId)));
 	}
 }

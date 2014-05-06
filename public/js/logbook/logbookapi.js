@@ -64,7 +64,8 @@ logbook.getWaypointData = function (waypointId, callback) {
 };
 
 /**
-* Returns a set of trips of a boat ordered by the startDate (timestamp).
+* Gets a set of trips of a boat ordered by the startDate (timestamp)
+* and passes it to a callback function f(trips)
 */
 logbook.getTripsOfBoat = function (boat, startDate, skip, count, descending, callback) {
     var desc = 'false';
@@ -79,12 +80,25 @@ logbook.getTripsOfBoat = function (boat, startDate, skip, count, descending, cal
 }
 
 /**
-* Returns all trips of the specified boat. Note that not all attributes are initialized.
+* Gets all trips of the specified boat. Note that not all attributes are initialized.
+* Passes the result to a callback function f(trips)
 */
 logbook.getAllTripsOfBoat = function (boat, callback) {
     $.getJSON('/logbook/allTrips/' + boat)
         .done(function (result) {
             callback(result);
+        })
+        .fail(handleAjaxError);
+}
+
+/**
+* Gets the metadata (name, date) of all waypoints of a trip
+* and passes the result to a callback function f(tripId, waypoints)
+*/
+logbook.getAllWaypointsOfTrip = function (tripId, callback) {
+    $.getJSON('/logbook/tripWaypoints/' + tripId + '/all')
+        .done(function (result) {
+            callback(tripId, result);
         })
         .fail(handleAjaxError);
 }
