@@ -1,4 +1,31 @@
 <div id="entries">
+
+	<script type="x/handlebars-template" id="waypointTemplate">
+		<div class="logbookEntry" id="trip_{{trip}}-entry_{{_id}}">
+		<b>{{name}}</b><br />
+
+ 		{{#if image_thumb}}
+  			<img src="{{image_thumb}}" alt="" style="float: left" />
+  		{{/if}}
+
+		<span>{{note}}</span>
+   		<br style="clear: both" />
+		</div>
+	</script>
+	
+	<script type="x/handlebars-template" id="ajaxLoaderTemplate">
+		<div id="{{loaderId}}" class="ajaxLoader" style="text-align: center">
+			<img src="@routes.Assets.at("images/logbook/ajax-loader.gif")" />
+		</div>
+	</script>
+	
+	<script type="x/handlebars-template" id="loadMoreEntriesTemplate">
+		<div class="loadMoreSection" data-tripid="{{tripId}}" style="text-align: center">
+			<a data-tripid="{{tripId}}" href="#" class="btn btn-primary btnLoadMoreEntries">Load more...</a>
+		</div>
+	</script>
+	
+
 <!--  
     @for(i <- 1 to 5) {
         <div id="trip_@i">
