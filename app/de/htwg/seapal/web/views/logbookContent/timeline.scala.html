@@ -1,8 +1,8 @@
 <div id="viewport">
-    <ul id="base" class="timeline dragger">
-
+    <ul id="base" class="timeline dragger timeline_header">
+	
 	<script type="x/handlebars-template" id="timelineTripTemplate">
-		<li id="timeline-trip_{{_id}}">
+		<li>
 			<div class="timeline-panel expandable" id="timeline-trip_{{_id}}">
 				<div class="timeline-heading">
 					<b>{{startDate}}<b>
@@ -12,20 +12,23 @@
 				</div>
 			</div>
 		</li>
+		<li  id="timeline-trip_container_{{_id}}">
+			<!-- to add timeline waypoints -->
+		</li>
 	</script>
 	
 	<script type="x/handlebars-template" id="timelineWaypointTemplate">
 		<ul class="timeline" id="expandable-trip_{{_id}}">
         	<li class="timeline-inverted">
-               <div class="timeline-panel clickable" id="timeline-trip_{{trip}}-entry_{{_id}}">
+               <div id="timeline-trip_{{trip}}-entry_{{_id}}" class="timeline-panel clickable">
                     <div class="timeline-heading">
                    		<b>{{date}}</b>
                     </div>
                     <div class="timeline-body">
                       	{{name}}
 						
-						{{#if _attachments}}
-  							<img src="{{_attachments}}" alt="" style="float: left" width="32px" height="32px" />
+						{{#if image_thumb}}
+  							<img src="{{image_thumb}}" alt="" style="float: left" width="32px" height="32px" />
   						{{/if}}
                     </div>
                </div>

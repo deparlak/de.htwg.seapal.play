@@ -7,6 +7,9 @@
     <script type="text/javascript">
 
         $(document).ready(function () {
+        	var dateFormatShort = "YYYY-MM-DD";
+        	var dateFormatLong = "YYYY-MM-DD";
+        
             var initialTripId = '@Model.getInitialTripId()';
             var boatId = '505e4b46-517b-4c1e-ac96-3dc32400ff2a';  // for test only
 
@@ -21,13 +24,14 @@
             var timelineWaypointTemplate = Handlebars.compile($('#timelineWaypointTemplate').html());
                 
             var isLoadingWaypoints = false;
-
+            
             // load the initial trip
             $('#entries').html(ajaxLoaderTemplate({ loaderId: 'tripLoader' }));
             logbook.getTripData(initialTripId, onReceivedTrip);
             
             // load the timeline
             logbook.getAllTripsOfBoat(boatId, onReceivedAllTrips);
+            logbook.getAllWaypointsOfTrip(initialTripId, onReceivedAllWaypointsByTrip);
 
             function initWaypoint(item, callback) {
                 var offset_up = $('#menu_bar').height() - 1;
@@ -78,14 +82,23 @@
             // callback of logbook.getAllTripsOfBoat
             // Populates the inital timeline
             function onReceivedAllTrips(trips) {
-                alert(trips.length);
-               
-                // fill Timeline with trips
-                var timelineContainer = $('.timeline');                
+                var timelineContainer = $('.timeline_header');                
                 $.each(trips, function (index, tripData) {
+                	tripData.startDate = moment(new Date(tripData.startDate)).format(dateFormatShort);
                     timelineContainer.append(timelineTripTemplate(tripData));
                 });
             }
+            
+            // callback of logbook.getAllWaypointsOfTrip
+            // Populates the Waypoints for one Trip
+            function onReceivedAllWaypointsByTrip(tripId, waypoints) {
+            	var tripContainer = $('#timeline-trip_container_' + tripId);                
+                $.each(waypoints, function (index, waypointData) {
+                	waypointData.date = moment(new Date(waypointData.date)).format(dateFormatShort);
+                    tripContainer.append(timelineWaypointTemplate(waypointData));
+                });
+            }
+            
 
             // callback of getTripWaypoints()
             function onReceivedWaypoints(tripId, waypoints) {
