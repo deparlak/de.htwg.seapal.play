@@ -16,6 +16,10 @@
             var ajaxLoaderTemplate = Handlebars.compile($('#ajaxLoaderTemplate').html());
             var loadMoreEntriesTemplate = Handlebars.compile($('#loadMoreEntriesTemplate').html());
             var entryDetailsTemplate = Handlebars.compile($('#entryDetailsTemplate').html());
+           
+            var timelineTripTemplate = Handlebars.compile($('#timelineTripTemplate').html());
+            var timelineWaypointTemplate = Handlebars.compile($('#timelineWaypointTemplate').html());
+                
             var isLoadingWaypoints = false;
 
             // load the initial trip
@@ -75,6 +79,12 @@
             // Populates the inital timeline
             function onReceivedAllTrips(trips) {
                 alert(trips.length);
+               
+                // fill Timeline with trips
+                var timelineContainer = $('.timeline');                
+                $.each(trips, function (index, tripData) {
+                    timelineContainer.append(timelineTripTemplate(tripData));
+                });
             }
 
             // callback of getTripWaypoints()
