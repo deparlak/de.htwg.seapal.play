@@ -56,3 +56,5 @@ GET           /logbook/$tripId<[0-9a-fA-F\-]+>                                  
 GET           /logbook/tripData/$tripId<[0-9a-fA-F\-]+>	                                                  @de.htwg.seapal.web.controllers.LogbookAPI.getTripById(tripId: UUID)
 GET           /logbook/tripPhotos/$tripId<[0-9a-fA-F\-]+>/$startIndex<[0-9]+>/$count<[0-9]+>              @de.htwg.seapal.web.controllers.LogbookAPI.getPhotosOfTrip(tripId: UUID, startIndex: Int, count: Int)
 GET           /logbook/tripWaypoints/$tripId<[0-9a-fA-F\-]+>/$startIndex<[0-9]+>/$count<[0-9]+>           @de.htwg.seapal.web.controllers.LogbookAPI.getWaypointsOfTrip(tripId: UUID, startIndex: Int, count: Int)
+GET           /logbook/getTrips/$boat<[0-9a-fA-F\-]+>/$startDate<[0-9]+>/$skip<[0-9]+>/$count<[0-9]+>/$descending<(true|false)>    @de.htwg.seapal.web.controllers.LogbookAPI.getTrips(boat: UUID, startDate: Long, skip: Int, count: Int, descending: String)
+GET           /logbook/allTrips/$boat<[0-9a-fA-F\-]+>                                    @de.htwg.seapal.web.controllers.LogbookAPI.getAllTrips(boat: UUID)
