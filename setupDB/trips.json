@@ -10,6 +10,12 @@
        },
        "boat": {
          "map":"(doc)->\n if doc? and doc.boat? and doc.owner.length? and doc.owner.length > 0 and doc.boat.length? and doc.boat.length > 0\n  emit \"#{doc.owner}#{doc.boat}\", doc"
+       },
+       "byDate": {
+           "map": "(doc)->\n  emit \"#{doc.boat}_#{doc.startDate}\", doc"
+       },
+       "byDateMinimalData": {
+           "map": "(doc)->\n  emit \"#{doc.boat}_#{doc.startDate}\", {_id: doc._id, startDate: doc.startDate, from: doc.from, to: doc.to, name: doc.name}"
        }
    },
    "filters": {
