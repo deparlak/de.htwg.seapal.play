@@ -13,6 +13,7 @@ import de.htwg.seapal.controller.IAccountController;
 import de.htwg.seapal.controller.IMainController;
 import de.htwg.seapal.controller.impl.AccountController;
 import de.htwg.seapal.model.IBoat;
+import de.htwg.seapal.web.controllers.AccountAPI;
 import de.htwg.seapal.web.controllers.SimulationAPI;
 import de.htwg.seapal.web.controllers.helpers.ISimulator;
 import de.htwg.seapal.web.models.TripGeneratorArgs;
@@ -36,6 +37,7 @@ public class SimulationAPIImpl extends Controller implements SimulationAPI {
 	 * Shows a page to configure the generation of a random trip.
 	 */
 	@Override
+	@play.mvc.Security.Authenticated(AccountAPI.SecuredAPI.class)
 	public Result prepareTrip() {
 		TripGeneratorArgs args  = new TripGeneratorArgs();
 		args.setRouteFile("test/simulation/routes/bodensee1.txt");
@@ -56,6 +58,7 @@ public class SimulationAPIImpl extends Controller implements SimulationAPI {
 	 * Creates a random trip based on inputs from the prepareTrip page.
 	 */
 	@Override
+	@play.mvc.Security.Authenticated(AccountAPI.SecuredAPI.class)
 	public Result generateTrip() throws IOException {
 		Form<TripGeneratorArgs> postData = DynamicForm.form(TripGeneratorArgs.class).bindFromRequest();
 		TripGeneratorArgs args = postData.get();

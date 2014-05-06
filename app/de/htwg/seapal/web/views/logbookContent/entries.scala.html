@@ -1,58 +1,33 @@
-<div id="entries">
+<div id="entries_col">
 
-	<script type="x/handlebars-template" id="waypointTemplate">
-		<div class="logbookEntry" id="trip_{{trip}}-entry_{{_id}}">
-		<b>{{name}}</b><br />
+        <a href="#" id="btnLoadPreviousTrip" class="btn btn-primary" style="margin: 3em auto; display: none">Load previous trip</a>
 
- 		{{#if image_thumb}}
-  			<img src="{{image_thumb}}" alt="" style="float: left" />
-  		{{/if}}
+    <div id="entries">
+        <script type="x/handlebars-template" id="waypointTemplate">
+            <div class="logbookEntry" id="trip_{{trip}}-entry_{{_id}}">
+                <b>{{name}}</b><br />
 
-		<span>{{note}}</span>
-   		<br style="clear: both" />
-		</div>
-	</script>
-	
-	<script type="x/handlebars-template" id="ajaxLoaderTemplate">
-		<div id="{{loaderId}}" class="ajaxLoader" style="text-align: center">
-			<img src="@routes.Assets.at("images/logbook/ajax-loader.gif")" />
-		</div>
-	</script>
-	
-	<script type="x/handlebars-template" id="loadMoreEntriesTemplate">
-		<div class="loadMoreSection" data-tripid="{{tripId}}" style="text-align: center">
-			<a data-tripid="{{tripId}}" href="#" class="btn btn-primary btnLoadMoreEntries">Load more...</a>
-		</div>
-	</script>
-	
+                {{#if image_thumb}}
+                <img src="{{image_thumb}}" alt="" style="float: left" />
+                {{/if}}
 
-<!--  
-    @for(i <- 1 to 5) {
-        <div id="trip_@i">
-            @for(j <- 1 to 6) {
-                <div class="logbookEntry" id="trip_@i-entry_@j">
-                        <div>
-                            <b>Logbucheintrag vom @j.@i.2014</b> <br> <br>
-                        </div>
-                        <div class="imageholder">
-                            <a href='@routes.Assets.at("images/dummy_pic_1.jpg")' data-lightbox="trip_@i-entry_@j" data-title="dummy pic 1">
-                                <img src='@routes.Assets.at("images/dummy_pic_1.jpg")' alt="Map dummy" class="img-responsive">
-                            </a>
-                            <a href='@routes.Assets.at("images/dummy_pic_3.jpg")' data-lightbox="trip_@i-entry_@j" data-title="dummy pic 3">
-                                <img src='@routes.Assets.at("images/dummy_pic_3.jpg")' alt="Map dummy" class="img-responsive">
-                            </a>
-                        </div>
+                <span>{{note}}</span>
+                <br style="clear: both" />
+            </div>
+        </script>
 
-                        <div>
-                            <p>
-                                lindtexte werden ebenfalls zur Demonstration der Gestalt verschiedener Schrifttypen und zu Layoutzwecken verwendet.
-                                Sie ergeben in der Regel keinen inhaltlichen Sinn. Aufgrund ihrer verbreiteten Funktion als Fülltext für das Layout
-                                kommt einer Nicht-Lesbarkeit besondere Bedeutung zu, da die menschliche Wahrnehmung u.a. mehr…
-                            </p>
-                        </div>
-                </div>
-            }
-        </div>
-    }
-    -->
+        <script type="x/handlebars-template" id="ajaxLoaderTemplate">
+            <div id="{{loaderId}}" class="ajaxLoader" style="text-align: center">
+                <img src="@routes.Assets.at("images/logbook/ajax-loader.gif")" />
+            </div>
+        </script>
+
+        <script type="x/handlebars-template" id="loadMoreEntriesTemplate">
+            <div class="loadMoreSection" data-tripid="{{tripId}}" style="text-align: center">
+                <a data-tripid="{{tripId}}" href="#" class="btn btn-primary btnLoadMoreEntries">Load more...</a>
+            </div>
+        </script>
+    </div>
+
+    <a href="#" id="btnLoadNextTrip" class="btn btn-primary" style="margin: 3em auto; display: none">Load next trip</a>
 </div>

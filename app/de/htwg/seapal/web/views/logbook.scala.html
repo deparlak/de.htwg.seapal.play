@@ -9,7 +9,7 @@
         $(document).ready(function () {
             var initialTripId = '@Model.getInitialTripId()';
             var boatId = '505e4b46-517b-4c1e-ac96-3dc32400ff2a';  // for test only
-
+            
             // compile the HTML templates with Handlebars lib
             var tripTemplate = Handlebars.compile($('#tripTemplate').html());
             var waypointTemplate = Handlebars.compile($('#waypointTemplate').html());
@@ -28,6 +28,8 @@
             
             // load the timeline
             logbook.getAllTripsOfBoat(boatId, onReceivedAllTrips);
+
+            $('html, body').scrollTop($('#loadPreviousTripSection').height());
 
             function initWaypoint(item, callback) {
                 var offset_up = $('#menu_bar').height() - 1;
@@ -64,13 +66,12 @@
             // callback from getTripsOfBoat, receives a subset of the properties of the previous trip
             function onReceivedPreviousTrip(trips) {
                 if (trips.length > 0) {
-                    console.log('previous trip: ' + trips[0].name);
+                    $('#btnLoadPreviousTrip').attr('data-prev-trip', trips[0]._id).show();
                 }
-
             }
             function onReceivedNextTrip(trips) {
                 if (trips.length > 0) {
-                    console.log('next trip: ' + trips[0].name);
+                    $('#btnLoadNextTrip').attr('data-next-trip', trips[0]._id).show();
                 }
             }
 
@@ -78,8 +79,7 @@
             // callback of logbook.getAllTripsOfBoat
             // Populates the inital timeline
             function onReceivedAllTrips(trips) {
-                alert(trips.length);
-               
+              
                 // fill Timeline with trips
                 var timelineContainer = $('.timeline');                
                 $.each(trips, function (index, tripData) {
@@ -148,6 +148,23 @@
 
                 $('#detailsText').html(entryDetailsTemplate(node.data('waypointData')));
             }
+
+            // click handlers for loading previous/next trip
+            $('#btnLoadPreviousTrip').click(function () {
+                var previousTripId = $(this).attr('data-prev-trip');
+                if (previousTripId && previousTripId.length > 0) {
+                    $('#entries').html(ajaxLoaderTemplate({ loaderId: 'tripLoader' }));
+                    logbook.getTripData(previousTripId, onReceivedTrip);
+                }
+            });
+            $('#btnLoadNextTrip').click(function () {
+                var nextTripId = $(this).attr('data-next-trip');
+                if (nextTripId && nextTripId.length > 0) {
+                    $('#entries').html(ajaxLoaderTemplate({ loaderId: 'tripLoader' }));
+                    logbook.getTripData(nextTripId, onReceivedTrip);
+                }
+            });
+
 
             // actual script
             var padding = $(window).height() - parseInt($('.logbookEntry').css('min-height'));
@@ -266,9 +283,8 @@
     <div id="timeline_col">
         @logbookContent.timeline()
     </div>
-    <div id="entries_col">
-        @logbookContent.entries()
-    </div>
+    
+    @logbookContent.entries()
 
     <div id="details_col">
         @logbookContent.details()
