@@ -21,7 +21,7 @@
            "map": "(doc)->\n  emit doc.trip, doc"
        },
        "byTripMinimalData": {
-           "map": "(doc)->\n  emit \"#{doc.trip}#{doc.date}\", {id: doc.id, name: doc.name, date: doc.date}"
+           "map": "(doc)->\n  emit \"#{doc.trip}#{doc.date}\", {id: doc._id, name: doc.name, date: doc.date, image_thumb: doc.image_thumb}"
        }
    },
    "filters": {

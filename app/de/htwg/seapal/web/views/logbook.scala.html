@@ -33,8 +33,6 @@
             logbook.getAllTripsOfBoat(boatId, onReceivedAllTrips);
             logbook.getAllWaypointsOfTrip(initialTripId, onReceivedAllWaypointsByTrip);
 
-            $('html, body').scrollTop($('#loadPreviousTripSection').height());
-
             function initWaypoint(item, callback) {
                 var offset_up = $('#menu_bar').height() - 1;
                 var offset_down = offset_up + parseInt($('.logbookEntry').css('min-height'));
@@ -71,11 +69,15 @@
             function onReceivedPreviousTrip(trips) {
                 if (trips.length > 0) {
                     $('#btnLoadPreviousTrip').attr('data-prev-trip', trips[0]._id).show();
+                } else {
+                    $('#btnLoadPreviousTrip').attr('data-prev-trip', '').hide();
                 }
             }
             function onReceivedNextTrip(trips) {
                 if (trips.length > 0) {
                     $('#btnLoadNextTrip').attr('data-next-trip', trips[0]._id).show();
+                } else {
+                    $('#btnLoadNextTrip').attr('data-next-trip', '').hide();
                 }
             }
 
@@ -195,34 +197,41 @@
 
             $('#entries').css('margin-bottom', $.waypoints('viewportHeight') + 'px');
 
-            //timeline
-            $(".timeline-panel.clickable").each(function () {
-                $(this).click(function () {
-                    var index = $(this).attr("id");
-                    index = index.replace('timeline-', '');
-                    var entry = $("#" + index);
-                    //console.log("index: "+index);
-                    var targetOffset = entry.offset().top - 50;
 
-                    $('html,body').animate({
-                        scrollTop: targetOffset
-                    }, {
-                        complete: function () { onScrolledToWaypoint(entry); }
-                    },
-                    'slow'
-                    );
+            // add handlers for clicks on trips & waypoints in the timeline
+
+            $('.timeline').on('click', 'div.timeline-panel.expandable', function () {     // click on trip header
+                var tripId = $(this).attr("id");
+                tripId = tripId.replace('timeline-trip_', '');
+
+                // check if this is the active trip
+                var tripContainer = $('#trip_' + tripId);
+                if (tripContainer.length != 0) {
+                    $('#timeline-trip_container_' + tripId).toggle("slow");
                     return true;
-                });
+                } else {
+                    // this trip is currently not loaded -> get it
+                    $('#entries').html(ajaxLoaderTemplate({ loaderId: 'tripLoader' }));
+                    logbook.getTripData(tripId, onReceivedTrip);
+                }
+                
             });
 
-            $(".timeline-panel.expandable").each(function () {
-                $(this).click(function () {
-                    var index = $(this).attr("id");
-                    index = index.replace('timeline-', '');
-                    //console.log("index: "+index);
-                    $('#expandable-' + index).toggle("slow");
-                    return true;
-                });
+            $('.timeline').on('click', 'div.timeline-panel.clickable', function () {    // click on waypoint item
+                var waypointId = $(this).attr("id");
+                waypointId = waypointId.replace('timeline-waypoint_', '');
+                var entry = $("#waypoint_" + waypointId);
+                //console.log("index: "+index);
+                var targetOffset = entry.offset().top - 50;
+
+                $('html,body').animate({
+                    scrollTop: targetOffset
+                }, {
+                    complete: function () { onScrolledToWaypoint(entry); }
+                },
+                'slow'
+                );
+                return true;
             });
 
             $('#viewport').dragscrollable();
@@ -306,15 +315,4 @@
 
 </body>
 
-<script type="x/handlebars-template" id="tripTemplate">
-    <div class="tripContainer" id="trip_{{_id}}">
-        <div class="tripHeader">
-            <h3>{{name}}</h3>
-            <b>Skipper:</b> {{skipper}} (Crew: {{crew}})
-        </div>
-    </div>
-</script>
-
-	</script>
-
-</html></html>
+</html>
