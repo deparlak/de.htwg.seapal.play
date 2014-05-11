@@ -1,4 +1,7 @@
 <div id="entries_col">
+    <div style="position: fixed; right: 32%; top: 70px; z-index: 100">
+        <button class="btn btn-primary btn-xs" data-toggle="modal" data-target="#filterDialog">Filter</button>
+    </div>
 
     <a href="#" id="btnLoadPreviousTrip" class="btn btn-primary" style="margin: 3em auto; display: none">Load previous trip</a>
 
@@ -9,37 +12,62 @@
     <a href="#" id="btnLoadNextTrip" class="btn btn-primary" style="margin: 3em auto; display: none">Load next trip</a>
 </div>
 
-<script type="x/handlebars-template" id="tripTemplate">
-    <div class="tripContainer" id="trip_{{_id}}">
-        <div class="tripHeader">
-            <h3>{{name}}</h3>
-            <b>Skipper:</b> {{skipper}} (Crew: {{crew}})
+<!-- filter dialog -->
+<div class="modal fade" id="filterDialog" tabindex="-1" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">Filter</h4>
+            </div>
+            <div class="modal-body">
+                <form>
+                    <input type="checkbox" id="chkOnlyWithImage" />
+                    <label for="chkOnlyImages">Has image</label>
+
+                    <input type="checkbox" id="chkOnlyWithNote" />
+                    <label for="chkOnlyImages">Has notes</label>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal">Apply</button>
+            </div>
         </div>
     </div>
-</script>
+</div>
 
-<script type="x/handlebars-template" id="waypointTemplate">
-    <div class="logbookEntry" id="waypoint_{{_id}}">
-        <b>{{name}}</b><br />
+    <script type="x/handlebars-template" id="tripTemplate">
+        <div class="tripContainer" id="trip_{{_id}}">
+            <div class="tripHeader">
+                <h3>{{name}}</h3>
+                <b>Skipper:</b> {{skipper}} (Crew: {{crew}})
+            </div>
+        </div>
+    </script>
 
-        {{#if image_thumb}}
-        <img src="{{image_thumb}}" alt="" style="float: left" />
-        {{/if}}
+    <script type="x/handlebars-template" id="waypointTemplate">
+        <div class="logbookEntry {{#if note}}hasNote{{/if}} {{#if image_thumb}}hasImage{{/if}}" id="waypoint_{{_id}}">
+            <b>{{name}}</b><br />
 
-        <span>{{note}}</span>
-        <br style="clear: both" />
-    </div>
-</script>
+            {{#if image_thumb}}
+            <img src="{{image_thumb}}" alt="" style="float: left" />
+            {{/if}}
 
-<script type="x/handlebars-template" id="ajaxLoaderTemplate">
-    <div id="{{loaderId}}" class="ajaxLoader" style="text-align: center">
-        <img src="@routes.Assets.at("images/logbook/ajax-loader.gif")" />
-    </div>
-</script>
+            <span>{{note}}</span>
+            <br style="clear: both" />
+        </div>
+    </script>
 
-<script type="x/handlebars-template" id="loadMoreEntriesTemplate">
-    <div class="loadMoreSection" data-tripid="{{tripId}}" style="text-align: center">
-        <a data-tripid="{{tripId}}" href="#" class="btn btn-primary btnLoadMoreEntries">Load more...</a>
-    </div>
-</script>
+    <script type="x/handlebars-template" id="ajaxLoaderTemplate">
+        <div id="{{loaderId}}" class="ajaxLoader" style="text-align: center">
+            <img src="@routes.Assets.at("images/logbook/ajax-loader.gif")" />
+        </div>
+    </script>
+
+    <script type="x/handlebars-template" id="loadMoreEntriesTemplate">
+        <div class="loadMoreSection" data-tripid="{{tripId}}" style="text-align: center">
+            <a data-tripid="{{tripId}}" href="#" class="btn btn-primary btnLoadMoreEntries">Load more...</a>
+        </div>
+    </script>
 

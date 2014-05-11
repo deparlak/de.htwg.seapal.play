@@ -1,50 +1,16 @@
-<div id="viewport">
+
+<div id="timeline">
     <ul id="base" class="timeline dragger timeline_header">
-
-        <!--
-        <li class="timeline-seperator">
-                <span>Februar 2014</span>
-        </li>
-
-         @for(i <- 1 to 5) {
-             <li>
-                 <div class="timeline-panel expandable" id="timeline-trip_@i">
-                     <div class="timeline-heading">
-                         <b>@i.2014</b>
-                     </div>
-                     <div class="timeline-body">
-                         Trip @i
-                         <img src='@routes.Assets.at("images/dummy_pic_1.jpg")' alt="dummy pic 1" width="32px" height="32px"/>
-                     </div>
-                 </div>
-             </li>
-             <li>
-                 <ul class="timeline" id="expandable-trip_@i">
-                     @for(j <- 1 to 6) {
-                         <li class="timeline-inverted">
-                             <div class="timeline-panel clickable" id="timeline-trip_@i-entry_@j">
-                                 <div class="timeline-heading">
-                                     <b>@j.@i.2014</b>
-                                 </div>
-                                 <div class="timeline-body">
-                                     sample entry
-                                     <img src='@routes.Assets.at("images/dummy_pic_1.jpg")' alt="dummy pic 1" width="32px" height="32px"/>
-                                 </div>
-                             </div>
-                         </li>
-                     }
-                 </ul>
-             </li>
-         }
-         -->
+        <!-- AJAX content -->
     </ul>
 </div>
+
 
 <script type="x/handlebars-template" id="timelineTripTemplate">
     <li>
         <div class="timeline-panel expandable" id="timeline-trip_{{_id}}">
             <div class="timeline-heading">
-                <b>{{startDate}}<b>
+                {{startDate}}
             </div>
             <div class="timeline-body">
                 {{name}}
@@ -60,11 +26,11 @@
     <li class="timeline-inverted">
         <div id="timeline-waypoint_{{_id}}" class="timeline-panel clickable">
             {{#if image_thumb}}
-            <img src="{{image_thumb}}" alt="" style="float: left; width: 32px; height: 32px;" />
+            <img src="{{image_thumb}}" alt="" class="timeline-img" />
             {{/if}}
 
             <div class="timeline-heading">
-                <b>{{date}}</b>
+                {{date}}
             </div>
             <div class="timeline-body">
                 {{name}}

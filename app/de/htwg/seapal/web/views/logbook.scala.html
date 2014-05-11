@@ -3,35 +3,38 @@
 <!DOCTYPE html>
 <html>
 <head lang="en">
+    <title>SeaPal Logbook</title>
     @logbookContent.header()
+</head>
+<body>
     <script type="text/javascript">
 
         $(document).ready(function () {
-        	var dateFormatShort = "YYYY-MM-DD";
-        	var dateFormatLong = "YYYY-MM-DD";
-        
+            var dateFormatShort = "YYYY-MM-DD";
+            var dateFormatLong = "YYYY-MM-DD";
+
             var initialTripId = '@Model.getInitialTripId()';
             var boatId = '505e4b46-517b-4c1e-ac96-3dc32400ff2a';  // for test only
-            
+
             // compile the HTML templates with Handlebars lib
             var tripTemplate = Handlebars.compile($('#tripTemplate').html());
             var waypointTemplate = Handlebars.compile($('#waypointTemplate').html());
             var ajaxLoaderTemplate = Handlebars.compile($('#ajaxLoaderTemplate').html());
             var loadMoreEntriesTemplate = Handlebars.compile($('#loadMoreEntriesTemplate').html());
             var entryDetailsTemplate = Handlebars.compile($('#entryDetailsTemplate').html());
-           
+
             var timelineTripTemplate = Handlebars.compile($('#timelineTripTemplate').html());
             var timelineWaypointTemplate = Handlebars.compile($('#timelineWaypointTemplate').html());
-                
+
             var isLoadingWaypoints = false;
-            
+
             // load the initial trip
             $('#entries').html(ajaxLoaderTemplate({ loaderId: 'tripLoader' }));
             logbook.getTripData(initialTripId, onReceivedTrip);
-            
+
             // load the timeline
             logbook.getAllTripsOfBoat(boatId, onReceivedAllTrips);
-            logbook.getAllWaypointsOfTrip(initialTripId, onReceivedAllWaypointsByTrip);
+            //logbook.getAllWaypointsOfTrip(initialTripId, onReceivedAllWaypointsByTrip);
 
             function initWaypoint(item, callback) {
                 var offset_up = $('#menu_bar').height() - 1;
@@ -62,7 +65,7 @@
                 logbook.getTripsOfBoat(boatId, tripData.startDate, 1, 1, 'false', onReceivedNextTrip);  // next
 
                 // get the first 5 waypoints of this trip
-                loadMoreEntries(tripId, 5);
+                loadMoreEntries(tripId, 0);  // 0 = all waypoints
             }
 
             // callback from getTripsOfBoat, receives a subset of the properties of the previous trip
@@ -86,42 +89,49 @@
             // Populates the inital timeline
             function onReceivedAllTrips(trips) {
                 var timelineContainer = $('.timeline_header');
-				$.each(trips, function (index, tripData) {
-                	tripData.startDate = moment(new Date(tripData.startDate)).format(dateFormatShort);
+                $.each(trips, function (index, tripData) {
+                    tripData.startDate = moment(new Date(tripData.startDate)).format(dateFormatShort);
                     timelineContainer.append(timelineTripTemplate(tripData));
                 });
             }
-            
+
             // callback of logbook.getAllWaypointsOfTrip
             // Populates the Waypoints for one Trip
-            function onReceivedAllWaypointsByTrip(tripId, waypoints) {
-            	var tripContainer = $('#timeline-trip_container_' + tripId);                
-                $.each(waypoints, function (index, waypointData) {
-                	waypointData.date = moment(new Date(waypointData.date)).format(dateFormatShort);
-                    tripContainer.append(timelineWaypointTemplate(waypointData));
-                });
-            }
-            
+            //function onReceivedAllWaypointsByTrip(tripId, waypoints) {
+            //	var tripContainer = $('#timeline-trip_container_' + tripId);
+            //    $.each(waypoints, function (index, waypointData) {
+            //    	waypointData.date = moment(new Date(waypointData.date)).format(dateFormatShort);
+            //        tripContainer.append(timelineWaypointTemplate(waypointData));
+            //    });
+            //}
+
 
             // callback of getTripWaypoints()
             function onReceivedWaypoints(tripId, waypoints) {
                 var tripContainer = $('#trip_' + tripId);
+                var timelineTripContainer = $('#timeline-trip_container_' + tripId);
                 // hide ajax loader in this trip container
                 $('#entryLoader' + tripId).remove();
-                // iterate all received waypoints and append the template to the container of the trip
+                // iterate all received waypoints and append the template to the container of the trip & the timelime
                 $.each(waypoints, function (index, waypointData) {
+                    // unix timestamp -> formatted time
+                    waypointData.date = moment(new Date(waypointData.date)).format(dateFormatShort);
+
+                    // append to trip in timeline panel
+                    timelineTripContainer.append(timelineWaypointTemplate(waypointData));
+
+                    // append to trip in entries panel
                     tripContainer.append(waypointTemplate(waypointData));
                     var entryNode = $('#trip_' + tripId + "-entry_" + waypointData._id);
-
                     initWaypoint(entryNode, onScrolledToWaypoint);
                     entryNode.data('waypointData', waypointData);
                 });
 
                 // not last set of waypoints of the trip? show "load more" button
-                if (waypoints.length != 0) {
-                    tripContainer.append(loadMoreEntriesTemplate({ tripId: tripId }));
-                    initWaypoint(tripContainer.children('.loadMoreSection').get(0), onScrolledToLoadMore);
-                }
+                //if (waypoints.length != 0) {
+                //    tripContainer.append(loadMoreEntriesTemplate({ tripId: tripId }));
+                //    initWaypoint(tripContainer.children('.loadMoreSection').get(0), onScrolledToLoadMore);
+                //}
 
                 // refresh waypoint handlers to new positions of elements
                 window.setTimeout(function () { $.waypoints('refresh'); }, 200);
@@ -183,12 +193,12 @@
 
 
             // actual script
-            var padding = $(window).height() - parseInt($('.logbookEntry').css('min-height'));
-            $('#entries_col').css('padding-bottom', (padding - 1));
-            $('#entries_col').css('margin-top', $('#menu_bar').css('height'));
-            $('#entries_col').css('top', $('#menu_bar').css('height'));
-            $('#details_col').css('top', $('#menu_bar').css('height'));
-            $('#timeline_col').css('top', $('#menu_bar').css('height'));
+           // var padding = $(window).height() - parseInt($('.logbookEntry').css('min-height'));
+            //$('#entries_col').css('padding-bottom', (padding - 1));
+            //$('#entries_col').css('margin-top', $('#menu_bar').css('height'));
+            //$('#entries_col').css('top', $('#menu_bar').css('height'));
+            //$('#details_col').css('top', $('#menu_bar').css('height'));
+            //$('#timeline_col').css('top', $('#menu_bar').css('height'));
 
             $('.accordion .head').click(function () {
                 $(this).next().toggle("slow");
@@ -200,7 +210,7 @@
 
             // add handlers for clicks on trips & waypoints in the timeline
 
-            $('.timeline').on('click', 'div.timeline-panel.expandable', function () {     // click on trip header
+            $('#timeline').on('click', 'div.timeline-panel.expandable', function () {     // click on trip header
                 var tripId = $(this).attr("id");
                 tripId = tripId.replace('timeline-trip_', '');
 
@@ -214,10 +224,10 @@
                     $('#entries').html(ajaxLoaderTemplate({ loaderId: 'tripLoader' }));
                     logbook.getTripData(tripId, onReceivedTrip);
                 }
-                
+
             });
 
-            $('.timeline').on('click', 'div.timeline-panel.clickable', function () {    // click on waypoint item
+            $('#timeline').on('click', 'div.timeline-panel.clickable', function () {    // click on waypoint item
                 var waypointId = $(this).attr("id");
                 waypointId = waypointId.replace('timeline-waypoint_', '');
                 var entry = $("#waypoint_" + waypointId);
@@ -234,7 +244,7 @@
                 return true;
             });
 
-            $('#viewport').dragscrollable();
+            $('#timeline').dragscrollable();
 
             if ($('.logbookEntry.active').length <= 0) {
                 onScrolledToWaypoint($('.logbookEntry').first());
@@ -296,8 +306,8 @@
             );
         }
     </script>
-</head>
-<body>
+
+
     <div id="menu_bar">
         @logbookContent.menubar()
     </div>
@@ -306,7 +316,7 @@
     <div id="timeline_col">
         @logbookContent.timeline()
     </div>
-    
+
     @logbookContent.entries()
 
     <div id="details_col">

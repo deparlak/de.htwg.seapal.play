@@ -171,6 +171,7 @@ public class WaypointDatabase extends CouchDbRepositorySupport<Waypoint> impleme
 	/**
 	 * Gets the waypoints objects of a trip.
 	 * @param startIndex Number of entries to skip before returning the values.
+	 * @param count Specify 0 to reveive all items.
 	 * @author Lukas
 	 */
 	public List<? extends IWaypoint> getWaypointsByTripId(UUID tripId, int startIndex, int count) {
@@ -179,8 +180,10 @@ public class WaypointDatabase extends CouchDbRepositorySupport<Waypoint> impleme
 		.viewName("byTrip")
 		.startKey(tripId.toString())
 		.endKey(tripId.toString() + "\ufff0")  // append high unicode character for string ranges, see http://wiki.apache.org/couchdb/View_collation
-		.skip(startIndex)
-		.limit(count);
+		.skip(startIndex);
+		if (count != 0) {
+			query = query.limit(count);
+		}
 
 		return connector.queryView(query, Waypoint.class);
 	}
