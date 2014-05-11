@@ -1,5 +1,4 @@
 @(Model : de.htwg.seapal.web.models.Logbook)
-
 <!DOCTYPE html>
 <html>
 <head lang="en">
@@ -262,7 +261,30 @@
                 window.location = url;
                 return true;
             });
-        });
+
+            $('#btnApplyFilter').click(function () { window.setTimeout(applyEntryFilters, 500) });
+
+        });  //   /document.ready()
+
+
+        /**
+        * Shows or hides waypoints based on the current filter settings
+        */
+        function applyEntryFilters() {
+            if ($('#optFilterEntries').is(':checked')) {  // filtering enabled?
+                // hide all at first
+                $('.logbookEntry').addClass('filtered');
+                // show items with images 
+                if ($('#chkOnlyWithImage').is(':checked'))   
+                    $('.logbookEntry.hasImage').removeClass('filtered');
+                // show items with notes 
+                if ($('#chkOnlyWithNote').is(':checked'))
+                    $('.logbookEntry.hasNotes').removeClass('filtered');
+            } else {
+                // show all items
+                $('.logbookEntry').removeClass('filtered'); 
+            }
+        }
 
         function menu_hover() {
             var menu_item = $('.nav').find('li');

@@ -22,16 +22,26 @@
             </div>
             <div class="modal-body">
                 <form>
-                    <input type="checkbox" id="chkOnlyWithImage" />
-                    <label for="chkOnlyImages">Has image</label>
-
-                    <input type="checkbox" id="chkOnlyWithNote" />
-                    <label for="chkOnlyImages">Has notes</label>
+                    <label>
+                        <input type="radio" name="optEntryFilter" id="optDontFilterEntries" value="all" checked>
+                        Show all waypoints of a trip
+                    </label><br />
+                    <label>
+                        <input type="radio" name="optEntryFilter" id="optFilterEntries" value="filter">
+                        Only show waypoints which...
+                    </label>
+                    <div style="padding-left: 2em">
+                        <input type="checkbox" id="chkOnlyWithImage" />
+                        <label for="chkOnlyImages">...have an image</label>
+                        <br />
+                        <input type="checkbox" id="chkOnlyWithNote" />
+                        <label for="chkOnlyImages">...have notes</label>
+                    </div>
                 </form>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-primary" data-dismiss="modal">Apply</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal" id="btnApplyFilter">Apply</button>
             </div>
         </div>
     </div>
