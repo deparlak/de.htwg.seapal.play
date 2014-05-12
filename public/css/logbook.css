@@ -126,6 +126,21 @@ h3 {
     margin-bottom: 5px;
 }
 
+#details_weather {
+    height: 30%;
+}
+
+#details_text {
+    height: 30%;
+}
+
+#details_map {
+    height: 300px;
+    max-height: 300px;
+    width: 100%;
+    max-width: 100%;
+}
+
 @media (max-width: 1200px) {
     #entries_col {
         margin-left: auto;
