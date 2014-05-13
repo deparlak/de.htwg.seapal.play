@@ -141,6 +141,11 @@ h3 {
     max-width: 100%;
 }
 
+#map_canvas{
+    height: 100%;
+    width: 100%;
+}
+
 @media (max-width: 1200px) {
     #entries_col {
         margin-left: auto;

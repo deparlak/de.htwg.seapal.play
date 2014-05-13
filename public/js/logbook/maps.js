@@ -1,7 +1,11 @@
+var bounds;
+var markers = [];
+var mark_connections;
+
 function initialize_waypoints(map_waypoints) {
     clear_overlays();
 
-    var bounds = new google.maps.LatLngBounds();
+    bounds = new google.maps.LatLngBounds();
     for (var i = 0; i < map_waypoints.length; i++) {
         bounds.extend(map_waypoints[i]);
     }
@@ -50,4 +54,9 @@ function highlight_waypoint(lat_lng){
     //console.log(lat_lng);
     map.panTo(lat_lng);
     map.setZoom(13);
+}
+
+function reset_map_zoom(){
+    map.panTo(bounds.getCenter());
+    map.fitBounds(bounds);
 }
