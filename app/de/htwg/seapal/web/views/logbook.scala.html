@@ -41,7 +41,7 @@
             //logbook.getAllWaypointsOfTrip(initialTripId, onReceivedAllWaypointsByTrip);
 
             function initWaypoint(item, callback) {
-                var offset_up = $('#menu_bar').height() - 10;
+                var offset_up = $('#menu_bar').height() +10;
                 var offset_down = offset_up + parseInt($('.logbookEntry').css('min-height'));
 
                 item.waypoint(function (direction) {
@@ -279,6 +279,12 @@
                 onScrolledToWaypoint($('.logbookEntry').first());
             }
 
+            // check a checkbox if the corresponding label is clicked
+            $('label').click(function () {
+                labelID = $(this).attr('for');
+                $('#' + labelID).prop('checked', true);
+            });
+
             //navbar
             menu_hover();
             var lis = $('.nav > li');
@@ -304,18 +310,20 @@
         * Shows or hides waypoints based on the current filter settings
         */
         function applyEntryFilters() {
-            if ($('#optFilterEntries').is(':checked')) {  // filtering enabled?
+            var onlyImages = $('#chkOnlyWithImage').is(':checked');
+            var onlyNotes = $('#chkOnlyWithNote').is(':checked');
+            if (onlyImages || onlyNotes) {  // filtering enabled?
                 // hide all at first
-                $('.logbookEntry').addClass('filtered');
+                $('.logbookEntry, .timeline-inverted').addClass('filtered');
                 // show items with images 
-                if ($('#chkOnlyWithImage').is(':checked'))   
-                    $('.logbookEntry.hasImage').removeClass('filtered');
+                if (onlyImages)
+                    $('.logbookEntry.hasImage, .timeline-inverted.hasImage').removeClass('filtered');
                 // show items with notes 
-                if ($('#chkOnlyWithNote').is(':checked'))
-                    $('.logbookEntry.hasNotes').removeClass('filtered');
+                if (onlyNotes)
+                    $('.logbookEntry.hasNotes, .timeline-inverted.hasNotes').removeClass('filtered');
             } else {
                 // show all items
-                $('.logbookEntry').removeClass('filtered'); 
+                $('.logbookEntry, .timeline-inverted').removeClass('filtered');
             }
         }
 
