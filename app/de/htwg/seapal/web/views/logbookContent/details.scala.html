@@ -1,20 +1,44 @@
 <div id="details" class="accordion">
 	<script type="x/handlebars-template" id="entryDetailsTemplate">
-		<b>Lng</b> {{lng}} <b>Lat</b> {{lat}}
+		<div id ="details_text_position">
+			<!-- latitude -->			
+			<b>Lat </b>
+			{{#if lat }}
+				0.0
+			{{else}}
+			    {{lat}} 
+			{{/if}}
+			  N
+
+			<!-- longitude -->
+			<b>Lng </b>			
+			{{#if lng }}
+				0.0 
+			{{else}}
+				{{lng}} 
+			{{/if}}
+			  E			
+		</div>
+
+		<div id ="details_text_course">
+			<b> unkown </b>
+		</div>
+		<div id ="details_text_speed">
+			<b>COG </b> {{cog}} ∞ <b>SOG </b> {{sog}} kn
+		</div>
+		<div id ="details_text_distance">
+			<b> unknown </b>
+		</div>
 	</script>
 
 
     <h3 class="head">Map</h3>
     <div id="details_map">
-        <!--
-        <img src='@routes.Assets.at("images/dummy_map.png")' alt="Map dummy" class="img-responsive">
-        -->
+            
     </div>
     <h3 class="head">Details</h3>
     <div id="details_text">
-        <p>
-           Details m√ºssen hier rein
-        </p>
+                
     </div>
     <h3 class="head">Weather</h3>
     <div id="details_weather">
