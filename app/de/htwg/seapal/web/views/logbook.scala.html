@@ -12,6 +12,12 @@
         $(document).ready(function () {
             var dateFormatShort = "YYYY-MM-DD";
             var dateFormatLong = "YYYY-MM-DD";
+            
+            // preloaded Images
+            var expandImage = new Image();
+            var contractImage = new Image();
+            expandImage.src = '@routes.Assets.at("images/logbook/expand-icon.png")';
+            contractImage.src = '@routes.Assets.at("images/logbook/contract-icon.png")';
 
             var initialTripId = '@Model.getInitialTripId()';
             var boatId = '505e4b46-517b-4c1e-ac96-3dc32400ff2a';  // for test only
@@ -189,11 +195,17 @@
             function onScrolledToWaypoint(node) {
                 $('.logbookEntry').removeClass("active");
                 node.addClass("active");
-
+				
+				// change details
                 var waypointData = node.data('waypointData');
-
+                if (typeof(waypointData) != "undefined") {
+                	waypointData.latRounded = ('' + waypointData.lat).substr(0, 7);
+                	waypointData.lngRounded = ('' + waypointData.lng).substr(0, 7);
+                }
                 $('#details_text').html(entryDetailsTemplate(waypointData));
 
+
+				// mark waypoint in Map
                 if (typeof(map) != "undefined" && typeof(waypointData) != "undefined"){
                     highlight_waypoint(new google.maps.LatLng(waypointData.lat, waypointData.lng));
                 }
@@ -231,6 +243,16 @@
             //$('#timeline_col').css('top', $('#menu_bar').css('height'));
 
             $('.accordion .head').click(function () {
+            	// change expand image
+            	var headId = $(this).attr('id'); 
+            	var changeImage = document.getElementById(headId.substr(0, headId.lastIndexOf('_')) + '_img');
+            	            	
+            	if (changeImage.src == expandImage.src) {
+            		changeImage.src = contractImage.src;  
+            	} else {
+            		changeImage.src = expandImage.src;  
+            	}            	         	
+            
                 $(this).next().toggle("slow");
                 return true;
             });
