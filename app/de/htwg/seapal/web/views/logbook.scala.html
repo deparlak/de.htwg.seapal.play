@@ -133,7 +133,7 @@
                 // iterate all received waypoints and append the template to the container of the trip & the timelime
                 $.each(waypoints, function (index, waypointData) {
                     // unix timestamp -> formatted time
-                    waypointData.date = moment(new Date(waypointData.date)).format(dateFormatShort);
+                    waypointData.formattedDate = moment(new Date(waypointData.date)).format(dateFormatShort);
 
                     // append to trip in timeline panel
                     timelineTripContainer.append(timelineWaypointTemplate(waypointData));
@@ -312,19 +312,34 @@
         function applyEntryFilters() {
             var onlyImages = $('#chkOnlyWithImage').is(':checked');
             var onlyNotes = $('#chkOnlyWithNote').is(':checked');
-            if (onlyImages || onlyNotes) {  // filtering enabled?
-                // hide all at first
-                $('.logbookEntry, .timeline-inverted').addClass('filtered');
-                // show items with images 
-                if (onlyImages)
-                    $('.logbookEntry.hasImage, .timeline-inverted.hasImage').removeClass('filtered');
-                // show items with notes 
-                if (onlyNotes)
-                    $('.logbookEntry.hasNotes, .timeline-inverted.hasNotes').removeClass('filtered');
-            } else {
-                // show all items
-                $('.logbookEntry, .timeline-inverted').removeClass('filtered');
-            }
+            var minTimePeriod = parseInt($('#txtTimePeriod').val()) * 60 * 1000;  // min to msec 
+            var lastTimestamp = -1;
+
+            // iterate over all waypoints in entry view & timeline
+            $('.logbookEntry').each(function (index, value) {
+                var item = $(value);  // waypoint entry in entries view
+                var waypointData = item.data('waypointData'); // DB object
+                var timelineItem = $('#timeline-wp-container_' + waypointData._id);  // corresponding entry in timeline
+
+                // skip item if not at least [minTimePeriod] minutes between this and the last item
+                if (minTimePeriod > 0 && lastTimestamp > (parseInt(waypointData.date) - minTimePeriod)) {
+                    item.addClass('filtered');
+                    timelineItem.addClass('filtered');
+                    return;
+                }
+                lastTimestamp = parseInt(waypointData.date);
+
+                if (onlyImages && !$(item).hasClass('hasImage')) {
+                    item.addClass('filtered');
+                    timelineItem.addClass('filtered');
+                } else if (onlyNotes && !$(item).hasClass('hasNote')) {
+                    item.addClass('filtered');
+                    timelineItem.addClass('filtered');
+                } else { // show item
+                    item.removeClass('filtered');
+                    timelineItem.removeClass('filtered');
+                }
+            });
         }
 
     </script>

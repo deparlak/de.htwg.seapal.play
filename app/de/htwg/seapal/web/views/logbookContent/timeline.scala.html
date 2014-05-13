@@ -23,14 +23,14 @@
 </script>
 
 <script type="x/handlebars-template" id="timelineWaypointTemplate">
-    <li class="timeline-inverted {{#if note}}hasNote{{/if}} {{#if image_thumb}}hasImage{{/if}}">
+    <li class="timeline-inverted {{#if note}}hasNote{{/if}} {{#if image_thumb}}hasImage{{/if}}" id="timeline-wp-container_{{_id}}">
         <div id="timeline-waypoint_{{_id}}" class="timeline-panel clickable">
             {{#if image_thumb}}
             <img src="{{image_thumb}}" alt="" class="timeline-img" />
             {{/if}}
 
             <div class="timeline-heading">
-                {{date}}
+                {{formattedDate}}
             </div>
             <div class="timeline-body">
                 {{name}}
