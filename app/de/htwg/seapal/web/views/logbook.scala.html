@@ -8,8 +8,6 @@
 <body>
     <script type="text/javascript">
         var map;
-        var markers = [];
-        var mark_connections;
 
         $(document).ready(function () {
             var dateFormatShort = "YYYY-MM-DD";
@@ -32,6 +30,10 @@
 
             // load the initial trip
             $('#entries').html(ajaxLoaderTemplate({ loaderId: 'tripLoader' }));
+            $('#timeline').append(ajaxLoaderTemplate({ loaderId: 'tripLoaderTimeline' }));
+            $('#details_map').append(ajaxLoaderTemplate({ loaderId: 'tripLoaderMap' }));
+
+
             logbook.getTripData(initialTripId, onReceivedTrip);
 
             // load the timeline
@@ -39,16 +41,16 @@
             //logbook.getAllWaypointsOfTrip(initialTripId, onReceivedAllWaypointsByTrip);
 
             function initWaypoint(item, callback) {
-                var offset_up = $('#menu_bar').height() - 1;
+                var offset_up = $('#menu_bar').height() - 10;
                 var offset_down = offset_up + parseInt($('.logbookEntry').css('min-height'));
 
-                $(item).waypoint(function (direction) {
+                item.waypoint(function (direction) {
                     if (direction == "down") {
                         callback($(this));
                     }
                 }, { offset: offset_down });
 
-                $(item).waypoint(function (direction) {
+                item.waypoint(function (direction) {
                     if (direction == "up") {
                         callback($(this));
                     }
@@ -58,9 +60,13 @@
             // callback of getTripData()
             function onReceivedTrip(tripId, tripData) {
                 $('#tripLoader').remove();
+                $('#tripLoaderTimeline').remove();
+                $('#tripLoaderMap').remove();
 
                 // create the container for this trip
                 $('#entries').append(tripTemplate(tripData));
+
+                initWaypoint($('#trip_header_'+tripId), onScrolledToTripHeader);
 
                 // lookup previous and next trip
                 logbook.getTripsOfBoat(boatId, tripData.startDate, 1, 1, 'true', onReceivedPreviousTrip);  // previous
@@ -134,7 +140,7 @@
 
                     // append to trip in entries panel
                     tripContainer.append(waypointTemplate(waypointData));
-                    var entryNode = $('#trip_' + tripId + "-entry_" + waypointData._id);
+                    var entryNode = $('#waypoint_' + waypointData._id);
                     entryNode.data('waypointData', waypointData);
                     initWaypoint(entryNode, onScrolledToWaypoint);
                 });
@@ -184,13 +190,21 @@
                 $('.logbookEntry').removeClass("active");
                 node.addClass("active");
 
-                $('#detailsText').html(entryDetailsTemplate(node.data('waypointData')));
-
                 var waypointData = node.data('waypointData');
-                console.log(waypointData);
+
+                $('#details_text').html(entryDetailsTemplate(waypointData));
+
                 if (typeof(map) != "undefined" && typeof(waypointData) != "undefined"){
                     highlight_waypoint(new google.maps.LatLng(waypointData.lat, waypointData.lng));
                 }
+            }
+
+            function onScrolledToTripHeader(node){
+                $('.logbookEntry').removeClass("active");
+
+            $('#details_text').html(entryDetailsTemplate());
+                //zoom out map
+                reset_map_zoom();
             }
 
             // click handlers for loading previous/next trip
@@ -209,8 +223,7 @@
                 }
             });
 
-            // actual script
-           // var padding = $(window).height() - parseInt($('.logbookEntry').css('min-height'));
+            // var padding = $(window).height() - parseInt($('.logbookEntry').css('min-height'));
             //$('#entries_col').css('padding-bottom', (padding - 1));
             //$('#entries_col').css('margin-top', $('#menu_bar').css('height'));
             //$('#entries_col').css('top', $('#menu_bar').css('height'));
@@ -283,7 +296,7 @@
 
 
             //map
-            map = map = new google.maps.Map(document.getElementById('details_map'));
+            map = map = new google.maps.Map(document.getElementById('map_canvas'));
         });  //   /document.ready()
 
 
