@@ -64,7 +64,7 @@ h3 {
 
 .logbookEntry {
     padding: 1em 0;
-    opacity: 0.7;
+    opacity: 0.5;
     border-top: 1px solid lightgray;
     cursor: pointer;
     -webkit-transition: max-height 0.5s, padding 0.5s, opacity 0.5s;
@@ -93,14 +93,22 @@ h3 {
     display: inline;
 }
 
+label {
+    cursor: pointer;
+}
+
 /* for hidden waypoints*/
-.filtered {
+.logbookEntry.filtered {
     padding: 0;
     max-height: 0;
     opacity: 0;
     border-style: none;
     overflow: hidden;
 }
+.timeline-inverted.filtered {
+   max-height:0;
+}
+
 
 #details_col {
     position: fixed;
@@ -140,6 +148,12 @@ h3 {
     height: 32px;
     margin-right: 5px;
     margin-bottom: 5px;
+}
+.timeline-inverted {
+    max-height: 2000px;
+    overflow: hidden;
+    -webkit-transition: max-height 0.5s;
+    transition: max-height 0.5s;
 }
 
 #details_weather {
