@@ -48,7 +48,7 @@
 
             function initWaypoint(item, callback) {
                 var offset_up = 1;
-                var offset_down = $('#menu_bar').css("height") + parseInt($('.logbookEntry').css('min-height'));
+                var offset_down = $('#menu_bar').css("height") + parseInt($('.logbookEntry').css('min-height')) + 1;
 
                 item.waypoint(function (direction) {
                     if (direction == "down") {
@@ -257,7 +257,8 @@
                 return true;
             });
 
-            $('#entries').css('margin-bottom', $.waypoints('viewportHeight') + 'px');
+
+            $('#entries_col').css('margin-bottom', $.waypoints('viewportHeight'));
 
             // add handlers for clicks on trips & waypoints in the timeline
 
@@ -361,7 +362,10 @@
                     item.removeClass('filtered');
                     timelineItem.removeClass('filtered');
                 }
+
             });
+            // refresh waypoint handlers to new positions of elements
+            window.setTimeout(function () { $.waypoints('refresh'); }, 750);
         }
 
     </script>
