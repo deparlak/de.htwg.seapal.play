@@ -11,7 +11,7 @@
 
         $(document).ready(function () {
             var dateFormatShort = "YYYY-MM-DD";
-            var dateFormatLong = "YYYY-MM-DD";
+            var timeFormat = "h:mm:ss a";
             
             // preloaded Images
             var expandImage = new Image();
@@ -140,6 +140,7 @@
                 $.each(waypoints, function (index, waypointData) {
                     // unix timestamp -> formatted time
                     waypointData.formattedDate = moment(new Date(waypointData.date)).format(dateFormatShort);
+                    waypointData.formattedTime = moment(new Date(waypointData.date)).format(timeFormat);
 
                     // append to trip in timeline panel
                     timelineTripContainer.append(timelineWaypointTemplate(waypointData));
@@ -334,7 +335,7 @@
         function applyEntryFilters() {
             var onlyImages = $('#chkOnlyWithImage').is(':checked');
             var onlyNotes = $('#chkOnlyWithNote').is(':checked');
-            var minTimePeriod = parseInt($('#txtTimePeriod').val()) * 60 * 1000;  // min to msec 
+            var minTimePeriod = parseInt($('#txtTimePeriod').val());   // min to msec    * 60 * 1000
             var lastTimestamp = -1;
 
             // iterate over all waypoints in entry view & timeline
@@ -362,6 +363,8 @@
                     timelineItem.removeClass('filtered');
                 }
             });
+
+            window.setTimeout(function () { $.waypoints('refresh'); }, 1000);
         }
 
     </script>
