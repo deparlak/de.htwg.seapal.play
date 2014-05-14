@@ -12,7 +12,7 @@
         $(document).ready(function () {
             var dateFormatShort = "YYYY-MM-DD";
             var timeFormat = "h:mm:ss a";
-            
+
             // preloaded Images
             var expandImage = new Image();
             var contractImage = new Image();
@@ -72,7 +72,7 @@
                 // create the container for this trip
                 $('#entries').append(tripTemplate(tripData));
 
-                initWaypoint($('#trip_header_'+tripId), onScrolledToTripHeader);
+                initWaypoint($('#trip_header_' + tripId), onScrolledToTripHeader);
 
                 // lookup previous and next trip
                 logbook.getTripsOfBoat(boatId, tripData.startDate, 1, 1, 'true', onReceivedPreviousTrip);  // previous
@@ -81,8 +81,8 @@
                 //convert tripData.marks in array with lat lon objects
                 //console.log(trip_marks);
                 var map_waypoints = [];
-                for (i = 0; i < tripData.marks.length; i=i+2) {
-                    map_waypoints[i/2] = new google.maps.LatLng(tripData.marks[i], tripData.marks[i+1]);
+                for (i = 0; i < tripData.marks.length; i = i + 2) {
+                    map_waypoints[i / 2] = new google.maps.LatLng(tripData.marks[i], tripData.marks[i + 1]);
                 }
                 //console.log(map_waypoints);
 
@@ -196,23 +196,23 @@
             function onScrolledToWaypoint(node) {
                 $('.logbookEntry').removeClass("active");
                 node.addClass("active");
-				
-				// change details
+
+                // change details
                 var waypointData = node.data('waypointData');
-                if (typeof(waypointData) != "undefined") {
-                	waypointData.latRounded = ('' + waypointData.lat).substr(0, 7);
-                	waypointData.lngRounded = ('' + waypointData.lng).substr(0, 7);
+                if (typeof (waypointData) != "undefined") {
+                    waypointData.latRounded = ('' + waypointData.lat).substr(0, 7);
+                    waypointData.lngRounded = ('' + waypointData.lng).substr(0, 7);
                 }
                 $('#details_text').html(entryDetailsTemplate(waypointData));
 
 
-				// mark waypoint in Map
-                if (typeof(map) != "undefined" && typeof(waypointData) != "undefined"){
+                // mark waypoint in Map
+                if (typeof (map) != "undefined" && typeof (waypointData) != "undefined") {
                     highlight_waypoint(new google.maps.LatLng(waypointData.lat, waypointData.lng));
                 }
             }
 
-            function onScrolledToTripHeader(node){
+            function onScrolledToTripHeader(node) {
                 $('.logbookEntry').removeClass("active");
 
                 $('#details_text').html(entryDetailsTemplate());
@@ -244,16 +244,16 @@
             //$('#timeline_col').css('top', $('#menu_bar').css('height'));
 
             $('.accordion .head').click(function () {
-            	// change expand image
-            	var headId = $(this).attr('id'); 
-            	var changeImage = document.getElementById(headId.substr(0, headId.lastIndexOf('_')) + '_img');
-            	            	
-            	if (changeImage.src == expandImage.src) {
-            		changeImage.src = contractImage.src;  
-            	} else {
-            		changeImage.src = expandImage.src;  
-            	}            	         	
-            
+                // change expand image
+                var headId = $(this).attr('id');
+                var changeImage = document.getElementById(headId.substr(0, headId.lastIndexOf('_')) + '_img');
+
+                if (changeImage.src == expandImage.src) {
+                    changeImage.src = contractImage.src;
+                } else {
+                    changeImage.src = expandImage.src;
+                }
+
                 $(this).next().toggle("slow");
                 return true;
             });
@@ -327,6 +327,13 @@
 
             //map
             map = map = new google.maps.Map(document.getElementById('map_canvas'));
+
+            // click handler for filter buttons
+            $('.filterButton').click(function () {
+                $(this).toggleClass('active');
+                applyEntryFilters();
+            })
+
         });  //   /document.ready()
 
 
@@ -334,8 +341,8 @@
         * Shows or hides waypoints based on the current filter settings
         */
         function applyEntryFilters() {
-            var onlyImages = $('#chkOnlyWithImage').is(':checked');
-            var onlyNotes = $('#chkOnlyWithNote').is(':checked');
+            var onlyImages = $('#chkOnlyWithImage').hasClass('active');
+            var onlyNotes = $('#chkOnlyWithNote').hasClass('active');
             var minTimePeriod = parseInt($('#txtTimePeriod').val());   // min to msec    * 60 * 1000
             var lastTimestamp = -1;
 
@@ -370,6 +377,9 @@
         }
 
     </script>
+
+
+
 
 
     <div id="menu_bar">
