@@ -1,5 +1,6 @@
 package de.htwg.seapal.web.controllers;
 
+import java.io.InputStream;
 import java.util.List;
 import java.util.UUID;
 
@@ -74,5 +75,11 @@ public class LogbookAPI extends Controller {
 	public Result getAllWaypoints(UUID tripId) {
 		WaypointDatabase db = SeapalGlobal.getInjector().getInstance(WaypointDatabase.class);
 		return ok(Json.toJson(db.getAllWaypointsOfTrip(tripId)));
+	}
+
+	public Result getWaypointPhoto(UUID waypointId) {
+		WaypointDatabase db = SeapalGlobal.getInjector().getInstance(WaypointDatabase.class);
+		InputStream imgData =  db.getPhoto(waypointId);
+		return ok(imgData).as("image/jpeg");
 	}
 }

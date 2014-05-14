@@ -58,7 +58,9 @@
             <b>{{name}}</b><br />
 
             {{#if image_thumb}}
-            <img src="{{image_thumb}}" alt="" style="float: left" />
+            <a href="logbook/waypointPhoto/{{_id}}" data-lightbox="highres_{{_id}}">
+                <img src="{{image_thumb}}" alt="" style="float: left" />
+            </a>
             {{/if}}
 
             <span>{{note}}</span>
