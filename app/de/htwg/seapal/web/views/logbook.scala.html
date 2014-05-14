@@ -47,8 +47,8 @@
             //logbook.getAllWaypointsOfTrip(initialTripId, onReceivedAllWaypointsByTrip);
 
             function initWaypoint(item, callback) {
-                var offset_up = $('#menu_bar').height() +10;
-                var offset_down = offset_up + parseInt($('.logbookEntry').css('min-height'));
+                var offset_up = 1;
+                var offset_down = $('#menu_bar').css("height") + parseInt($('.logbookEntry').css('min-height')) + 1;
 
                 item.waypoint(function (direction) {
                     if (direction == "down") {
@@ -215,7 +215,7 @@
             function onScrolledToTripHeader(node){
                 $('.logbookEntry').removeClass("active");
 
-            $('#details_text').html(entryDetailsTemplate());
+                $('#details_text').html(entryDetailsTemplate());
                 //zoom out map
                 reset_map_zoom();
             }
@@ -258,7 +258,8 @@
                 return true;
             });
 
-            $('#entries').css('margin-bottom', $.waypoints('viewportHeight') + 'px');
+
+            $('#entries_col').css('margin-bottom', $.waypoints('viewportHeight'));
 
             // add handlers for clicks on trips & waypoints in the timeline
 
@@ -362,9 +363,10 @@
                     item.removeClass('filtered');
                     timelineItem.removeClass('filtered');
                 }
-            });
 
-            window.setTimeout(function () { $.waypoints('refresh'); }, 1000);
+            });
+            // refresh waypoint handlers to new positions of elements
+            window.setTimeout(function () { $.waypoints('refresh'); }, 750);
         }
 
     </script>

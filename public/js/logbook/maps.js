@@ -57,6 +57,8 @@ function highlight_waypoint(lat_lng){
 }
 
 function reset_map_zoom(){
-    map.panTo(bounds.getCenter());
-    map.fitBounds(bounds);
+    if(typeof(bounds) != "undefined"){
+        map.panTo(bounds.getCenter());
+        map.fitBounds(bounds);
+    }
 }
