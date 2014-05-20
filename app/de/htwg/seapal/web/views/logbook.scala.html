@@ -368,7 +368,7 @@
         function applyEntryFilters() {
             var onlyImages = $('#chkOnlyWithImage').hasClass('active');
             var onlyNotes = $('#chkOnlyWithNote').hasClass('active');
-            var minTimePeriod = parseInt($('#txtTimePeriod').val()) * 60 * 1000;   // min to msec    
+            var minTimePeriod = parseInt($('#timeOffsetToggler').html()) * 60 * 1000;   // min to msec    
             var lastTimestamp = -1;
 
             // iterate over all waypoints in entry view & timeline
