@@ -68,33 +68,6 @@
                 loadMoreEntries(node.attr('data-tripid'), 5);
             }
 
-            // callback for trip container when scrolled to
-            function onScrolledToWaypoint(node) {
-                $('.logbookEntry').removeClass("active");
-                node.addClass("active");
-				
-				// change details
-                var waypointData = node.data('waypointData');
-                if (typeof(waypointData) != "undefined") {
-                	waypointData.latRounded = ('' + waypointData.lat).substr(0, 7);
-                	waypointData.lngRounded = ('' + waypointData.lng).substr(0, 7);
-                }
-                $('#details_text').html(entryDetailsTemplate(waypointData));
-
-				// change sog chart
-				if (typeof(window.sogChart) != "undefined") {
-					var point = window.sogChart.series[0].points[0];
-					var newVal = waypointData.sog.substr(0,waypointData.sog.lastIndexOf(' '));
-					point.update(parseFloat(newVal));
-					window.sogChart.redraw();
-				}
-				
-
-				// mark waypoint in Map
-                if (typeof(map) != "undefined" && typeof(waypointData) != "undefined"){
-                    highlight_waypoint(new google.maps.LatLng(waypointData.lat, waypointData.lng));
-                }
-            }
             // click handlers for loading previous/next trip
             $('#btnLoadPreviousTrip').click(function () {
                 var previousTripId = $(this).attr('data-prev-trip');
@@ -130,11 +103,6 @@
                 }
 
                 $(this).next().toggle("slow");
-                
-                // remove highcart logo
-                $('#highcharts-0 svg text').last().remove();
-               
-              
                 
                 return true;
             });
@@ -389,6 +357,16 @@
             }
             $('#details_text').html(entryDetailsTemplate(waypointData));
 
+			// create sog chart
+			initSOGSpeedometer('speedometer_sog');
+			
+			if (typeof(window.sogChart) != "undefined") {
+				var point = window.sogChart.series[0].points[0];
+				var newVal = waypointData.sog.substr(0,waypointData.sog.lastIndexOf(' '));
+				point.update(parseFloat(newVal));
+				window.sogChart.redraw();
+			}
+
             // mark waypoint in Map
             if (typeof (map) != "undefined" && typeof (waypointData) != "undefined") {
                 highlight_waypoint(new google.maps.LatLng(waypointData.lat, waypointData.lng));
@@ -476,6 +454,140 @@
                 }
             });
             return waypoint;
+        }
+        
+        /**
+         *  This function initalizes the SOG Chart
+         */
+        function initSOGSpeedometer(containerId) {
+        	if (typeof(window.sogChart) != "undefined") {
+        		window.sogChart.destroy();
+        	}
+        	
+        	window.sogChart = new Highcharts.Chart({
+			    chart: {
+			    	renderTo: containerId,
+			        type: 'gauge',
+			        plotBackgroundColor: null,
+			        plotBackgroundImage: null,
+			        plotBorderWidth: 0,
+			        plotShadow: false
+			    },
+			    
+			    title: {
+			        text: '',
+				    style: {
+				        display: 'none'
+				    }
+			    },
+			    
+			    pane: {
+			        startAngle: -150,
+			        endAngle: 150,
+			        background: [{
+			            backgroundColor: {
+			                linearGradient: { x1: 0, y1: 0, x2: 0, y2: 1 },
+			                stops: [
+			                    [0, '#FFF'],
+			                    [1, '#333']
+			                ]
+			            },
+			            borderWidth: 0,
+			            outerRadius: '109%'
+			        }, {
+			            backgroundColor: {
+			                linearGradient: { x1: 0, y1: 0, x2: 0, y2: 1 },
+			                stops: [
+			                    [0, '#333'],
+			                    [1, '#FFF']
+			                ]
+			            },
+			            borderWidth: 1,
+			            outerRadius: '107%'
+			        }, {
+			            // default background
+			        }, {
+			            backgroundColor: '#DDD',
+			            borderWidth: 0,
+			            outerRadius: '105%',
+			            innerRadius: '103%'
+			        }]
+			    },
+			       
+			    // the value axis
+			    yAxis: {
+			        min: 0,
+			        max: 50,
+			        
+			        minorTickInterval: 'auto',
+			        minorTickWidth: 1,
+			        minorTickLength: 10,
+			        minorTickPosition: 'inside',
+			        minorTickColor: '#666',
+			
+			        tickPixelInterval: 30,
+			        tickWidth: 2,
+			        tickPosition: 'inside',
+			        tickLength: 10,
+			        tickColor: '#666',
+			        labels: {
+			            step: 2,
+			            rotation: 'auto'
+			        },
+			        title: {
+			            text: 'kn',
+			            y: 10
+			        },
+			        plotBands: [{
+			            from: 0,
+			            to: 30,
+			            color: '#55BF3B' // green
+			        }, {
+			            from: 30,
+			            to: 40,
+			            color: '#DDDF0D' // yellow
+			        }, {
+			            from: 40,
+			            to: 50,
+			            color: '#DF5353' // red
+			        }]        
+			    },
+			    
+			    exporting: {
+         			enabled: false
+				},
+			
+			    series: [{
+			        name: 'SOG',
+			        data: [100],
+			        tooltip: {
+			            valueSuffix: 'kn'
+			        }
+			    }]
+			
+			}
+			// Add some life
+			// function (chart) {
+				//if (!chart.renderer.forExport) {
+				    // setInterval(function () {
+				        // var point = chart.series[0].points[0],
+				            // newVal,
+				            // inc = Math.round((Math.random() - 0.5) * 20);
+						// 				        
+				        // newVal = point.y + inc;
+				        // if (newVal < 0 || newVal > 200) {
+				            // newVal = point.y - inc;
+				        // }
+						// 				        
+				        // point.update(newVal);
+						// 				        
+				    // }, 3000);
+				//}
+			//}
+			);
+			
+			// remove highcart logo
+            $('#highcharts-0 svg text').last().remove();
         }
     </script>
 
