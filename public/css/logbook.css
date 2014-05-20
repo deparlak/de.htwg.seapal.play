@@ -69,9 +69,9 @@ h3 {
     max-height: 2000em; /* only for transition */
 }
 
-    .logbookEntry.active {
-        opacity: 1;
-    }
+.logbookEntry.active {
+    opacity: 1;
+}
 
 .imageholder {
     display: inline;
@@ -106,7 +106,6 @@ label {
 .timeline-inverted.filtered {
     max-height: 0;
 }
-
 
 #details_col {
     position: fixed;
