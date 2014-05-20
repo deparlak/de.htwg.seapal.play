@@ -74,11 +74,69 @@
                                 <li><a class="menu-icon icon-charts action">Navigation Charts</a></li>
                                 <li><a class="menu-icon icon-addOns action">Add-ons</a></li>
                                 <li><a class="menu-icon icon-poi action">Points of Interest</a></li>
-                                <li><a class="menu-icon icon-weather action">Weather</a></li>
+                                <li><a class="menu-icon icon-weather link" data-link="menu-weather">Weather</a></li>
                                 <li><a class="menu-icon icon-alarms action">Alarms</a></li>
                                 <li><a class="menu-icon icon-info action">Info</a></li>
                                 <li><a class="menu-icon icon-settings action">Settings</a></li>
-                            </ul>                        
+                            </ul>
+
+ <!-- ???-->                           <ul id="menu-weather" class="menubar-menu inactive-menu-list">
+                                <li><a class="menu-icon icon-menuBack link" data-link="menu-main">Back</a></li>
+                                <!-- selector to switch between different weather data -->
+                                <li>
+                                    <div class="btn-group-justified menubar-optionsSelector" data-toggle="buttons">
+                                        <label class="btn btn-primary action weather active" data-name="#current-weather">
+                                            <input type="radio">Current Weather
+                                        </label>
+<!--
+                                        <label class="btn btn-primary action weather" data-name="#weather-forecast">
+                                            <input type="radio">Weather Forecast
+                                        </label>
+-->
+                                    </div>
+                                </li>
+                                <div id="current-weather" class="active-weather">
+                                    <li class="heading">
+                                        <div class="heading1">
+                                            Select Layer Current
+                                        </div>
+                                    </li>
+                                    <div id="weater-layers">
+                                        <li>
+                                            <a class="menu-icon action icon-notSelected-weather" data-type="weather" data-id="wind" id="wind">Wind</a>
+                                        </li>
+                                        <li>
+                                            <a class="menu-icon action icon-notSelected-weather" data-type="weather" data-id="temperature" id="temperature">Temperature</a>
+                                        </li>
+                                        <li>
+                                            <a class="menu-icon action icon-notSelected-weather" data-type="weather" data-id="icons" id="icons">Wetter-Icons</a>
+                                        </li>
+                                        <li>
+                                            <a class="menu-icon action icon-notSelected-weather" data-type="weather" data-id="waveHeight" id="waveHeight">Wave Height</a>
+                                        </li>
+                                        <li>
+                                            <a class="menu-icon action icon-notSelected-weather" data-type="weather" data-id="precipitate" id="precipitate">Precipitate</a>
+                                        </li>
+                                        <li>
+                                            <a class="menu-icon action icon-notSelected-weather" data-type="weather" data-id="clouds" id="clouds">Clouds</a>
+                                        </li>
+                                        <li>
+                                            <a class="menu-icon action icon-notSelected-weather" data-type="weather" data-id="owm" id="owm">OWM</a>
+                                        </li>
+                                        <li>
+                                            <a class="menu-icon action icon-notSelected-weather" data-type="weather" data-id="test" id="test">Test</a>
+                                        </li>
+                                    </div>
+                                </div>
+                                <div id="weather-forecast" class="inactive-weather">
+                                    <li class="heading">
+                                        <div class="heading1">
+                                            Select Layer Forecast
+                                        </div>
+                                    </li>
+                                    <div id="weater-layers"></div>
+                                </div>
+  <!--??? -->                           </ul>
                             
                             <ul id="menu-logbook" class="menubar-menu inactive-menu-list">
                                 <li><a class="menu-icon icon-menuBack link" data-link="menu-main">Back</a></li>
