@@ -1,76 +1,89 @@
 <div id="details" class="accordion">
-
-	<script type="text/javascript">
-		$(document).ready(function () {
-		
-		});
-	</script>
-	
 	<script type="x/handlebars-template" id="entryDetailsTemplate">
 		<table> 
-			<tr id="details_sog_chart">
-				<td colspan="4">
-					<div id="speedometer_sog" class="table_chart" > haha </div>
-				</td>
-			</tr>
 			<tr id ="details_text_course">
+				{{#if formattedDate}}
 				<td>							
 					<b> Date </b>
 				</td>
 				<td>
 					{{formattedDate}}
-				</td>				
+				</td>	
+				{{/if}}		
+				{{#if formattedTime}}	
 				<td>							
 					<b> Time </b>
 				</td>
 				<td>
                     {{formattedTime}}
 				</td>
+				{{/if}}	
 			</tr>
 			<tr id ="details_text_position">
-				<!-- latitude -->	
+				{{#if latRounded}}	
 				<td>							
 					<b>Lat </b> 
 				</td>
 				<td>
 					{{latRounded}} N
 				</td>
-
-				<!-- latitude -->	
+				{{/if}}	
+				{{#if lngRounded}}	
 				<td>							
 					<b>Lng </b>
 				</td>
 				<td>
 					{{lngRounded}} E
 				</td>
-			</tr>			
+				{{/if}}	
+			</tr>
 			<tr id ="details_text_position">
+				{{#if cog}}
 				<td>							
 					<b>COG </b>
 				</td>
 				<td>
 					{{cog}}
-				</td>					
+				</td>		
+				{{/if}}		
+				{{#if sog}}		
 				<td>							
 					<b>SOG </b>
 				</td>
 				<td>
 					{{sog}}
 				</td>
+				{{/if}}
 			</tr>
+			<tr id="details_charts">
+			{{#if cog}}
+				<td colspan="2">
+					<div id="compass_cog" class="table_chart" ></div>
+				</td>				
+			{{/if}}
+			{{#if sog}}
+				<td colspan="2">
+					<div id="speedometer_sog" class="table_chart" ></div>
+				</td>				
+			{{/if}}		
+			</tr>			
 			<tr id ="details_text_distance">
+				{{#if btm}}
 				<td>							
 					<b>BTM </b>
 				</td>
 				<td>
 					unknown
-				</td>					
+				</td>
+				{{/if}}	
+				{{#if dtm}}					
 				<td>							
 					<b>DTM </b>
 				</td>
 				<td>
 					unknown
 				</td>
+				{{/if}}	
 			</tr>
 		</table>
 	</script>
