@@ -1,0 +1,106 @@
+/*   ------------------  Default:   Desktop-Size Screens  ------------------*/
+
+#menu_bar {
+    top: 0px;
+    position: fixed;
+    width: 100%;
+    text-align: center;
+    z-index: 3;
+}
+
+#timeline_col {
+    position: fixed;
+    top: 50px;
+    bottom: 0;
+    left: 0;
+    margin-left: 0;
+    width: 20%;
+    padding: 0 10px;
+    z-index: 1;
+    background-color: white;
+    transition: margin-left 0.5s;
+}
+
+#entries_col {
+    z-index: 0;
+    margin-left: 20%;
+    margin-right: 30%;
+    margin-top: 50px;
+    padding: 0 10px 10px 10px;
+    transition: margin-left 0.5s;
+}
+
+#details_col {
+    position: fixed;
+    bottom: 0px;
+    top: 50px;
+    right: 0px;
+    width: 30%;
+    padding: 1em;
+    z-index: 2;
+}
+
+#filterBar {
+    position: fixed;
+    background-color: #abecfe;
+    right: 31%;
+    top: 74px;
+    z-index: 100;
+}
+
+#timelineToggler {
+    display: none;
+}
+
+/*   ------------------  MID-Size Screens  ------------------*/
+
+@media (max-width: 1200px) {
+
+    #timelineToggler {
+        display: inline-block;
+    }
+
+    #timeline_col.forceOpen {
+        margin-left: 0;
+    }
+
+    #timeline_col {
+        border-right: 2px solid #808080;
+        margin-left: -40%;
+        width: 40%;
+    }
+
+    #entries_col {
+        margin-left: 0;
+        width: 70%;
+        max-width: 70%;
+    }
+
+
+    #filterBar {
+        right: 31%;
+    }
+}
+
+/*   ------------------  Smartphone Screens   ------------------ */
+
+@media (max-width: 1024px) {
+
+    #entries_col {
+        margin-right: auto;
+        width: 100%;
+        max-width: 100%;
+    }
+
+    #details_col {
+        display: none;
+    }
+
+    #filterBar {
+        right: 30px;
+    }
+
+    .logbookEntry {
+        opacity: 1;
+    }
+}
