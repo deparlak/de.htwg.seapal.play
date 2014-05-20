@@ -14,11 +14,13 @@
     background-position-x: center;
     background-position-y: center;
     margin-top: 5px;
+    display: none;
 }
 
-.panelToggler:hover {
-    background-color: #b2b2b2;
-}
+    .panelToggler:hover {
+        background-color: #b2b2b2;
+        text-decoration: none;
+    }
 
 #pictures {
     background: #FFFFFF;

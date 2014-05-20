@@ -5,7 +5,7 @@
     position: fixed;
     width: 100%;
     text-align: center;
-    z-index: 3;
+    z-index: 30;
 }
 
 #timeline_col {
@@ -16,7 +16,7 @@
     margin-left: 0;
     width: 20%;
     padding: 0 10px;
-    z-index: 1;
+    z-index: 10;
     background-color: white;
     transition: margin-left 0.5s;
 }
@@ -27,7 +27,7 @@
     margin-right: 30%;
     margin-top: 50px;
     padding: 0 10px 10px 10px;
-    transition: margin-left 0.5s;
+    transition: margin-left 0.5s, margin-right 0.5s;
 }
 
 #details_col {
@@ -35,9 +35,12 @@
     bottom: 0px;
     top: 50px;
     right: 0px;
+    margin-right: 0;
     width: 30%;
     padding: 1em;
-    z-index: 2;
+    background-color: white;
+    z-index: 20;
+    transition: margin-right 0.5s;
 }
 
 #filterBar {
@@ -45,7 +48,7 @@
     background-color: #abecfe;
     right: 31%;
     top: 74px;
-    z-index: 100;
+    z-index: 5;
 }
 
 #timelineToggler {
@@ -72,8 +75,6 @@
 
     #entries_col {
         margin-left: 0;
-        width: 70%;
-        max-width: 70%;
     }
 
 
@@ -86,14 +87,23 @@
 
 @media (max-width: 1024px) {
 
+    #detailsToggler {
+        display: inline-block;
+    }
+
     #entries_col {
-        margin-right: auto;
-        width: 100%;
-        max-width: 100%;
+        margin-right: 0;
     }
 
     #details_col {
-        display: none;
+        width: 70%;
+        margin-right: -70%;
+        border-left: 2px solid #808080;
+    }
+
+    #details_col.forceOpen {
+        width: 70%;
+        margin-right: 0;
     }
 
     #filterBar {
