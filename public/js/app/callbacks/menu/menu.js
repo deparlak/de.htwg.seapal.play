@@ -59,10 +59,6 @@ $(document).ready(function() {
         output.info("Add-ons are not supported in the web app. With Add-ons you can download for example offline maps to use the app without an internet connection.");
     });
 
-    menu.addCallback('leftclick', 'icon-weather', function (self) {
-        output.info("Weather is not supported in the web app. In the app there is an weather overlay giving you forecasts and information about the weather.");
-    });
-
     menu.addCallback('leftclick', 'icon-poi', function (self) {
         output.info("Points of interest is not supported in the web app.");
     });

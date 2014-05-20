@@ -401,6 +401,10 @@ input.menubar-search:focus {
         content: "\f00c"
 }
 
+.icon-selected-weather::after{
+        content: "\f00c"
+}
+
 .icon-notSelected-mark::after{
         content: ""
 }
@@ -418,6 +422,10 @@ input.menubar-search:focus {
 }
 
 .icon-notSelected-person::after{
+        content: ""
+}
+
+.icon-notSelected-weather::after{
         content: ""
 }
 

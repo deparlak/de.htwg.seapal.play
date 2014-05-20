@@ -3,6 +3,7 @@
 * @version ENGLISH
 * @author Julian Mueller
 */
+
 (function( $, window ){
     /**
     * *************************************************************************************
@@ -174,6 +175,16 @@
             }
         }
     };
+
+    /**
+    * *************************************************************************************
+    * Variable for Google Icon- and Cloud-Layer
+    * *************************************************************************************
+    */
+    var iconLayerGoogle = null;
+    var cloudLayerGoogle = null;
+    var stations = null;
+    var current = null;
 	
     /**
     * *************************************************************************************
@@ -948,7 +959,7 @@
             return true;
         }
 		
-		/* define the select method for a route */
+		/* define the deselect method for a route */
 		data.route.deselectMethod = function(id) {
 			if (!data.route.active || data.route.active.id != id) {
 				throw("Illegal call of data.route.deselectMethod, beacause only the active route can be hidden.");
@@ -968,7 +979,7 @@
             return true;
 		};
         
-		/* define the select method for a track */
+		/* define the deselect method for a track */
 		data.trip.deselectMethod = function(id) {
 			if (!data.trip.active || data.trip.active.id != id) {
 				throw("Illegal call of data.trip.deselectMethod, beacause only the active track can be hidden.");
@@ -980,10 +991,10 @@
 			/* hide the active trip now */
 			hideActiveTrack();
             return true;
-		};	
+		};
 
 		/* define the select method for a mark */
-		data.mark.selectMethod	 = function(id){
+		data.mark.selectMethod = function(id){
 			if (!data.mark.list[id].onMap) {
 				data.mark.list[id].onMap = getOnMapMark(data.mark.list[id]);
 			}
@@ -1118,27 +1129,306 @@
         /**
         * *********************************************************************************
         * Initializes the GoogleMaps with OpenSeaMaps overlay, the context menu, the
-        * boat animation and the default route.
+        * boat animation, the default route and weather layers.
         * *********************************************************************************
         */
         function init() {
             map = new google.maps.Map(element, options.map);
-            initOpenSeaMaps();
+            // initOpenSeaMaps();
             
             if ( options.mode !== "NOTINTERACTIVE" ) {
-                initContextMenu();    
+                initContextMenu();
                 initGoogleMapsListeners();
             }
+
             initCrosshairMarker();
         }
 
+// ???>
+        var RainMap;
+        /**
+         * *********************************************************************************
+         * Initializes the Open Weather Map Layer.
+         * *********************************************************************************
+         */
+        this.initOpenWeaterMap1 = function() {
+            RainMap = new google.maps.ImageMapType({
+            getTileUrl: function (coord, zoom) {
+            return "http://tile.openweathermap.org/map/wind/" + zoom + "/" + coord.x + "/" + coord.y + ".png";
+            },
+            tileSize: new google.maps.Size(256, 256),
+            isPng: true,
+            alt: "RainMap",
+            name: "RainMap",
+            maxZoom: 19
+            });
+            RainMap.setOpacity(0.5);
+
+        map.overlayMapTypes.push(RainMap);
+        }
+        /**
+        * *********************************************************************************
+        * Destroy the Open Weather Map Layer.
+        * *********************************************************************************
+        */
+        this.destOpenWeaterMap1 = function() {
+            map.overlayMapTypes.pop(RainMap);
+        }
+           
+        /**
+         * *********************************************************************************
+         * Initializes the Open Weather Map Layer.
+         * *********************************************************************************
+         */
+        this.initOpenWeaterMap = function() {
+            map = new OpenLayers.Map("map_canvas", {
+                projection: 'EPSG:3857',
+                layers: [
+                    new OpenLayers.Layer.Google(
+                    "Google Streets", // the default
+                    {numZoomLevels: 20}
+                )],
+
+                center: new OpenLayers.LonLat(9.2, 47.7)
+                // Google.v3 uses web mercator as projection, so we have to
+                // transform our coordinates
+                .transform('EPSG:4326', 'EPSG:3857'),
+                zoom: 10
+            });
+
+            OpenLayers.Layer.Google
+
+            stations = new OpenLayers.Layer.Vector.OWMStations("Stations");
+            current =  new OpenLayers.Layer.Vector.OWMWeather("Current weather");
+            map.addLayers([current]);
+            //map.overlayMapTypes.push(stations);
+            //addIcons();
+
+        }
+
+        this.addIcons = function() {
+
+            var list = $("image").map(function(){return $(this).attr("id");}).get();
+            for (var i = 0; i < list.length; i++) {
+                if (list[i].indexOf("OpenLayers_Geometry_Point_") != -1) {
+                    var x = $("#" + list[i]).attr("x");
+                    x += 100;
+                    $("#" + list[i]).attr("x", x);
+                }
+            }
+        }
+
+        this.initTest = function() {
+            var lngLat = map.getCenter();
+            var longitude = lngLat.lng();
+            var latitude = lngLat.lat();
+            var speed = 0;
+            var deg = 0;
+            var dfd = $.Deferred();
+            var url = "http://api.openweathermap.org/data/2.5/weather?lat=";
+            url += latitude;
+            url += "&lon=";
+            url += longitude;
+            url += "&cnt=1";
+            $.ajax({
+                type: "POST",
+                dataType: "jsonp",
+                url: url + "&callback=?",
+                async: false,
+                success: function (data) {
+                    speed = data.wind.speed;
+                    deg = data.wind.deg;
+                    alert("speed: " + speed + ", deg: " + deg);
+                    dfd.resolve(temperature);
+                },
+                error: function (errorData) {
+                    alert("Error while getting weather data :: " + errorData.status);
+                }
+            });
+            return dfd.promise();
+
+        }
+
+        this.destTest = function() {
+
+        }
+
+        /**
+         * *********************************************************************************
+         * Destroy the Open Weather Map Layer.
+         * *********************************************************************************
+         */
+        this.destOpenWeaterMap = function() {
+            map.destroy();
+        }
+
+        /**
+         * *********************************************************************************
+         * Initializes the Google Weather Icons overlay.
+         * *********************************************************************************
+         */
+        this.initWeatherIcon = function() {
+            iconLayerGoogle = new google.maps.weather.WeatherLayer({
+                temperatureUnits: google.maps.weather.TemperatureUnit.FAHRENHEIT
+              });
+
+            iconLayerGoogle.setMap(map);
+        }
+        
+        /**
+         * *********************************************************************************
+         * Destroy the Google Weather Icons overlay.
+         * *********************************************************************************
+         */
+        this.destWeatherIcon = function() {
+            iconLayerGoogle.setMap(null);
+        }
+
+        /**
+         * *********************************************************************************
+         * Initializes the Google Weather cloud radar overlay.
+         * *********************************************************************************
+         */
+        
+        this.initCloudLayer = function() {
+            cloudLayerGoogle = new google.maps.weather.CloudLayer();
+            cloudLayerGoogle.setMap(map);
+        }
+        
+        /**
+         * *********************************************************************************
+         * Destroy the Google Weather cloud radar overlay.
+         * *********************************************************************************
+         */
+        this.destCloudLayer = function() {
+            cloudLayerGoogle.setMap(null);
+        }
+        
+        /**
+         * *********************************************************************************
+         * Initializes the OpenPortGuide precipitation overlay.
+         * *********************************************************************************
+         */
+        this.initPrecipitation = function() {
+            map.overlayMapTypes.setAt(0, new google.maps.ImageMapType({
+                getTileUrl: function(coord, zoom) {
+                    return "http://www.openportguide.org/tiles/actual/precipitation/5/" + zoom + "/" + coord.x + "/" + coord.y + ".png"
+                },
+                tileSize: new google.maps.Size(256, 256),
+                name: "Precipitation",
+                maxZoom: 7
+            }));
+            
+            if(map.getZoom() > 7){
+                map.setZoom(7);
+            }
+        }
+        
+        /**
+         * *********************************************************************************
+         * Destroy the OpenPortGuide precipitation overlay.
+         * *********************************************************************************
+         */
+        this.destPrecipitation = function() {
+            map.overlayMapTypes.removeAt(0);
+        }
+        
+        /**
+         * *********************************************************************************
+         * Initializes the OpenPortGuide wave height overlay.
+         * *********************************************************************************
+         */
+        this.initWaveHeight = function() {
+            map.overlayMapTypes.setAt(1, new google.maps.ImageMapType({
+                getTileUrl: function(coord, zoom) {
+                    return "http://www.openportguide.org/tiles/actual/significant_wave_height/5/" + zoom + "/" + coord.x + "/" + coord.y + ".png"
+                },
+                tileSize: new google.maps.Size(256, 256),
+                name: "WaveHeight",
+                maxZoom: 7
+            }));
+            
+            if(map.getZoom() > 7){
+                map.setZoom(7);
+            }
+        }
+        
+        /**
+         * *********************************************************************************
+         * Destroy the OpenPortGuide wave height overlay.
+         * *********************************************************************************
+         */
+        this.destWaveHeight = function() {
+            map.overlayMapTypes.removeAt(1);
+        }
+         
+        /**
+         * *********************************************************************************
+         * Initializes the OpenPortGuide temperature overlay.
+         * *********************************************************************************
+         */
+        this.initTemperature = function() {
+            map.overlayMapTypes.setAt(2, new google.maps.ImageMapType({
+                getTileUrl: function(coord, zoom) {
+                    return "http://www.openportguide.org/tiles/actual/air_temperature/5/" + zoom + "/" + coord.x + "/" + coord.y + ".png"
+                },
+                tileSize: new google.maps.Size(256, 256),
+                name: "Temperature",
+                maxZoom: 7
+            }));
+            
+            if(map.getZoom() > 7){
+                map.setZoom(7);
+            }
+        }
+        
+        /**
+         * *********************************************************************************
+         * Destroy the OpenPortGuide temperature overlay.
+         * *********************************************************************************
+         */
+        this.destTemperature = function() {
+            map.overlayMapTypes.removeAt(2);
+        }
+        
+        /**
+         * *********************************************************************************
+         * Initializes the OpenPortGuide wind overlay.
+         * *********************************************************************************
+         */
+        this.initWind = function() {
+            map.overlayMapTypes.setAt(3, new google.maps.ImageMapType({
+                getTileUrl: function(coord, zoom) {
+                    return "http://www.openportguide.org/tiles/actual/wind_vector/5/" + zoom + "/" + coord.x + "/" + coord.y + ".png";
+                },
+                tileSize: new google.maps.Size(256, 256),
+                name: "Wind",
+                maxZoom: 7
+            }));
+            
+            if(map.getZoom() > 7){
+                map.setZoom(7);
+            }
+        }
+        
+        /**
+         * *********************************************************************************
+         * Destroy the OpenPortGuide wind overlay.
+         * *********************************************************************************
+         */
+        this.destWind = function() {
+            map.overlayMapTypes.removeAt(3);
+        }
+
+// <???
         /**
         * *********************************************************************************
         * Initializes the OpenSeamaps overlay.
         * *********************************************************************************
         */
         function initOpenSeaMaps() {
-            map.overlayMapTypes.push(new google.maps.ImageMapType({
+// ???            map.overlayMapTypes.push(new google.maps.ImageMapType({
+            map.overlayMapTypes.setAt(4, new google.maps.ImageMapType({
                 getTileUrl: function(coord, zoom) {
                     return "http://tiles.openseamap.org/seamark/" + zoom + "/" + coord.x + "/" + coord.y + ".png";
                 },
@@ -1147,6 +1437,17 @@
                 maxZoom: 18
             }));
         }
+
+// ???>
+        /**
+         * *********************************************************************************
+         * Destroy the OpenSeamaps overlay.
+         * *********************************************************************************
+         */
+        this.destOpenSeaMaps = function() {
+            map.overlayMapTypes.removeAt(4);
+        }
+// <???
 
         /**
         * *********************************************************************************
