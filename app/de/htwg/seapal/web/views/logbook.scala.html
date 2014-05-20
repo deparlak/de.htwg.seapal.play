@@ -11,7 +11,7 @@
 
         $(document).ready(function () {
             var dateFormatShort = "YYYY-MM-DD";
-            var dateFormatLong = "YYYY-MM-DD";
+            var timeFormatShort = "mm:ss:zzz";
             
             // preloaded Images
             var expandImage = new Image();
@@ -140,7 +140,8 @@
                 $.each(waypoints, function (index, waypointData) {
                     // unix timestamp -> formatted time
                     waypointData.formattedDate = moment(new Date(waypointData.date)).format(dateFormatShort);
-
+					waypointData.formattedTime = moment(new Date(waypointData.date)).format(timeFormatShort);
+					
                     // append to trip in timeline panel
                     timelineTripContainer.append(timelineWaypointTemplate(waypointData));
 
@@ -204,6 +205,14 @@
                 }
                 $('#details_text').html(entryDetailsTemplate(waypointData));
 
+				// change sog chart
+				if (typeof(window.sogChart) != "undefined") {
+					var point = window.sogChart.series[0].points[0];
+					var newVal = waypointData.sog.substr(0,waypointData.sog.lastIndexOf(' '));
+					point.update(parseFloat(newVal));
+					window.sogChart.redraw();
+				}
+				
 
 				// mark waypoint in Map
                 if (typeof(map) != "undefined" && typeof(waypointData) != "undefined"){
@@ -254,6 +263,12 @@
             	}            	         	
             
                 $(this).next().toggle("slow");
+                
+                // remove highcart logo
+                $('#highcharts-0 svg text').last().remove();
+               
+              
+                
                 return true;
             });
 
