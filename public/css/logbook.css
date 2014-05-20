@@ -69,9 +69,9 @@ h3 {
     max-height: 2000em; /* only for transition */
 }
 
-.logbookEntry.active {
-    opacity: 1;
-}
+    .logbookEntry.active {
+        opacity: 1;
+    }
 
 .imageholder {
     display: inline;
@@ -118,17 +118,17 @@ label {
 
 #filterBar {
     position: fixed;
-    background-color: rgba(255, 255, 255, 0.6);
+    background-color: #abecfe;
     right: 31%;
     top: 74px;
     z-index: 100;
 }
 
 .filterButton {
+    display: inline-block;
     padding: 4px 0;
     border: 1px solid rgba(255, 255, 255, 0.00);
     cursor: pointer;
-    box-sizing: border-box;
 }
 
     .filterButton:hover {
@@ -143,9 +143,19 @@ label {
     }
 
     .filterButton.active {
-        background-color: rgba(255, 255, 255, 0.62);
-        border: 1px solid white;
+        background-color: #a6d3e0;
+        border: 1px solid #5394a7;
     }
+
+#timeOffsetToggler {
+    width: 34px;
+    height: 34px;
+    padding: 4px 0 0 0;
+    text-align: center;
+    color: #7aa3ae;
+    font-weight: bold;
+    font-size: 16px;
+}
 
 #timeline_col {
     position: fixed;
@@ -213,9 +223,14 @@ label {
     #timeline_col {
         display: none;
     }
+
+    #filterBar {
+        right: 31%;
+    }
 }
 
 @media (max-width: 1024px) {
+
     #entries_col {
         margin-right: auto;
         width: 100%;
@@ -224,6 +239,10 @@ label {
 
     #details_col {
         display: none;
+    }
+
+    #filterBar {
+        right: 30px;
     }
 
     .logbookEntry {

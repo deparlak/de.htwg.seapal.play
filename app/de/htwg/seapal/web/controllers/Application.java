@@ -41,7 +41,7 @@ public class Application
     }
 
     public static Result logbook(){
-        return ok(logbook.render(new Logbook("4c2e18b8-cf96-4651-a396-21badc7ad770")));
+        return ok(logbook.render(new Logbook("394b2934-3918-444d-820c-abaf11e60fc7")));
     }
 
     public static Result login() {
