@@ -81,6 +81,7 @@ public class SimpleSimulator implements ISimulator {
 		// get list of random pictures
 		File picsDir = new File(args.getPicturesDir());
 		File[] pictures = picsDir.listFiles();
+		long lastTimestamp = trip.getStartDate();
 
 		// create waypoints
 		for (int n = 0; n < args.getWaypointCount(); n ++) {
@@ -93,7 +94,10 @@ public class SimpleSimulator implements ISimulator {
 			wp.setLng(tripCoords.get(2*n + 1));
 			wp.setCog(String.valueOf(Math.round(Math.random() * 360 * 100) / 100.0) + "°");  // round 0-360° to 2 decimal places
 			wp.setSog(String.valueOf(Math.round(Math.random() * 10 * 100) / 100.0) + " kn");   // round 0-10 to 2 decimal places
-			wp.setDate(trip.getStartDate() + 60 * n);
+			
+			long nextDate = lastTimestamp + (long)(Math.random() * 89 + 1) * 60 * 1000;  // random time offset from 1-90 min in milliseconds
+			wp.setDate(trip.getStartDate() + nextDate);   // in milliseconds!
+			lastTimestamp = nextDate;
 			wp.setNote(baseNotes.get((int)(Math.random() * baseNotes.size())));  // select random note
 
 			// sometimes upload a photo

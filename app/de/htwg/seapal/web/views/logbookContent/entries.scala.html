@@ -1,6 +1,8 @@
 <div id="entries_col">
-    <div style="position: fixed; right: 32%; top: 70px; z-index: 100">
-        <button class="btn btn-primary btn-xs" data-toggle="modal" data-target="#filterDialog">Filter</button>
+    <div id="filterBar">
+        <a id="chkOnlyWithImage" class="filterButton">&nbsp;<img src="@routes.Assets.at("images/logbook/camera.png")"  />&nbsp;</a>
+        <a id="chkOnlyWithNote" class="filterButton">&nbsp;<img src="@routes.Assets.at("images/logbook/notes.png")" />&nbsp;</a>
+        <a id="timeOffsetToggler" class="filterButton">0</a>
     </div>
 
     <a href="#" id="btnLoadPreviousTrip" class="btn btn-primary" style="margin: 3em auto; display: none">Load previous trip</a>
@@ -21,23 +23,20 @@
                 <h4 class="modal-title">Filter</h4>
             </div>
             <div class="modal-body">
-                <form>
-                    <label>
-                        <input type="radio" name="optEntryFilter" id="optDontFilterEntries" value="all" checked>
-                        Show all waypoints of a trip
-                    </label><br />
-                    <label>
-                        <input type="radio" name="optEntryFilter" id="optFilterEntries" value="filter">
-                        Only show waypoints which...
-                    </label>
-                    <div style="padding-left: 2em">
+                Only show waypoints which...
+                <div style="padding-left: 2em">
+                    <form>
                         <input type="checkbox" id="chkOnlyWithImage" />
-                        <label for="chkOnlyImages">...have an image</label>
+                        <label for="chkOnlyImage">...have an image</label>
                         <br />
                         <input type="checkbox" id="chkOnlyWithNote" />
-                        <label for="chkOnlyImages">...have notes</label>
-                    </div>
-                </form>
+                        <label for="chkOnlyWithNote">...have notes</label>
+                        <br />
+                        Minimum time period between entries:
+                        <input type="text" id="txtTimePeriod" value="0"  />
+                    </form>
+                </div>
+               
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
@@ -49,7 +48,7 @@
 
     <script type="x/handlebars-template" id="tripTemplate">
         <div class="tripContainer" id="trip_{{_id}}">
-            <div class="tripHeader">
+            <div class="tripHeader" id="trip_header_{{_id}}">
                 <h3>{{name}}</h3>
                 <b>Skipper:</b> {{skipper}} (Crew: {{crew}})
             </div>
@@ -61,7 +60,9 @@
             <b>{{name}}</b><br />
 
             {{#if image_thumb}}
-            <img src="{{image_thumb}}" alt="" style="float: left" />
+            <a href="logbook/waypointPhoto/{{_id}}" data-lightbox="highres_{{_id}}">
+                <img src="{{image_thumb}}" alt="" style="float: left" />
+            </a>
             {{/if}}
 
             <span>{{note}}</span>

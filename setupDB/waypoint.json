@@ -18,7 +18,7 @@
            "map": "(doc) -> if doc.image_thumb\n   emit doc.trip, {waypointId: doc._id, thumbPicture: doc.image_thumb}"
        },
        "byTrip": {
-           "map": "(doc)->\n  emit doc.trip, doc"
+           "map": "(doc)->\n  emit \"#{doc.trip}#{doc.date}\", doc"
        },
        "byTripMinimalData": {
            "map": "(doc)->\n  emit \"#{doc.trip}#{doc.date}\", {id: doc._id, name: doc.name, date: doc.date, image_thumb: doc.image_thumb}"
