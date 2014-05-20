@@ -1,6 +1,7 @@
 <div id="entries_col">
-    <div style="position: fixed; right: 32%; top: 70px; z-index: 100">
-        <button class="btn btn-primary btn-xs" data-toggle="modal" data-target="#filterDialog">Filter</button>
+    <div id="filterBar">
+        <a id="chkOnlyWithImage" class="filterButton">&nbsp;<img src="@routes.Assets.at("images/logbook/camera.png")"  />&nbsp;</a>
+        <a id="chkOnlyWithNote" class="filterButton">&nbsp;<img src="@routes.Assets.at("images/logbook/notes.png")" />&nbsp;</a>
     </div>
 
     <a href="#" id="btnLoadPreviousTrip" class="btn btn-primary" style="margin: 3em auto; display: none">Load previous trip</a>
@@ -58,7 +59,9 @@
             <b>{{name}}</b><br />
 
             {{#if image_thumb}}
-            <img src="{{image_thumb}}" alt="" style="float: left" />
+            <a href="logbook/waypointPhoto/{{_id}}" data-lightbox="highres_{{_id}}">
+                <img src="{{image_thumb}}" alt="" style="float: left" />
+            </a>
             {{/if}}
 
             <span>{{note}}</span>

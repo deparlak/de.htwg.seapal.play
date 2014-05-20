@@ -62,3 +62,15 @@ function reset_map_zoom(){
         map.fitBounds(bounds);
     }
 }
+
+function setMarkerClickFunction(click_function){
+    for (var i = 0; i < markers.length; i++ ) {
+        addListener(markers[i], click_function);
+    }
+}
+
+function addListener(marker, click_function){
+    google.maps.event.addListener(marker, 'click', function(){
+        click_function(marker);
+    });
+}
