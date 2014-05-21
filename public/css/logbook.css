@@ -1,21 +1,26 @@
-#entries_col {
-    margin-left: 20%;
-    margin-right: 30%;
-    margin-top: 50px;
-    padding: 0 10px 10px 10px;
-}
-
-#menu_bar {
-    top: 0px;
-    position: fixed;
-    width: 100%;
-    text-align: center;
-    z-index: 1;
-}
+/*
+    Note:    Styles for responsive master layout are in logbook_masterlayout.css!
+*/
 
 .navbar {
     background-color: rgb( 228, 230, 229);
 }
+
+.panelToggler {
+    cursor: pointer;
+    width: 40px;
+    height: 40px;
+    background-repeat: no-repeat;
+    background-position-x: center;
+    background-position-y: center;
+    margin-top: 5px;
+    display: none;
+}
+
+    .panelToggler:hover {
+        background-color: #b2b2b2;
+        text-decoration: none;
+    }
 
 #pictures {
     background: #FFFFFF;
@@ -52,6 +57,13 @@ h3 {
 
 #details table {
     width: 100%;
+}
+
+#details .table_chart {
+	min-width: 170px;
+	max-width: 170px;
+	height: 170px;
+	margin: 0 auto;
 }
 
 .tripHeader {
@@ -107,23 +119,6 @@ label {
     max-height: 0;
 }
 
-#details_col {
-    position: fixed;
-    bottom: 0px;
-    top: 50px;
-    right: 0px;
-    width: 30%;
-    padding: 1em;
-}
-
-#filterBar {
-    position: fixed;
-    background-color: #abecfe;
-    right: 31%;
-    top: 74px;
-    z-index: 100;
-}
-
 .filterButton {
     display: inline-block;
     padding: 4px 0;
@@ -155,15 +150,6 @@ label {
     color: #7aa3ae;
     font-weight: bold;
     font-size: 16px;
-}
-
-#timeline_col {
-    position: fixed;
-    top: 50px;
-    bottom: 0;
-    left: 0;
-    width: 20%;
-    padding: 0 10px;
 }
 
 #timeline {
@@ -211,41 +197,4 @@ label {
 #map_canvas {
     height: 100%;
     width: 100%;
-}
-
-@media (max-width: 1200px) {
-    #entries_col {
-        margin-left: auto;
-        width: 70%;
-        max-width: 70%;
-    }
-
-    #timeline_col {
-        display: none;
-    }
-
-    #filterBar {
-        right: 31%;
-    }
-}
-
-@media (max-width: 1024px) {
-
-    #entries_col {
-        margin-right: auto;
-        width: 100%;
-        max-width: 100%;
-    }
-
-    #details_col {
-        display: none;
-    }
-
-    #filterBar {
-        right: 30px;
-    }
-
-    .logbookEntry {
-        opacity: 1;
-    }
 }

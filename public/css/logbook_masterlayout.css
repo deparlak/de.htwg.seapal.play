@@ -1,0 +1,116 @@
+/*   ------------------  Default:   Desktop-Size Screens  ------------------*/
+
+#menu_bar {
+    top: 0px;
+    position: fixed;
+    width: 100%;
+    text-align: center;
+    z-index: 30;
+}
+
+#timeline_col {
+    position: fixed;
+    top: 50px;
+    bottom: 0;
+    left: 0;
+    margin-left: 0;
+    width: 20%;
+    padding: 0 10px;
+    z-index: 10;
+    background-color: white;
+    transition: margin-left 0.5s;
+}
+
+#entries_col {
+    z-index: 0;
+    margin-left: 20%;
+    margin-right: 30%;
+    margin-top: 50px;
+    padding: 0 10px 10px 10px;
+    transition: margin-left 0.5s, margin-right 0.5s;
+}
+
+#details_col {
+    position: fixed;
+    bottom: 0px;
+    top: 50px;
+    right: 0px;
+    margin-right: 0;
+    width: 30%;
+    padding: 1em;
+    background-color: white;
+    z-index: 20;
+    transition: margin-right 0.5s;
+}
+
+#filterBar {
+    position: fixed;
+    background-color: #abecfe;
+    right: 31%;
+    top: 74px;
+    z-index: 5;
+}
+
+#timelineToggler {
+    display: none;
+}
+
+/*   ------------------  MID-Size Screens  ------------------*/
+
+@media (max-width: 1200px) {
+
+    #timelineToggler {
+        display: inline-block;
+    }
+
+    #timeline_col.forceOpen {
+        margin-left: 0;
+    }
+
+    #timeline_col {
+        border-right: 2px solid #808080;
+        margin-left: -40%;
+        width: 40%;
+    }
+
+    #entries_col {
+        margin-left: 0;
+    }
+
+
+    #filterBar {
+        right: 31%;
+    }
+}
+
+/*   ------------------  Smartphone Screens   ------------------ */
+
+@media (max-width: 1024px) {
+
+    #detailsToggler {
+        display: inline-block;
+    }
+
+    #entries_col {
+        margin-right: 0;
+    }
+
+    #details_col {
+        width: 70%;
+        margin-right: -70%;
+        border-left: 2px solid #808080;
+    }
+
+    #details_col.forceOpen {
+        width: 70%;
+        margin-right: 0;
+    }
+
+    #filterBar {
+        right: 30px;
+    }
+
+    .logbookEntry {
+        opacity: 1;
+    }
+}

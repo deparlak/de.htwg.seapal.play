@@ -1,192 +1,89 @@
 <div id="details" class="accordion">
-
-	<script type="text/javascript">
-		$(document).ready(function () {
-			window.sogChart = new Highcharts.Chart({
-			    chart: {
-			    	renderTo: 'speedometer_sog',
-			        type: 'gauge',
-			        plotBackgroundColor: null,
-			        plotBackgroundImage: null,
-			        plotBorderWidth: 0,
-			        plotShadow: false
-			    },
-			    
-			    title: {
-			        text: '',
-				    style: {
-				        display: 'none'
-				    }
-			    },
-			    
-			    pane: {
-			        startAngle: -150,
-			        endAngle: 150,
-			        background: [{
-			            backgroundColor: {
-			                linearGradient: { x1: 0, y1: 0, x2: 0, y2: 1 },
-			                stops: [
-			                    [0, '#FFF'],
-			                    [1, '#333']
-			                ]
-			            },
-			            borderWidth: 0,
-			            outerRadius: '109%'
-			        }, {
-			            backgroundColor: {
-			                linearGradient: { x1: 0, y1: 0, x2: 0, y2: 1 },
-			                stops: [
-			                    [0, '#333'],
-			                    [1, '#FFF']
-			                ]
-			            },
-			            borderWidth: 1,
-			            outerRadius: '107%'
-			        }, {
-			            // default background
-			        }, {
-			            backgroundColor: '#DDD',
-			            borderWidth: 0,
-			            outerRadius: '105%',
-			            innerRadius: '103%'
-			        }]
-			    },
-			       
-			    // the value axis
-			    yAxis: {
-			        min: 0,
-			        max: 50,
-			        
-			        minorTickInterval: 'auto',
-			        minorTickWidth: 1,
-			        minorTickLength: 10,
-			        minorTickPosition: 'inside',
-			        minorTickColor: '#666',
-			
-			        tickPixelInterval: 30,
-			        tickWidth: 2,
-			        tickPosition: 'inside',
-			        tickLength: 10,
-			        tickColor: '#666',
-			        labels: {
-			            step: 2,
-			            rotation: 'auto'
-			        },
-			        title: {
-			            text: 'kn',
-			            y: 10
-			        },
-			        plotBands: [{
-			            from: 0,
-			            to: 30,
-			            color: '#55BF3B' // green
-			        }, {
-			            from: 30,
-			            to: 40,
-			            color: '#DDDF0D' // yellow
-			        }, {
-			            from: 40,
-			            to: 50,
-			            color: '#DF5353' // red
-			        }]        
-			    },
-			    
-			    exporting: {
-         			enabled: false
-				},
-			
-			    series: [{
-			        name: 'SOG',
-			        data: [100],
-			        tooltip: {
-			            valueSuffix: 'kn'
-			        }
-			    }]
-			
-			}
-			// Add some life
-			// function (chart) {
-				//if (!chart.renderer.forExport) {
-				    // setInterval(function () {
-				        // var point = chart.series[0].points[0],
-				            // newVal,
-				            // inc = Math.round((Math.random() - 0.5) * 20);
-						// 				        
-				        // newVal = point.y + inc;
-				        // if (newVal < 0 || newVal > 200) {
-				            // newVal = point.y - inc;
-				        // }
-						// 				        
-				        // point.update(newVal);
-						// 				        
-				    // }, 3000);
-				//}
-			//}
-			);
-		});
-
-	</script>
-	
 	<script type="x/handlebars-template" id="entryDetailsTemplate">
 		<table> 
 			<tr id ="details_text_course">
+				{{#if formattedDate}}
 				<td>							
 					<b> Date </b>
 				</td>
 				<td>
 					{{formattedDate}}
-				</td>				
+				</td>	
+				{{/if}}		
+				{{#if formattedTime}}	
 				<td>							
 					<b> Time </b>
 				</td>
 				<td>
                     {{formattedTime}}
 				</td>
+				{{/if}}	
 			</tr>
 			<tr id ="details_text_position">
-				<!-- latitude -->	
+				{{#if latRounded}}	
 				<td>							
 					<b>Lat </b> 
 				</td>
 				<td>
 					{{latRounded}} N
 				</td>
-
-				<!-- latitude -->	
+				{{/if}}	
+				{{#if lngRounded}}	
 				<td>							
 					<b>Lng </b>
 				</td>
 				<td>
 					{{lngRounded}} E
 				</td>
-			</tr>			
+				{{/if}}	
+			</tr>
 			<tr id ="details_text_position">
+				{{#if cog}}
 				<td>							
 					<b>COG </b>
 				</td>
 				<td>
 					{{cog}}
-				</td>					
+				</td>		
+				{{/if}}		
+				{{#if sog}}		
 				<td>							
 					<b>SOG </b>
 				</td>
 				<td>
 					{{sog}}
 				</td>
+				{{/if}}
 			</tr>
+			<tr id="details_charts">
+			{{#if cog}}
+				<td colspan="2">
+					<div id="compass_cog" class="table_chart" ></div>
+				</td>				
+			{{/if}}
+			{{#if sog}}
+				<td colspan="2">
+					<div id="speedometer_sog" class="table_chart" ></div>
+				</td>				
+			{{/if}}		
+			</tr>			
 			<tr id ="details_text_distance">
+				{{#if btm}}
 				<td>							
 					<b>BTM </b>
 				</td>
 				<td>
 					unknown
-				</td>					
+				</td>
+				{{/if}}	
+				{{#if dtm}}					
 				<td>							
 					<b>DTM </b>
 				</td>
 				<td>
 					unknown
 				</td>
+				{{/if}}	
 			</tr>
 		</table>
 	</script>
@@ -207,7 +104,7 @@
         <img id="details_text_img" src='@routes.Assets.at("images/logbook/contract-icon.png")' class="details-img-expand">
        	<h3>Details</h3>
     </div>  
-    <div id="speedometer_sog" style="min-width: 200px; max-width: 200px; height: 200px; margin: 0 auto"> haha </div>
+    
     <div id="details_text">   	
 	    	<!-- will be filled by javascript -->
     </div>
