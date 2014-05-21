@@ -1146,6 +1146,27 @@
 
 // ???>
         var RainMap;
+
+        /**
+         * *********************************************************************************
+         * Initializes the Custom Google-Maps Layer.
+         * *********************************************************************************
+         */
+        this.initCustomLayer = function() {
+            google.maps.event.addListener(map, 'idle', function(ev){
+                initializeCustomLayer(map);
+            });
+        }
+        /**
+        * *********************************************************************************
+        * Destroy the Open Weather Map Layer.
+        * *********************************************************************************
+        */
+        this.destCustomLayer = function() {
+            map.overlayMapTypes.pop(RainMap);
+        }
+
+
         /**
          * *********************************************************************************
          * Initializes the Open Weather Map Layer.
@@ -1196,7 +1217,6 @@
                 zoom: 10
             });
 
-            OpenLayers.Layer.Google
 
             stations = new OpenLayers.Layer.Vector.OWMStations("Stations");
             current =  new OpenLayers.Layer.Vector.OWMWeather("Current weather");
@@ -1245,9 +1265,11 @@
                     alert("Error while getting weather data :: " + errorData.status);
                 }
             });
-            return dfd.promise();
+            
+            //return dfd.promise();
 
         }
+
 
         this.destTest = function() {
 

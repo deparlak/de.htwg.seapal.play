@@ -39,6 +39,9 @@ $(document).ready(function() {
                     map.destOpenWeaterMap();
                     $("#owm").removeClass('icon-selected-weather').addClass('icon-notSelected-weather');
                     break;
+                case "weather-icons":
+                    $("#weather-icons").removeClass('icon-selected-weather').addClass('icon-notSelected-weather');
+                    break;
                 case "test":
                     map.destTest();
                     $("#test").removeClass('icon-selected-weather').addClass('icon-notSelected-weather');
@@ -79,9 +82,13 @@ $(document).ready(function() {
                     $("#owm").removeClass('icon-notSelected-weather').addClass('icon-selected-weather');
                     map.initOpenWeaterMap();
                     break;
+                case "weather-icons":
+                    $("#weather-icons").removeClass('icon-notSelected-weather').addClass('icon-selected-weather');
+                    map.initCustomLayer();
+                    break;
                 case "test":
                     $("#test").removeClass('icon-notSelected-weather').addClass('icon-selected-weather');
-                    map.initTest();
+                    map.initTest1();
                     break;
             }
         }
