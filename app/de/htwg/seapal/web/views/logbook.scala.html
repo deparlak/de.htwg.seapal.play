@@ -26,6 +26,7 @@
         var initialTripId = '@Model.getInitialTripId()';
         var boatId = '2dcc6f94-4d01-47d4-a4ed-e5ce9a6be3cf';  // for test only
 
+        var scrollToWaypointTimeout;
 
         $(document).ready(function () {
             var dateFormatShort = "YYYY-MM-DD";
@@ -132,16 +133,7 @@
                 var waypointId = $(this).attr("id");
                 waypointId = waypointId.replace('timeline-waypoint_', '');
                 var entry = $("#waypoint_" + waypointId);
-                //console.log("index: "+index);
-                var targetOffset = entry.offset().top - 50;
-
-                $('html,body').animate({
-                    scrollTop: targetOffset
-                }, {
-                    complete: function () { onScrolledToWaypoint(entry); }
-                },
-                'slow'
-                );
+                scrollToWaypoint(entry);
                 return true;
             });
 
@@ -192,25 +184,29 @@
                 $(this).html(newValue);
                 applyEntryFilters();
             });
-
-
         });  //   /document.ready()
 
 
 
         function initWaypoint(item, callback) {
-            var offset_up = 1;
+            var offset_up = parseInt($('.logbookEntry').css('min-height')) + 1;
             var offset_down = $('#menu_bar').css("height") + parseInt($('.logbookEntry').css('min-height')) + 1;
 
             item.waypoint(function (direction) {
                 if (direction == "down") {
-                    callback($(this));
+                    if(typeof(scrollToWaypointTimeout) != undefined) {
+                        clearTimeout ( scrollToWaypointTimeout ) ;
+                    }
+                    scrollToWaypointTimeout = setTimeout(function(){callback(item)}, 200);
                 }
             }, { offset: offset_down });
 
             item.waypoint(function (direction) {
                 if (direction == "up") {
-                    callback($(this));
+                    if(typeof(scrollToWaypointTimeout) != undefined) {
+                        clearTimeout ( scrollToWaypointTimeout ) ;
+                    }
+                    scrollToWaypointTimeout = setTimeout(function(){callback(item)}, 200);
                 }
             }, { offset: offset_up });
         }
@@ -360,14 +356,14 @@
 			// create charts
 			initSOGSpeedometer('speedometer_sog');
 			initCOGCompass('compass_cog');
-			
+
 			if (typeof(window.sogChart) != "undefined") {
 				var point = window.sogChart.series[0].points[0];
 				var newVal = waypointData.sog.substr(0,waypointData.sog.lastIndexOf(' '));
 				point.update(parseFloat(newVal));
 				window.sogChart.redraw();
 			}
-			
+
 			if (typeof(window.cogChart) != "undefined") {
 				var pointH = window.cogChart.series[0].points[0];
 				var pointB = window.cogChart.series[1].points[0];
@@ -435,9 +431,15 @@
         }
 
         function scrollToWaypoint(waypoint){
-            var offset = parseInt($(waypoint).offset().top) - parseInt($('#menu_bar').css('height')) + 15;
+            $('.logbookEntry' ).waypoint('disable');
+            var offset = $(waypoint).offset().top - parseInt($('#menu_bar').css('height'));
             $('html, body').animate({
                scrollTop: offset
+            },{
+                done: function(){
+                    onScrolledToWaypoint(waypoint);
+                    $('.logbookEntry' ).waypoint('enable');
+                }
             }, 'slow');
         }
 
