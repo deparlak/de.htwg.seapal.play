@@ -46,14 +46,36 @@
     </div>
 </div>
 
-    <script type="x/handlebars-template" id="tripTemplate">
-        <div class="tripContainer" id="trip_{{_id}}">
-            <div class="tripHeader" id="trip_header_{{_id}}">
-                <h3>{{name}}</h3>
-                <b>Skipper:</b> {{skipper}} (Crew: {{crew}})
-            </div>
+<script type="x/handlebars-template" id="tripTemplate">
+    <div class="tripContainer" id="trip_{{_id}}">
+        <div class="tripHeader" id="trip_header_{{_id}}">
+            <h3>{{name}}</h3>
+            <table style="min-width: 80%">
+                <tr>
+                    <td><b>Route:</b></td>
+                    <td>{{from}} &#8594; {{to}}</td>
+                </tr>
+                <tr>
+                    <td><b>Started</b></td>
+                    <td>{{formattedStartDate}}</td>
+                </tr>
+                <tr>
+                    <td><b>Arrived</b></td>
+                    <td>{{formattedEndDate}}</td>
+                </tr>
+                <tr>
+                    <td><b>Crew:</b></td>
+                    <td>
+                        {{skipper}} (Skipper)
+                        {{#if crew}}
+                        <br />with {{crew}}
+                        {{/if}}
+                    </td>
+                </tr>
+            </table>
         </div>
-    </script>
+    </div>
+</script>
 
     <script type="x/handlebars-template" id="waypointTemplate">
         <div class="logbookEntry {{#if note}}hasNote{{/if}} {{#if image_thumb}}hasImage{{/if}}" id="waypoint_{{_id}}">

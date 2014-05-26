@@ -8,12 +8,11 @@
 
 .panelToggler {
     cursor: pointer;
-    width: 40px;
-    height: 40px;
+    width: 35px;
+    height: 35px;
     background-repeat: no-repeat;
     background-position-x: center;
     background-position-y: center;
-    margin-top: 5px;
     display: none;
 }
 
@@ -60,19 +59,24 @@ h3 {
 }
 
 #details .table_chart {
-	min-width: 170px;
-	max-width: 170px;
-	height: 170px;
-	margin: 0 auto;
+    min-width: 170px;
+    max-width: 170px;
+    height: 170px;
+    margin: 0 auto;
 }
 
 .tripHeader {
-    background: #2fd1ff;
-    padding: 1em;
+    background: rgba(0, 0, 40, 0.4);
+    padding: 1em 2em;
+    color: white;
 }
 
+    .tripHeader td {
+        vertical-align: top;
+    }
+
 .logbookEntry {
-    padding: 1em 0;
+    padding: 1em 2em;
     opacity: 0.5;
     border-top: 1px solid lightgray;
     cursor: pointer;
@@ -84,6 +88,12 @@ h3 {
     .logbookEntry.active {
         opacity: 1;
     }
+
+@media (max-width: 1024px) {
+    .logbookEntry, .tripHeader {
+        padding: 1em 0.5em;
+    }
+}
 
 .imageholder {
     display: inline;
@@ -152,9 +162,16 @@ label {
     font-size: 16px;
 }
 
+/* -------  timeline customization  -------- */
+
 #timeline {
     overflow: hidden;
     height: 100vh;
+    font-size: 10pt;
+}
+
+.timeline:before {
+    background-color: #c2c2c2; /* color of middle line of timeline */
 }
 
 .timeline-heading {
@@ -176,6 +193,25 @@ label {
     transition: max-height 0.5s;
 }
 
+/* override background colors */
+.timeline > li > .timeline-panel:after {
+    border-left-color: #dcdcdc;
+}
+
+.timeline > li.timeline-inverted > .timeline-panel:after {
+    border-right-color: #dcdcdc;
+}
+
+.timeline-panel {
+    background-color: #e6e6e6;
+}
+
+.timeline-inverted .timeline-panel {
+    background-color: #efefef;
+}
+
+/* ------- styles of DETAILS panel ---------*/
+
 #details_weather {
     height: 30%;
 }
@@ -189,9 +225,6 @@ label {
     max-height: 300px;
     width: 100%;
     max-width: 100%;
-}
-
-.detail_box {
 }
 
 #map_canvas {

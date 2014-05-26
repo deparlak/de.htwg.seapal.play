@@ -184,6 +184,14 @@
                 $(this).html(newValue);
                 applyEntryFilters();
             });
+
+            // click handlers for panel toggle buttons in menubar
+            $('#timelineToggler').click(function () { $('#timeline_col').toggleClass('forceOpen'); $('#details_col').removeClass('forceOpen'); });
+            $('#detailsToggler').click(function () { $('#details_col').toggleClass('forceOpen'); $('#timeline_col').removeClass('forceOpen'); });
+            // hide side panels if mouse leaves them
+            $('#entries_col').mouseenter(function () { $('#details_col, #timeline_col').removeClass('forceOpen'); })
+            $('#entries_col').click(function () { $('#details_col, #timeline_col').removeClass('forceOpen'); })
+
         });  //   /document.ready()
 
 
@@ -213,6 +221,10 @@
 
         // callback of getTripData()
         function onReceivedTrip(tripId, tripData) {
+            // format data
+            tripData.formattedStartDate = moment(new Date(tripData.startDate)).format(dateFormatShort + " " + timeFormat);
+            tripData.formattedEndDate = moment(new Date(tripData.endDate)).format(dateFormatShort + " " + timeFormat);
+
             $('#tripLoader').remove();
             $('#tripLoaderTimeline').remove();
             $('#tripLoaderMap').remove();
