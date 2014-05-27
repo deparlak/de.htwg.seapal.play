@@ -1,11 +1,19 @@
-@(Model : de.htwg.seapal.web.models.Logbook)
-<!DOCTYPE html>
+@(Model : de.htwg.seapal.web.models.Logbook)<!DOCTYPE html>
 <html>
-<head lang="en">
-    <title>SeaPal Logbook</title>
-    @logbookContent.header()
-</head>
-<body>
+<head lang="en"><title>SeaPal Logbook</title>@logbookContent.header()</head><body>@logbookContent.entries()
+
+    <div id="menu_bar">
+        @logbookContent.menubar()
+    </div>
+
+    <div id="timeline_col">
+        @logbookContent.timeline()
+    </div>
+
+    <div id="details_col">
+        @logbookContent.details()
+    </div>
+
     <script type="text/javascript">
         var map;
 
@@ -49,46 +57,18 @@
             timelineWaypointTemplate = Handlebars.compile($('#timelineWaypointTemplate').html());
 
             // load the initial trip
-            $('#entries').html(ajaxLoaderTemplate({ loaderId: 'tripLoader' }));
-            $('#timeline').append(ajaxLoaderTemplate({ loaderId: 'tripLoaderTimeline' }));
-            $('#details_map').append(ajaxLoaderTemplate({ loaderId: 'tripLoaderMap' }));
+            changeTripTo(initialTripId);
 
-            logbook.getTripData(initialTripId, onReceivedTrip);
             // load the timeline
             logbook.getAllTripsOfBoat(boatId, onReceivedAllTrips);
             //logbook.getAllWaypointsOfTrip(initialTripId, onReceivedAllWaypointsByTrip);
 
-            // handle clicks on "load more" button
-            $('#entries').on('click', 'a.btnLoadMoreEntries', function () {
-                loadMoreEntries($(this).attr('data-tripid'), 5);
-                return true;
-            });
-
             // click handlers for loading previous/next trip
-            $('#btnLoadPreviousTrip').click(function () {
-                var previousTripId = $(this).attr('data-prev-trip');
-                if (previousTripId && previousTripId.length > 0) {
-                    $('#entries').html(ajaxLoaderTemplate({ loaderId: 'tripLoader' }));
-                    logbook.getTripData(previousTripId, onReceivedTrip);
-                }
-            });
-            $('#btnLoadNextTrip').click(function () {
-                var nextTripId = $(this).attr('data-next-trip');
-                if (nextTripId && nextTripId.length > 0) {
-                    $('#entries').html(ajaxLoaderTemplate({ loaderId: 'tripLoader' }));
-                    logbook.getTripData(nextTripId, onReceivedTrip);
-                }
-            });
-
-            // var padding = $(window).height() - parseInt($('.logbookEntry').css('min-height'));
-            //$('#entries_col').css('padding-bottom', (padding - 1));
-            //$('#entries_col').css('margin-top', $('#menu_bar').css('height'));
-            //$('#entries_col').css('top', $('#menu_bar').css('height'));
-            //$('#details_col').css('top', $('#menu_bar').css('height'));
-            //$('#timeline_col').css('top', $('#menu_bar').css('height'));
-
+            $('.NextPrevTripButton').click(function () { changeTripTo($(this).attr('data-trip')) });
+    
+            // toggle sections of the details panel
             $('.accordion .head').click(function () {
-                // change expand image
+                // change expander image
                 var headId = $(this).attr('id');
                 var changeImage = document.getElementById(headId.substr(0, headId.lastIndexOf('_')) + '_img');
 
@@ -107,7 +87,7 @@
             $('#entries_col').css('margin-bottom', $.waypoints('viewportHeight'));
 
             // add handlers for clicks on trips & waypoints in the timeline
-            $('#timeline').on('click', 'div.timeline-panel.expandable', function () {     // click on trip header
+            $('#timeline').on('click', 'div.timeline-panel.expandable', function () {     // click on trip header in timeline
                 var tripId = $(this).attr("id");
                 tripId = tripId.replace('timeline-trip_', '');
 
@@ -124,7 +104,7 @@
 
             });
 
-            $('#timeline').on('click', 'div.timeline-panel.clickable', function () {    // click on waypoint item
+            $('#timeline').on('click', 'div.timeline-panel.clickable', function () {    // click on waypoint item in timeline
                 var waypointId = $(this).attr("id");
                 waypointId = waypointId.replace('timeline-waypoint_', '');
                 var entry = $("#waypoint_" + waypointId);
@@ -134,16 +114,10 @@
 
             $('#timeline').dragscrollable();
 
-            // check a checkbox if the corresponding label is clicked
-            $('label').click(function () {
-                labelID = $(this).attr('for');
-                $('#' + labelID).prop('checked', true);
-            });
-
             //navbar
-            menu_hover();
-            var lis = $('.nav > li');
-            menu_focus(lis[2], 3);
+            //menu_hover();
+            //var lis = $('.nav > li');
+            //menu_focus(lis[2], 3);
 
             //hotfix: hrefs didn't work anymore (click returns false anywere?!)
             $('.navbar .nav a').click(function (event) {
@@ -153,7 +127,7 @@
                 return true;
             });
 
-            $('#btnApplyFilter').click(function () { window.setTimeout(applyEntryFilters, 500) });
+            //$('#btnApplyFilter').click(function () { window.setTimeout(applyEntryFilters, 500) });
 
             map = new google.maps.Map(document.getElementById('map_canvas'));
 
@@ -189,8 +163,20 @@
 
         });  //   /document.ready()
 
+        // changes the currently displayed trip to another one
+        function changeTripTo(tripId) {
+            if (tripId && tripId.length > 0) {
+                $('#entries').html(ajaxLoaderTemplate({ loaderId: 'tripLoader' }));
+                $('#timeline').append(ajaxLoaderTemplate({ loaderId: 'tripLoaderTimeline' }));
+                $('#details_map').append(ajaxLoaderTemplate({ loaderId: 'tripLoaderMap' }));
 
+                $('.NextPrevTripButton').hide();
+                $('#entries').html(ajaxLoaderTemplate({ loaderId: 'tripLoader' }));
+                logbook.getTripData(tripId, onReceivedTrip);
+            }
+        }
 
+        // Adds the function 'callback' as a handler when the users scrolls to the 'item'.
         function initWaypoint(item, callback) {
             var offset_up = 1;
             var offset_down = $('#menu_bar').css("height") + parseInt($('.logbookEntry').css('min-height')) + 1;
@@ -216,10 +202,11 @@
 
         // callback of getTripData()
         function onReceivedTrip(tripId, tripData) {
-            // format data
+            // prepare formatted datetime strings (required in handlebars templates)
             tripData.formattedStartDate = moment(new Date(tripData.startDate)).format(dateFormatShort + " " + timeFormat);
             tripData.formattedEndDate = moment(new Date(tripData.endDate)).format(dateFormatShort + " " + timeFormat);
 
+            // hide the loading animations
             $('#tripLoader').remove();
             $('#tripLoaderTimeline').remove();
             $('#tripLoaderMap').remove();
@@ -228,41 +215,48 @@
             $('#entries').append(tripTemplate(tripData));
 
             var trip_header = $('#trip_header_' + tripId);
-            initWaypoint(trip_header, onScrolledToTripHeader);
-            trip_header.data("tripData",tripData);
+            initWaypoint(trip_header, onScrolledToTripHeader); // add scrolled-to handler
+            trip_header.data("tripData",tripData);  // store the DB object in this DOM element
 
             // lookup previous and next trip
             logbook.getTripsOfBoat(boatId, tripData.startDate, 1, 1, 'true', onReceivedPreviousTrip);  // previous
             logbook.getTripsOfBoat(boatId, tripData.startDate, 1, 1, 'false', onReceivedNextTrip);  // next
 
-            //convert tripData.marks in array with lat lon objects
+            // show complete route on maps:  convert tripData.marks in array with lat lon objects
             var map_waypoints = [];
             for (i = 0; i < tripData.marks.length; i = i + 2) {
                 map_waypoints[i / 2] = new google.maps.LatLng(tripData.marks[i], tripData.marks[i + 1]);
             }
 
+            // ???
             initialize_waypoints(map_waypoints);
-
+            // add handler for click on a waypoint marker in the map (scroll to waypoint position in entries view)
             setMarkerClickFunction(clicked_on_marker);
 
-            // get the first 5 waypoints of this trip
+            // get the waypoints of this trip
             loadMoreEntries(tripId, 0);  // 0 = all waypoints
         }
 
-        // callback from getTripsOfBoat, receives a subset of the properties of the previous trip
+        // callbacks from getTripsOfBoat, receives a subset of the properties of the previous/next trip
         function onReceivedPreviousTrip(trips) {
             if (trips.length > 0) {
-                $('#btnLoadPreviousTrip').attr('data-prev-trip', trips[0]._id).show();
+                $('#prevTripName').html(trips[0].name);
+                $('#btnLoadPreviousTrip').attr('data-trip', trips[0]._id).css('display', 'block');
+                var scrollOffset = $('.tripHeader').offset().top - $('#entries_col').css("margin-top").replace("px", "") - $('#menu_bar').height()+ 15;
+                //alert(scrollOffset);
+                $('html,body').prop('scrollTop', scrollOffset);
+                //$('.tripHeader')[0].scrollIntoView(true);
             } else {
-                $('#btnLoadPreviousTrip').attr('data-prev-trip', '').hide();
+                $('#btnLoadPreviousTrip').attr('data-trip', '').hide();
             }
         }
 
         function onReceivedNextTrip(trips) {
             if (trips.length > 0) {
-                $('#btnLoadNextTrip').attr('data-next-trip', trips[0]._id).show();
+                $('#nextTripName').html(trips[0].name);
+                $('#btnLoadNextTrip').attr('data-trip', trips[0]._id).css('display', 'block');
             } else {
-                $('#btnLoadNextTrip').attr('data-next-trip', '').hide();
+                $('#btnLoadNextTrip').attr('data-trip', '').hide();
             }
         }
 
@@ -275,17 +269,6 @@
                 timelineContainer.append(timelineTripTemplate(tripData));
             });
         }
-
-        // callback of logbook.getAllWaypointsOfTrip
-        // Populates the Waypoints for one Trip
-        //function onReceivedAllWaypointsByTrip(tripId, waypoints) {
-        //	var tripContainer = $('#timeline-trip_container_' + tripId);
-        //    $.each(waypoints, function (index, waypointData) {
-        //    	waypointData.date = moment(new Date(waypointData.date)).format(dateFormatShort);
-        //        tripContainer.append(timelineWaypointTemplate(waypointData));
-        //    });
-        //}
-
 
         // callback of getTripWaypoints()
         function onReceivedWaypoints(tripId, waypoints) {
@@ -325,12 +308,6 @@
                 waypoint_ids.push(waypointData._id);
             });
 
-            // not last set of waypoints of the trip? show "load more" button
-            //if (waypoints.length != 0) {
-            //    tripContainer.append(loadMoreEntriesTemplate({ tripId: tripId }));
-            //    initWaypoint(tripContainer.children('.loadMoreSection').get(0), onScrolledToLoadMore);
-            //}
-
             // refresh waypoint handlers to new positions of elements
             window.setTimeout(function () { $.waypoints('refresh'); }, 200);
             isLoadingWaypoints = false;
@@ -346,7 +323,7 @@
             initSpeedChart($('#details_chart'), data_x, data_y, waypoint_names, waypoint_ids, title, description);
         }
 
-        // loads and appends waypoint entries to a trip
+        // loads or appends waypoint entries to a trip
         function loadMoreEntries(tripId, count) {
             if (isLoadingWaypoints) {
                 return;
@@ -363,11 +340,6 @@
 
             // get the next waypoints of this trip
             logbook.getTripWaypoints(tripId, loadedEntriesCount, count, onReceivedWaypoints);
-        }
-
-        // handle scrolling to "load more" button
-        function onScrolledToLoadMore(node) {
-            loadMoreEntries(node.attr('data-tripid'), 5);
         }
 
         // callback for trip container when scrolled to
@@ -873,21 +845,6 @@
             $('#highcharts-' + window.chartIndex + ' svg text').last().remove();
         }
     </script>
-
-    <div id="menu_bar">
-        @logbookContent.menubar()
-    </div>
-
-
-    <div id="timeline_col">
-        @logbookContent.timeline()
-    </div>
-
-    @logbookContent.entries()
-
-    <div id="details_col">
-        @logbookContent.details()
-    </div>
 
 </body>
 

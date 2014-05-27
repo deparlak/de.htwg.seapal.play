@@ -5,45 +5,13 @@
         <a id="timeOffsetToggler" class="filterButton">0</a>
     </div>
 
-    <a href="#" id="btnLoadPreviousTrip" class="btn btn-primary" style="margin: 3em auto; display: none">Load previous trip</a>
+    <a href="#" id="btnLoadPreviousTrip" class="NextPrevTripButton" style="margin-bottom: 5em; background-image: url(@routes.Assets.at("images/logbook/prevtrip.png"))"><span class="btnTitle">Load Previous Trip</span><br /><span id="prevTripName"><!-- AJAX content --></span></a>
 
     <div id="entries">
         <!-- ajax content -->
     </div>
 
-    <a href="#" id="btnLoadNextTrip" class="btn btn-primary" style="margin: 3em auto; display: none">Load next trip</a>
-</div>
-
-<!-- filter dialog -->
-<div class="modal fade" id="filterDialog" tabindex="-1" role="dialog">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal">&times;</button>
-                <h4 class="modal-title">Filter</h4>
-            </div>
-            <div class="modal-body">
-                Only show waypoints which...
-                <div style="padding-left: 2em">
-                    <form>
-                        <input type="checkbox" id="chkOnlyWithImage" />
-                        <label for="chkOnlyImage">...have an image</label>
-                        <br />
-                        <input type="checkbox" id="chkOnlyWithNote" />
-                        <label for="chkOnlyWithNote">...have notes</label>
-                        <br />
-                        Minimum time period between entries:
-                        <input type="text" id="txtTimePeriod" value="0"  />
-                    </form>
-                </div>
-               
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-primary" data-dismiss="modal" id="btnApplyFilter">Apply</button>
-            </div>
-        </div>
-    </div>
+    <a href="#" id="btnLoadNextTrip" class="NextPrevTripButton" style="margin-top: 5em; background-image: url(@routes.Assets.at("images/logbook/nexttrip.png"))"><span class="btnTitle">Load Next Trip</span><br /><span id="nextTripName"><!-- AJAX content --></span></a>
 </div>
 
 <script type="x/handlebars-template" id="tripTemplate">
@@ -93,8 +61,10 @@
     </script>
 
     <script type="x/handlebars-template" id="ajaxLoaderTemplate">
-        <div id="{{loaderId}}" class="ajaxLoader" style="text-align: center">
+        <div id="{{loaderId}}" class="ajaxLoader" style="text-align: center; margin: 2em">
+            <br style="clear: both" />
             <img src="@routes.Assets.at("images/logbook/ajax-loader.gif")" />
+            <br style="clear: both" />
         </div>
     </script>
 
