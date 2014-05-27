@@ -335,7 +335,11 @@
             window.setTimeout(function () { $.waypoints('refresh'); }, 200);
             isLoadingWaypoints = false;
 
-            $('.logbookEntry').click(function () {
+            $('.logbookEntry').click(function (e) {
+                if($(e.target).is('img')){
+                    e.preventDefault();
+                    return;
+                }
                 scrollToWaypoint($(this));
             });
 
