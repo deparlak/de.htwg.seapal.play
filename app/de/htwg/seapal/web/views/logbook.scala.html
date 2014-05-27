@@ -1,6 +1,37 @@
-@(Model : de.htwg.seapal.web.models.Logbook)<!DOCTYPE html>
-<html>
-<head lang="en"><title>SeaPal Logbook</title>@logbookContent.header()</head><body>@logbookContent.entries()
+@(Model : de.htwg.seapal.web.models.Logbook)
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<title>SeaPal Logbook</title>
+<meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+<meta http-equiv="keywords" content="logbook, Seapal" />
+<meta http-equiv="description" content="Logbook of Seapal trips." />
+<meta http-equiv="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<link rel="stylesheet" type="text/css" href="@routes.Assets.at("css/bootstrap.min.css")">
+<link rel="stylesheet" type="text/css" href="@routes.Assets.at("css/font-awesome.min.css")">
+<link rel="stylesheet" type="text/css" href="@routes.Assets.at("css/navbar.css")">
+<link rel="stylesheet" type="text/css" href="@routes.Assets.at("lib/lightbox/css/lightbox.css")">
+<link rel="stylesheet" type="text/css" href="@routes.Assets.at("lib/timeline/css/timeline.css")">
+<link rel="stylesheet" type="text/css" href="@routes.Assets.at("css/logbook_masterlayout.css")">
+<link rel="stylesheet" type="text/css" href="@routes.Assets.at("css/logbook.css")">
+<script type="text/javascript" src="@routes.Assets.at("lib/jquery-2.1.1.min.js")"></script>
+<script type="text/javascript" src="@routes.Assets.at("js/homepage/bootstrap.min.js")"></script>
+<script type="text/javascript" src="@routes.Assets.at("js/logbook/logbookapi.js")"></script>
+<script type="text/javascript" src="@routes.Assets.at("js/logbook/moment.min.js")"></script>
+<script type="text/javascript" src="@routes.Assets.at("js/logbook/navbar.js")"></script>
+<script type="text/javascript" src="@routes.Assets.at("js/logbook/maps.js")"></script>
+<script type="text/javascript" src="@routes.Assets.at("js/homepage/jquery.easing.1.3.js")"></script>
+<script type="text/javascript" src="@routes.Assets.at("lib/lightbox/js/lightbox.min.js")"></script>
+<script type="text/javascript" src="@routes.Assets.at("lib/dragscrollable.js")"></script>
+<script type="text/javascript" src="@routes.Assets.at("lib/waypoints.min.js")"></script>
+<script type="text/javascript" src="@routes.Assets.at("lib/handlebars/handlebars-v1.3.0.js")"></script>
+<script type="text/javascript" src="https://maps.google.com/maps/api/js?key=AIzaSyAL6gKFmwH7gDXmmAW-5VqkW_HbJG7_QLA&amp;sensor=false&amp;libraries=places"></script>
+<script type="text/javascript" src="@routes.Assets.at("js/highchart/highcharts.js")"></script>
+<script type="text/javascript" src="@routes.Assets.at("js/highchart/highcharts-more.js")"></script>
+<script type="text/javascript" src="@routes.Assets.at("js/highchart/exporting.js")"></script>
+</head>
+<body>
+    @logbookContent.entries()
 
     <div id="menu_bar">
         @logbookContent.menubar()
@@ -39,7 +70,7 @@
         $(document).ready(function () {
             var dateFormatShort = "YYYY-MM-DD";
             var timeFormatShort = "mm:ss:zzz";
-            
+
             // preloaded Images
             var expandImage = new Image();
             var contractImage = new Image();
@@ -65,7 +96,7 @@
 
             // click handlers for loading previous/next trip
             $('.NextPrevTripButton').click(function () { changeTripTo($(this).attr('data-trip')) });
-    
+
             // toggle sections of the details panel
             $('.accordion .head').click(function () {
                 // change expander image
@@ -79,7 +110,7 @@
                 }
 
                 $(this).next().toggle("slow");
-                
+
                 return true;
             });
 
@@ -183,19 +214,19 @@
 
             item.waypoint(function (direction) {
                 if (direction == "down") {
-                    if(typeof(scrollToWaypointTimeout) != undefined) {
-                        clearTimeout ( scrollToWaypointTimeout ) ;
+                    if (typeof (scrollToWaypointTimeout) != undefined) {
+                        clearTimeout(scrollToWaypointTimeout);
                     }
-                    scrollToWaypointTimeout = setTimeout(function(){callback(item)}, 200);
+                    scrollToWaypointTimeout = setTimeout(function () { callback(item) }, 200);
                 }
             }, { offset: offset_down });
 
             item.waypoint(function (direction) {
                 if (direction == "up") {
-                    if(typeof(scrollToWaypointTimeout) != undefined) {
-                        clearTimeout ( scrollToWaypointTimeout ) ;
+                    if (typeof (scrollToWaypointTimeout) != undefined) {
+                        clearTimeout(scrollToWaypointTimeout);
                     }
-                    scrollToWaypointTimeout = setTimeout(function(){callback(item)}, 200);
+                    scrollToWaypointTimeout = setTimeout(function () { callback(item) }, 200);
                 }
             }, { offset: offset_up });
         }
@@ -216,7 +247,7 @@
 
             var trip_header = $('#trip_header_' + tripId);
             initWaypoint(trip_header, onScrolledToTripHeader); // add scrolled-to handler
-            trip_header.data("tripData",tripData);  // store the DB object in this DOM element
+            trip_header.data("tripData", tripData);  // store the DB object in this DOM element
 
             // lookup previous and next trip
             logbook.getTripsOfBoat(boatId, tripData.startDate, 1, 1, 'true', onReceivedPreviousTrip);  // previous
@@ -242,7 +273,7 @@
             if (trips.length > 0) {
                 $('#prevTripName').html(trips[0].name);
                 $('#btnLoadPreviousTrip').attr('data-trip', trips[0]._id).css('display', 'block');
-                var scrollOffset = $('.tripHeader').offset().top - $('#entries_col').css("margin-top").replace("px", "") - $('#menu_bar').height()+ 15;
+                var scrollOffset = $('.tripHeader').offset().top - $('#entries_col').css("margin-top").replace("px", "");
                 //alert(scrollOffset);
                 $('html,body').prop('scrollTop', scrollOffset);
                 //$('.tripHeader')[0].scrollIntoView(true);
@@ -277,8 +308,8 @@
             var trip_header = $('#trip_header_' + tripId);
 
             var tripData = trip_header.data("tripData");
-            var title = 'Speed - '+tripData.name;
-            var description = tripData.from+" to "+tripData.to
+            var title = 'Speed - ' + tripData.name;
+            var description = tripData.from + " to " + tripData.to
             var waypoint_names = [];
             var waypoint_ids = [];
             var data_y = [];
@@ -302,7 +333,7 @@
                 entryNode.data('waypointData', waypointData);
                 initWaypoint(entryNode, onScrolledToWaypoint);
 
-                data_x.push(index+1);
+                data_x.push(index + 1);
                 data_y.push(parseFloat(waypointData.sog));
                 waypoint_names.push(waypointData.name);
                 waypoint_ids.push(waypointData._id);
@@ -313,7 +344,7 @@
             isLoadingWaypoints = false;
 
             $('.logbookEntry').click(function (e) {
-                if($(e.target).is('img')){
+                if ($(e.target).is('img')) {
                     e.preventDefault();
                     return;
                 }
@@ -344,7 +375,7 @@
 
         // callback for trip container when scrolled to
         function onScrolledToWaypoint(node) {
-            $('#details_chart' ).css("display", "none");
+            $('#details_chart').css("display", "none");
             $('.logbookEntry').removeClass("active");
             node.addClass("active");
 
@@ -356,29 +387,29 @@
             }
             $('#details_text').html(entryDetailsTemplate(waypointData));
 
-			// create charts
-			initSOGSpeedometer('speedometer_sog');
-			initCOGCompass('compass_cog');
+            // create charts
+            initSOGSpeedometer('speedometer_sog');
+            initCOGCompass('compass_cog');
 
-			if (typeof(window.sogChart) != "undefined") {
-				var point = window.sogChart.series[0].points[0];
-				var newVal = waypointData.sog.substr(0,waypointData.sog.lastIndexOf(' '));
-				point.update(parseFloat(newVal));
-				window.sogChart.redraw();
-			}
+            if (typeof (window.sogChart) != "undefined") {
+                var point = window.sogChart.series[0].points[0];
+                var newVal = waypointData.sog.substr(0, waypointData.sog.lastIndexOf(' '));
+                point.update(parseFloat(newVal));
+                window.sogChart.redraw();
+            }
 
-			if (typeof(window.cogChart) != "undefined") {
-				var pointH = window.cogChart.series[0].points[0];
-				var pointB = window.cogChart.series[1].points[0];
-				var newValH = parseFloat(waypointData.cog.substr(0,waypointData.sog.lastIndexOf(' ')));
-				var newValB = newValH - 180;
-				if (newValB < 0) {
-					newValB = 360 + newValB;
-				}
-				pointH.update(newValH);
-				pointB.update(newValB);
-				window.cogChart.redraw();
-			}
+            if (typeof (window.cogChart) != "undefined") {
+                var pointH = window.cogChart.series[0].points[0];
+                var pointB = window.cogChart.series[1].points[0];
+                var newValH = parseFloat(waypointData.cog.substr(0, waypointData.sog.lastIndexOf(' ')));
+                var newValB = newValH - 180;
+                if (newValB < 0) {
+                    newValB = 360 + newValB;
+                }
+                pointH.update(newValH);
+                pointB.update(newValB);
+                window.cogChart.redraw();
+            }
 
             // mark waypoint in Map
             if (typeof (map) != "undefined" && typeof (waypointData) != "undefined") {
@@ -393,7 +424,7 @@
             //zoom out map
             reset_map_zoom();
 
-            $('#details_chart' ).css("display", "block");
+            $('#details_chart').css("display", "block");
         }
 
         /**
@@ -402,7 +433,7 @@
         function applyEntryFilters() {
             var onlyImages = $('#chkOnlyWithImage').hasClass('active');
             var onlyNotes = $('#chkOnlyWithNote').hasClass('active');
-            var minTimePeriod = parseInt($('#timeOffsetToggler').html()) * 60 * 1000;   // min to msec    
+            var minTimePeriod = parseInt($('#timeOffsetToggler').html()) * 60 * 1000;   // min to msec
             var lastTimestamp = -1;
 
             // iterate over all waypoints in entry view & timeline
@@ -435,365 +466,365 @@
             window.setTimeout(function () { $.waypoints('refresh'); }, 750);
         }
 
-        function scrollToWaypoint(waypoint){
-            $('.logbookEntry' ).waypoint('disable');
+        function scrollToWaypoint(waypoint) {
+            $('.logbookEntry').waypoint('disable');
             var offset = $(waypoint).offset().top - parseInt($('#menu_bar').css('height'));
             $('html, body').animate({
-               scrollTop: offset
-            },{
-                done: function(){
+                scrollTop: offset
+            }, {
+                done: function () {
                     onScrolledToWaypoint(waypoint);
-                    $('.logbookEntry' ).waypoint('enable');
+                    $('.logbookEntry').waypoint('enable');
                 }
             }, 'slow');
         }
 
-        function clicked_on_marker(marker){
+        function clicked_on_marker(marker) {
             var lat = marker.getPosition().lat();
             var lng = marker.getPosition().lng();
             var waypoint = getWaypointFromPosition(lat, lng);
-            if(typeof(waypoint) !=  "undefind"){
+            if (typeof (waypoint) != "undefind") {
                 scrollToWaypoint(waypoint);
             }
         }
 
-        function getWaypointFromPosition(lat, lng){
+        function getWaypointFromPosition(lat, lng) {
             var waypoint;
             //console.log("lat: "+lat+" lng: "+lng);
 
             //hotfix: the longitude differs for some strange reasons... only after the 9th digit.
             //(object received with getTripData have different longitudes as objects received with getTripWaypoints?!)
             lng = lng.toFixed(9);
-            $.each($(".logbookEntry"), function() {
-                var waypointData = $(this ).data().waypointData;
+            $.each($(".logbookEntry"), function () {
+                var waypointData = $(this).data().waypointData;
                 var match = (waypointData.lat == lat) && (waypointData.lng.toFixed(9) == lng);
                 //console.log("lat: "+waypointData.lat+" lng: "+waypointData.lng);
                 //console.log(match);
-                if(match){
+                if (match) {
                     waypoint = $(this);
                     return false;
                 }
             });
             return waypoint;
         }
-        
+
         /**
          *  This function initalizes the SOG Chart
          */
         function initSOGSpeedometer(containerId) {
-        	if (typeof(window.sogChart) != "undefined") {
-        		window.sogChart.destroy();
-        	}
-        	if (typeof(window.chartIndex) == "undefined") {
-        		window.chartIndex = 0;
-        	} else {
-        		window.chartIndex += 5;
-        	}
-        	
-        	window.sogChart = new Highcharts.Chart({
-			    chart: {
-			    	renderTo: containerId,
-			        type: 'gauge',
-			        alignTicks: false,
-			        plotBackgroundColor: null,
-			        plotBackgroundImage: null,
-			        plotBorderWidth: 0,
-			        plotShadow: false
-			    },
-			    
-			    title: {
-			        text: '',
-			        style: {
-				        display: 'none'
-				    }
-			    },
-			    
-			    pane: {
-			        startAngle: -150,
-			        endAngle: 150,
-			        center: ['50%', '50%'],
-			        background: [{
-			            backgroundColor: {
-			                linearGradient: { x1: 0, y1: 0, x2: 0, y2: 1 },
-			                stops: [
+            if (typeof (window.sogChart) != "undefined") {
+                window.sogChart.destroy();
+            }
+            if (typeof (window.chartIndex) == "undefined") {
+                window.chartIndex = 0;
+            } else {
+                window.chartIndex += 5;
+            }
+
+            window.sogChart = new Highcharts.Chart({
+                chart: {
+                    renderTo: containerId,
+                    type: 'gauge',
+                    alignTicks: false,
+                    plotBackgroundColor: null,
+                    plotBackgroundImage: null,
+                    plotBorderWidth: 0,
+                    plotShadow: false
+                },
+
+                title: {
+                    text: '',
+                    style: {
+                        display: 'none'
+                    }
+                },
+
+                pane: {
+                    startAngle: -150,
+                    endAngle: 150,
+                    center: ['50%', '50%'],
+                    background: [{
+                        backgroundColor: {
+                            linearGradient: { x1: 0, y1: 0, x2: 0, y2: 1 },
+                            stops: [
 			                    [0, '#FFF'],
 			                    [1, '#333']
-			                ]
-			            },
-			            borderWidth: 0,
-			            outerRadius: '109%'
-			        }, {
-			            backgroundColor: {
-			                linearGradient: { x1: 0, y1: 0, x2: 0, y2: 1 },
-			                stops: [
+                            ]
+                        },
+                        borderWidth: 0,
+                        outerRadius: '109%'
+                    }, {
+                        backgroundColor: {
+                            linearGradient: { x1: 0, y1: 0, x2: 0, y2: 1 },
+                            stops: [
 			                    [0, '#333'],
 			                    [1, '#FFF']
-			                ]
-			            },
-			            borderWidth: 1,
-			            outerRadius: '107%'
-			        }, {
-			            // default background
-			        }, {
-			            backgroundColor: '#DDD',
-			            borderWidth: 0,
-			            outerRadius: '105%',
-			            innerRadius: '103%'
-			        }]
-			    },
-			       
-			    // the value axis
-			    yAxis: {
-			        min: 0,
-			        max: 50,
-			        
-			        minorTickInterval: 'auto',
-			        minorTickWidth: 1,
-			        minorTickLength: 10,
-			        minorTickPosition: 'inside',
-			        minorTickColor: '#666',
-			
-			        tickPixelInterval: 30,
-			        tickWidth: 2,
-			        tickPosition: 'inside',
-			        tickLength: 10,
-			        tickColor: '#666',
-			        labels: {
-			            step: 1,
-			            style: {
-			            	 fontSize: '8px',
-			            	 distance: -15
-			            }
-			        },
-			        title: {
-			            text: 'kn',
-			            y: 20
-			        },
-			        plotBands: [{
-			            from: 0,
-			            to: 30,
-			            color: '#55BF3B' // green
-			        }, {
-			            from: 30,
-			            to: 40,
-			            color: '#DDDF0D' // yellow
-			        }, {
-			            from: 40,
-			            to: 50,
-			            color: '#DF5353' // red
-			        }]   
-			    },
-			    
-		        tooltip: {
-		            enabled: false
-		        },      
-			    
-			    exporting: {
-         			enabled: false
-				},
-			    
-			    series: [{
-			        name: 'SOG',
-			        data: [100],
-			        tooltip: {
-			        	enabled: false
-			        }
-			    }]
-			
-			});
-			
-			// remove highcart logo
+                            ]
+                        },
+                        borderWidth: 1,
+                        outerRadius: '107%'
+                    }, {
+                        // default background
+                    }, {
+                        backgroundColor: '#DDD',
+                        borderWidth: 0,
+                        outerRadius: '105%',
+                        innerRadius: '103%'
+                    }]
+                },
+
+                // the value axis
+                yAxis: {
+                    min: 0,
+                    max: 50,
+
+                    minorTickInterval: 'auto',
+                    minorTickWidth: 1,
+                    minorTickLength: 10,
+                    minorTickPosition: 'inside',
+                    minorTickColor: '#666',
+
+                    tickPixelInterval: 30,
+                    tickWidth: 2,
+                    tickPosition: 'inside',
+                    tickLength: 10,
+                    tickColor: '#666',
+                    labels: {
+                        step: 1,
+                        style: {
+                            fontSize: '8px',
+                            distance: -15
+                        }
+                    },
+                    title: {
+                        text: 'kn',
+                        y: 20
+                    },
+                    plotBands: [{
+                        from: 0,
+                        to: 30,
+                        color: '#55BF3B' // green
+                    }, {
+                        from: 30,
+                        to: 40,
+                        color: '#DDDF0D' // yellow
+                    }, {
+                        from: 40,
+                        to: 50,
+                        color: '#DF5353' // red
+                    }]
+                },
+
+                tooltip: {
+                    enabled: false
+                },
+
+                exporting: {
+                    enabled: false
+                },
+
+                series: [{
+                    name: 'SOG',
+                    data: [100],
+                    tooltip: {
+                        enabled: false
+                    }
+                }]
+
+            });
+
+            // remove highcart logo
             $('#highcharts-' + window.chartIndex + ' svg text').last().remove();
         }
-        
-        
+
+
         /**
          *  This function initalizes the Compass Chart
          */
         function initCOGCompass(containerId) {
-        	if (typeof(window.cogChart) != "undefined") {
-        		window.cogChart.destroy();
-        	}
-        	if (typeof(window.chartIndex) == "undefined") {
-        		window.chartIndex = 0;
-        	} else {
-        		window.chartIndex += 5;
-        	}
-        	
-        	window.cogChart = new Highcharts.Chart({
+            if (typeof (window.cogChart) != "undefined") {
+                window.cogChart.destroy();
+            }
+            if (typeof (window.chartIndex) == "undefined") {
+                window.chartIndex = 0;
+            } else {
+                window.chartIndex += 5;
+            }
 
-			    chart: {
-			    	renderTo: containerId,
-			        type: 'gauge',
-			        plotBackgroundColor: null,
-			        plotBackgroundImage: null,
-			        plotBorderWidth: 0,
-			        plotShadow: false
-			    },
-			    
-			    exporting: {
-         			enabled: false
-				},
-				
-				tooltip: {
-		            enabled: false
-		        },
-				
-				title: {
-			        text: '', 
-			        style: {
-				        display: 'none'
-				    }
-			    },
-			    pane: {
-			        startAngle: -180,
-			        endAngle: 180,
-			        size: [10],
-		            center: ['50%', '50%'],
-			        background: [{
-		                backgroundColor: {
-		                    linearGradient: { x1: 0, y1: 0, x2: 0, y2: 1 },
-		                    stops: [
+            window.cogChart = new Highcharts.Chart({
+
+                chart: {
+                    renderTo: containerId,
+                    type: 'gauge',
+                    plotBackgroundColor: null,
+                    plotBackgroundImage: null,
+                    plotBorderWidth: 0,
+                    plotShadow: false
+                },
+
+                exporting: {
+                    enabled: false
+                },
+
+                tooltip: {
+                    enabled: false
+                },
+
+                title: {
+                    text: '',
+                    style: {
+                        display: 'none'
+                    }
+                },
+                pane: {
+                    startAngle: -180,
+                    endAngle: 180,
+                    size: [10],
+                    center: ['50%', '50%'],
+                    background: [{
+                        backgroundColor: {
+                            linearGradient: { x1: 0, y1: 0, x2: 0, y2: 1 },
+                            stops: [
 		                        [0, '#FFF'],
 		                        [1, '#333']
-		                    ]
-		                },
-		                borderWidth: 0,
-		                outerRadius: '109%'
-		            }, {
-		                backgroundColor: {
-		                    linearGradient: { x1: 0, y1: 0, x2: 0, y2: 1 },
-		                    stops: [
+                            ]
+                        },
+                        borderWidth: 0,
+                        outerRadius: '109%'
+                    }, {
+                        backgroundColor: {
+                            linearGradient: { x1: 0, y1: 0, x2: 0, y2: 1 },
+                            stops: [
 		                        [0, '#333'],
 		                        [1, '#FFF']
-		                    ]
-		                },
-		                borderWidth: 1,
-		                outerRadius: '107%'
-		            }, {
-		                backgroundColor: {
-		                    linearGradient: { x1: 0, y1: 0, x2: 0, y2: 1 },
-		                    stops: [
+                            ]
+                        },
+                        borderWidth: 1,
+                        outerRadius: '107%'
+                    }, {
+                        backgroundColor: {
+                            linearGradient: { x1: 0, y1: 0, x2: 0, y2: 1 },
+                            stops: [
 		                        [0, '#666'],
 		                        [1, '#0c0c0c']
-		                    ]
-		                },
-		                borderWidth: 1,
-		                outerRadius: '107%'
-		            }, {
-		                backgroundColor: '#DDD',
-		                borderWidth: 1,
-		                outerRadius: '105%',
-		                innerRadius: '104%'
-		            }]
-			    },
-			       
-			    // the value axis
-			    yAxis: [{
-		            showLastLabel: false,
-		            
-			        min: 0,
-			        max: 360,
-			        
-			        minorTickInterval: 'auto',
-			        minorTickWidth: 1,
-			        minorTickLength: 5,
-			        minorTickPosition: 'inside',
-			        minorTickColor: '#fff',
-			
-			        tickPixelInterval: 30,
-			        tickWidth: 2,
-			        tickPosition: 'inside',
-			        tickLength: 8,
-			        tickColor: '#fff',
-			        labels: {
-		                style: {
-		                     color: '#fff',
-		                     fontSize: '8px'
-		                },
-			            step: 2,
-		                distance: -15
-		            }
-			    },{
-		            categories: ['N'],
-		            offset: 10,  
-		            min: 0,
-			        max: 360,
-		            
-		            minorTickLength: 0,
-		            
-		            tickInterval: 45,
-			        tickWidth: 2,
-			        tickPosition: 'outside',
-			        tickLength: 3,
-			        tickColor: '#000',
-		                               
-			        labels: {
-		                style: {
-		                    fontSize: '12px',
-		                    color: '#000'
-		                },
-		                formatter: function() {
-		                    if (this.value == 'N' || this.value == 'O' || this.value == '360') {
-		                        return 'N';
-		                    } else if (this.value == '45') {
-		                        return 'NE';
-		                    } else if (this.value == '90') {
-		                        return 'E';
-		                    } else if (this.value == '135') {
-		                        return 'SE';
-		                    } else if (this.value == '180') {
-		                        return 'S';
-		                    } else if (this.value == '225') {
-		                        return 'SW';
-		                    } else if (this.value == '270') {
-		                        return 'W';
-		                    } else if (this.value == '315') {
-		                        return 'NW';
-		                    }
-		                },
-		                distance: 15
-		            }
-			    }],
-		        
-			    series: [{
-			        name: 'Degree Head',
-			        data: [180],
-		            dial: {
-		                    baseWidth: 4,
-		                    backgroundColor: '#C33',
-		                    borderColor: '#900',
-		                    borderWidth: 1,
-		                    rearLength: 20,
-		                    baseLength: 10,
-		                    radius: 80
-		           },
-		           tooltip: {
-		           		enabled: false
-			       }        
-			    }, {
-			        name: 'Degree Bottom',
-			        data: [0],
-		            dial: {
-		                    baseWidth: 4,
-		                    backgroundColor: '#C33',
-		                    borderColor: '#900',
-		                    borderWidth: 1,
-		                    baseLength: 10,
-		                    radius: 80
-		           },
-		           tooltip: {
-			            enabled: false
-			       }        
-			    }]
-			
-			});
-			
-			// remove highcart logo
-            $('#highcharts-' + window.chartIndex + ' svg text').last().remove();
-		};
+                            ]
+                        },
+                        borderWidth: 1,
+                        outerRadius: '107%'
+                    }, {
+                        backgroundColor: '#DDD',
+                        borderWidth: 1,
+                        outerRadius: '105%',
+                        innerRadius: '104%'
+                    }]
+                },
 
-        function initSpeedChart(container, data_x, data_y, waypoint_names, waypoint_ids, title, description){
+                // the value axis
+                yAxis: [{
+                    showLastLabel: false,
+
+                    min: 0,
+                    max: 360,
+
+                    minorTickInterval: 'auto',
+                    minorTickWidth: 1,
+                    minorTickLength: 5,
+                    minorTickPosition: 'inside',
+                    minorTickColor: '#fff',
+
+                    tickPixelInterval: 30,
+                    tickWidth: 2,
+                    tickPosition: 'inside',
+                    tickLength: 8,
+                    tickColor: '#fff',
+                    labels: {
+                        style: {
+                            color: '#fff',
+                            fontSize: '8px'
+                        },
+                        step: 2,
+                        distance: -15
+                    }
+                }, {
+                    categories: ['N'],
+                    offset: 10,
+                    min: 0,
+                    max: 360,
+
+                    minorTickLength: 0,
+
+                    tickInterval: 45,
+                    tickWidth: 2,
+                    tickPosition: 'outside',
+                    tickLength: 3,
+                    tickColor: '#000',
+
+                    labels: {
+                        style: {
+                            fontSize: '12px',
+                            color: '#000'
+                        },
+                        formatter: function () {
+                            if (this.value == 'N' || this.value == 'O' || this.value == '360') {
+                                return 'N';
+                            } else if (this.value == '45') {
+                                return 'NE';
+                            } else if (this.value == '90') {
+                                return 'E';
+                            } else if (this.value == '135') {
+                                return 'SE';
+                            } else if (this.value == '180') {
+                                return 'S';
+                            } else if (this.value == '225') {
+                                return 'SW';
+                            } else if (this.value == '270') {
+                                return 'W';
+                            } else if (this.value == '315') {
+                                return 'NW';
+                            }
+                        },
+                        distance: 15
+                    }
+                }],
+
+                series: [{
+                    name: 'Degree Head',
+                    data: [180],
+                    dial: {
+                        baseWidth: 4,
+                        backgroundColor: '#C33',
+                        borderColor: '#900',
+                        borderWidth: 1,
+                        rearLength: 20,
+                        baseLength: 10,
+                        radius: 80
+                    },
+                    tooltip: {
+                        enabled: false
+                    }
+                }, {
+                    name: 'Degree Bottom',
+                    data: [0],
+                    dial: {
+                        baseWidth: 4,
+                        backgroundColor: '#C33',
+                        borderColor: '#900',
+                        borderWidth: 1,
+                        baseLength: 10,
+                        radius: 80
+                    },
+                    tooltip: {
+                        enabled: false
+                    }
+                }]
+
+            });
+
+            // remove highcart logo
+            $('#highcharts-' + window.chartIndex + ' svg text').last().remove();
+        };
+
+        function initSpeedChart(container, data_x, data_y, waypoint_names, waypoint_ids, title, description) {
             $(container).highcharts({
                 chart: {
                     height: 250
@@ -803,8 +834,8 @@
                         cursor: 'pointer',
                         point: {
                             events: {
-                                click: function() {
-                                    var waypoint = $('#waypoint_'+waypoint_ids[this.x]);
+                                click: function () {
+                                    var waypoint = $('#waypoint_' + waypoint_ids[this.x]);
                                     scrollToWaypoint(waypoint);
                                 }
                             }
@@ -832,8 +863,8 @@
                     }]
                 },
                 tooltip: {
-                    formatter: function() {
-                        return  '<b>'+description+'</b><br>'+ waypoint_names[this.x-1] +': '+ this.y +'kn';
+                    formatter: function () {
+                        return '<b>' + description + '</b><br>' + waypoint_names[this.x - 1] + ': ' + this.y + 'kn';
                     }
                 },
                 series: [{
