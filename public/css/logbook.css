@@ -17,10 +17,10 @@
     display: none;
 }
 
-    .panelToggler:hover {
-        background-color: #b2b2b2;
-        text-decoration: none;
-    }
+.panelToggler:hover {
+    background-color: #b2b2b2;
+    text-decoration: none;
+}
 
 #pictures {
     background: #FFFFFF;
@@ -81,9 +81,9 @@ h3 {
     max-height: 2000em; /* only for transition */
 }
 
-    .logbookEntry.active {
-        opacity: 1;
-    }
+.logbookEntry.active {
+    opacity: 1;
+}
 
 .imageholder {
     display: inline;
@@ -91,10 +91,10 @@ h3 {
     margin-right: auto;
 }
 
-    .imageholder a img {
-        max-width: 45%;
-        display: inline;
-    }
+.imageholder a img {
+    max-width: 45%;
+    display: inline;
+}
 
 .logbookEntry img {
     max-width: 100%;
@@ -126,21 +126,21 @@ label {
     cursor: pointer;
 }
 
-    .filterButton:hover {
-        background-color: rgba(255, 255, 255, 0.4);
-        border: 1px solid rgba(255, 255, 255, 0.00);
-        text-decoration: none;
-    }
+.filterButton:hover {
+    background-color: rgba(255, 255, 255, 0.4);
+    border: 1px solid rgba(255, 255, 255, 0.00);
+    text-decoration: none;
+}
 
-    .filterButton img {
-        width: 24px;
-        height: auto;
-    }
+.filterButton img {
+    width: 24px;
+    height: auto;
+}
 
-    .filterButton.active {
-        background-color: #a6d3e0;
-        border: 1px solid #5394a7;
-    }
+.filterButton.active {
+    background-color: #a6d3e0;
+    border: 1px solid #5394a7;
+}
 
 #timeOffsetToggler {
     width: 34px;
@@ -182,6 +182,9 @@ label {
 
 #details_text {
     height: 30%;
+}
+
+#details_chart {
 }
 
 #details_map {

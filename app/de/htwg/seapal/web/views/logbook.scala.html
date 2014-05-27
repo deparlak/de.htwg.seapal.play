@@ -64,11 +64,6 @@
                 return true;
             });
 
-            // handle scrolling to "load more" button
-            function onScrolledToLoadMore(node) {
-                loadMoreEntries(node.attr('data-tripid'), 5);
-            }
-
             // click handlers for loading previous/next trip
             $('#btnLoadPreviousTrip').click(function () {
                 var previousTripId = $(this).attr('data-prev-trip');
@@ -189,7 +184,7 @@
 
 
         function initWaypoint(item, callback) {
-            var offset_up = parseInt($('.logbookEntry').css('min-height')) + 1;
+            var offset_up = 1;
             var offset_down = $('#menu_bar').css("height") + parseInt($('.logbookEntry').css('min-height')) + 1;
 
             item.waypoint(function (direction) {
@@ -220,7 +215,9 @@
             // create the container for this trip
             $('#entries').append(tripTemplate(tripData));
 
-            initWaypoint($('#trip_header_' + tripId), onScrolledToTripHeader);
+            var trip_header = $('#trip_header_' + tripId);
+            initWaypoint(trip_header, onScrolledToTripHeader);
+            trip_header.data("tripData",tripData);
 
             // lookup previous and next trip
             logbook.getTripsOfBoat(boatId, tripData.startDate, 1, 1, 'true', onReceivedPreviousTrip);  // previous
@@ -282,6 +279,16 @@
         function onReceivedWaypoints(tripId, waypoints) {
             var tripContainer = $('#trip_' + tripId);
             var timelineTripContainer = $('#timeline-trip_container_' + tripId);
+            var trip_header = $('#trip_header_' + tripId);
+
+            var tripData = trip_header.data("tripData");
+            var title = 'Speed - '+tripData.name;
+            var description = tripData.from+" to "+tripData.to
+            var waypoint_names = [];
+            var waypoint_ids = [];
+            var data_y = [];
+            var data_x = []
+
             // hide ajax loader in this trip container
             $('#entryLoader' + tripId).remove();
             //console.log(waypoints);
@@ -299,6 +306,11 @@
                 var entryNode = $('#waypoint_' + waypointData._id);
                 entryNode.data('waypointData', waypointData);
                 initWaypoint(entryNode, onScrolledToWaypoint);
+
+                data_x.push(index+1);
+                data_y.push(parseFloat(waypointData.sog));
+                waypoint_names.push(waypointData.name);
+                waypoint_ids.push(waypointData._id);
             });
 
             // not last set of waypoints of the trip? show "load more" button
@@ -314,6 +326,8 @@
             $('.logbookEntry').click(function () {
                 scrollToWaypoint($(this));
             });
+
+            initSpeedChart($('#details_chart'), data_x, data_y, waypoint_names, waypoint_ids, title, description);
         }
 
         // loads and appends waypoint entries to a trip
@@ -342,6 +356,7 @@
 
         // callback for trip container when scrolled to
         function onScrolledToWaypoint(node) {
+            $('#details_chart' ).css("display", "none");
             $('.logbookEntry').removeClass("active");
             node.addClass("active");
 
@@ -389,6 +404,8 @@
             $('#details_text').html(entryDetailsTemplate());
             //zoom out map
             reset_map_zoom();
+
+            $('#details_chart' ).css("display", "block");
         }
 
         /**
@@ -787,6 +804,58 @@
 			// remove highcart logo
             $('#highcharts-' + window.chartIndex + ' svg text').last().remove();
 		};
+
+        function initSpeedChart(container, data_x, data_y, waypoint_names, waypoint_ids, title, description){
+            $(container).highcharts({
+                chart: {
+                    height: 250
+                },
+                plotOptions: {
+                    series: {
+                        cursor: 'pointer',
+                        point: {
+                            events: {
+                                click: function() {
+                                    var waypoint = $('#waypoint_'+waypoint_ids[this.x]);
+                                    scrollToWaypoint(waypoint);
+                                }
+                            }
+                        }
+                    }
+                },
+                legend: {
+                    enabled: false
+                },
+                title: {
+                    text: title,
+                    x: -20 //center
+                },
+                xAxis: {
+                    categories: data_x
+                },
+                yAxis: {
+                    title: {
+                        text: 'Speed [kn]'
+                    },
+                    plotLines: [{
+                        value: 0,
+                        width: 1,
+                        color: '#808080'
+                    }]
+                },
+                tooltip: {
+                    formatter: function() {
+                        return  '<b>'+description+'</b><br>'+ waypoint_names[this.x-1] +': '+ this.y +'kn';
+                    }
+                },
+                series: [{
+                    name: description,
+                    data: data_y
+                }]
+            });
+            // remove highchart logo
+            $('#highcharts-' + window.chartIndex + ' svg text').last().remove();
+        }
     </script>
 
     <div id="menu_bar">
