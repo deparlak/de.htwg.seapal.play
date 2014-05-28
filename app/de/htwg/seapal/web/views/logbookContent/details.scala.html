@@ -87,6 +87,23 @@
 			</tr>
 		</table>
 	</script>
+	
+	
+	<script type="x/handlebars-template" id="entryWeatherTemplate">
+		<table> 
+			<tr id ="weather_charts">
+				<td colspan="2">
+					<div id="air_pressure" class="table_chart_small" ></div>
+				</td>
+				<td colspan="2">
+					<div id="clouds" class="table_chart_small" ></div>
+				</td>
+				<td colspan="2">
+					<div id="temperature" class="table_chart_small" ></div>
+				</td>			
+			</tr>
+		</table>
+	</script>
 
 	<!-- Detail Map -->
 	<div id="details_map_head" class="head">
@@ -112,13 +129,14 @@
         </div>
     </div>
     
+    <!-- Weather Information -->
     <div id="details_weather_head" class="head">
         <img id="details_weather_img" src='@routes.Assets.at("images/logbook/contract-icon.png")' class="details-img-expand" alt="">
      	<h3>Weather</h3>
     </div>
     <div id="details_weather" class="detailsContent">
-        <p>
-            <img src='@routes.Assets.at("images/dummy_weather.png")' alt="Weather dummy" class="img-responsive">
-        </p>
+        <div id="details_weather_charts">
+        	<!-- will be filled by javascript -->
+        </div>
     </div>
 </div>

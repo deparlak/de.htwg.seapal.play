@@ -54,6 +54,7 @@
         var ajaxLoaderTemplate;
         var loadMoreEntriesTemplate;
         var entryDetailsTemplate;
+        var entryWeatherTemplate;
         var timelineTripTemplate;
         var timelineWaypointTemplate;
 
@@ -83,6 +84,7 @@
             ajaxLoaderTemplate = Handlebars.compile($('#ajaxLoaderTemplate').html());
             loadMoreEntriesTemplate = Handlebars.compile($('#loadMoreEntriesTemplate').html());
             entryDetailsTemplate = Handlebars.compile($('#entryDetailsTemplate').html());
+            entryWeatherTemplate = Handlebars.compile($('#entryWeatherTemplate').html());
 
             timelineTripTemplate = Handlebars.compile($('#timelineTripTemplate').html());
             timelineWaypointTemplate = Handlebars.compile($('#timelineWaypointTemplate').html());
@@ -387,7 +389,7 @@
             }
             $('#details_text').html(entryDetailsTemplate(waypointData));
 
-            // create charts
+            // create detail charts
             initSOGSpeedometer('speedometer_sog');
             initCOGCompass('compass_cog');
 
@@ -415,7 +417,31 @@
             if (typeof (map) != "undefined" && typeof (waypointData) != "undefined") {
                 highlight_waypoint(new google.maps.LatLng(waypointData.lat, waypointData.lng));
             }
+            
+            // change weather
+            $('#details_weather_charts').html(entryWeatherTemplate(waypointData));
+            
+            // create weather charts
+            initAirPressureChart('air_pressure');
+            initCloudsChart('clouds');
+            initTemperatureChart('temperature');
+            
+            if (typeof (window.airPressureChart) != "undefined") {
+            	//TODO fill
+            	window.airPressureChart.redraw();
+            }
+            
+            if (typeof (window.cloudsChart) != "undefined") {
+            	//TODO fill
+            	window.cloudsChart.redraw();
+            }
+            
+            if (typeof (window.temperatureChart) != "undefined") {
+            	//TODO fill
+            	window.temperatureChart.redraw();
+            }
         }
+
 
         function onScrolledToTripHeader(node) {
             $('.logbookEntry').removeClass("active");
@@ -526,7 +552,7 @@
                     renderTo: containerId,
                     type: 'gauge',
                     alignTicks: false,
-                    plotBackgroundColor: null,
+                    backgroundColor:'rgba(255, 255, 255, 0.1)',                    
                     plotBackgroundImage: null,
                     plotBorderWidth: 0,
                     plotShadow: false
@@ -576,7 +602,7 @@
                 // the value axis
                 yAxis: {
                     min: 0,
-                    max: 50,
+                    max: 20,
 
                     minorTickInterval: 'auto',
                     minorTickWidth: 1,
@@ -602,15 +628,15 @@
                     },
                     plotBands: [{
                         from: 0,
-                        to: 30,
+                        to: 13,
                         color: '#55BF3B' // green
                     }, {
-                        from: 30,
-                        to: 40,
+                        from: 13,
+                        to: 17,
                         color: '#DDDF0D' // yellow
                     }, {
-                        from: 40,
-                        to: 50,
+                        from: 17,
+                        to: 20,
                         color: '#DF5353' // red
                     }]
                 },
@@ -656,7 +682,7 @@
                 chart: {
                     renderTo: containerId,
                     type: 'gauge',
-                    plotBackgroundColor: null,
+                    backgroundColor:'rgba(255, 255, 255, 0.1)',
                     plotBackgroundImage: null,
                     plotBorderWidth: 0,
                     plotShadow: false
@@ -823,11 +849,233 @@
             // remove highcart logo
             $('#highcharts-' + window.chartIndex + ' svg text').last().remove();
         };
+        
+        /**
+         *  This function initalizes the Air Pressure Chart
+         */
+        function initAirPressureChart(containerId) {
+        	if (typeof (window.airPressureChart) != "undefined") {
+                window.airPressureChart.destroy();
+            }
+            if (typeof (window.chartIndex) == "undefined") {
+                window.chartIndex = 0;
+            } else {
+                window.chartIndex += 5;
+            }
+        	
+        	window.airPressureChart = new Highcharts.Chart({
+        		chart: {
+			        renderTo: containerId,
+                    type: 'gauge',
+                    backgroundColor:'rgba(255, 255, 255, 0.1)',
+                    plotBackgroundImage: null,
+                    plotBorderWidth: 0,
+                    plotShadow: false
+			    },
+			    pane: {
+			    	startAngle: -150,
+			    	endAngle: 150,
+		            size: [11],
+		            center: ['50%', '50%'],
+			    },
+			    exporting: {
+		            enabled: false
+		        },        
+		        tooltip: {
+		            enabled: false
+		        },        
+		        title: {
+		            text: 'Luftdruck'
+		        },	    
+				yAxis: {
+					min: 960,
+					max: 1060,
+		            
+		            minorTickInterval: 1,
+		            minorTickWidth: 2,
+		            minorTickLength: 10,
+		            minorTickPosition: 'inside',
+		            
+		            tickInterval: 20,
+		            tickWidth: 3,
+		            tickLength: 15,
+		            tickPosition: 'inside',
+		            
+		            title: {
+			            text: 'mBar',
+		                y: +15,
+			        }
+				},        	
+			    series: [{
+		            name: "score",
+		            data: [990],
+					dial: {
+						radius: "87%",
+		                rearLength: "0%"
+					}            
+		         }]	
+        	});
+
+            // remove highcart logo
+            $('#highcharts-' + window.chartIndex + ' svg text').last().remove();
+        };
+        
+        /**
+         *  This function initalizes the clouds Chart
+         */
+        function initCloudsChart(containerId) {
+        	if (typeof (window.cloudsChart) != "undefined") {
+                window.cloudsChart.destroy();
+            }
+            if (typeof (window.chartIndex) == "undefined") {
+                window.chartIndex = 0;
+            } else {
+                window.chartIndex += 5;
+            }
+        	
+        	window.cloudsChart = new Highcharts.Chart({
+        		chart: {
+			        renderTo: containerId,
+                    type: 'gauge',
+                    backgroundColor:'rgba(255, 255, 255, 0.1)',
+                    plotBackgroundImage: null,
+                    plotBorderWidth: 0,
+                    plotShadow: false
+			    },
+				pane: {
+		            startAngle: -150,
+		            endAngle: 150,
+		            size: [11],
+		            center: ['50%', '50%'],
+		        },
+		        exporting: {
+		            enabled: false
+		        },        
+		        tooltip: {
+		            enabled: false
+		        },        
+		        title: {
+		            text: 'Bewölkung'
+		        },	    
+		        yAxis: {
+		            min: 0,
+		            max: 1,
+		                       
+		            minorTickInterval: 0.05,
+		            minorTickWidth: 2,
+		            minorTickLength: 8,
+		            minorTickPosition: 'inside',
+		            
+		            tickInterval: 0.2,
+		            tickWidth: 3,
+		            tickLength: 10,
+		            tickPosition: 'inside',
+		        },        	
+		        series: [{
+		            name: "score",
+		            data: [0.5],
+		            dial: {
+		                radius: "90%",
+		                rearLength: "0%"
+		            }            
+		        }]	
+        	});
+
+            // remove highcart logo
+            $('#highcharts-' + window.chartIndex + ' svg text').last().remove();
+        };
+
+		        /**
+         *  This function initalizes the temperature Chart
+         */
+        function initTemperatureChart(containerId) {
+        	if (typeof (window.temperatureChart) != "undefined") {
+                window.temperatureChart.destroy();
+            }
+            if (typeof (window.chartIndex) == "undefined") {
+                window.chartIndex = 0;
+            } else {
+                window.chartIndex += 5;
+            }
+        	
+        	window.temperatureChart = new Highcharts.Chart({
+        		chart: {
+			        renderTo: containerId,
+                    type: 'gauge',
+                    backgroundColor:'rgba(255, 255, 255, 0.1)',
+                    plotBackgroundImage: null,
+                    plotBorderWidth: 0,
+                    plotShadow: false
+			    },
+		    	pane: {
+			    	startAngle: -150,
+			    	endAngle: 150,
+		            size: [11],
+		            center: ['50%', '50%'],
+			    },
+			    exporting: {
+		            enabled: false
+		        },        
+		        tooltip: {
+		            enabled: false
+		        },        
+		        title: {
+		            text: 'Temperatur'
+		        },	    
+				yAxis: {
+					min: -10,
+					max: 40,
+		            
+		            minorTickInterval: 1,
+		            minorTickWidth: 1,
+		            minorTickLength: 5,
+		            minorTickPosition: 'inside',
+		            
+		            tickInterval: 5,
+		            tickWidth: 3,
+		            tickLength: 10,
+		            tickPosition: 'inside',
+		            
+		            title: {
+			            text: 'C',
+		                y: +15,
+			        },
+		            labels: {
+		                style: {
+		                    fontSize: '10px'
+		                },
+		                step: 1,
+		                distance: -15
+		            }
+				},        	
+			    series: [{
+		            name: "score",
+		            data: [10],
+					dial: {
+						radius: "87%",
+		                rearLength: "0%"
+					}            
+		         }]	
+        	});
+
+            // remove highcart logo
+            $('#highcharts-' + window.chartIndex + ' svg text').last().remove();
+        };
+
 
         function initSpeedChart(container, data_x, data_y, waypoint_names, waypoint_ids, title, description) {
+            if (typeof (window.chartIndex) == "undefined") {
+                window.chartIndex = 0;
+            } else {
+                window.chartIndex += 5;
+            }
+
             $(container).highcharts({
                 chart: {
                     height: 250
+                },
+                exporting: {
+                    enabled: false
                 },
                 plotOptions: {
                     series: {
@@ -872,6 +1120,7 @@
                     data: data_y
                 }]
             });
+            
             // remove highchart logo
             $('#highcharts-' + window.chartIndex + ' svg text').last().remove();
         }

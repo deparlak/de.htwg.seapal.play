@@ -66,6 +66,13 @@ h3 {
     margin: 0 auto;
 }
 
+#details .table_chart_small {
+	min-width: 130px;
+    max-width: 130px;
+    height: 140px;
+    margin: 0 auto;
+}
+
 .tripHeader {
     background: rgba(0, 0, 40, 0.4);
     padding: 1em 2em;
