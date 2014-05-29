@@ -55,18 +55,6 @@
 				</td>
 				{{/if}}
 			</tr>
-			<tr id="details_charts">
-			{{#if cog}}
-				<td colspan="2">
-					<div id="compass_cog" class="table_chart" ></div>
-				</td>				
-			{{/if}}
-			{{#if sog}}
-				<td colspan="2">
-					<div id="speedometer_sog" class="table_chart" ></div>
-				</td>				
-			{{/if}}		
-			</tr>			
 			<tr id ="details_text_distance">
 				{{#if btm}}
 				<td>							
@@ -84,23 +72,6 @@
 					unknown
 				</td>
 				{{/if}}	
-			</tr>
-		</table>
-	</script>
-	
-	
-	<script type="x/handlebars-template" id="entryWeatherTemplate">
-		<table> 
-			<tr id ="weather_charts">
-				<td colspan="2">
-					<div id="air_pressure" class="table_chart_small" ></div>
-				</td>
-				<td colspan="2">
-					<div id="clouds" class="table_chart_small" ></div>
-				</td>
-				<td colspan="2">
-					<div id="temperature" class="table_chart_small" ></div>
-				</td>			
 			</tr>
 		</table>
 	</script>
@@ -127,6 +98,16 @@
         <div id="details_text">
             <!-- will be filled by javascript -->
         </div>
+        <div id="details_pie_charts">
+            <table>
+                <td colspan="2">
+                    <div id="compass_cog" class="table_chart" ></div>
+                </td>
+                <td colspan="2">
+                    <div id="speedometer_sog" class="table_chart" ></div>
+                </td>
+            </table>
+        </div>
     </div>
     
     <!-- Weather Information -->
@@ -136,7 +117,19 @@
     </div>
     <div id="details_weather" class="detailsContent">
         <div id="details_weather_charts">
-        	<!-- will be filled by javascript -->
+            <table>
+                <tr id ="weather_charts">
+                    <td colspan="2">
+                        <div id="air_pressure" class="table_chart_small" ></div>
+                    </td>
+                    <td colspan="2">
+                        <div id="clouds" class="table_chart_small" ></div>
+                    </td>
+                    <td colspan="2">
+                        <div id="temperature" class="table_chart_small" ></div>
+                    </td>
+                </tr>
+            </table>
         </div>
     </div>
 </div>
