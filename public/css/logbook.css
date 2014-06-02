@@ -69,14 +69,14 @@ h3 {
 #details .table_chart_small {
 	min-width: 130px;
     max-width: 130px;
-    height: 140px;
+    height: 160px;
     margin: 0 auto;
 }
 
 #details .table_chart_high {
 	min-width: 170px;
     max-width: 170px;
-    height: 220px;
+    height: 200px;
     margin: 0 auto;
 }
 
