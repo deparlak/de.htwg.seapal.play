@@ -436,8 +436,11 @@
                 if($.trim($('#temperature' ).html()) == ''){
                     initTemperatureChart('temperature');
                 }
-                if ($.trim($('#wind').html()) == '') {
+                if ($.trim($('#wind' ).html()) == '') {
                 	initWindDirSpeedChart('wind');
+                }
+                 if ($.trim($('#wave' ).html()) == '') {
+                	initWaveDirHeightChart('wave');
                 }
 
                 if (typeof (window.airPressureChart) != "undefined") {
@@ -458,6 +461,11 @@
                 if (typeof (window.windDirSpeedChart) != "undefined") {
                 	//TODO fill
                     window.windDirSpeedChart.redraw();
+                }
+                
+                if (typeof (window.waveDirHeightChart) != "undefined") {
+                	//TODO fill
+                    window.waveDirHeightChart.redraw();
                 }
             }, 500);
         }
@@ -565,12 +573,7 @@
             if (typeof (window.sogChart) != "undefined") {
                 window.sogChart.destroy();
             }
-            if (typeof (window.chartIndex) == "undefined") {
-                window.chartIndex = 0;
-            } else {
-                window.chartIndex += 5;
-            }
-
+            
             window.sogChart = new Highcharts.Chart({
                 chart: {
                     renderTo: containerId,
@@ -593,6 +596,7 @@
                 pane: {
                     startAngle: -150,
                     endAngle: 150,
+                    size: [11],
                     center: ['50%', '50%'],
                     background: [{
                         backgroundColor: {
@@ -685,7 +689,7 @@
             });
 
             // remove highcart logo
-            $('#highcharts-' + window.chartIndex + ' svg text').last().remove();
+            removeHighChartLogo();
         }
 
 
@@ -696,12 +700,7 @@
             if (typeof (window.cogChart) != "undefined") {
                 window.cogChart.destroy();
             }
-            if (typeof (window.chartIndex) == "undefined") {
-                window.chartIndex = 0;
-            } else {
-                window.chartIndex += 5;
-            }
-
+           
             window.cogChart = new Highcharts.Chart({
 
   	      		chart: {
@@ -886,7 +885,7 @@
             });
 
             // remove highcart logo
-            $('#highcharts-' + window.chartIndex + ' svg text').last().remove();
+            removeHighChartLogo();
         };
 
         /**
@@ -896,15 +895,10 @@
    			if (typeof (window.windDirSpeedChart) != "undefined") {
                 window.windDirSpeedChart.destroy();
             }
-            if (typeof (window.chartIndex) == "undefined") {
-                window.chartIndex = 0;
-            } else {
-                window.chartIndex += 5;
-            }
-        	
+                   	
         	window.windDirSpeedChart = new Highcharts.Chart({
-        		chart: {
-			        renderTo: containerId,
+		       chart: {
+		       	 	renderTo: containerId,
 			        polar: true,
 			        type: 'column',
 		            backgroundColor:'rgba(255, 255, 255, 0.1)',
@@ -922,10 +916,14 @@
 		        },
 			    
 			    title: {
-			        text: 'Windrichtung / Windgeschwindigkeit'
+			        text: 'Windrichtung / Windgeschwindigkeit',
+		            style: {
+		                fontSize: '14px'
+		            }
 			    },	    
 			    pane: {
-			    	size: '85%'
+		            size: [11],
+		            center: ['50%', '50%']
 			    },	    
 			        
 			    xAxis: {
@@ -950,9 +948,15 @@
 			        endOnTick: false,
 			        showLastLabel: true,
 			        title: {
+		                style: {
+		                    fontSize: '9px'
+		                },
 			        	text: 'Beaufort'
 			        },
 			        labels: {
+		                style: {
+		                    fontSize: '8px'
+		                },
 			        	formatter: function () {
 			        		return this.value;
 			        	}
@@ -967,7 +971,93 @@
 			});
 
             // remove highcart logo
-            $('#highcharts-' + window.chartIndex + ' svg text').last().remove();
+            removeHighChartLogo();
+        }
+        
+             /**
+         *  This method inits the wave direction speed chart 
+         */
+        function initWaveDirHeightChart(containerId) {
+   			if (typeof (window.waveDirHeightChart) != "undefined") {
+                window.waveDirHeightChart.destroy();
+            }
+                   	
+        	window.waveDirHeightChart = new Highcharts.Chart({
+        	    	chart: {
+        	    		renderTo: containerId,
+				        polar: true,
+				        type: 'column',
+			            backgroundColor:'rgba(255, 255, 255, 0.1)',
+			            plotBackgroundImage: null,
+			            plotBorderWidth: 0,
+			            plotShadow: false
+				    },
+			        
+			        exporting: {
+			            enabled: false
+			        },
+			        
+			        tooltip: {
+			            enabled: false
+			        },
+				    
+				    title: {
+				        text: 'Wellenrichtung / Wellenhöhe',
+			            style: {
+			                fontSize: '14px'
+			            }
+				    },	    
+				    pane: {
+			            size: [11],
+			            center: ['50%', '50%']
+				    },	    
+				        
+				    xAxis: {
+				    	tickmarkPlacement: 'on'
+				    },
+			        
+			        legend: {
+			            enabled: false
+			        },
+				    plotOptions: {
+				        series: {
+				        	stacking: 'normal',
+				        	shadow: false,
+				        	groupPadding: 0,
+				        	pointPlacement: 'on'
+				        }
+				    },        
+				    yAxis: {
+				        min: 0,
+			            max: 11,
+			            tickInterval: 1,
+				        endOnTick: false,
+				        showLastLabel: true,
+				        title: {
+			                style: {
+			                    fontSize: '9px'
+			                },
+				        	text: 'Meter'
+				        },
+				        labels: {
+			                style: {
+			                    fontSize: '8px'
+			                },
+				        	formatter: function () {
+				        		return this.value;
+				        	}
+				        }
+				    },	   
+			        data: {
+				    	table: 'freq',
+				    	startRow: 1,
+				    	endRow: 17,
+				    	endColumn: 7
+				    }
+	    		});
+
+            // remove highcart logo
+            removeHighChartLogo();
         }
         
         /**
@@ -977,13 +1067,8 @@
         	if (typeof (window.airPressureChart) != "undefined") {
                 window.airPressureChart.destroy();
             }
-            if (typeof (window.chartIndex) == "undefined") {
-                window.chartIndex = 0;
-            } else {
-                window.chartIndex += 5;
-            }
-
-        	window.airPressureChart = new Highcharts.Chart({
+           
+           	window.airPressureChart = new Highcharts.Chart({
         		chart: {
 			        renderTo: containerId,
                     type: 'gauge',
@@ -1037,7 +1122,7 @@
         	});
 
             // remove highcart logo
-            $('#highcharts-' + window.chartIndex + ' svg text').last().remove();
+            removeHighChartLogo();
         };
 
         /**
@@ -1047,13 +1132,8 @@
         	if (typeof (window.cloudsChart) != "undefined") {
                 window.cloudsChart.destroy();
             }
-            if (typeof (window.chartIndex) == "undefined") {
-                window.chartIndex = 0;
-            } else {
-                window.chartIndex += 5;
-            }
-
-        	window.cloudsChart = new Highcharts.Chart({
+           
+           	window.cloudsChart = new Highcharts.Chart({
         		chart: {
 			        renderTo: containerId,
                     type: 'gauge',
@@ -1102,7 +1182,7 @@
         	});
 
             // remove highcart logo
-            $('#highcharts-' + window.chartIndex + ' svg text').last().remove();
+           removeHighChartLogo();
         };
 
 		        /**
@@ -1111,12 +1191,7 @@
         function initTemperatureChart(containerId) {
         	if (typeof (window.temperatureChart) != "undefined") {
                 window.temperatureChart.destroy();
-            }
-            if (typeof (window.chartIndex) == "undefined") {
-                window.chartIndex = 0;
-            } else {
-                window.chartIndex += 5;
-            }
+            }          
 
         	window.temperatureChart = new Highcharts.Chart({
         		chart: {
@@ -1178,18 +1253,11 @@
 		         }]
         	});
 
-            // remove highcart logo
-            $('#highcharts-' + window.chartIndex + ' svg text').last().remove();
+            removeHighChartLogo();
         };
 
 
         function initSpeedChart(container, data_x, data_y, waypoint_names, waypoint_ids, title, description) {
-            if (typeof (window.chartIndex) == "undefined") {
-                window.chartIndex = 0;
-            } else {
-                window.chartIndex += 5;
-            }
-
             $(container).highcharts({
                 chart: {
                     height: 250
@@ -1240,8 +1308,26 @@
                     data: data_y
                 }]
             });
-
-            // remove highchart logo
+            
+            removeHighChartLogo();
+        }
+        
+        /*
+         * remove initial highchart logo by using an Index for each chart
+         */
+        function removeHighChartLogo() {
+        	if (typeof (window.chartIndex) == "undefined") {
+                window.chartIndex = 0;
+            } else if (window.chartIndex < 4) {
+            	window.chartIndex += 4;
+            } else if (window.chartIndex < 14) {
+                window.chartIndex += 5;
+            } else if (window.chartIndex < 23) {
+             	window.chartIndex += 3;
+            } else {
+            	window.chartIndex += 2;
+            }
+                        
             $('#highcharts-' + window.chartIndex + ' svg text').last().remove();
         }
     </script>

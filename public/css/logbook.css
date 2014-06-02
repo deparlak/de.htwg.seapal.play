@@ -73,6 +73,13 @@ h3 {
     margin: 0 auto;
 }
 
+#details .table_chart_high {
+	min-width: 170px;
+    max-width: 170px;
+    height: 220px;
+    margin: 0 auto;
+}
+
 .tripHeader {
     background: rgba(0, 0, 40, 0.4);
     padding: 1em 2em;
