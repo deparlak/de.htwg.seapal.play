@@ -46,7 +46,7 @@
     </div>
 
     <script type="text/javascript">
-        var map;
+         var map;
 
         //HTML templates - Handlebars lib
         var tripTemplate;
@@ -54,7 +54,6 @@
         var ajaxLoaderTemplate;
         var loadMoreEntriesTemplate;
         var entryDetailsTemplate;
-        var entryWeatherTemplate;
         var timelineTripTemplate;
         var timelineWaypointTemplate;
 
@@ -84,8 +83,6 @@
             ajaxLoaderTemplate = Handlebars.compile($('#ajaxLoaderTemplate').html());
             loadMoreEntriesTemplate = Handlebars.compile($('#loadMoreEntriesTemplate').html());
             entryDetailsTemplate = Handlebars.compile($('#entryDetailsTemplate').html());
-            entryWeatherTemplate = Handlebars.compile($('#entryWeatherTemplate').html());
-
             timelineTripTemplate = Handlebars.compile($('#timelineTripTemplate').html());
             timelineWaypointTemplate = Handlebars.compile($('#timelineWaypointTemplate').html());
 
@@ -193,7 +190,6 @@
             // hide side panels if mouse leaves them
             $('#entries_col').mouseenter(function () { $('#details_col, #timeline_col').removeClass('forceOpen'); })
             $('#entries_col').click(function () { $('#details_col, #timeline_col').removeClass('forceOpen'); })
-
         });  //   /document.ready()
 
         // changes the currently displayed trip to another one
@@ -216,20 +212,12 @@
 
             item.waypoint(function (direction) {
                 if (direction == "down") {
-                    if (typeof (scrollToWaypointTimeout) != undefined) {
-                        clearTimeout(scrollToWaypointTimeout);
-                    }
-                    scrollToWaypointTimeout = setTimeout(function () { callback(item) }, 200);
                     callback(item);
                 }
             }, { offset: offset_down });
 
             item.waypoint(function (direction) {
                 if (direction == "up") {
-                    if (typeof (scrollToWaypointTimeout) != undefined) {
-                        clearTimeout(scrollToWaypointTimeout);
-                    }
-                    scrollToWaypointTimeout = setTimeout(function () { callback(item) }, 200);
                     callback(item);
                 }
             }, { offset: offset_up });
@@ -449,7 +437,7 @@
                     initTemperatureChart('temperature');
                 }
                 if ($.trim($('#wind').html()) == '') {
-                	initWindDirSpeedChart('temperature');
+                	initWindDirSpeedChart('wind');
                 }
 
                 if (typeof (window.airPressureChart) != "undefined") {
