@@ -679,8 +679,8 @@
 
             window.cogChart = new Highcharts.Chart({
 
-                chart: {
-                    renderTo: containerId,
+  	      		chart: {
+  	      			renderTo: containerId,
                     type: 'gauge',
                     backgroundColor:'rgba(255, 255, 255, 0.1)',
                     plotBackgroundImage: null,
@@ -747,8 +747,6 @@
 
                 // the value axis
                 yAxis: [{
-                    showLastLabel: false,
-
                     min: 0,
                     max: 360,
 
@@ -758,7 +756,7 @@
                     minorTickPosition: 'inside',
                     minorTickColor: '#fff',
 
-                    tickPixelInterval: 30,
+                    tickInterval: 30,
                     tickWidth: 2,
                     tickPosition: 'inside',
                     tickLength: 8,
@@ -769,9 +767,25 @@
                             fontSize: '8px'
                         },
                         step: 2,
-                        distance: -15
+                        distance: -15,
+                         formatter: function () {
+                            if (this.value == 'N' || this.value == 'O' || this.value == '360') {
+                                return '180';
+                            } else if (this.value == '60') {
+                                return '240';
+                            } else if (this.value == '120') {
+                                return '300';
+                            } else if (this.value == '180') {
+                                return '0';
+                            } else if (this.value == '240') {
+                                return '60';
+                            } else if (this.value == '300') {
+                                return '120';
+                            }
+                        }
                     }
-                }, {
+                }, {     
+                    showlastlabel: false,
                     categories: ['N'],
                     offset: 10,
                     min: 0,
@@ -790,26 +804,26 @@
                             fontSize: '12px',
                             color: '#000'
                         },
+                        distance: 15,
                         formatter: function () {
                             if (this.value == 'N' || this.value == 'O' || this.value == '360') {
-                                return 'N';
-                            } else if (this.value == '45') {
-                                return 'NE';
-                            } else if (this.value == '90') {
-                                return 'E';
-                            } else if (this.value == '135') {
-                                return 'SE';
-                            } else if (this.value == '180') {
                                 return 'S';
-                            } else if (this.value == '225') {
+                            } else if (this.value == '45') {
                                 return 'SW';
-                            } else if (this.value == '270') {
+                            } else if (this.value == '90') {
                                 return 'W';
-                            } else if (this.value == '315') {
+                            } else if (this.value == '135') {
                                 return 'NW';
+                            } else if (this.value == '180') {
+                                return 'N';
+                            } else if (this.value == '225') {
+                                return 'NE';
+                            } else if (this.value == '270') {
+                                return 'E';
+                            } else if (this.value == '315') {
+                                return 'SE';
                             }
-                        },
-                        distance: 15
+                        }
                     }
                 }],
 
@@ -842,13 +856,94 @@
                     tooltip: {
                         enabled: false
                     }
-                }]
+                }]	
 
             });
 
             // remove highcart logo
             $('#highcharts-' + window.chartIndex + ' svg text').last().remove();
         };
+        
+        /**
+         *  This method inits the wind direction speed chart 
+         */
+        function initWindDirSpeedChart(containerId) {
+   			if (typeof (window.windDirSpeedChart) != "undefined") {
+                window.windDirSpeedChart.destroy();
+            }
+            if (typeof (window.chartIndex) == "undefined") {
+                window.chartIndex = 0;
+            } else {
+                window.chartIndex += 5;
+            }
+        	
+        	window.windDirSpeedChart = new Highcharts.Chart({
+        		chart: {
+			        renderTo: containerId,
+			        polar: true,
+			        type: 'column',
+		            backgroundColor:'rgba(255, 255, 255, 0.1)',
+		            plotBackgroundImage: null,
+		            plotBorderWidth: 0,
+		            plotShadow: false
+			    },
+		        
+		        exporting: {
+		            enabled: false
+		        },
+		        
+		        tooltip: {
+		            enabled: false
+		        },
+			    
+			    title: {
+			        text: 'Windrichtung / Windgeschwindigkeit'
+			    },	    
+			    pane: {
+			    	size: '85%'
+			    },	    
+			        
+			    xAxis: {
+			    	tickmarkPlacement: 'on'
+			    },
+		        
+		        legend: {
+		            enabled: false
+		        },
+			    plotOptions: {
+			        series: {
+			        	stacking: 'normal',
+			        	shadow: false,
+			        	groupPadding: 0,
+			        	pointPlacement: 'on'
+			        }
+			    },        
+			    yAxis: {
+			        min: 0,
+		            max: 11,
+		            tickInterval: 1,
+			        endOnTick: false,
+			        showLastLabel: true,
+			        title: {
+			        	text: 'Beaufort'
+			        },
+			        labels: {
+			        	formatter: function () {
+			        		return this.value;
+			        	}
+			        }
+			    },	   
+		        data: {
+			    	table: 'freq',
+			    	startRow: 1,
+			    	endRow: 17,
+			    	endColumn: 7
+			    }
+			});
+
+            // remove highcart logo
+            $('#highcharts-' + window.chartIndex + ' svg text').last().remove();
+        }
         
         /**
          *  This function initalizes the Air Pressure Chart
