@@ -220,6 +220,7 @@
                         clearTimeout(scrollToWaypointTimeout);
                     }
                     scrollToWaypointTimeout = setTimeout(function () { callback(item) }, 200);
+                    callback(item);
                 }
             }, { offset: offset_down });
 
@@ -229,6 +230,7 @@
                         clearTimeout(scrollToWaypointTimeout);
                     }
                     scrollToWaypointTimeout = setTimeout(function () { callback(item) }, 200);
+                    callback(item);
                 }
             }, { offset: offset_up });
         }
@@ -398,7 +400,13 @@
                 var newVal = waypointData.sog.substr(0, waypointData.sog.lastIndexOf(' '));
                 point.update(parseFloat(newVal));
                 window.sogChart.redraw();
+            if (typeof (scrollToWaypointTimeout) != undefined) {
+                clearTimeout(scrollToWaypointTimeout);
             }
+            scrollToWaypointTimeout = setTimeout(function () {
+                console.log("onScrolledToWaypoint timeout called")
+                // create detail pie charts
+                $('#details_pie_charts').css("display", "block");
 
             if (typeof (window.cogChart) != "undefined") {
                 var pointH = window.cogChart.series[0].points[0];
@@ -407,11 +415,18 @@
                 var newValB = newValH - 180;
                 if (newValB < 0) {
                     newValB = 360 + newValB;
+
+                //only call init once if there's no html content inside the matching div
+                if($.trim($('#speedometer_sog' ).html()) == ''){
+                    initSOGSpeedometer('speedometer_sog');
                 }
                 pointH.update(newValH);
                 pointB.update(newValB);
                 window.cogChart.redraw();
             }
+                if($.trim($('#compass_cog' ).html()) == ''){
+                    initCOGCompass('compass_cog');
+                }
 
             // mark waypoint in Map
             if (typeof (map) != "undefined" && typeof (waypointData) != "undefined") {
@@ -440,10 +455,68 @@
             	//TODO fill
             	window.temperatureChart.redraw();
             }
+                if (typeof (window.sogChart) != "undefined") {
+                    var point = window.sogChart.series[0].points[0];
+                    var newVal = waypointData.sog.substr(0, waypointData.sog.lastIndexOf(' '));
+                    point.update(parseFloat(newVal));
+                    window.sogChart.redraw();
+                }
+
+                if (typeof (window.cogChart) != "undefined") {
+                    var pointH = window.cogChart.series[0].points[0];
+                    var pointB = window.cogChart.series[1].points[0];
+                    var newValH = parseFloat(waypointData.cog.substr(0, waypointData.sog.lastIndexOf(' ')));
+                    var newValB = newValH - 180;
+                    if (newValB < 0) {
+                        newValB = 360 + newValB;
+                    }
+                    pointH.update(newValH);
+                    pointB.update(newValB);
+                    window.cogChart.redraw();
+                }
+
+                // mark waypoint in Map
+                if (typeof (map) != "undefined" && typeof (waypointData) != "undefined") {
+                    highlight_waypoint(new google.maps.LatLng(waypointData.lat, waypointData.lng));
+                }
+
+                // change weather
+                $('#details_weather_charts').css("display", "block");
+
+                // create weather charts
+                //only call init once if there's no html content inside the matching div
+                if($.trim($('#air_pressure' ).html()) == ''){
+                    initAirPressureChart('air_pressure');
+                }
+                if($.trim($('#clouds' ).html()) == ''){
+                    initCloudsChart('clouds');
+                }
+                if($.trim($('#temperature' ).html()) == ''){
+                    initTemperatureChart('temperature');
+                }
+
+                if (typeof (window.airPressureChart) != "undefined") {
+                    //TODO fill
+                    window.airPressureChart.redraw();
+                }
+
+                if (typeof (window.cloudsChart) != "undefined") {
+                    //TODO fill
+                    window.cloudsChart.redraw();
+                }
+
+                if (typeof (window.temperatureChart) != "undefined") {
+                    //TODO fill
+                    window.temperatureChart.redraw();
+                }
+            }, 500);
         }
 
 
         function onScrolledToTripHeader(node) {
+            if (typeof (scrollToWaypointTimeout) != undefined) {
+                clearTimeout(scrollToWaypointTimeout);
+            }
             $('.logbookEntry').removeClass("active");
 
             $('#details_text').html(entryDetailsTemplate());
@@ -451,6 +524,8 @@
             reset_map_zoom();
 
             $('#details_chart').css("display", "block");
+            $('#details_pie_charts').css("display", "none");
+            $('#details_weather_charts').css("display", "none");
         }
 
         /**
@@ -476,10 +551,10 @@
                 }
                 lastTimestamp = parseInt(waypointData.date);
 
-                if (onlyImages && !$(item).hasClass('hasImage')) {
+                if ((onlyImages && !$(item).hasClass('hasImage')) && (!onlyNotes || (onlyNotes && !$(item).hasClass('hasNote'))) ) {
                     item.addClass('filtered');
                     timelineItem.addClass('filtered');
-                } else if (onlyNotes && !$(item).hasClass('hasNote')) {
+                }else if ((onlyNotes && !$(item).hasClass('hasNote')) && (!onlyImages || (onlyImages && !$(item).hasClass('hasImage'))) ) {
                     item.addClass('filtered');
                     timelineItem.addClass('filtered');
                 } else { // show item
@@ -553,6 +628,7 @@
                     type: 'gauge',
                     alignTicks: false,
                     backgroundColor:'rgba(255, 255, 255, 0.1)',                    
+                    backgroundColor:'rgba(255, 255, 255, 0.1)',
                     plotBackgroundImage: null,
                     plotBorderWidth: 0,
                     plotShadow: false
@@ -863,7 +939,7 @@
             // remove highcart logo
             $('#highcharts-' + window.chartIndex + ' svg text').last().remove();
         };
-        
+
         /**
          *  This method inits the wind direction speed chart 
          */
@@ -957,7 +1033,7 @@
             } else {
                 window.chartIndex += 5;
             }
-        	
+
         	window.airPressureChart = new Highcharts.Chart({
         		chart: {
 			        renderTo: containerId,
@@ -971,50 +1047,50 @@
 			    	startAngle: -150,
 			    	endAngle: 150,
 		            size: [11],
-		            center: ['50%', '50%'],
+		            center: ['50%', '50%']
 			    },
 			    exporting: {
 		            enabled: false
-		        },        
+		        },
 		        tooltip: {
 		            enabled: false
-		        },        
+		        },
 		        title: {
 		            text: 'Luftdruck'
-		        },	    
+		        },
 				yAxis: {
 					min: 960,
 					max: 1060,
-		            
+
 		            minorTickInterval: 1,
 		            minorTickWidth: 2,
 		            minorTickLength: 10,
 		            minorTickPosition: 'inside',
-		            
+
 		            tickInterval: 20,
 		            tickWidth: 3,
 		            tickLength: 15,
 		            tickPosition: 'inside',
-		            
+
 		            title: {
 			            text: 'mBar',
-		                y: +15,
+		                y: +15
 			        }
-				},        	
+				},
 			    series: [{
 		            name: "score",
 		            data: [990],
 					dial: {
 						radius: "87%",
 		                rearLength: "0%"
-					}            
-		         }]	
+					}
+		         }]
         	});
 
             // remove highcart logo
             $('#highcharts-' + window.chartIndex + ' svg text').last().remove();
         };
-        
+
         /**
          *  This function initalizes the clouds Chart
          */
@@ -1027,7 +1103,7 @@
             } else {
                 window.chartIndex += 5;
             }
-        	
+
         	window.cloudsChart = new Highcharts.Chart({
         		chart: {
 			        renderTo: containerId,
@@ -1041,39 +1117,39 @@
 		            startAngle: -150,
 		            endAngle: 150,
 		            size: [11],
-		            center: ['50%', '50%'],
+		            center: ['50%', '50%']
 		        },
 		        exporting: {
 		            enabled: false
-		        },        
+		        },
 		        tooltip: {
 		            enabled: false
-		        },        
+		        },
 		        title: {
 		            text: 'Bewölkung'
-		        },	    
+		        },
 		        yAxis: {
 		            min: 0,
 		            max: 1,
-		                       
+
 		            minorTickInterval: 0.05,
 		            minorTickWidth: 2,
 		            minorTickLength: 8,
 		            minorTickPosition: 'inside',
-		            
+
 		            tickInterval: 0.2,
 		            tickWidth: 3,
 		            tickLength: 10,
-		            tickPosition: 'inside',
-		        },        	
+		            tickPosition: 'inside'
+		        },
 		        series: [{
 		            name: "score",
 		            data: [0.5],
 		            dial: {
 		                radius: "90%",
 		                rearLength: "0%"
-		            }            
-		        }]	
+		            }
+		        }]
         	});
 
             // remove highcart logo
@@ -1092,7 +1168,7 @@
             } else {
                 window.chartIndex += 5;
             }
-        	
+
         	window.temperatureChart = new Highcharts.Chart({
         		chart: {
 			        renderTo: containerId,
@@ -1106,34 +1182,34 @@
 			    	startAngle: -150,
 			    	endAngle: 150,
 		            size: [11],
-		            center: ['50%', '50%'],
+		            center: ['50%', '50%']
 			    },
 			    exporting: {
 		            enabled: false
-		        },        
+		        },
 		        tooltip: {
 		            enabled: false
-		        },        
+		        },
 		        title: {
 		            text: 'Temperatur'
-		        },	    
+		        },
 				yAxis: {
 					min: -10,
 					max: 40,
-		            
+
 		            minorTickInterval: 1,
 		            minorTickWidth: 1,
 		            minorTickLength: 5,
 		            minorTickPosition: 'inside',
-		            
+
 		            tickInterval: 5,
 		            tickWidth: 3,
 		            tickLength: 10,
 		            tickPosition: 'inside',
-		            
+
 		            title: {
 			            text: 'C',
-		                y: +15,
+		                y: +15
 			        },
 		            labels: {
 		                style: {
@@ -1142,15 +1218,15 @@
 		                step: 1,
 		                distance: -15
 		            }
-				},        	
+				},
 			    series: [{
 		            name: "score",
 		            data: [10],
 					dial: {
 						radius: "87%",
 		                rearLength: "0%"
-					}            
-		         }]	
+					}
+		         }]
         	});
 
             // remove highcart logo
@@ -1215,7 +1291,7 @@
                     data: data_y
                 }]
             });
-            
+
             // remove highchart logo
             $('#highcharts-' + window.chartIndex + ' svg text').last().remove();
         }

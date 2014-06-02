@@ -173,21 +173,21 @@ label {
     cursor: pointer;
 }
 
-    .filterButton:hover {
-        background-color: rgba(255, 255, 255, 0.4);
-        border: 1px solid rgba(255, 255, 255, 0.00);
-        text-decoration: none;
-    }
+.filterButton:hover {
+    background-color: rgba(255, 255, 255, 0.4);
+    border: 1px solid rgba(255, 255, 255, 0.00);
+    text-decoration: none;
+}
 
-    .filterButton img {
-        width: 24px;
-        height: auto;
-    }
+.filterButton img {
+    width: 24px;
+    height: auto;
+}
 
-    .filterButton.active {
-        background-color: #a6d3e0;
-        border: 1px solid #5394a7;
-    }
+.filterButton.active {
+    background-color: #a6d3e0;
+    border: 1px solid #5394a7;
+}
 
 #timeOffsetToggler {
     width: 34px;
@@ -258,6 +258,10 @@ label {
 }
 
 #details_chart {
+}
+
+#details_pie_charts{
+    display: none;
 }
 
 #details_map {
