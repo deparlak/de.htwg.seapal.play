@@ -104,8 +104,17 @@ logbook.getAllWaypointsOfTrip = function (tripId, callback) {
 }
 
 /**
+* Takes a callback function which gets invoked when the user tries to access restricted objects.
+*/
+logbook.onForbidden = null;  // dummy to be replaced by user
+
+/**
  * Internal AJAX error handler
  */
 function handleAjaxError(jqXHR, textStatus, errorThrown) {
-    window.alert(ajaxErrorMsg + ' (' + errorThrown + ').');
+    if (jqXHR.status == 403 && logbook.onForbidden != null) {   // forbidden
+        logbook.onForbidden();
+        return;
+    }
+    window.alert(jqXHR.responseText + ' (' + errorThrown + ').');
 }

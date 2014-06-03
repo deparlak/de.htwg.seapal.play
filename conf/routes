@@ -22,6 +22,7 @@ GET           /api/all/$scope<(all|friends|own)>                                
 GET           /api/all/$id<[0-9a-fA-F\-]+>                                                              @de.htwg.seapal.web.controllers.MainAPI.allofFriend(id: UUID)
 
 # authentication
+GET           /forbidden                                                                                de.htwg.seapal.web.controllers.Application.forbiddenContent()
 GET           /login                                                                                    de.htwg.seapal.web.controllers.Application.login()
 POST          /login                                                                                    @de.htwg.seapal.web.controllers.AccountAPI.login()
 GET           /logout                                                                                   @de.htwg.seapal.web.controllers.AccountAPI.logout()

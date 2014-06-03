@@ -15,6 +15,7 @@ import de.htwg.seapal.web.views.html.appContent.signUpSeapal;
 import de.htwg.seapal.web.views.html.impressum;
 import de.htwg.seapal.web.views.html.index;
 import de.htwg.seapal.web.views.html.logbook;
+import de.htwg.seapal.web.views.html.forbiddenContent;
 import play.Routes;
 import play.data.DynamicForm;
 import play.mvc.Controller;
@@ -43,6 +44,10 @@ public class Application
     @play.mvc.Security.Authenticated(AccountAPI.Secured.class)
     public static Result logbook(){
         return redirect("/logbook/394b2934-3918-444d-820c-abaf11e60fc7");  
+    }
+    
+    public static Result forbiddenContent() {
+    	return ok(forbiddenContent.render());
     }
 
     public static Result login() {

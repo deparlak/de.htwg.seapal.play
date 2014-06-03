@@ -153,7 +153,6 @@ public class WaypointDatabase extends CouchDbRepositorySupport<Waypoint> impleme
 	 * Returns a list of JSON objects of the form {waypointId, thumbImage}.
 	 * thumbImage is of the form "data:image/jpg;base64,[binaryData]" for direct use as src of image tags.
 	 * @param startIndex Number of entries to skip before returning the values.
-	 * @author Lukas
 	 */
 	public List<WaypointPictureBean> getPhotosByTripId(UUID tripId, int startIndex, int count) {
 		// the pictures view contains entries of the form   (tripID  ->  {wayPointId: ..., thumbImage: ...})
@@ -172,7 +171,6 @@ public class WaypointDatabase extends CouchDbRepositorySupport<Waypoint> impleme
 	 * Gets the waypoints objects of a trip.
 	 * @param startIndex Number of entries to skip before returning the values.
 	 * @param count Specify 0 to reveive all items.
-	 * @author Lukas
 	 */
 	public List<? extends IWaypoint> getWaypointsByTripId(UUID tripId, int startIndex, int count) {
 		ViewQuery query = new ViewQuery()
@@ -190,7 +188,6 @@ public class WaypointDatabase extends CouchDbRepositorySupport<Waypoint> impleme
 	
 	/**
 	 * Returns all waypoints of the specified trip. Note that not all properties get initialized!
-	 * @author Lukas
 	 */
 	public List<? extends IWaypoint> getAllWaypointsOfTrip(UUID tripId) {
 		ViewQuery query = new ViewQuery()
