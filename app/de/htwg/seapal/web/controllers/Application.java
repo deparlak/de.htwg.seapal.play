@@ -40,12 +40,18 @@ public class Application
         return ok(app.render());
     }
 
+    @play.mvc.Security.Authenticated(AccountAPI.Secured.class)
     public static Result logbook(){
-        return ok(logbook.render(new Logbook("394b2934-3918-444d-820c-abaf11e60fc7")));
+        return redirect("/logbook/394b2934-3918-444d-820c-abaf11e60fc7");  
     }
 
     public static Result login() {
-        return ok(signInSeapal.render(DynamicForm.form(Account.class), routes.AccountAPI.login()));
+    	String returnUrl = request().getQueryString("returnUrl");
+    	if (returnUrl == null) {
+    		returnUrl = "";
+    	}
+    	
+        return ok(signInSeapal.render(DynamicForm.form(Account.class), routes.AccountAPI.login(), returnUrl));
     }
 
     public static Result forgotten() {

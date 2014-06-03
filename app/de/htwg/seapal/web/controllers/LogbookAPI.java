@@ -17,6 +17,8 @@ import de.htwg.seapal.database.impl.TripDatabase;
 import de.htwg.seapal.database.impl.WaypointDatabase;
 import de.htwg.seapal.model.IModel;
 import de.htwg.seapal.model.ITrip;
+import de.htwg.seapal.web.models.Logbook;
+import de.htwg.seapal.web.views.html.logbook;
 
 /**
  * Handles http requests to /LogbookAPI
@@ -28,14 +30,17 @@ public class LogbookAPI extends Controller {
 	@Inject
 	private IMainController mainController;
 	
+	@Inject
+	private IAccountController accountController;
+	
 
-	//@play.mvc.Security.Authenticated(AccountAPI.SecuredAPI.class)
+	@play.mvc.Security.Authenticated(AccountAPI.Secured.class)
 	public Result index(UUID tripId) {
 		String userId = session(IAccountController.AUTHN_COOKIE_KEY);
-		return ok(de.htwg.seapal.web.views.html.scrolldemo.render(tripId.toString()));
+		return ok(logbook.render(new Logbook(tripId.toString())));
 	}
 	
-	//@play.mvc.Security.Authenticated(AccountAPI.SecuredAPI.class)
+	@play.mvc.Security.Authenticated(AccountAPI.SecuredAPI.class)
 	public Result getTripById(UUID tripId) {
 		TripDatabase db = SeapalGlobal.getInjector().getInstance(TripDatabase.class);
 		ITrip trip = db.get(tripId);
@@ -46,18 +51,19 @@ public class LogbookAPI extends Controller {
 		return ok(Json.toJson(trip));
 	}
 	
-	//@play.mvc.Security.Authenticated(AccountAPI.SecuredAPI.class)
+	@play.mvc.Security.Authenticated(AccountAPI.SecuredAPI.class)
 	public Result getPhotosOfTrip(UUID tripId, int startIndex, int count) {
 		WaypointDatabase db = SeapalGlobal.getInjector().getInstance(WaypointDatabase.class);
 		return ok(Json.toJson(db.getPhotosByTripId(tripId, startIndex, count)));
 	}
 	
-	//@play.mvc.Security.Authenticated(AccountAPI.SecuredAPI.class)
+	@play.mvc.Security.Authenticated(AccountAPI.SecuredAPI.class)
 	public Result getWaypointsOfTrip(UUID tripId, int startIndex, int count) {
 		WaypointDatabase db = SeapalGlobal.getInjector().getInstance(WaypointDatabase.class);
 		return ok(Json.toJson(db.getWaypointsByTripId(tripId, startIndex, count)));
 	}
 	
+	@play.mvc.Security.Authenticated(AccountAPI.SecuredAPI.class)
 	public Result getTrips(UUID boat, long startDate, int skip, int count, String desc) {
 		TripDatabase tripsDb = SeapalGlobal.getInjector().getInstance(TripDatabase.class);
 		List<? extends ITrip> result = tripsDb.getTrips(boat.toString(), startDate, skip, count, "true".equals(desc));
@@ -65,6 +71,7 @@ public class LogbookAPI extends Controller {
 		return ok(Json.toJson(result));
 	}
 	
+	@play.mvc.Security.Authenticated(AccountAPI.SecuredAPI.class)
 	public Result getAllTrips(UUID boatId) {
 		TripDatabase tripsDb = SeapalGlobal.getInjector().getInstance(TripDatabase.class);
 		List<? extends ITrip> result = tripsDb.getAllTrips(boatId.toString());
@@ -72,11 +79,13 @@ public class LogbookAPI extends Controller {
 		return ok(Json.toJson(result));
 	}
 	
+	@play.mvc.Security.Authenticated(AccountAPI.SecuredAPI.class)
 	public Result getAllWaypoints(UUID tripId) {
 		WaypointDatabase db = SeapalGlobal.getInjector().getInstance(WaypointDatabase.class);
 		return ok(Json.toJson(db.getAllWaypointsOfTrip(tripId)));
 	}
 
+	@play.mvc.Security.Authenticated(AccountAPI.SecuredAPI.class)
 	public Result getWaypointPhoto(UUID waypointId) {
 		WaypointDatabase db = SeapalGlobal.getInjector().getInstance(WaypointDatabase.class);
 		InputStream imgData =  db.getPhoto(waypointId);
