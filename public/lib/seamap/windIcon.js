@@ -1,130 +1,158 @@
-function windIcon(deg, num) {
-  //num = 5;
+function windIcon(deg, speed, num) {
   var langWindDir = new Array("N", "NNE", "NE", "ENE","E", "ESE", "SE", "SSE","S", "SSW", "SW", "WSW","W", "WNW", "NW", "NNW");
+  var windColor;
+
 
   function windDirLang ($winddir) {
     return langWindDir[Math.floor(((parseInt($winddir) + 11.25) / 22.5))];
   }
+
+  function getColor() {
+    if (speed < 1.5) {
+      return 'rgba(0, 0, 180, 1.0)'; // dark blue
+    } else if (speed < 3) {
+      return 'rgba(0, 0, 223, 1.0)'; // blue
+    } else if (speed < 5) {
+      return 'rgba(0, 24, 254, 1.0)'; // blue
+    } else if (speed < 6.5) {
+      return 'rgba(0, 114, 254, 1.0)'; // light blue
+    } else if (speed < 8.5) {
+      return 'rgba(0, 173, 254, 1.0)'; // cyan blue
+    } else if (speed < 10) {
+      return 'rgba(0, 238, 254, 1.0)'; // cyan
+    } else if (speed < 12) {
+      return 'rgba(43, 254, 211, 1.0)'; // light cyan
+    } else if (speed < 13.5) {
+      return 'rgba(103, 254, 151, 1.0)'; // green cyan
+    } else if (speed < 15.5) {
+      return 'rgba(155, 254, 99, 1.0)'; // light green
+    } else if (speed < 17) {
+      return 'rgba(211, 254, 43, 1.0)'; // yellow green
+    } else if (speed < 19) {
+      return 'rgba(254, 243, 0, 1.0)'; // yellow
+    } else if (speed < 20.5) {
+      return 'rgba(254, 183, 0, 1.0)'; // orange yellow
+    } else if (speed < 22.5) {
+      return 'rgba(254, 121, 0, 1.0)'; // orange
+    } else if (speed < 24) {
+      return 'rgba(254, 75, 0, 1.0)'; // red orange
+    } else if (speed < 25.5) {
+      return 'rgba(254, 23, 0, 1.0)'; // light red
+    } else if (speed < 27.5) {
+      return 'rgba(220, 0, 0, 1.0)'; // red
+    } else if (speed < 29) {
+      return 'rgba(173, 0, 0, 1.0)'; // dark red
+    } else {
+      return 'rgba(254, 0, 0, 1.0)'; // red
+    }
+  }
+
+  windColor = getColor();
   
   // Create the chart
-  $('.div-wind-icon' + num).highcharts({
+  $('#div-wind-icon' + num).highcharts({
   
       chart: {
           type: 'gauge',
+          backgroundColor:'rgba(0, 0, 0, 0.0)',
           plotBackgroundColor: 'rgba(0, 0, 0, 0.0)',
-          backgroundColor:'rgba(255, 255, 255, 0.0)',
           plotBackgroundImage: null,
           plotBorderWidth: 0,
           plotShadow: false,
-          // Größe der Uhr auf der Webseite
+          // size
           height: 50,
           width: 50,
-          margin: 2
+          margin: 5
       },
       
       credits: {
-        // Anzeige von Highcharts
-          enabled: false
+        // logo
+        enabled: false
       },
 
       title: {
-        // Überschrift
+        // headline
         text: ''
       },
       
       pane: {
         background: [{
-          // default background
-        }, {
-          // reflex for supported browsers
-          backgroundColor: Highcharts.svg ? {
-            radialGradient: {
-              cx: 0.5,
-              cy: -0.4,
-              r: 1.9
-            },
-            stops: [
-              [0.5, 'rgba(255, 255, 255, 0.2)']
-            ]
-          } : null
+          backgroundColor: 'rgba(0, 0, 0, 0.0)',
+          borderColor: 'rgba(0, 0, 0, 0.0)'
         }]
       },
       
       yAxis: {
-          // Start- und End-Wert der Zahlen
           min: 0,
           max: 360,
-          // Kreis ausenherum
           lineWidth: 0,
 
           minorTickInterval: 'auto',
-          // Breite Skalierungsanzeige
           minorTickWidth: 1,
-          // Länder der Skalierung zur Mitte
           minorTickLength: 2,
-          // Wo Skalierung in Uhr anfängt
           minorTickPosition: 'inside',
           minorGridLineWidth: 0,
-          // Farbe der Skalierung
-          minorTickColor: '#666',
+          minorTickColor: 'rgba(0, 0, 0, 0.0)',
   
-      // Wo an der Skalierung Zahlen angezeigt werden
           tickInterval: 22.5,
           tickWidth: 1,
           tickLength: 4,
           tickPosition: 'inside',
-          tickColor: '#666',
-          // Anzeige der Himmelsrichtung
+          tickColor: 'rgba(0, 0, 0, 0.0)',
           labels: {
-            // Position der Zahlen im Kreis, vom Rand aus
               distance: -11,
-            style: {
+              style: {
                   fontSize: '8px',
-                  color: '#0059FE',
+                  color: 'rgba(0, 0, 0, 0.0)',
                   fontWeight: 'bold'
               },
               step: 4,
               rotation: 'auto',
-        formatter:
-        function() {
-          return windDirLang(this.value);
-        },
-          }
-/*              title: {
-            // Text in der Uhr
-              text: 'degree',
-              style: {
-                  color: '#BBB',
-                  fontWeight: 'bold',
-                  fontSize: '12px',
-                  // Zeilenabstand
-                  lineHeight: '20px'                
+              formatter:
+              function() {
+                return windDirLang(this.value);
               },
-              // Position des Texts
-              y: 100
-
           }
-*/      
       },
-  
+
       series: [{
-          name: 'deg',
-          data: [deg],
-          tooltip: {
-              //valueSuffix: ' km/h'
-        enabled: false
-          },
-          dial: {
-            backgroundColor: '#FE0000',
-                radius: '100%',
-                baseWidth: 4,
-                topWidth: 1,
-                baseLength: '10%',
-                rearLength: 0
-            },
-            pivot: {
-              radius : 3
+        name: 'deg',
+        enableMouseTracking: false,
+        data: [{
+            id: 'top',
+            y: deg + 180,
+            dial: {
+              backgroundColor: windColor,
+              baseLength: '70%',
+              baseWidth: 15,
+              radius: '100%',
+              rearLength: '-70%',
+              topWidth: 1
             }
+          },{
+            id: 'base',
+            y: deg + 180,
+            dial: {
+              backgroundColor: windColor,
+              baseLength: '100%',
+              baseWidth: 5,
+              radius: '70%',
+              rearLength: '130%',
+              topWidth: 1
+            }
+        }],
+        tooltip: {
+          //valueSuffix: ' km/h'
+          enabled: false,
+        },
+        pivot: {
+          radius : 3
+        },
+          
+        animation: false,
+        dataLabels: {
+          enabled: false
+        }
       }]
   });
 }

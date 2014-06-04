@@ -1,36 +1,37 @@
-var lng = new Array();
-var lat = new Array();
-var deg = new Array();
-var speed = new Array();
-var temp = new Array();
-var icon = new Array();
+// container which contains all weather info from openweathermap
+var weatherData;
+var sw;
+var ne;
 
 var overlay;
 var map;
-var dfd = $.Deferred();
+
+var listener;
 
 USGSOverlay.prototype = new google.maps.OverlayView();
 
-// Initialize the map and the custom overlay.
-
-function initializeCustomLayer(googleMap) {
-  map = googleMap
-  getWeatherInfos();
+function destroyCustomLayer() {
+  google.maps.event.removeListener(listener);
+  if (overlay != null) {
+    overlay.setMap(null);
+  }
 }
 
-// after response with weather infos
-dfd.done(function() {
-  for(var i = 0; i < lng.length; i++) {
-    var swBound = new google.maps.LatLng(lat[i], lng[i]);
-    var neBound = new google.maps.LatLng(i, i);
-    var bounds = new google.maps.LatLngBounds(swBound, neBound);
+// Initialize the map and the custom overlay.
+function initializeCustomLayer(googleMap) {
+  map = googleMap;
+  overlay = null;
+  listener = null;
+  weatherData = new Array();
 
-    // weather icon
-    var srcImage = 'http://openweathermap.org/img/w/' + icon[i] + '.png';
+  getWeatherInfos();
 
-    overlay = new USGSOverlay(bounds, srcImage, map);
-  }
-});
+  // listener which is called by any change of the map (move in one direction or zoom in and out)
+  listener = google.maps.event.addListener(map, 'idle', function(ev){
+    weatherData = new Array();
+    getWeatherInfos();
+  });
+}
 
 /** @constructor */
 function USGSOverlay(bounds, image, map) {
@@ -39,7 +40,7 @@ function USGSOverlay(bounds, image, map) {
   this.bounds_ = bounds;
   this.image_ = image;
   this.map_ = map;
-  // includes all data
+  // keep all weather data of the layer
   this.div_ = null;
 
   // set this overlay on map
@@ -51,71 +52,119 @@ function USGSOverlay(bounds, image, map) {
  * added to the map.
  */
 USGSOverlay.prototype.onAdd = function() {
+  var weatherHTML = new Array();
 
-  var blabla = this.bounds_.getNorthEast();
-  var memory = blabla.lng();
+  // div over total layout, get size in pixel
+  var overlayProjection = this.getProjection();
+  sw = overlayProjection.fromLatLngToDivPixel(this.bounds_.getSouthWest());
+  ne = overlayProjection.fromLatLngToDivPixel(this.bounds_.getNorthEast());
+  var pixelWidth = ne.x - sw.x;
+  var pixelHeight = sw.y - ne.y;
 
-  var div_weather_info = document.createElement('div');
-  div_weather_info.setAttribute("class", "div-weather-info");
+  // This div is like an overlayer
+  var div_weather_layer = document.createElement('div');
+  div_weather_layer.setAttribute("class", "div-weather-layer");
+  div_weather_layer.style.width = pixelWidth + "px";
+  div_weather_layer.style.height = pixelHeight + "px";
+    
+  for(var i = 0; i < weatherData.length; i++) {
+    weatherHTML[i] = new Array();
 
-  var div_weather_icon = document.createElement('div');
-  div_weather_icon.setAttribute("class", "div-weather-icon");
+    // get position of weather info in pixel
+    weatherHTML[i]["swBound"] = new google.maps.LatLng(weatherData[i]["lat"], weatherData[i]["lng"]);
 
-  var div_wind_icon = document.createElement('div');
-  div_wind_icon.setAttribute("class", "div-wind-icon" + memory);
+    var pointInPixel = getPixelPosition(weatherHTML[i]["swBound"]);
 
-  var div_weather_text = document.createElement('div');
-  div_weather_text.setAttribute("class", "div-weather-text");
+    weatherHTML[i]["swDiv"] = overlayProjection.fromLatLngToDivPixel(weatherHTML[i]["swBound"]);
 
-  var div_wind_text = document.createElement('div');
-  div_wind_text.setAttribute("class", "div-wind-text");
-  
-  var img_weather_icon = document.createElement('img');
-  img_weather_icon.setAttribute("src", this.image_);
+    if (checkClosestInfo(weatherHTML[i]["swDiv"])) {
+      weatherData[i]["drawn"] = weatherHTML[i]["swDiv"];
+    } else {
+      continue;
+    }
 
-  var txt_weather = document.createElement('text');
-  txt_weather.innerHTML = temp[memory].toFixed(1) + "°C";
+    weatherHTML[i]["div_weather_info"] = document.createElement('div');
+    weatherHTML[i]["div_weather_info"].setAttribute("class", "div-weather-info");
+    weatherHTML[i]["div_weather_info"].style.left = (pointInPixel.x - 25) + 'px';
+    weatherHTML[i]["div_weather_info"].style.top = (pointInPixel.y - 75) + 'px';
 
-  var txt_wind = document.createElement('text');
-  txt_wind.innerHTML = speed[memory] + "km/h";
+    weatherHTML[i]["div_weather_icon"] = document.createElement('div');
+    weatherHTML[i]["div_weather_icon"].setAttribute("class", "div-weather-icon");
 
-  div_weather_text.appendChild(txt_weather);
-  div_wind_text.appendChild(txt_wind);
+    weatherHTML[i]["div_wind_icon"] = document.createElement('div');
+    weatherHTML[i]["div_wind_icon"].setAttribute("class", "div-wind-icon");
+    weatherHTML[i]["div_wind_icon"].setAttribute("id", "div-wind-icon" + i);
 
-  div_weather_icon.appendChild(img_weather_icon);
-  
+    weatherHTML[i]["div_weather_text"] = document.createElement('div');
+    weatherHTML[i]["div_weather_text"].setAttribute("class", "div-weather-text");
 
-  div_weather_info.appendChild(div_weather_icon);
-  div_weather_info.appendChild(div_wind_icon);
-  div_weather_info.appendChild(div_weather_text);
-  div_weather_info.appendChild(div_wind_text);
+    weatherHTML[i]["div_wind_speed"] = document.createElement('div');
+    weatherHTML[i]["div_wind_speed"].setAttribute("class", "div-wind-speed");
 
-  this.div_ = div_weather_info;
+    weatherHTML[i]["div_wind_deg"] = document.createElement('div');
+    weatherHTML[i]["div_wind_deg"].setAttribute("class", "div-wind-deg");
+    
+    weatherHTML[i]["img_weather_icon"] = document.createElement('img');
+    weatherHTML[i]["img_weather_icon"].setAttribute("src", "http://openweathermap.org/img/w/" + weatherData[i]["icon"] + ".png");
 
-  windIcon(deg[memory], memory);
+    weatherHTML[i]["txt_weather"] = document.createElement('text');
+    weatherHTML[i]["txt_weather"].setAttribute("class", "text-weather-info");
+    if (weatherData[i]["temp"]) {
+      weatherHTML[i]["txt_weather"].innerHTML = weatherData[i]["temp"].toFixed(1) + "°C";
+    } else {
+      weatherHTML[i]["txt_weather"].innerHTML = "NA" + "°C";
+    }
+
+    weatherHTML[i]["txt_wind_speed"] = document.createElement('text');
+    weatherHTML[i]["txt_wind_speed"].setAttribute("class", "text-weather-info");
+    if (weatherData[i]["speed"]) {
+      weatherHTML[i]["txt_wind_speed"].innerHTML = weatherData[i]["speed"].toFixed(1) + "m/s";
+    } else {
+      weatherHTML[i]["txt_wind_speed"].innerHTML = "NA" + "m/s";
+    }
+
+    weatherHTML[i]["txt_wind_deg"] = document.createElement('text');
+    weatherHTML[i]["txt_wind_deg"].setAttribute("class", "text-weather-info");
+    if (weatherData[i]["deg"]) {
+      weatherHTML[i]["txt_wind_deg"].innerHTML = weatherData[i]["deg"].toFixed(1) + "°";
+    } else {
+      weatherHTML[i]["txt_wind_deg"].innerHTML = "NA" + "°";
+    }
+
+    weatherHTML[i]["div_weather_text"].appendChild(weatherHTML[i]["txt_weather"]);
+    weatherHTML[i]["div_wind_speed"].appendChild(weatherHTML[i]["txt_wind_speed"]);
+    weatherHTML[i]["div_wind_deg"].appendChild(weatherHTML[i]["txt_wind_deg"]);
+    weatherHTML[i]["div_weather_icon"].appendChild(weatherHTML[i]["img_weather_icon"]);
+
+    weatherHTML[i]["div_weather_info"].appendChild(weatherHTML[i]["div_weather_icon"]);
+    weatherHTML[i]["div_weather_info"].appendChild(weatherHTML[i]["div_wind_icon"]);
+    weatherHTML[i]["div_weather_info"].appendChild(weatherHTML[i]["div_weather_text"]);
+    weatherHTML[i]["div_weather_info"].appendChild(weatherHTML[i]["div_wind_speed"]);
+    weatherHTML[i]["div_weather_info"].appendChild(weatherHTML[i]["div_wind_deg"]);
+
+    div_weather_layer.appendChild(weatherHTML[i]["div_weather_info"]);
+  }
+
+  this.div_ = div_weather_layer;
 
   // Add the element to the "overlayLayer" pane.
   var panes = this.getPanes();
-  // ??? Hier muss man schauen welche Schicht man will (MapPanes.mapPane,MapPanes.overlayLayer,MapPanes.overlayShadow,MapPanes.overlayImage,MapPanes.floatShadow,MapPanes.overlayMouseTarget,MapPanes.floatPane). Entscheidet was vorne oder weiter hinten liegt.
-  panes.overlayLayer.appendChild(div_weather_info);
+  panes.overlayLayer.appendChild(div_weather_layer);
 };
 
 // set position of div
 USGSOverlay.prototype.draw = function() {
 
-  var blabla = this.bounds_.getNorthEast();
-  var memory = blabla.lng();
-  windIcon(deg[memory], memory);
+  for(var i = 0; i < weatherData.length; i++) {
+    if(weatherData[i]["drawn"].x != 0) {
+      windIcon(weatherData[i]["deg"], weatherData[i]["speed"], i);
+    }
+  }
 
-  // needed to get position in pixel on map
-  var overlayProjection = this.getProjection();
-
-  var sw = overlayProjection.fromLatLngToDivPixel(this.bounds_.getSouthWest());
-
-  // Resize the image's div to fit the indicated dimensions.
+  // Resize the image's div to fit in the indicated dimensions.
   var div = this.div_;
   div.style.left = sw.x + 'px';
-  div.style.top = sw.y + 'px';
+  div.style.top = ne.y + 'px';
 };
 
 
@@ -126,73 +175,76 @@ USGSOverlay.prototype.onRemove = function() {
   this.div_ = null;
 };
 
-//google.maps.event.addDomListener(window, 'load', initialize);
-
-
+// ajax request at openweathermap.org. Get weather data from an area.
 this.getWeatherInfos = function() {
-  google.maps.event.addListener(map, 'idle', function(ev){
-    var bounds = map.getBounds();
-    var ne = bounds.getNorthEast();
-    var sw = bounds.getSouthWest();
-    
-    var url = "http://api.openweathermap.org/data/2.5/box/city?cluster=yes&cnt=200&format=json&units=metric&layer=%5Bobject%20Object%5D&bbox=";
-    url += sw.lng() + ",";
-    url += sw.lat() + ",";
-    url += ne.lng() + ",";
-    url += ne.lat() + ",";
-    url += map.getZoom() + ",";
-    url += "EPSG%3A4326&callback=OpenLayers.Protocol.Script.registry.c20";
-    $.ajax({
-        type: "POST",
-        dataType: "jsonp",
-        url: url,
-        async: false,
-        success: function (data) {
-            for(var i = 0; i < data.list.length; i++) {
-                speed[i] = data.list[i].wind.speed;
-                deg[i] = data.list[i].wind.deg;
-                icon[i] = data.list[i].weather[0].icon;
-                temp[i] = data.list[i].main.temp;
-                lng[i] = data.list[i].coord.lon;
-                lat[i] = data.list[i].coord.lat;
-            }
-            dfd.resolve();
-        },
-        error: function (errorData) {
-          alert("Error while getting weather data :: " + errorData.status);
+  
+  // destroy old overlay
+  if (overlay != null) {
+    overlay.setMap(null);
+  }
+
+  var bounds = map.getBounds();
+  var nePoint = bounds.getNorthEast();
+  var swPoint = bounds.getSouthWest();
+  
+  var url = "http://api.openweathermap.org/data/2.5/box/city?cluster=yes&cnt=200&format=json&units=metric&layer=%5Bobject%20Object%5D&bbox=";
+  url += swPoint.lng() + ",";
+  url += swPoint.lat() + ",";
+  url += nePoint.lng() + ",";
+  url += nePoint.lat() + ",";
+  url += map.getZoom() + ",";
+  url += "EPSG%3A4326&callback=OpenLayers.Protocol.Script.registry.c20";
+  $.ajax({
+      type: "POST",
+      dataType: "jsonp",
+      url: url,
+      async: true,
+      success: function (data) {
+          for(var i = 0; i < data.list.length; i++) {
+              weatherData[i] = new Array();
+              weatherData[i]["speed"] = data.list[i].wind.speed;
+              weatherData[i]["deg"] = data.list[i].wind.deg;
+              weatherData[i]["icon"] = data.list[i].weather[0].icon;
+              weatherData[i]["temp"] = data.list[i].main.temp;
+              weatherData[i]["place"] = data.list[i].name;
+              weatherData[i]["lng"] = data.list[i].coord.lon;
+              weatherData[i]["lat"] = data.list[i].coord.lat;
+              weatherData[i]["drawn"] = new google.maps.Point(0, 0);
+          }
+      },
+      error: function (errorData) {
+        alert("Error while getting weather data :: " + errorData.status);
+        if (overlay != null) {
+          overlay.setMap(null);
         }
-    });
+      }
+  }).done(function() {
+    // ??? Vielleicht Bounds von Request verwenden
+    var bounds = map.getBounds();
+    overlay = new USGSOverlay(bounds, null, map);
   });
 }
 
-
-this.oldFunc = function() {
-  var lngLat = map.getCenter();
-  lng[0] = lngLat.lng();
-  lat[0] = lngLat.lat();
-  var url = "http://api.openweathermap.org/data/2.5/weather?lat=";
-  url += lat[0];
-  url += "&lon=";
-  url += lng[0];
-  url += "&cnt=1";
-  $.ajax({
-    type: "POST",
-    dataType: "json",
-    url: url + "&callback=?",
-    async: false,
-    success: function (data) {
-      speed[0] = data.wind.speed;
-      deg[0] = data.wind.deg;
-      icon[0] = data.weather[0].icon;
-      // temperature is in Kelvin
-      temp[0] = data.main.temp - 273,15;
-      lng[0] = data.coord.lon;
-      lat[0] = data.coord.lat;
-      dfd.resolve();
-    },
-    error: function (errorData) {
-      alert("Error while getting weather data :: " + errorData.status);
+// check if there is a shown weather info closer than 150 pixel on the map
+function checkClosestInfo(point) {
+  for(var i = 0; i < weatherData.length; i++) {
+    if(weatherData[i]["drawn"].x != 0) {
+      math = Math.round(Math.sqrt(Math.pow(point.y - weatherData[i]["drawn"].y, 2) + Math.pow(point.x - weatherData[i]["drawn"].x, 2)));
+      if(math < 150) {
+        return false;
+      }
     }
-  });
-  //return dfd.promise();
+  }
+  return true;
+}
+
+// returns the offset between the current map position and the position of a wetherstation station
+function getPixelPosition(point) {
+  var scale = Math.pow(2, map.getZoom());
+  var nw = new google.maps.LatLng(map.getBounds().getNorthEast().lat(), map.getBounds().getSouthWest().lng());
+  var worldCoordinateNW = map.getProjection().fromLatLngToPoint(nw);
+  var worldCoordinate = map.getProjection().fromLatLngToPoint(point);
+  var pixelOffset = new google.maps.Point(Math.floor((worldCoordinate.x - worldCoordinateNW.x) * scale), Math.floor((worldCoordinate.y - worldCoordinateNW.y) * scale));
+ 
+  return pixelOffset;
 }
