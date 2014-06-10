@@ -1,8 +1,11 @@
 package de.htwg.seapal.web.controllers;
 
+import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.List;
 import java.util.UUID;
+
+import org.omg.CosNaming.NamingContextPackage.NotFoundReasonHolder;
 
 import play.libs.Json;
 import play.mvc.Controller;
@@ -15,8 +18,10 @@ import de.htwg.seapal.controller.IAccountController;
 import de.htwg.seapal.controller.IMainController;
 import de.htwg.seapal.database.impl.TripDatabase;
 import de.htwg.seapal.database.impl.WaypointDatabase;
+import de.htwg.seapal.database.IWaypointDatabase.WaypointPictureBean;
 import de.htwg.seapal.model.IModel;
 import de.htwg.seapal.model.ITrip;
+import de.htwg.seapal.model.IWaypoint;
 import de.htwg.seapal.web.models.Logbook;
 import de.htwg.seapal.web.views.html.logbook;
 
@@ -44,35 +49,35 @@ public class LogbookAPI extends Controller {
 
 	@play.mvc.Security.Authenticated(AccountAPI.SecuredAPI.class)
 	public Result getTripById(UUID tripId) {
-		TripDatabase db = SeapalGlobal.getInjector().getInstance(TripDatabase.class);
-		ITrip trip = db.get(tripId);
+		String userId = session(IAccountController.AUTHN_COOKIE_KEY);
+
+		IModel trip = mainController.getSingleDocument("trip", userId, tripId);
 
 		if (trip == null)
 			return notFound();
-
-		// check access rights
-		String userId = session(IAccountController.AUTHN_COOKIE_KEY);
-		if (!canAccess(trip.getAccount())) {
-			return forbidden(AccessDeniedMsg);
-		}
 
 		return ok(Json.toJson(trip));
 	}
 
 	/**
 	 * Gets all waypoints of a trip which have a picture assigned.
-	 * Returns a list of JSON objects of the form {waypointId, thumbImage}.
+	 * Returns an array of JSON objects of the form [{waypointId, thumbImage}, ...]
 	 * thumbImage is of the form "data:image/jpg;base64,[binaryData]" for direct use as src of image tags.
 	 * @param startIndex Number of entries to skip before returning the values.
 	 */
 	@play.mvc.Security.Authenticated(AccountAPI.SecuredAPI.class)
 	public Result getPhotosOfTrip(UUID tripId, int startIndex, int count) {
+		String userId = session(IAccountController.AUTHN_COOKIE_KEY);
+
 		if (!canAccessTrip(tripId)) {
 			return forbidden(AccessDeniedMsg);
 		}
 
-		WaypointDatabase db = SeapalGlobal.getInjector().getInstance(WaypointDatabase.class);
-		return ok(Json.toJson(db.getPhotosByTripId(tripId, startIndex, count)));
+		List<WaypointPictureBean> result = mainController.getPhotosOfTrip(userId, tripId, startIndex, count);
+		if (result == null) 
+			return notFound();
+
+		return ok(Json.toJson(result));
 	}
 
 	/**
@@ -85,9 +90,8 @@ public class LogbookAPI extends Controller {
 		if (!canAccessTrip(tripId)) {
 			return forbidden(AccessDeniedMsg);
 		}
-		
-		WaypointDatabase db = SeapalGlobal.getInjector().getInstance(WaypointDatabase.class);
-		return ok(Json.toJson(db.getWaypointsByTripId(tripId, startIndex, count)));
+
+		return ok(Json.toJson(mainController.getWaypointsByTripId(tripId, startIndex, count)));
 	}
 
 
@@ -101,9 +105,11 @@ public class LogbookAPI extends Controller {
 		if (!canAccessBoat(boat)) {
 			return forbidden(AccessDeniedMsg);
 		}
-		
-		TripDatabase tripsDb = SeapalGlobal.getInjector().getInstance(TripDatabase.class);
-		List<? extends ITrip> result = tripsDb.getTrips(boat.toString(), startDate, skip, count, "true".equals(desc));
+
+		List<? extends ITrip> result = mainController.getTripsByBoat(boat, startDate, skip, count, "true".equals(desc));
+		if (result == null) {
+			return notFound();
+		}
 
 		return ok(Json.toJson(result));
 	}
@@ -118,20 +124,26 @@ public class LogbookAPI extends Controller {
 		if (!canAccessBoat(boatId)) {
 			return forbidden(AccessDeniedMsg);
 		}
-		
-		TripDatabase tripsDb = SeapalGlobal.getInjector().getInstance(TripDatabase.class);
-		List<? extends ITrip> result = tripsDb.getAllTrips(boatId.toString());
+
+		List<? extends ITrip> result = mainController.getTripsByBoatSlim(boatId);
+		if (result == null) {
+			return notFound();
+		}
 
 		return ok(Json.toJson(result));
 	}
-	
+
 	/**
 	 * Returns all waypoints of the specified trip. Note that not all properties get initialized!
 	 */
 	@play.mvc.Security.Authenticated(AccountAPI.SecuredAPI.class)
 	public Result getAllWaypoints(UUID tripId) {
-		WaypointDatabase db = SeapalGlobal.getInjector().getInstance(WaypointDatabase.class);
-		return ok(Json.toJson(db.getAllWaypointsOfTrip(tripId)));
+		List<? extends IWaypoint> result = mainController.getWaypointsOfTripSlim(tripId);
+		if (result == null) {
+			return notFound();
+		}
+
+		return ok(Json.toJson(result));
 	}
 
 	/**
@@ -139,11 +151,16 @@ public class LogbookAPI extends Controller {
 	 */
 	@play.mvc.Security.Authenticated(AccountAPI.SecuredAPI.class)
 	public Result getWaypointPhoto(UUID waypointId) {
-		WaypointDatabase db = SeapalGlobal.getInjector().getInstance(WaypointDatabase.class);
-		InputStream imgData = db.getPhoto(waypointId);
-		return ok(imgData).as("image/jpeg");
+		String userId = session(IAccountController.AUTHN_COOKIE_KEY);
+		InputStream imgData;
+		try {
+			imgData = mainController.getPhoto(userId, waypointId, "waypoint");
+			return ok(imgData).as("image/jpeg");
+		} catch (FileNotFoundException e) {
+			return notFound();
+		}
 	}
-	
+
 	/**
 	 * Returns true when the current user is allowed to access the specified boat and it's trips.
 	 */

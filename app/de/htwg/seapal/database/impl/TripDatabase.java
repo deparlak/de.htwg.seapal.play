@@ -112,7 +112,8 @@ public class TripDatabase extends CouchDbRepositorySupport<Trip> implements ITri
 	 * Returns a set of trip objects for a boat ordered by the startDate.
 	 * @param skip Number of items to skip before returning the results
 	 */
-	public List<? extends ITrip> getTrips(String boatId, long startDate, int skip, int count, boolean descending) {
+	@Override
+	public List<? extends ITrip> getTripsByBoat(String boatId, long startDate, int skip, int count, boolean descending) {
 		String endKey = boatId; // (descending order)
 		if (!descending) {
 			endKey = endKey + "_\ufff0"; // append high unicode character to select a range (ascending order)
@@ -136,7 +137,8 @@ public class TripDatabase extends CouchDbRepositorySupport<Trip> implements ITri
 	 * Returns all trips of the specified boat.
 	 * Note that only the properties name, startDate, from and to are initialized.
 	 */
-	public List<? extends ITrip> getAllTrips(String boatId) {		
+	@Override
+	public List<? extends ITrip> getTripsByBoatSlim(String boatId) {		
 		ViewQuery query = new ViewQuery();
 		query
 		.designDocId("_design/Trip")

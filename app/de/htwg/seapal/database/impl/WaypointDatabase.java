@@ -14,8 +14,6 @@ import org.ektorp.CouchDbConnector;
 import org.ektorp.CouchDbInstance;
 import org.ektorp.DocumentNotFoundException;
 import org.ektorp.ViewQuery;
-import org.ektorp.ViewResult;
-import org.ektorp.ViewResult.Row;
 import org.ektorp.impl.StdCouchDbConnector;
 import org.ektorp.support.CouchDbRepositorySupport;
 
@@ -33,28 +31,6 @@ public class WaypointDatabase extends CouchDbRepositorySupport<Waypoint> impleme
 	private final ILogger logger;
 	private final StdCouchDbConnector connector;
 
-
-	public static class WaypointPictureBean {
-		private String waypointId;
-		private String thumbPicture;
-
-		public String getWaypointId() {
-			return waypointId;
-		}
-		public void setWaypointId(String waypointId) {
-			this.waypointId = waypointId;
-		}
-		/**
-		 * Returns the thumb image data in the form "data:image/jpg;base64,[binaryData]"
-		 * to be set as img-Tag directly.
-		 */
-		public String getThumbPicture() {
-			return thumbPicture;
-		}
-		public void setThumbPicture(String thumbPicture) {
-			this.thumbPicture = thumbPicture;
-		}
-	}
 
 	@Inject
 	protected WaypointDatabase(@Named("waypointCouchDbConnector") CouchDbConnector db, ILogger logger, CouchDbInstance dbInstance) {
@@ -154,6 +130,7 @@ public class WaypointDatabase extends CouchDbRepositorySupport<Waypoint> impleme
 	 * thumbImage is of the form "data:image/jpg;base64,[binaryData]" for direct use as src of image tags.
 	 * @param startIndex Number of entries to skip before returning the values.
 	 */
+	@Override
 	public List<WaypointPictureBean> getPhotosByTripId(UUID tripId, int startIndex, int count) {
 		// the pictures view contains entries of the form   (tripID  ->  {wayPointId: ..., thumbImage: ...})
 		// for all waypoints which have a picture assigned
@@ -172,6 +149,7 @@ public class WaypointDatabase extends CouchDbRepositorySupport<Waypoint> impleme
 	 * @param startIndex Number of entries to skip before returning the values.
 	 * @param count Specify 0 to reveive all items.
 	 */
+	@Override
 	public List<? extends IWaypoint> getWaypointsByTripId(UUID tripId, int startIndex, int count) {
 		ViewQuery query = new ViewQuery()
 		.designDocId("_design/Waypoint")
@@ -189,7 +167,8 @@ public class WaypointDatabase extends CouchDbRepositorySupport<Waypoint> impleme
 	/**
 	 * Returns all waypoints of the specified trip. Note that not all properties get initialized!
 	 */
-	public List<? extends IWaypoint> getAllWaypointsOfTrip(UUID tripId) {
+	@Override
+	public List<? extends IWaypoint> getWaypointsOfTripSlim(UUID tripId) {
 		ViewQuery query = new ViewQuery()
 		.designDocId("_design/Waypoint")
 		.viewName("byTripMinimalData")
