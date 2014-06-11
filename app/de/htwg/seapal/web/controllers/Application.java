@@ -43,7 +43,7 @@ public class Application
 
     @play.mvc.Security.Authenticated(AccountAPI.Secured.class)
     public static Result logbook(){
-        return redirect("/logbook/394b2934-3918-444d-820c-abaf11e60fc7");  
+        return redirect("/logbook/505e4b46-517b-4c1e-ac96-3dc32400ff2a/2d6ce4e2-075e-47b2-9d7a-e094b06fbb44");  
     }
     
     public static Result forbiddenContent() {

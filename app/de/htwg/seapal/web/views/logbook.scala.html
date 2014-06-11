@@ -38,8 +38,7 @@
         var isLoadingWaypoints = false;
 
         var initialTripId = '@Model.getInitialTripId()';
-        var boatId = '2dcc6f94-4d01-47d4-a4ed-e5ce9a6be3cf';  // for test only
-
+        var boatId = '@Model.getBoatId()'
         var scrollToWaypointTimeout;
 
         // set handler for HTTP-Forbidden errors:
@@ -995,7 +994,7 @@
 			        },
 				    
 				    title: {
-				        text: 'Wellenrichtung / Wellenhöhe',
+				        text: 'Wellenrichtung / Wellenhï¿½he',
 			            style: {
 			                fontSize: '14px'
 			            }
@@ -1165,7 +1164,7 @@
 		            enabled: false
 		        },
 		        title: {
-		            text: 'Bewölkung',
+		            text: 'Bewï¿½lkung',
 		            style: {
 		                fontSize: '14px'
 		            }

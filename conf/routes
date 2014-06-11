@@ -48,16 +48,16 @@ GET           /api/photo/$id<[0-9a-fA-F\-]+>/$document<(mark|waypoint)>.jpg     
 POST          /api/photo/$id<[0-9a-fA-F\-]+>/$document<(mark|waypoint)>                                 @de.htwg.seapal.web.controllers.MainAPI.addPhoto(id: UUID, document: String)
 
 # Simulator routes
-GET           /simulation/prepareTrip                                                    @de.htwg.seapal.web.controllers.SimulationAPI.prepareTrip()
-GET           /simulation/generateTrip                                                   @de.htwg.seapal.web.controllers.SimulationAPI.prepareTrip()
-POST          /simulation/generateTrip                                                   @de.htwg.seapal.web.controllers.SimulationAPI.generateTrip()
+GET           /simulation/prepareTrip                                                                   @de.htwg.seapal.web.controllers.SimulationAPI.prepareTrip()
+GET           /simulation/generateTrip                                                                  @de.htwg.seapal.web.controllers.SimulationAPI.prepareTrip()
+POST          /simulation/generateTrip                                                                  @de.htwg.seapal.web.controllers.SimulationAPI.generateTrip()
 
 # Logbook routes
-GET           /logbook/$tripId<[0-9a-fA-F\-]+>                                                            @de.htwg.seapal.web.controllers.LogbookAPI.index(tripId: UUID)
-GET           /logbook/tripData/$tripId<[0-9a-fA-F\-]+>	                                                  @de.htwg.seapal.web.controllers.LogbookAPI.getTripById(tripId: UUID)
-GET           /logbook/tripPhotos/$tripId<[0-9a-fA-F\-]+>/$startIndex<[0-9]+>/$count<[0-9]+>              @de.htwg.seapal.web.controllers.LogbookAPI.getPhotosOfTrip(tripId: UUID, startIndex: Int, count: Int)
-GET           /logbook/waypointPhoto/$waypointId<[0-9a-fA-F\-]+>                                          @de.htwg.seapal.web.controllers.LogbookAPI.getWaypointPhoto(waypointId: UUID)
-GET           /logbook/tripWaypoints/$tripId<[0-9a-fA-F\-]+>/$startIndex<[0-9]+>/$count<[0-9]+>           @de.htwg.seapal.web.controllers.LogbookAPI.getWaypointsOfTrip(tripId: UUID, startIndex: Int, count: Int)
-GET           /logbook/tripWaypoints/$tripId<[0-9a-fA-F\-]+>/all                                          @de.htwg.seapal.web.controllers.LogbookAPI.getAllWaypoints(tripId: UUID)
+GET           /logbook/$boatId<[0-9a-fA-F\-]+>/$tripId<[0-9a-fA-F\-]+>                                  @de.htwg.seapal.web.controllers.LogbookAPI.index(boatId: UUID, tripId: UUID)
+GET           /logbook/tripData/$tripId<[0-9a-fA-F\-]+>	                                                @de.htwg.seapal.web.controllers.LogbookAPI.getTripById(tripId: UUID)
+GET           /logbook/tripPhotos/$tripId<[0-9a-fA-F\-]+>/$startIndex<[0-9]+>/$count<[0-9]+>            @de.htwg.seapal.web.controllers.LogbookAPI.getPhotosOfTrip(tripId: UUID, startIndex: Int, count: Int)
+GET           /logbook/waypointPhoto/$waypointId<[0-9a-fA-F\-]+>                                        @de.htwg.seapal.web.controllers.LogbookAPI.getWaypointPhoto(waypointId: UUID)
+GET           /logbook/tripWaypoints/$tripId<[0-9a-fA-F\-]+>/$startIndex<[0-9]+>/$count<[0-9]+>         @de.htwg.seapal.web.controllers.LogbookAPI.getWaypointsOfTrip(tripId: UUID, startIndex: Int, count: Int)
+GET           /logbook/tripWaypoints/$tripId<[0-9a-fA-F\-]+>/all                                        @de.htwg.seapal.web.controllers.LogbookAPI.getAllWaypoints(tripId: UUID)
 GET           /logbook/getTrips/$boat<[0-9a-fA-F\-]+>/$startDate<[0-9]+>/$skip<[0-9]+>/$count<[0-9]+>/$descending<(true|false)>    @de.htwg.seapal.web.controllers.LogbookAPI.getTrips(boat: UUID, startDate: Long, skip: Int, count: Int, descending: String)
-GET           /logbook/allTrips/$boat<[0-9a-fA-F\-]+>                                    @de.htwg.seapal.web.controllers.LogbookAPI.getAllTrips(boat: UUID)
+GET           /logbook/allTrips/$boat<[0-9a-fA-F\-]+>                                                   @de.htwg.seapal.web.controllers.LogbookAPI.getAllTrips(boat: UUID)

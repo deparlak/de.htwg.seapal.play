@@ -42,9 +42,9 @@ public class LogbookAPI extends Controller {
 
 
 	@play.mvc.Security.Authenticated(AccountAPI.Secured.class)
-	public Result index(UUID tripId) {
+	public Result index(UUID boatId, UUID tripId) {
 		String userId = session(IAccountController.AUTHN_COOKIE_KEY);
-		return ok(logbook.render(new Logbook(tripId.toString())));
+		return ok(logbook.render(new Logbook(tripId.toString(), boatId.toString())));
 	}
 
 	@play.mvc.Security.Authenticated(AccountAPI.SecuredAPI.class)
