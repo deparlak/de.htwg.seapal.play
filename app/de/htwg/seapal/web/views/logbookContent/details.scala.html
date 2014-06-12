@@ -94,11 +94,11 @@
     </div>  
 
     <div id="details_info">
-        <div id="details_chart"></div>
+        <div id="details_charts_distribution"></div>
         <div id="details_text">
             <!-- will be filled by javascript -->
         </div>
-        <div id="details_pie_charts">
+        <div id="details_charts">
             <table>
                 <tr>
                     <td>
@@ -118,14 +118,26 @@
      	<h3>Weather</h3>
     </div>
     <div id="details_weather" class="detailsContent">
+    	<div id="details_weather_charts_distribution">
+    		<table>
+    			<tr>
+            		<td colspan="3">
+            			 <div id="wind_distribution" class="table_chart_high" ></div>
+            		</td>
+            		<td colspan="3">
+            			 <div id="wave_distribution" class="table_chart_high" ></div>
+            		</td>
+            	</tr>
+    		</table>	
+    	</div>
         <div id="details_weather_charts">
             <table>
             	<tr>
             		<td colspan="3">
-            			 <div id="wind" class="table_chart_high" ></div>
+            			 <div id="wind_compass" class="table_chart_big" ></div>
             		</td>
             		<td colspan="3">
-            			 <div id="wave" class="table_chart_high" ></div>
+            			 <div id="wave_compass" class="table_chart_big" ></div>
             		</td>
             	</tr>
                 <tr id ="weather_charts">
