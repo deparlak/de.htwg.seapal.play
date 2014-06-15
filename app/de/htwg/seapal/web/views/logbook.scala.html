@@ -176,6 +176,7 @@
                 $('#entries').html(ajaxLoaderTemplate({ loaderId: 'tripLoader' }));
                 $('#timeline').append(ajaxLoaderTemplate({ loaderId: 'tripLoaderTimeline' }));
                 $('#details_map').append(ajaxLoaderTemplate({ loaderId: 'tripLoaderMap' }));
+                $('#details_trip_weather_stats_content').hide();
 
                 $('.NextPrevTripButton').hide();
                 $('#entries').html(ajaxLoaderTemplate({ loaderId: 'tripLoader' }));
@@ -283,7 +284,10 @@
             var waypoint_names = [];
             var waypoint_ids = [];
             var data_y = [];
-            var data_x = []
+            var data_x = [];
+            
+            var minTemp = 1000;
+            var maxTemp = -1000;
 
             // hide ajax loader in this trip container
             $('#entryLoader' + tripId).remove();
@@ -293,7 +297,8 @@
                 // unix timestamp -> formatted time
                 waypointData.formattedDate = moment(new Date(waypointData.date)).format(dateFormatShort);
                 waypointData.formattedTime = moment(new Date(waypointData.date)).format(timeFormat);
-
+                minTemp = (waypointData.tempCelsius < minTemp) ? waypointData.tempCelsius : minTemp;
+                maxTemp = (waypointData.tempCelsius > maxTemp) ? waypointData.tempCelsius : maxTemp;
                 // append to trip in timeline panel
                 timelineTripContainer.append(timelineWaypointTemplate(waypointData));
 
@@ -321,6 +326,12 @@
                 scrollToWaypoint($(this));
             });
 
+            // set trip wheather stats if available
+            if (minTemp != 1000) {
+                $('#tripMinTemp').html(Math.round(minTemp));
+                $('#tripMaxTemp').html(Math.round(maxTemp));
+                $('#details_trip_weather_stats_content').show();
+            }
 			// load speed table
 			if ($.trim($('#details_charts_distribution' ).html()) == '') {
            		initSpeedChart($('#details_charts_distribution'), data_x, data_y, waypoint_names, waypoint_ids, title, description);
@@ -491,8 +502,11 @@
             }
             
             showDistributionCharts();
-            
-            hideCharts();
+
+            // hide the Normal Charts for details 
+        	$('#details_weather_charts').css("display", "none");    // hide waypoint weather	
+        	$('#details_charts').css("display", "none");    		// hide compass+speedometer
+        	
         }
 
         /**
@@ -1724,16 +1738,18 @@
         function hideDistributionCharts() {
         	$('#details_charts_distribution').css("display", "none");
             $('#wind_distribution').css("display", "none"); 
-           	$('#wave_distribution').css("display", "none"); 
+            $('#wave_distribution').css("display", "none");
+            $('#details_trip_weather_stats').css("display", "none");
         }
         
         /**
          * This method shows the Distribution charts 
          */
         function showDistributionCharts() {
-        	$('#details_charts_distribution').css("display", "inline");
-            $('#wind_distribution').css("display", "inline"); 
-           	$('#wave_distribution').css("display", "inline"); 
+            $('#details_charts_distribution').css("display", "block");
+        	$('#wind_distribution').css("display", "block");
+            $('#wave_distribution').css("display", "block");
+            $('#details_trip_weather_stats').css("display", "block");
         }
         
         /**
@@ -1744,13 +1760,7 @@
             $('#details_weather_charts').css("display", "block");
         }
         
-        /**
-         * This method hides the Normal Charts for details 
-         */
-        function hideCharts() {
-        	$('#details_weather_charts').css("display", "none");        	
-        	$('#details_charts').css("display", "none");
-        }
+        
     </script>
 
 </body>

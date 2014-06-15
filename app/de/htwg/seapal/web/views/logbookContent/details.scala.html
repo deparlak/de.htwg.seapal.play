@@ -118,6 +118,12 @@
      	<h3>Weather</h3>
     </div>
     <div id="details_weather" class="detailsContent">
+        <div id="details_trip_weather_stats">
+            <div id="details_trip_weather_stats_content" style="display: none">
+                Min. <span id="tripMinTemp"><!--JS-content--></span><span>&nbsp;&#176;C</span> Max. 
+                <span id="tripMaxTemp"><!--JS-content--></span><span>&nbsp;&#176;C</span>
+            </div>
+        </div>
     	<div id="details_weather_charts_distribution">
     		<table>
     			<tr>
@@ -140,7 +146,7 @@
             			 <div id="wave_compass" class="table_chart_big" ></div>
             		</td>
             	</tr>
-                <tr id ="weather_charts">
+                <tr id="weather_charts">
                     <td colspan="2">
                         <div id="air_pressure" class="table_chart_small" ></div>
                     </td>
