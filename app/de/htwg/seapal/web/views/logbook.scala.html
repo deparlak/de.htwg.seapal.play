@@ -279,12 +279,16 @@
             var trip_header = $('#trip_header_' + tripId);
 
             var tripData = trip_header.data("tripData");
-            var title = 'Speed - ' + tripData.name;
+            var speed_title = 'Speed - ' + tripData.name;
             var description = tripData.from + " to " + tripData.to
             var waypoint_names = [];
             var waypoint_ids = [];
             var speed_data_y = [];
-            var speed_data_x = [];
+            var index_data_x = [];
+            var air_pressure_data_y = [];
+            var cloudage_data_y = [];
+            var temperature_data_y = [];
+
             //N, NNO, NO, .... -->  16 keys
             var wind_data_map = {0:0, 1:0, 2:0, 3:0, 4:0, 5:0, 6:0, 7:0, 8:0, 9:0, 10:0, 11:0, 12:0, 13:0, 14:0, 15:0};
             var wave_data_map = {0:0, 1:0, 2:0, 3:0, 4:0, 5:0, 6:0, 7:0, 8:0, 9:0, 10:0, 11:0, 12:0, 13:0, 14:0, 15:0};
@@ -312,9 +316,12 @@
                 entryNode.data('waypointData', waypointData);
                 initWaypoint(entryNode, onScrolledToWaypoint);
 
-                console.log(waypointData);
-                speed_data_x.push(index + 1);
+                //console.log(waypointData);
+                index_data_x.push(index + 1);
                 speed_data_y.push(parseFloat(waypointData.sog));
+                air_pressure_data_y.push(parseFloat(waypointData.atmosPressure));
+                cloudage_data_y.push(parseFloat(waypointData.cloudage));
+                temperature_data_y.push(parseFloat(waypointData.tempCelsius));
                 waypoint_names.push(waypointData.name);
                 waypoint_ids.push(waypointData._id);
 
@@ -343,7 +350,7 @@
 
 			// load speed table
 			if ($.trim($('#details_charts_distribution' ).html()) == '') {
-           		initSpeedChart($('#details_charts_distribution'), speed_data_x, speed_data_y, waypoint_names, waypoint_ids, title, description);
+           		initSpeedChart($('#details_charts_distribution'), index_data_x, speed_data_y, waypoint_names, waypoint_ids, speed_title, description);
             }
 
             var wind_data = [];
@@ -359,6 +366,14 @@
             // load wind table
             if ($.trim($('#wave_distribution' ).html()) == '') {
                 initWaveDirHeightChart('wave_distribution', wave_data);
+            }
+
+            // load air pressure/clouding/temperature table
+            if ($.trim($('#air_pressure_cloudage_temperature_distribution' ).html()) == '') {
+                console.log(air_pressure_data_y);
+                console.log(cloudage_data_y);
+                console.log(temperature_data_y);
+                initAirPressureCloudingTemperatureChart('#air_pressure_cloudage_temperature_distribution', index_data_x, air_pressure_data_y, cloudage_data_y, temperature_data_y, waypoint_ids);
             }
         }
 
@@ -766,7 +781,7 @@
                     backgroundColor:'rgba(255, 255, 255, 0.1)',
                     plotBackgroundImage: null,
                     plotBorderWidth: 0,
-                    plotShadow: false,
+                    plotShadow: false
                 },
 
                 exporting: {
@@ -946,7 +961,7 @@
                     backgroundColor:'rgba(255, 255, 255, 0.1)',
                     plotBackgroundImage: null,
                     plotBorderWidth: 0,
-                    plotShadow: false,
+                    plotShadow: false
                 },
 
                 exporting: {
@@ -1126,7 +1141,7 @@
                     backgroundColor:'rgba(255, 255, 255, 0.1)',
                     plotBackgroundImage: null,
                     plotBorderWidth: 0,
-                    plotShadow: false,
+                    plotShadow: false
                 },
 
                 exporting: {
@@ -1693,7 +1708,11 @@
         function initSpeedChart(container, data_x, data_y, waypoint_names, waypoint_ids, title, description) {
             $(container).highcharts({
                 chart: {
-                    height: 250
+                    height: 250,
+                    backgroundColor:'rgba(255, 255, 255, 0.1)',
+                    plotBackgroundImage: null,
+                    plotBorderWidth: 0,
+                    plotShadow: false
                 },
                 exporting: {
                     enabled: false
@@ -1724,12 +1743,7 @@
                 yAxis: {
                     title: {
                         text: 'Speed [kn]'
-                    },
-                    plotLines: [{
-                        value: 0,
-                        width: 1,
-                        color: '#808080'
-                    }]
+                    }
                 },
                 tooltip: {
                     formatter: function () {
@@ -1744,7 +1758,97 @@
             
             removeHighChartLogo();
         }
-        
+
+        function initAirPressureCloudingTemperatureChart(container, data_x, air_pressure_data_y, cloudage_data_y, temperature_data_y, waypoint_ids) {
+            $(container).highcharts({
+                chart: {
+                    backgroundColor:'rgba(255, 255, 255, 0.1)',
+                    plotBackgroundImage: null,
+                    plotBorderWidth: 0,
+                    plotShadow: false
+                },
+                exporting: {
+                    enabled: false
+                },
+                plotOptions: {
+                    series: {
+                        cursor: 'pointer',
+                        point: {
+                            events: {
+                                click: function () {
+                                    var waypoint = $('#waypoint_' + waypoint_ids[this.x]);
+                                    scrollToWaypoint(waypoint);
+                                }
+                            }
+                        }
+                    }
+                },
+                legend: {
+                    enabled: false
+                },
+                title: {
+                    text: ""
+                },
+                xAxis: {
+                    categories: data_x
+                },
+                yAxis: [
+                    {
+                        title: {
+                            style: {
+                                color: 'black'
+                            },
+                            text: 'Air Pressure [x]'
+                        },
+                        max: 1500,
+                        min: 800
+                    },
+                    {
+                        title: {
+                            style: {
+                                color: 'blue'
+                            },
+                            text: 'Clouding [x]'
+                        },
+                        max : 1,
+                        min: 0
+                    },
+                    {
+                        title: {
+                            style: {
+                                color: 'green'
+                            },
+                            text: 'Temperature [°C]'
+                        },
+                        max: 45,
+                        min: -20
+                    }
+                ],
+                series: [
+                    {
+                        yAxis: 0,
+                        color: 'black',
+                        name: "air pressure",
+                        data: air_pressure_data_y
+                    },
+                    {
+                        yAxis: 1,
+                        color: 'blue',
+                        name: "clouding",
+                        data: cloudage_data_y
+                    },
+                    {
+                        yAxis: 2,
+                        color: 'green',
+                        name: "temperature",
+                        data: temperature_data_y
+                    }
+                ]
+            });
+
+            removeHighChartLogo();
+        }
+
         /*
          * remove initial highchart logo by using an Index for each chart
          */
@@ -1770,8 +1874,7 @@
          */
         function hideDistributionCharts() {
         	$('#details_charts_distribution').css("display", "none");
-            $('#wind_distribution').css("display", "none"); 
-            $('#wave_distribution').css("display", "none");
+            $('#details_weather_charts_distribution').css("display", "none");
             $('#details_trip_weather_stats').css("display", "none");
         }
         
@@ -1780,8 +1883,7 @@
          */
         function showDistributionCharts() {
             $('#details_charts_distribution').css("display", "block");
-        	$('#wind_distribution').css("display", "block");
-            $('#wave_distribution').css("display", "block");
+        	$('#details_weather_charts_distribution').css("display", "block");
             $('#details_trip_weather_stats').css("display", "block");
         }
         
