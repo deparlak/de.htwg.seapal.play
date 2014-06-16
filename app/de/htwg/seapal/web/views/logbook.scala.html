@@ -283,9 +283,13 @@
             var description = tripData.from + " to " + tripData.to
             var waypoint_names = [];
             var waypoint_ids = [];
-            var data_y = [];
-            var data_x = [];
-            
+            var speed_data_y = [];
+            var speed_data_x = [];
+            //N, NNO, NO, .... -->  16 keys
+            var wind_data_map = {0:0, 1:0, 2:0, 3:0, 4:0, 5:0, 6:0, 7:0, 8:0, 9:0, 10:0, 11:0, 12:0, 13:0, 14:0, 15:0};
+            var wave_data_map = {0:0, 1:0, 2:0, 3:0, 4:0, 5:0, 6:0, 7:0, 8:0, 9:0, 10:0, 11:0, 12:0, 13:0, 14:0, 15:0};
+            var degree_step = 22.5; // 360:16
+
             var minTemp = 1000;
             var maxTemp = -1000;
 
@@ -308,10 +312,14 @@
                 entryNode.data('waypointData', waypointData);
                 initWaypoint(entryNode, onScrolledToWaypoint);
 
-                data_x.push(index + 1);
-                data_y.push(parseFloat(waypointData.sog));
+                console.log(waypointData);
+                speed_data_x.push(index + 1);
+                speed_data_y.push(parseFloat(waypointData.sog));
                 waypoint_names.push(waypointData.name);
                 waypoint_ids.push(waypointData._id);
+
+                compassOrderdInsert(wind_data_map, degree_step, waypointData.windDirection, waypointData.windSpeedBeaufort);
+                compassOrderdInsert(wave_data_map, degree_step, waypointData.windDirection, waypointData.wavesHeight);
             });
 
             // refresh waypoint handlers to new positions of elements
@@ -326,15 +334,47 @@
                 scrollToWaypoint($(this));
             });
 
-            // set trip wheather stats if available
+            // set trip weather stats if available
             if (minTemp != 1000) {
                 $('#tripMinTemp').html(Math.round(minTemp));
                 $('#tripMaxTemp').html(Math.round(maxTemp));
                 $('#details_trip_weather_stats_content').show();
             }
+
 			// load speed table
 			if ($.trim($('#details_charts_distribution' ).html()) == '') {
-           		initSpeedChart($('#details_charts_distribution'), data_x, data_y, waypoint_names, waypoint_ids, title, description);
+           		initSpeedChart($('#details_charts_distribution'), speed_data_x, speed_data_y, waypoint_names, waypoint_ids, title, description);
+            }
+
+            var wind_data = [];
+            var wave_data = [];
+            mapToArray(wind_data_map, wind_data);
+            mapToArray(wave_data_map, wave_data);
+
+            // load wind table
+            if ($.trim($('#wind_distribution' ).html()) == '') {
+                initWindDirSpeedChart('wind_distribution', wind_data);
+            }
+
+            // load wind table
+            if ($.trim($('#wave_distribution' ).html()) == '') {
+                initWaveDirHeightChart('wave_distribution', wave_data);
+            }
+        }
+
+        // insert values in a map object with 16 keys, each representing compass directions (22.5 degrees).
+        function compassOrderdInsert(map, degree_step, degree, value){
+            var key = Math.floor(degree/degree_step);
+
+            if(!(key in map) || map[key] < value){
+                map[ key ] = value ;
+            }
+        }
+
+        // pushes all values of a map into an array
+        function mapToArray(map, array){
+            for (var key in map) {
+                array.push(map[key]);
             }
         }
 
@@ -483,14 +523,7 @@
             //zoom out map
             reset_map_zoom();
 
-			         // load wind and wave table
-         	if ($.trim($('#wind_distribution' ).html()) == '') {
-            	initWindDirSpeedChart('wind_distribution');
-            }
-            if ($.trim($('#wave_distribution' ).html()) == '') {
-            	initWaveDirHeightChart('wave_distribution');
-            }
-            
+
             if (typeof (window.windDirSpeedChart) != "undefined") {
             	//TODO fill
                 window.windDirSpeedChart.redraw();
@@ -1260,7 +1293,7 @@
         /**
          *  This method inits the wind direction speed chart 
          */
-        function initWindDirSpeedChart(containerId) {
+        function initWindDirSpeedChart(containerId, data) {
    			if (typeof (window.windDirSpeedChart) != "undefined") {
                 window.windDirSpeedChart.destroy();
             }
@@ -1321,7 +1354,7 @@
 		        }],
 			    yAxis: {
 			        min: 0,
-		            max: 11,
+		            max: 5,
 		            tickInterval: 1,
 			        endOnTick: false,
 			        showLastLabel: true,
@@ -1343,7 +1376,7 @@
 		       	series: [{
 			            name: 'windTable',
 			            type: 'column',
-			            data: [0.0, 6.9, 0, 10, 0, 6.5, 3, 7.5, 8.3, 0, 3.9, 4.6, 0, 0, 0, 0]   
+			            data: data //[0.0, 6.9, 0, 10, 0, 6.5, 3, 7.5, 8.3, 0, 3.9, 4.6, 0, 0, 0, 0]
 			    }]
 			});
 
@@ -1354,7 +1387,7 @@
              /**
          *  This method inits the wave direction speed chart 
          */
-        function initWaveDirHeightChart(containerId) {
+        function initWaveDirHeightChart(containerId, data) {
    			if (typeof (window.waveDirHeightChart) != "undefined") {
                 window.waveDirHeightChart.destroy();
             }
@@ -1415,7 +1448,7 @@
 			        }],     
 				    yAxis: {
 				        min: 0,
-			            max: 11,
+			            max: 5,
 			            tickInterval: 1,
 				        endOnTick: false,
 				        showLastLabel: true,
@@ -1437,7 +1470,7 @@
 				    series: [{
 			            name: 'waveTable',
 			            type: 'column',
-			            data: [7.0, 6.9, 9.5, 0, 0, 1.5, 0, 7.5, 8.3, 2.3, 1.9, 1.6, 0, 1, 4, 5]   
+			            data: data //[7.0, 6.9, 9.5, 0, 0, 1.5, 0, 7.5, 8.3, 2.3, 1.9, 1.6, 0, 1, 4, 5]
 			        }]
 	    		});
 
