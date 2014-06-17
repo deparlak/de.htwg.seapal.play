@@ -185,9 +185,13 @@
         }
 
         // Adds the function 'callback' as a handler when the users scrolls to the 'item'.
-        function initWaypoint(item, callback) {
-            var offset_up = 1;
-            var offset_down = $('#menu_bar').css("height") + parseInt($('.logbookEntry').css('min-height')) + 1;
+        function initWaypoint(item, callback, last_entry_node) {
+            var offset_up = 10;
+            var offset_down = parseInt($('#menu_bar').css("height")) + parseInt($(last_entry_node).css('height')) ;
+
+            if($(last_entry_node ).hasClass("tripHeader")){
+                offset_down/=2;
+            }
 
             item.waypoint(function (direction) {
                 if (direction == "down") {
@@ -217,7 +221,7 @@
             $('#entries').append(tripTemplate(tripData));
 
             var trip_header = $('#trip_header_' + tripId);
-            initWaypoint(trip_header, onScrolledToTripHeader); // add scrolled-to handler
+            initWaypoint(trip_header, onScrolledToTripHeader, trip_header); // add scrolled-to handler
             trip_header.data("tripData", tripData);  // store the DB object in this DOM element
 
             // lookup previous and next trip
@@ -297,6 +301,8 @@
             var minTemp = 1000;
             var maxTemp = -1000;
 
+            var last_entry_node = trip_header;
+
             // hide ajax loader in this trip container
             $('#entryLoader' + tripId).remove();
             //console.log(waypoints);
@@ -314,8 +320,9 @@
                 tripContainer.append(waypointTemplate(waypointData));
                 var entryNode = $('#waypoint_' + waypointData._id);
                 entryNode.data('waypointData', waypointData);
-                initWaypoint(entryNode, onScrolledToWaypoint);
+                initWaypoint(entryNode, onScrolledToWaypoint, last_entry_node);
 
+                last_entry_node = entryNode;
                 //console.log(waypointData);
                 index_data_x.push(index + 1);
                 speed_data_y.push(parseFloat(waypointData.sog));
@@ -358,21 +365,21 @@
             mapToArray(wind_data_map, wind_data);
             mapToArray(wave_data_map, wave_data);
 
-            // load wind table
-            if ($.trim($('#wind_distribution' ).html()) == '') {
-                initWindDirSpeedChart('wind_distribution', wind_data);
-            }
+            // wind and wave charts are not initialised here because the div they're going to be rendered in needs to be visible. (if user reloads page and tripHeader is not active)
+            trip_header.data('wind_data', wind_data);
+            trip_header.data('wave_data', wave_data);
 
-            // load wind table
-            if ($.trim($('#wave_distribution' ).html()) == '') {
-                initWaveDirHeightChart('wave_distribution', wave_data);
-            }
+            var wind_chart_index=$("#wind_distribution").data('highchartsChart');
+            var wind_chart=Highcharts.charts[wind_chart_index];
+            wind_chart.series[0].setData(wind_data);
+
+            var wave_chart_index=$("#wave_distribution").data('highchartsChart');
+            var wave_chart=Highcharts.charts[wave_chart_index];
+            wave_chart.series[0].setData(wave_data);
+
 
             // load air pressure/clouding/temperature table
             if ($.trim($('#air_pressure_cloudage_temperature_distribution' ).html()) == '') {
-                console.log(air_pressure_data_y);
-                console.log(cloudage_data_y);
-                console.log(temperature_data_y);
                 initAirPressureCloudingTemperatureChart('#air_pressure_cloudage_temperature_distribution', index_data_x, air_pressure_data_y, cloudage_data_y, temperature_data_y, waypoint_ids);
             }
         }
@@ -538,7 +545,6 @@
             //zoom out map
             reset_map_zoom();
 
-
             if (typeof (window.windDirSpeedChart) != "undefined") {
             	//TODO fill
                 window.windDirSpeedChart.redraw();
@@ -554,7 +560,16 @@
             // hide the Normal Charts for details 
         	$('#details_weather_charts').css("display", "none");    // hide waypoint weather	
         	$('#details_charts').css("display", "none");    		// hide compass+speedometer
-        	
+
+            // load wind table
+            if ($.trim($('#wind_distribution' ).html()) == '') {
+                initWindDirSpeedChart('wind_distribution', node.data('wind_data'));
+            }
+
+            // load wind table
+            if ($.trim($('#wave_distribution' ).html()) == '') {
+                initWaveDirHeightChart('wave_distribution', node.data('wave_data'));
+            }
         }
 
         /**
