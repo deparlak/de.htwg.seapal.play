@@ -31,6 +31,7 @@
         var entryDetailsTemplate;
         var timelineTripTemplate;
         var timelineWaypointTemplate;
+        var timelineTripHeaderTemplate;
 
         var dateFormatShort = "YYYY-MM-DD";
         var timeFormat = "h:mm:ss a";
@@ -64,6 +65,7 @@
             entryDetailsTemplate = Handlebars.compile($('#entryDetailsTemplate').html());
             timelineTripTemplate = Handlebars.compile($('#timelineTripTemplate').html());
             timelineWaypointTemplate = Handlebars.compile($('#timelineWaypointTemplate').html());
+            timelineTripHeaderTemplate = Handlebars.compile($('#timelineTripHeaderTemplate' ).html());
 
             // load the initial trip
             changeTripTo(initialTripId);
@@ -115,8 +117,8 @@
 
             $('#timeline').on('click', 'div.timeline-panel.clickable', function () {    // click on waypoint item in timeline
                 var waypointId = $(this).attr("id");
-                waypointId = waypointId.replace('timeline-waypoint_', '');
-                var entry = $("#waypoint_" + waypointId);
+                waypointId = waypointId.replace ( 'timeline-', '' );
+                var entry = $("#" + waypointId);
                 scrollToWaypoint(entry);
                 return true;
             });
@@ -305,6 +307,10 @@
 
             // hide ajax loader in this trip container
             $('#entryLoader' + tripId).remove();
+
+            tripData.formattedDate = moment(new Date(tripData.startDate)).format(dateFormatShort);
+            timelineTripContainer.append(timelineTripHeaderTemplate(tripData));
+
             //console.log(waypoints);
             // iterate all received waypoints and append the template to the container of the trip & the timelime
             $.each(waypoints, function (index, waypointData) {
@@ -447,7 +453,7 @@
                 clearTimeout(scrollToWaypointTimeout);
             }
             scrollToWaypointTimeout = setTimeout(function () {
-                console.log("onScrolledToWaypoint timeout called")
+                //console.log("onScrolledToWaypoint timeout called")
                 
                 //only call init once if there's no html content inside the matching div
                 if($.trim($('#speedometer_sog' ).html()) == ''){
@@ -618,7 +624,11 @@
                 scrollTop: offset
             }, {
                 done: function () {
-                    onScrolledToWaypoint(waypoint);
+                    if(waypoint.hasClass("TripHeader")){
+                        onScrolledToTripHeader(waypoint);
+                    }else if(waypoint.hasClass("logbookEntry")) {
+                        onScrolledToWaypoint ( waypoint ) ;
+                    }
                     $('.logbookEntry').waypoint('enable');
                 }
             }, 'slow');

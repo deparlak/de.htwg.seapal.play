@@ -38,3 +38,16 @@
         </div>
     </li>
 </script>
+
+<script type="x/handlebars-template" id="timelineTripHeaderTemplate">
+    <li class="timeline-inverted hasNote hasImage" id="timeline-tripHeader-container_{{_id}}">
+        <div id="timeline-trip_header_{{_id}}" class="timeline-panel clickable">
+            <div class="timeline-heading">
+            {{formattedDate}}
+            </div>
+            <div class="timeline-body">
+            {{name}}
+            </div>
+        </div>
+    </li>
+</script>
