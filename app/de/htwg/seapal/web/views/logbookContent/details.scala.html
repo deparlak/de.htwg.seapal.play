@@ -25,7 +25,7 @@
 					<b>Lat </b> 
 				</td>
 				<td>
-					{{latRounded}} N
+					{{latRounded}}
 				</td>
 				{{/if}}	
 				{{#if lngRounded}}	
@@ -33,7 +33,7 @@
 					<b>Lng </b>
 				</td>
 				<td>
-					{{lngRounded}} E
+					{{lngRounded}}
 				</td>
 				{{/if}}	
 			</tr>
@@ -55,18 +55,6 @@
 				</td>
 				{{/if}}
 			</tr>
-			<tr id="details_charts">
-			{{#if cog}}
-				<td colspan="2">
-					<div id="compass_cog" class="table_chart" ></div>
-				</td>				
-			{{/if}}
-			{{#if sog}}
-				<td colspan="2">
-					<div id="speedometer_sog" class="table_chart" ></div>
-				</td>				
-			{{/if}}		
-			</tr>			
 			<tr id ="details_text_distance">
 				{{#if btm}}
 				<td>							
@@ -90,7 +78,7 @@
 
 	<!-- Detail Map -->
 	<div id="details_map_head" class="head">
-		<img id="details_map_img" src='@routes.Assets.at("images/logbook/contract-icon.png")' class="details-img-expand">
+		<img id="details_map_img" src='@routes.Assets.at("images/logbook/contract-icon.png")' class="details-img-expand" alt="">
 		<h3 >Map</h3>		
 	</div>    
     <div id="details_map" class="detailsContent">
@@ -101,24 +89,76 @@
     
     <!-- Detail Information -->
     <div id="details_text_head" class="head">
-        <img id="details_text_img" src='@routes.Assets.at("images/logbook/contract-icon.png")' class="details-img-expand">
+        <img id="details_text_img" src='@routes.Assets.at("images/logbook/contract-icon.png")' class="details-img-expand" alt="">
        	<h3>Details</h3>
     </div>  
 
-    <div id="details">
-        <div id="details_chart"></div>
+    <div id="details_info">
+        <div id="details_charts_distribution"></div>
         <div id="details_text">
             <!-- will be filled by javascript -->
         </div>
+        <div id="details_charts">
+            <table>
+                <tr>
+                    <td>
+                        <div id="compass_cog" class="table_chart"></div>
+                    </td>
+                    <td>
+                        <div id="speedometer_sog" class="table_chart"></div>
+                    </td>
+                </tr>
+            </table>
+        </div>
     </div>
     
+    <!-- Weather Information -->
     <div id="details_weather_head" class="head">
-        <img id="details_weather_img" src='@routes.Assets.at("images/logbook/contract-icon.png")' class="details-img-expand">
+        <img id="details_weather_img" src='@routes.Assets.at("images/logbook/contract-icon.png")' class="details-img-expand" alt="">
      	<h3>Weather</h3>
     </div>
     <div id="details_weather" class="detailsContent">
-        <p>
-            <img src='@routes.Assets.at("images/dummy_weather.png")' alt="Weather dummy" class="img-responsive">
-        </p>
+        <div id="details_trip_weather_stats">
+            <div id="details_trip_weather_stats_content" style="display: none">
+                Min. <span id="tripMinTemp"><!--JS-content--></span><span>&nbsp;&#176;C</span> Max. 
+                <span id="tripMaxTemp"><!--JS-content--></span><span>&nbsp;&#176;C</span>
+            </div>
+        </div>
+    	<div id="details_weather_charts_distribution">
+    		<table>
+    			<tr>
+            		<td colspan="3">
+            			 <div id="wind_distribution" class="table_chart_high" ></div>
+            		</td>
+            		<td colspan="3">
+            			 <div id="wave_distribution" class="table_chart_high" ></div>
+            		</td>
+            	</tr>
+    		</table>
+            <div id="air_pressure_cloudage_temperature_distribution"></div>
+        </div>
+        <div id="details_weather_charts">
+            <table>
+            	<tr>
+            		<td colspan="3">
+            			 <div id="wind_compass" class="table_chart_big" ></div>
+            		</td>
+            		<td colspan="3">
+            			 <div id="wave_compass" class="table_chart_big" ></div>
+            		</td>
+            	</tr>
+                <tr id="weather_charts">
+                    <td colspan="2">
+                        <div id="air_pressure" class="table_chart_small" ></div>
+                    </td>
+                    <td colspan="2">
+                        <div id="clouds" class="table_chart_small" ></div>
+                    </td>
+                    <td colspan="2">
+                        <div id="temperature" class="table_chart_small" ></div>
+                    </td>
+                </tr>
+            </table>
+        </div>
     </div>
 </div>

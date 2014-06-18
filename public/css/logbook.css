@@ -16,10 +16,10 @@
     display: none;
 }
 
-.panelToggler:hover {
-    background-color: #b2b2b2;
-    text-decoration: none;
-}
+    .panelToggler:hover {
+        background-color: #b2b2b2;
+        text-decoration: none;
+    }
 
 #pictures {
     background: #FFFFFF;
@@ -66,18 +66,39 @@ h3 {
     margin: 0 auto;
 }
 
+#details .table_chart_small {
+	min-width: 130px;
+    max-width: 130px;
+    height: 160px;
+    margin: 0 auto;
+}
+
+#details .table_chart_high {
+	min-width: 170px;
+    max-width: 170px;
+    height: 200px;
+    margin: 0 auto;
+}
+#details .table_chart_big {
+	min-width: 170px;
+    max-width: 170px;
+    height: 230px;
+    margin: 0 auto;
+}
+
 .tripHeader {
     background: rgba(0, 0, 40, 0.4);
     padding: 1em 2em;
     color: white;
 }
 
-.tripHeader td {
-    vertical-align: top;
-}
-.tripHeader h3 {
-    color: rgb(18, 36, 66);
-}
+    .tripHeader td {
+        vertical-align: top;
+    }
+
+    .tripHeader h3 {
+        color: rgb(18, 36, 66);
+    }
 
 .logbookEntry {
     padding: 1em 2em;
@@ -89,9 +110,9 @@ h3 {
     max-height: 2000em; /* only for transition */
 }
 
-.logbookEntry.active, .logbookEntry:first-child {
-    opacity: 1;
-}
+    .logbookEntry.active, .logbookEntry:first-child {
+        opacity: 1;
+    }
 
 
 @media (max-width: 1024px) {
@@ -106,10 +127,10 @@ h3 {
     margin-right: auto;
 }
 
-.imageholder a img {
-    max-width: 45%;
-    display: inline;
-}
+    .imageholder a img {
+        max-width: 45%;
+        display: inline;
+    }
 
 .logbookEntry img {
     max-width: 100%;
@@ -129,6 +150,30 @@ label {
     border-style: none;
     overflow: hidden;
 }
+
+/* load next/prev trip buttons */
+.NextPrevTripButton {
+    display: none;
+    background-repeat: no-repeat;
+    /*background-color: #e5e5e5;*/
+    background-position-y: center;
+    background-position-x: 7px;
+    /*border: 1px solid #686771;*/
+    border-radius: 3px;
+    margin: auto;
+    padding: 1.5em 0.5em;
+    padding-left: 75px;
+    max-width: 400px;
+    color: #686771;
+}
+
+    .NextPrevTripButton:hover {
+        text-decoration: none;
+    }
+    .NextPrevTripButton .btnTitle {
+        color: rgb(18, 36, 66);
+        font-size: 14pt;
+    }
 
 .timeline-inverted.filtered {
     max-height: 0;
@@ -162,7 +207,7 @@ label {
     height: 34px;
     padding: 4px 0 0 0;
     text-align: center;
-    color: white;
+    color: #686771;
     font-weight: bold;
     font-size: 16px;
 }
@@ -226,6 +271,10 @@ label {
 }
 
 #details_chart {
+}
+
+#details_pie_charts{
+    display: none;
 }
 
 #details_map {

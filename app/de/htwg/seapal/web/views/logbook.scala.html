@@ -1,11 +1,25 @@
 @(Model : de.htwg.seapal.web.models.Logbook)
 <!DOCTYPE html>
-<html>
-<head lang="en">
-    <title>SeaPal Logbook</title>
-    @logbookContent.header()
+<html lang="en">
+<head>
+<title>SeaPal Logbook</title>
+@logbookContent.header()
 </head>
 <body>
+    @logbookContent.entries()
+
+    <div id="menu_bar">
+        @logbookContent.menubar()
+    </div>
+
+    <div id="timeline_col">
+        @logbookContent.timeline()
+    </div>
+
+    <div id="details_col">
+        @logbookContent.details()
+    </div>
+
     <script type="text/javascript">
         var map;
 
@@ -24,14 +38,18 @@
         var isLoadingWaypoints = false;
 
         var initialTripId = '@Model.getInitialTripId()';
-        var boatId = '2dcc6f94-4d01-47d4-a4ed-e5ce9a6be3cf';  // for test only
-
+        var boatId = '@Model.getBoatId()'
         var scrollToWaypointTimeout;
+
+        // set handler for HTTP-Forbidden errors:
+        logbook.onForbidden = function () {
+            window.location.href = '@de.htwg.seapal.web.controllers.routes.Application.forbiddenContent()';
+        }
 
         $(document).ready(function () {
             var dateFormatShort = "YYYY-MM-DD";
             var timeFormatShort = "mm:ss:zzz";
-            
+
             // preloaded Images
             var expandImage = new Image();
             var contractImage = new Image();
@@ -44,51 +62,22 @@
             ajaxLoaderTemplate = Handlebars.compile($('#ajaxLoaderTemplate').html());
             loadMoreEntriesTemplate = Handlebars.compile($('#loadMoreEntriesTemplate').html());
             entryDetailsTemplate = Handlebars.compile($('#entryDetailsTemplate').html());
-
             timelineTripTemplate = Handlebars.compile($('#timelineTripTemplate').html());
             timelineWaypointTemplate = Handlebars.compile($('#timelineWaypointTemplate').html());
 
             // load the initial trip
-            $('#entries').html(ajaxLoaderTemplate({ loaderId: 'tripLoader' }));
-            $('#timeline').append(ajaxLoaderTemplate({ loaderId: 'tripLoaderTimeline' }));
-            $('#details_map').append(ajaxLoaderTemplate({ loaderId: 'tripLoaderMap' }));
+            changeTripTo(initialTripId);
 
-            logbook.getTripData(initialTripId, onReceivedTrip);
             // load the timeline
             logbook.getAllTripsOfBoat(boatId, onReceivedAllTrips);
             //logbook.getAllWaypointsOfTrip(initialTripId, onReceivedAllWaypointsByTrip);
 
-            // handle clicks on "load more" button
-            $('#entries').on('click', 'a.btnLoadMoreEntries', function () {
-                loadMoreEntries($(this).attr('data-tripid'), 5);
-                return true;
-            });
-
             // click handlers for loading previous/next trip
-            $('#btnLoadPreviousTrip').click(function () {
-                var previousTripId = $(this).attr('data-prev-trip');
-                if (previousTripId && previousTripId.length > 0) {
-                    $('#entries').html(ajaxLoaderTemplate({ loaderId: 'tripLoader' }));
-                    logbook.getTripData(previousTripId, onReceivedTrip);
-                }
-            });
-            $('#btnLoadNextTrip').click(function () {
-                var nextTripId = $(this).attr('data-next-trip');
-                if (nextTripId && nextTripId.length > 0) {
-                    $('#entries').html(ajaxLoaderTemplate({ loaderId: 'tripLoader' }));
-                    logbook.getTripData(nextTripId, onReceivedTrip);
-                }
-            });
+            $('.NextPrevTripButton').click(function () { changeTripTo($(this).attr('data-trip')) });
 
-            // var padding = $(window).height() - parseInt($('.logbookEntry').css('min-height'));
-            //$('#entries_col').css('padding-bottom', (padding - 1));
-            //$('#entries_col').css('margin-top', $('#menu_bar').css('height'));
-            //$('#entries_col').css('top', $('#menu_bar').css('height'));
-            //$('#details_col').css('top', $('#menu_bar').css('height'));
-            //$('#timeline_col').css('top', $('#menu_bar').css('height'));
-
+            // toggle sections of the details panel
             $('.accordion .head').click(function () {
-                // change expand image
+                // change expander image
                 var headId = $(this).attr('id');
                 var changeImage = document.getElementById(headId.substr(0, headId.lastIndexOf('_')) + '_img');
 
@@ -99,7 +88,7 @@
                 }
 
                 $(this).next().toggle("slow");
-                
+
                 return true;
             });
 
@@ -107,7 +96,7 @@
             $('#entries_col').css('margin-bottom', $.waypoints('viewportHeight'));
 
             // add handlers for clicks on trips & waypoints in the timeline
-            $('#timeline').on('click', 'div.timeline-panel.expandable', function () {     // click on trip header
+            $('#timeline').on('click', 'div.timeline-panel.expandable', function () {     // click on trip header in timeline
                 var tripId = $(this).attr("id");
                 tripId = tripId.replace('timeline-trip_', '');
 
@@ -124,7 +113,7 @@
 
             });
 
-            $('#timeline').on('click', 'div.timeline-panel.clickable', function () {    // click on waypoint item
+            $('#timeline').on('click', 'div.timeline-panel.clickable', function () {    // click on waypoint item in timeline
                 var waypointId = $(this).attr("id");
                 waypointId = waypointId.replace('timeline-waypoint_', '');
                 var entry = $("#waypoint_" + waypointId);
@@ -134,16 +123,10 @@
 
             $('#timeline').dragscrollable();
 
-            // check a checkbox if the corresponding label is clicked
-            $('label').click(function () {
-                labelID = $(this).attr('for');
-                $('#' + labelID).prop('checked', true);
-            });
-
             //navbar
-            menu_hover();
-            var lis = $('.nav > li');
-            menu_focus(lis[2], 3);
+            //menu_hover();
+            //var lis = $('.nav > li');
+            //menu_focus(lis[2], 3);
 
             //hotfix: hrefs didn't work anymore (click returns false anywere?!)
             $('.navbar .nav a').click(function (event) {
@@ -153,8 +136,7 @@
                 return true;
             });
 
-            $('#btnApplyFilter').click(function () { window.setTimeout(applyEntryFilters, 500) });
-
+            //$('#btnApplyFilter').click(function () { window.setTimeout(applyEntryFilters, 500) });
             map = new google.maps.Map(document.getElementById('map_canvas'));
 
             // click handlers for entry filter buttons
@@ -186,40 +168,51 @@
             // hide side panels if mouse leaves them
             $('#entries_col').mouseenter(function () { $('#details_col, #timeline_col').removeClass('forceOpen'); })
             $('#entries_col').click(function () { $('#details_col, #timeline_col').removeClass('forceOpen'); })
-
         });  //   /document.ready()
 
+        // changes the currently displayed trip to another one
+        function changeTripTo(tripId) {
+            if (tripId && tripId.length > 0) {
+                $('#entries').html(ajaxLoaderTemplate({ loaderId: 'tripLoader' }));
+                $('#timeline').append(ajaxLoaderTemplate({ loaderId: 'tripLoaderTimeline' }));
+                $('#details_map').append(ajaxLoaderTemplate({ loaderId: 'tripLoaderMap' }));
+                $('#details_trip_weather_stats_content').hide();
 
+                $('.NextPrevTripButton').hide();
+                $('#entries').html(ajaxLoaderTemplate({ loaderId: 'tripLoader' }));
+                logbook.getTripData(tripId, onReceivedTrip);
+            }
+        }
 
-        function initWaypoint(item, callback) {
-            var offset_up = 1;
-            var offset_down = $('#menu_bar').css("height") + parseInt($('.logbookEntry').css('min-height')) + 1;
+        // Adds the function 'callback' as a handler when the users scrolls to the 'item'.
+        function initWaypoint(item, callback, last_entry_node) {
+            var offset_up = 10;
+            var offset_down = parseInt($('#menu_bar').css("height")) + parseInt($(last_entry_node).css('height')) ;
+
+            if($(last_entry_node ).hasClass("tripHeader")){
+                offset_down/=2;
+            }
 
             item.waypoint(function (direction) {
                 if (direction == "down") {
-                    if(typeof(scrollToWaypointTimeout) != undefined) {
-                        clearTimeout ( scrollToWaypointTimeout ) ;
-                    }
-                    scrollToWaypointTimeout = setTimeout(function(){callback(item)}, 200);
+                    callback(item);
                 }
             }, { offset: offset_down });
 
             item.waypoint(function (direction) {
                 if (direction == "up") {
-                    if(typeof(scrollToWaypointTimeout) != undefined) {
-                        clearTimeout ( scrollToWaypointTimeout ) ;
-                    }
-                    scrollToWaypointTimeout = setTimeout(function(){callback(item)}, 200);
+                    callback(item);
                 }
             }, { offset: offset_up });
         }
 
         // callback of getTripData()
         function onReceivedTrip(tripId, tripData) {
-            // format data
+            // prepare formatted datetime strings (required in handlebars templates)
             tripData.formattedStartDate = moment(new Date(tripData.startDate)).format(dateFormatShort + " " + timeFormat);
             tripData.formattedEndDate = moment(new Date(tripData.endDate)).format(dateFormatShort + " " + timeFormat);
 
+            // hide the loading animations
             $('#tripLoader').remove();
             $('#tripLoaderTimeline').remove();
             $('#tripLoaderMap').remove();
@@ -228,41 +221,48 @@
             $('#entries').append(tripTemplate(tripData));
 
             var trip_header = $('#trip_header_' + tripId);
-            initWaypoint(trip_header, onScrolledToTripHeader);
-            trip_header.data("tripData",tripData);
+            initWaypoint(trip_header, onScrolledToTripHeader, trip_header); // add scrolled-to handler
+            trip_header.data("tripData", tripData);  // store the DB object in this DOM element
 
             // lookup previous and next trip
             logbook.getTripsOfBoat(boatId, tripData.startDate, 1, 1, 'true', onReceivedPreviousTrip);  // previous
             logbook.getTripsOfBoat(boatId, tripData.startDate, 1, 1, 'false', onReceivedNextTrip);  // next
 
-            //convert tripData.marks in array with lat lon objects
+            // show complete route on maps:  convert tripData.marks in array with lat lon objects
             var map_waypoints = [];
             for (i = 0; i < tripData.marks.length; i = i + 2) {
                 map_waypoints[i / 2] = new google.maps.LatLng(tripData.marks[i], tripData.marks[i + 1]);
             }
 
+            // ???
             initialize_waypoints(map_waypoints);
-
+            // add handler for click on a waypoint marker in the map (scroll to waypoint position in entries view)
             setMarkerClickFunction(clicked_on_marker);
 
-            // get the first 5 waypoints of this trip
+            // get the waypoints of this trip
             loadMoreEntries(tripId, 0);  // 0 = all waypoints
         }
 
-        // callback from getTripsOfBoat, receives a subset of the properties of the previous trip
+        // callbacks from getTripsOfBoat, receives a subset of the properties of the previous/next trip
         function onReceivedPreviousTrip(trips) {
             if (trips.length > 0) {
-                $('#btnLoadPreviousTrip').attr('data-prev-trip', trips[0]._id).show();
+                $('#prevTripName').html(trips[0].name);
+                $('#btnLoadPreviousTrip').attr('data-trip', trips[0]._id).css('display', 'block');
+                var scrollOffset = $('.tripHeader').offset().top - $('#entries_col').css("margin-top").replace("px", "");
+                //alert(scrollOffset);
+                $('html,body').prop('scrollTop', scrollOffset);
+                //$('.tripHeader')[0].scrollIntoView(true);
             } else {
-                $('#btnLoadPreviousTrip').attr('data-prev-trip', '').hide();
+                $('#btnLoadPreviousTrip').attr('data-trip', '').hide();
             }
         }
 
         function onReceivedNextTrip(trips) {
             if (trips.length > 0) {
-                $('#btnLoadNextTrip').attr('data-next-trip', trips[0]._id).show();
+                $('#nextTripName').html(trips[0].name);
+                $('#btnLoadNextTrip').attr('data-trip', trips[0]._id).css('display', 'block');
             } else {
-                $('#btnLoadNextTrip').attr('data-next-trip', '').hide();
+                $('#btnLoadNextTrip').attr('data-trip', '').hide();
             }
         }
 
@@ -276,17 +276,6 @@
             });
         }
 
-        // callback of logbook.getAllWaypointsOfTrip
-        // Populates the Waypoints for one Trip
-        //function onReceivedAllWaypointsByTrip(tripId, waypoints) {
-        //	var tripContainer = $('#timeline-trip_container_' + tripId);
-        //    $.each(waypoints, function (index, waypointData) {
-        //    	waypointData.date = moment(new Date(waypointData.date)).format(dateFormatShort);
-        //        tripContainer.append(timelineWaypointTemplate(waypointData));
-        //    });
-        //}
-
-
         // callback of getTripWaypoints()
         function onReceivedWaypoints(tripId, waypoints) {
             var tripContainer = $('#trip_' + tripId);
@@ -294,12 +283,25 @@
             var trip_header = $('#trip_header_' + tripId);
 
             var tripData = trip_header.data("tripData");
-            var title = 'Speed - '+tripData.name;
-            var description = tripData.from+" to "+tripData.to
+            var speed_title = 'Speed - ' + tripData.name;
+            var description = tripData.from + " to " + tripData.to
             var waypoint_names = [];
             var waypoint_ids = [];
-            var data_y = [];
-            var data_x = []
+            var speed_data_y = [];
+            var index_data_x = [];
+            var air_pressure_data_y = [];
+            var cloudage_data_y = [];
+            var temperature_data_y = [];
+
+            //N, NNO, NO, .... -->  16 keys
+            var wind_data_map = {0:0, 1:0, 2:0, 3:0, 4:0, 5:0, 6:0, 7:0, 8:0, 9:0, 10:0, 11:0, 12:0, 13:0, 14:0, 15:0};
+            var wave_data_map = {0:0, 1:0, 2:0, 3:0, 4:0, 5:0, 6:0, 7:0, 8:0, 9:0, 10:0, 11:0, 12:0, 13:0, 14:0, 15:0};
+            var degree_step = 22.5; // 360:16
+
+            var minTemp = 1000;
+            var maxTemp = -1000;
+
+            var last_entry_node = trip_header;
 
             // hide ajax loader in this trip container
             $('#entryLoader' + tripId).remove();
@@ -309,7 +311,8 @@
                 // unix timestamp -> formatted time
                 waypointData.formattedDate = moment(new Date(waypointData.date)).format(dateFormatShort);
                 waypointData.formattedTime = moment(new Date(waypointData.date)).format(timeFormat);
-
+                minTemp = (waypointData.tempCelsius < minTemp) ? waypointData.tempCelsius : minTemp;
+                maxTemp = (waypointData.tempCelsius > maxTemp) ? waypointData.tempCelsius : maxTemp;
                 // append to trip in timeline panel
                 timelineTripContainer.append(timelineWaypointTemplate(waypointData));
 
@@ -317,32 +320,87 @@
                 tripContainer.append(waypointTemplate(waypointData));
                 var entryNode = $('#waypoint_' + waypointData._id);
                 entryNode.data('waypointData', waypointData);
-                initWaypoint(entryNode, onScrolledToWaypoint);
+                initWaypoint(entryNode, onScrolledToWaypoint, last_entry_node);
 
-                data_x.push(index+1);
-                data_y.push(parseFloat(waypointData.sog));
+                last_entry_node = entryNode;
+                //console.log(waypointData);
+                index_data_x.push(index + 1);
+                speed_data_y.push(parseFloat(waypointData.sog));
+                air_pressure_data_y.push(parseFloat(waypointData.atmosPressure));
+                cloudage_data_y.push(parseFloat(waypointData.cloudage));
+                temperature_data_y.push(parseFloat(waypointData.tempCelsius));
                 waypoint_names.push(waypointData.name);
                 waypoint_ids.push(waypointData._id);
-            });
 
-            // not last set of waypoints of the trip? show "load more" button
-            //if (waypoints.length != 0) {
-            //    tripContainer.append(loadMoreEntriesTemplate({ tripId: tripId }));
-            //    initWaypoint(tripContainer.children('.loadMoreSection').get(0), onScrolledToLoadMore);
-            //}
+                compassOrderdInsert(wind_data_map, degree_step, waypointData.windDirection, waypointData.windSpeedBeaufort);
+                compassOrderdInsert(wave_data_map, degree_step, waypointData.windDirection, waypointData.wavesHeight);
+            });
 
             // refresh waypoint handlers to new positions of elements
             window.setTimeout(function () { $.waypoints('refresh'); }, 200);
             isLoadingWaypoints = false;
 
-            $('.logbookEntry').click(function () {
+            $('.logbookEntry').click(function (e) {
+                if ($(e.target).is('img')) {
+                    e.preventDefault();
+                    return;
+                }
                 scrollToWaypoint($(this));
             });
 
-            initSpeedChart($('#details_chart'), data_x, data_y, waypoint_names, waypoint_ids, title, description);
+            // set trip weather stats if available
+            if (minTemp != 1000) {
+                $('#tripMinTemp').html(Math.round(minTemp));
+                $('#tripMaxTemp').html(Math.round(maxTemp));
+                $('#details_trip_weather_stats_content').show();
+            }
+
+			// load speed table
+			if ($.trim($('#details_charts_distribution' ).html()) == '') {
+           		initSpeedChart($('#details_charts_distribution'), index_data_x, speed_data_y, waypoint_names, waypoint_ids, speed_title, description);
+            }
+
+            var wind_data = [];
+            var wave_data = [];
+            mapToArray(wind_data_map, wind_data);
+            mapToArray(wave_data_map, wave_data);
+
+            // wind and wave charts are not initialised here because the div they're going to be rendered in needs to be visible. (if user reloads page and tripHeader is not active)
+            trip_header.data('wind_data', wind_data);
+            trip_header.data('wave_data', wave_data);
+
+            var wind_chart_index=$("#wind_distribution").data('highchartsChart');
+            var wind_chart=Highcharts.charts[wind_chart_index];
+            wind_chart.series[0].setData(wind_data);
+
+            var wave_chart_index=$("#wave_distribution").data('highchartsChart');
+            var wave_chart=Highcharts.charts[wave_chart_index];
+            wave_chart.series[0].setData(wave_data);
+
+
+            // load air pressure/clouding/temperature table
+            if ($.trim($('#air_pressure_cloudage_temperature_distribution' ).html()) == '') {
+                initAirPressureCloudingTemperatureChart('#air_pressure_cloudage_temperature_distribution', index_data_x, air_pressure_data_y, cloudage_data_y, temperature_data_y, waypoint_ids);
+            }
         }
 
-        // loads and appends waypoint entries to a trip
+        // insert values in a map object with 16 keys, each representing compass directions (22.5 degrees).
+        function compassOrderdInsert(map, degree_step, degree, value){
+            var key = Math.floor(degree/degree_step);
+
+            if(!(key in map) || map[key] < value){
+                map[ key ] = value ;
+            }
+        }
+
+        // pushes all values of a map into an array
+        function mapToArray(map, array){
+            for (var key in map) {
+                array.push(map[key]);
+            }
+        }
+
+        // loads or appends waypoint entries to a trip
         function loadMoreEntries(tripId, count) {
             if (isLoadingWaypoints) {
                 return;
@@ -361,63 +419,157 @@
             logbook.getTripWaypoints(tripId, loadedEntriesCount, count, onReceivedWaypoints);
         }
 
-        // handle scrolling to "load more" button
-        function onScrolledToLoadMore(node) {
-            loadMoreEntries(node.attr('data-tripid'), 5);
-        }
-
         // callback for trip container when scrolled to
-        function onScrolledToWaypoint(node) {
-            $('#details_chart' ).css("display", "none");
+ 		function onScrolledToWaypoint(node) {
+ 			// hide distribution charts
+           hideDistributionCharts();
+           
+           showCharts();
+            
             $('.logbookEntry').removeClass("active");
             node.addClass("active");
 
             // change details
             var waypointData = node.data('waypointData');
-            if (typeof (waypointData) != "undefined") {
-                waypointData.latRounded = ('' + waypointData.lat).substr(0, 7);
-                waypointData.lngRounded = ('' + waypointData.lng).substr(0, 7);
+            if (typeof (waypointData) != "undefined") {   
+            	var coordHelper = new coordinateHelpers();
+            	
+            	waypointData.latRounded = coordHelper.getLatAsString(waypointData.lat);
+            	waypointData.lngRounded = coordHelper.getLngAsString(waypointData.lng);
+            	
+               // waypointData.latRounded = ('' + waypointData.lat).substr(0, 7);
+               // waypointData.lngRounded = ('' + waypointData.lng).substr(0, 7);
             }
             $('#details_text').html(entryDetailsTemplate(waypointData));
 
-			// create charts
-			initSOGSpeedometer('speedometer_sog');
-			initCOGCompass('compass_cog');
 
-			if (typeof(window.sogChart) != "undefined") {
-				var point = window.sogChart.series[0].points[0];
-				var newVal = waypointData.sog.substr(0,waypointData.sog.lastIndexOf(' '));
-				point.update(parseFloat(newVal));
-				window.sogChart.redraw();
-			}
-
-			if (typeof(window.cogChart) != "undefined") {
-				var pointH = window.cogChart.series[0].points[0];
-				var pointB = window.cogChart.series[1].points[0];
-				var newValH = parseFloat(waypointData.cog.substr(0,waypointData.sog.lastIndexOf(' ')));
-				var newValB = newValH - 180;
-				if (newValB < 0) {
-					newValB = 360 + newValB;
-				}
-				pointH.update(newValH);
-				pointB.update(newValB);
-				window.cogChart.redraw();
-			}
-
-            // mark waypoint in Map
-            if (typeof (map) != "undefined" && typeof (waypointData) != "undefined") {
-                highlight_waypoint(new google.maps.LatLng(waypointData.lat, waypointData.lng));
+            if (typeof (scrollToWaypointTimeout) != undefined) {
+                clearTimeout(scrollToWaypointTimeout);
             }
+            scrollToWaypointTimeout = setTimeout(function () {
+                console.log("onScrolledToWaypoint timeout called")
+                
+                //only call init once if there's no html content inside the matching div
+                if($.trim($('#speedometer_sog' ).html()) == ''){
+                    initSOGSpeedometer('speedometer_sog');
+                }
+                if($.trim($('#compass_cog' ).html()) == ''){
+                    initCOGCompass('compass_cog');
+                }
+
+                if (typeof (window.sogChart) != "undefined") {
+                    var point = window.sogChart.series[0].points[0];
+                    var newVal = waypointData.sog.substr(0, waypointData.sog.lastIndexOf(' '));
+                    point.update(parseFloat(newVal));
+                    window.sogChart.redraw();
+                }
+
+                if (typeof (window.cogChart) != "undefined") {
+                    //var pointH = window.cogChart.series[0].points[0];
+                    var pointB = window.cogChart.series[0].points[0];
+                    var newValH = parseFloat(waypointData.cog.substr(0, waypointData.sog.lastIndexOf(' ')));
+                    var newValB = newValH - 180;
+                    if (newValB < 0) {
+                        newValB = 360 + newValB;
+                    }
+                    //pointH.update(newValH);
+                    pointB.update(newValB);
+                    window.cogChart.redraw();
+                }
+
+                // mark waypoint in Map
+                if (typeof (map) != "undefined" && typeof (waypointData) != "undefined") {
+                    highlight_waypoint(new google.maps.LatLng(waypointData.lat, waypointData.lng));
+                }
+
+                // change weather
+                //$('#details_weather_charts').css("display", "block");
+                // TODO
+
+                // create weather charts
+                //only call init once if there's no html content inside the matching div
+                if($.trim($('#wind_compass' ).html()) == ''){
+                    initWindCompassChart('wind_compass');
+                }
+                if($.trim($('#wave_compass').html()) == ''){
+                    initWaveCompassChart('wave_compass');
+                }
+                if($.trim($('#air_pressure' ).html()) == ''){
+                    initAirPressureChart('air_pressure');
+                }
+                if($.trim($('#clouds' ).html()) == ''){
+                    initCloudsChart('clouds');
+                }
+                if($.trim($('#temperature' ).html()) == ''){
+                    initTemperatureChart('temperature');
+                }
+               
+               
+                if (typeof (window.windCompassChart) != "undefined") {
+                    //TODO fill
+                    window.windCompassChart.redraw();
+                }
+
+ 				if (typeof (window.waveCompassChart) != "undefined") {
+                    //TODO fill
+                    window.waveCompassChart.redraw();
+                }
+
+
+                if (typeof (window.airPressureChart) != "undefined") {
+                    //TODO fill
+                    window.airPressureChart.redraw();
+                }
+
+                if (typeof (window.cloudsChart) != "undefined") {
+                    //TODO fill
+                    window.cloudsChart.redraw();
+                }
+
+                if (typeof (window.temperatureChart) != "undefined") {
+                    //TODO fill
+                    window.temperatureChart.redraw();
+                }
+                
+               
+            }, 500);
         }
 
         function onScrolledToTripHeader(node) {
+            if (typeof (scrollToWaypointTimeout) != undefined) {
+                clearTimeout(scrollToWaypointTimeout);
+            }
             $('.logbookEntry').removeClass("active");
 
             $('#details_text').html(entryDetailsTemplate());
             //zoom out map
             reset_map_zoom();
 
-            $('#details_chart' ).css("display", "block");
+            if (typeof (window.windDirSpeedChart) != "undefined") {
+            	//TODO fill
+                window.windDirSpeedChart.redraw();
+            }
+            
+            if (typeof (window.waveDirHeightChart) != "undefined") {
+            	//TODO fill
+                window.waveDirHeightChart.redraw();
+            }
+            
+            showDistributionCharts();
+
+            // hide the Normal Charts for details 
+        	$('#details_weather_charts').css("display", "none");    // hide waypoint weather	
+        	$('#details_charts').css("display", "none");    		// hide compass+speedometer
+
+            // load wind table
+            if ($.trim($('#wind_distribution' ).html()) == '') {
+                initWindDirSpeedChart('wind_distribution', node.data('wind_data'));
+            }
+
+            // load wind table
+            if ($.trim($('#wave_distribution' ).html()) == '') {
+                initWaveDirHeightChart('wave_distribution', node.data('wave_data'));
+            }
         }
 
         /**
@@ -426,7 +578,7 @@
         function applyEntryFilters() {
             var onlyImages = $('#chkOnlyWithImage').hasClass('active');
             var onlyNotes = $('#chkOnlyWithNote').hasClass('active');
-            var minTimePeriod = parseInt($('#timeOffsetToggler').html()) * 60 * 1000;   // min to msec    
+            var minTimePeriod = parseInt($('#timeOffsetToggler').html()) * 60 * 1000;   // min to msec
             var lastTimestamp = -1;
 
             // iterate over all waypoints in entry view & timeline
@@ -443,10 +595,10 @@
                 }
                 lastTimestamp = parseInt(waypointData.date);
 
-                if (onlyImages && !$(item).hasClass('hasImage')) {
+                if ((onlyImages && !$(item).hasClass('hasImage')) && (!onlyNotes || (onlyNotes && !$(item).hasClass('hasNote'))) ) {
                     item.addClass('filtered');
                     timelineItem.addClass('filtered');
-                } else if (onlyNotes && !$(item).hasClass('hasNote')) {
+                }else if ((onlyNotes && !$(item).hasClass('hasNote')) && (!onlyImages || (onlyImages && !$(item).hasClass('hasImage'))) ) {
                     item.addClass('filtered');
                     timelineItem.addClass('filtered');
                 } else { // show item
@@ -459,376 +611,1134 @@
             window.setTimeout(function () { $.waypoints('refresh'); }, 750);
         }
 
-        function scrollToWaypoint(waypoint){
-            $('.logbookEntry' ).waypoint('disable');
+        function scrollToWaypoint(waypoint) {
+            $('.logbookEntry').waypoint('disable');
             var offset = $(waypoint).offset().top - parseInt($('#menu_bar').css('height'));
             $('html, body').animate({
-               scrollTop: offset
-            },{
-                done: function(){
+                scrollTop: offset
+            }, {
+                done: function () {
                     onScrolledToWaypoint(waypoint);
-                    $('.logbookEntry' ).waypoint('enable');
+                    $('.logbookEntry').waypoint('enable');
                 }
             }, 'slow');
         }
 
-        function clicked_on_marker(marker){
+        function clicked_on_marker(marker) {
             var lat = marker.getPosition().lat();
             var lng = marker.getPosition().lng();
             var waypoint = getWaypointFromPosition(lat, lng);
-            if(typeof(waypoint) !=  "undefind"){
+            if (typeof (waypoint) != "undefind") {
                 scrollToWaypoint(waypoint);
             }
         }
 
-        function getWaypointFromPosition(lat, lng){
+        function getWaypointFromPosition(lat, lng) {
             var waypoint;
             //console.log("lat: "+lat+" lng: "+lng);
 
             //hotfix: the longitude differs for some strange reasons... only after the 9th digit.
             //(object received with getTripData have different longitudes as objects received with getTripWaypoints?!)
             lng = lng.toFixed(9);
-            $.each($(".logbookEntry"), function() {
-                var waypointData = $(this ).data().waypointData;
+            $.each($(".logbookEntry"), function () {
+                var waypointData = $(this).data().waypointData;
                 var match = (waypointData.lat == lat) && (waypointData.lng.toFixed(9) == lng);
                 //console.log("lat: "+waypointData.lat+" lng: "+waypointData.lng);
                 //console.log(match);
-                if(match){
+                if (match) {
                     waypoint = $(this);
                     return false;
                 }
             });
             return waypoint;
         }
-        
+
         /**
          *  This function initalizes the SOG Chart
          */
         function initSOGSpeedometer(containerId) {
-        	if (typeof(window.sogChart) != "undefined") {
-        		window.sogChart.destroy();
-        	}
-        	if (typeof(window.chartIndex) == "undefined") {
-        		window.chartIndex = 0;
-        	} else {
-        		window.chartIndex += 5;
-        	}
-        	
-        	window.sogChart = new Highcharts.Chart({
-			    chart: {
-			    	renderTo: containerId,
-			        type: 'gauge',
-			        alignTicks: false,
-			        plotBackgroundColor: null,
-			        plotBackgroundImage: null,
-			        plotBorderWidth: 0,
-			        plotShadow: false
-			    },
-			    
-			    title: {
-			        text: '',
-			        style: {
-				        display: 'none'
-				    }
-			    },
-			    
-			    pane: {
-			        startAngle: -150,
-			        endAngle: 150,
-			        center: ['50%', '50%'],
-			        background: [{
-			            backgroundColor: {
-			                linearGradient: { x1: 0, y1: 0, x2: 0, y2: 1 },
-			                stops: [
+            if (typeof (window.sogChart) != "undefined") {
+                window.sogChart.destroy();
+            }
+            
+            window.sogChart = new Highcharts.Chart({
+                chart: {
+                    renderTo: containerId,
+                    type: 'gauge',
+                    alignTicks: false,
+                    backgroundColor:'rgba(255, 255, 255, 0.1)',                    
+                    backgroundColor:'rgba(255, 255, 255, 0.1)',
+                    plotBackgroundImage: null,
+                    plotBorderWidth: 0,
+                    plotShadow: false
+                },
+
+                title: {
+                    text: '',
+                    style: {
+                        display: 'none'
+                    }
+                },
+
+                pane: {
+                    startAngle: -150,
+                    endAngle: 150,
+                    size: [11],
+                    center: ['50%', '50%'],
+                    background: [{
+                        backgroundColor: {
+                            linearGradient: { x1: 0, y1: 0, x2: 0, y2: 1 },
+                            stops: [
 			                    [0, '#FFF'],
 			                    [1, '#333']
-			                ]
-			            },
-			            borderWidth: 0,
-			            outerRadius: '109%'
-			        }, {
-			            backgroundColor: {
-			                linearGradient: { x1: 0, y1: 0, x2: 0, y2: 1 },
-			                stops: [
+                            ]
+                        },
+                        borderWidth: 0,
+                        outerRadius: '109%'
+                    }, {
+                        backgroundColor: {
+                            linearGradient: { x1: 0, y1: 0, x2: 0, y2: 1 },
+                            stops: [
 			                    [0, '#333'],
 			                    [1, '#FFF']
-			                ]
-			            },
-			            borderWidth: 1,
-			            outerRadius: '107%'
-			        }, {
-			            // default background
-			        }, {
-			            backgroundColor: '#DDD',
-			            borderWidth: 0,
-			            outerRadius: '105%',
-			            innerRadius: '103%'
-			        }]
-			    },
-			       
-			    // the value axis
-			    yAxis: {
-			        min: 0,
-			        max: 50,
-			        
-			        minorTickInterval: 'auto',
-			        minorTickWidth: 1,
-			        minorTickLength: 10,
-			        minorTickPosition: 'inside',
-			        minorTickColor: '#666',
-			
-			        tickPixelInterval: 30,
-			        tickWidth: 2,
-			        tickPosition: 'inside',
-			        tickLength: 10,
-			        tickColor: '#666',
-			        labels: {
-			            step: 1,
-			            style: {
-			            	 fontSize: '8px',
-			            	 distance: -15
-			            }
-			        },
-			        title: {
-			            text: 'kn',
-			            y: 20
-			        },
-			        plotBands: [{
-			            from: 0,
-			            to: 30,
-			            color: '#55BF3B' // green
-			        }, {
-			            from: 30,
-			            to: 40,
-			            color: '#DDDF0D' // yellow
-			        }, {
-			            from: 40,
-			            to: 50,
-			            color: '#DF5353' // red
-			        }]   
-			    },
-			    
-		        tooltip: {
-		            enabled: false
-		        },      
-			    
-			    exporting: {
-         			enabled: false
-				},
-			    
-			    series: [{
-			        name: 'SOG',
-			        data: [100],
-			        tooltip: {
-			        	enabled: false
-			        }
-			    }]
-			
-			});
-			
-			// remove highcart logo
-            $('#highcharts-' + window.chartIndex + ' svg text').last().remove();
+                            ]
+                        },
+                        borderWidth: 1,
+                        outerRadius: '107%'
+                    }, {
+                        // default background
+                    }, {
+                        backgroundColor: '#DDD',
+                        borderWidth: 0,
+                        outerRadius: '105%',
+                        innerRadius: '103%'
+                    }]
+                },
+
+                // the value axis
+                yAxis: {
+                    min: 0,
+                    max: 20,
+
+                    minorTickInterval: 'auto',
+                    minorTickWidth: 1,
+                    minorTickLength: 10,
+                    minorTickPosition: 'inside',
+                    minorTickColor: '#666',
+
+                    tickPixelInterval: 30,
+                    tickWidth: 2,
+                    tickPosition: 'inside',
+                    tickLength: 10,
+                    tickColor: '#666',
+                    labels: {
+                        step: 1,
+                        style: {
+                            fontSize: '8px',
+                            distance: -15
+                        }
+                    },
+                    title: {
+                        text: 'kn',
+                        y: 20
+                    },
+                    plotBands: [{
+                        from: 0,
+                        to: 13,
+                        color: '#55BF3B' // green
+                    }, {
+                        from: 13,
+                        to: 17,
+                        color: '#DDDF0D' // yellow
+                    }, {
+                        from: 17,
+                        to: 20,
+                        color: '#DF5353' // red
+                    }]
+                },
+
+                tooltip: {
+                    enabled: false
+                },
+
+                exporting: {
+                    enabled: false
+                },
+
+                series: [{
+                    name: 'SOG',
+                    data: [100],
+                    tooltip: {
+                        enabled: false
+                    }
+                }]
+
+            });
+
+            // remove highcart logo
+            removeHighChartLogo();
         }
-        
-        
+
+
         /**
          *  This function initalizes the Compass Chart
          */
         function initCOGCompass(containerId) {
-        	if (typeof(window.cogChart) != "undefined") {
-        		window.cogChart.destroy();
-        	}
-        	if (typeof(window.chartIndex) == "undefined") {
-        		window.chartIndex = 0;
-        	} else {
-        		window.chartIndex += 5;
-        	}
-        	
-        	window.cogChart = new Highcharts.Chart({
+            if (typeof (window.cogChart) != "undefined") {
+                window.cogChart.destroy();
+            }
+           
+            window.cogChart = new Highcharts.Chart({
 
-			    chart: {
-			    	renderTo: containerId,
-			        type: 'gauge',
-			        plotBackgroundColor: null,
-			        plotBackgroundImage: null,
-			        plotBorderWidth: 0,
-			        plotShadow: false
-			    },
-			    
-			    exporting: {
-         			enabled: false
-				},
-				
-				tooltip: {
-		            enabled: false
-		        },
-				
-				title: {
-			        text: '', 
-			        style: {
-				        display: 'none'
-				    }
-			    },
-			    pane: {
-			        startAngle: -180,
-			        endAngle: 180,
-			        size: [10],
-		            center: ['50%', '50%'],
-			        background: [{
-		                backgroundColor: {
-		                    linearGradient: { x1: 0, y1: 0, x2: 0, y2: 1 },
-		                    stops: [
+  	      		chart: {
+  	      			renderTo: containerId,
+                    type: 'gauge',
+                    backgroundColor:'rgba(255, 255, 255, 0.1)',
+                    plotBackgroundImage: null,
+                    plotBorderWidth: 0,
+                    plotShadow: false
+                },
+
+                exporting: {
+                    enabled: false
+                },
+
+                tooltip: {
+                    enabled: false
+                },
+
+                title: {
+                    text: '',
+                    style: {
+                        display: 'none'
+                    }
+                },
+                pane: {
+                    startAngle: -180,
+                    endAngle: 180,
+                    size: [10],
+                    center: ['50%', '50%'],
+                    background: [{
+                        backgroundColor: {
+                            linearGradient: { x1: 0, y1: 0, x2: 0, y2: 1 },
+                            stops: [
 		                        [0, '#FFF'],
 		                        [1, '#333']
-		                    ]
-		                },
-		                borderWidth: 0,
-		                outerRadius: '109%'
-		            }, {
-		                backgroundColor: {
-		                    linearGradient: { x1: 0, y1: 0, x2: 0, y2: 1 },
-		                    stops: [
+                            ]
+                        },
+                        borderWidth: 0,
+                        outerRadius: '109%'
+                    }, {
+                        backgroundColor: {
+                            linearGradient: { x1: 0, y1: 0, x2: 0, y2: 1 },
+                            stops: [
 		                        [0, '#333'],
 		                        [1, '#FFF']
-		                    ]
-		                },
-		                borderWidth: 1,
-		                outerRadius: '107%'
-		            }, {
-		                backgroundColor: {
-		                    linearGradient: { x1: 0, y1: 0, x2: 0, y2: 1 },
-		                    stops: [
+                            ]
+                        },
+                        borderWidth: 1,
+                        outerRadius: '107%'
+                    }, {
+                        backgroundColor: {
+                            linearGradient: { x1: 0, y1: 0, x2: 0, y2: 1 },
+                            stops: [
 		                        [0, '#666'],
 		                        [1, '#0c0c0c']
-		                    ]
-		                },
-		                borderWidth: 1,
-		                outerRadius: '107%'
-		            }, {
-		                backgroundColor: '#DDD',
-		                borderWidth: 1,
-		                outerRadius: '105%',
-		                innerRadius: '104%'
-		            }]
+                            ]
+                        },
+                        borderWidth: 1,
+                        outerRadius: '107%'
+                    }, {
+                        backgroundColor: '#DDD',
+                        borderWidth: 1,
+                        outerRadius: '105%',
+                        innerRadius: '104%'
+                    }]
+                },
+
+                // the value axis
+                yAxis: [{
+                    min: 0,
+                    max: 360,
+
+                    minorTickInterval: 'auto',
+                    minorTickWidth: 1,
+                    minorTickLength: 5,
+                    minorTickPosition: 'inside',
+                    minorTickColor: '#fff',
+
+                    tickInterval: 30,
+                    tickWidth: 2,
+                    tickPosition: 'inside',
+                    tickLength: 8,
+                    tickColor: '#fff',
+                    labels: {
+                        style: {
+                            color: '#fff',
+                            fontSize: '8px'
+                        },
+                        step: 2,
+                        distance: -15,
+                         formatter: function () {
+                            if (this.value == 'N' || this.value == 'O' || this.value == '360') {
+                                return '180';
+                            } else if (this.value == '60') {
+                                return '240';
+                            } else if (this.value == '120') {
+                                return '300';
+                            } else if (this.value == '180') {
+                                return '0';
+                            } else if (this.value == '240') {
+                                return '60';
+                            } else if (this.value == '300') {
+                                return '120';
+                            }
+                        }
+                    }
+                }, {     
+                    showlastlabel: false,
+                    categories: ['N'],
+                    offset: 10,
+                    min: 0,
+                    max: 360,
+
+                    minorTickLength: 0,
+
+                    tickInterval: 45,
+                    tickWidth: 2,
+                    tickPosition: 'outside',
+                    tickLength: 3,
+                    tickColor: '#000',
+
+                    labels: {
+                        style: {
+                            fontSize: '12px',
+                            color: '#000'
+                        },
+                        distance: 15,
+                        formatter: function () {
+                            if (this.value == 'N' || this.value == 'O' || this.value == '360') {
+                                return 'S';
+                            } else if (this.value == '45') {
+                                return 'SW';
+                            } else if (this.value == '90') {
+                                return 'W';
+                            } else if (this.value == '135') {
+                                return 'NW';
+                            } else if (this.value == '180') {
+                                return 'N';
+                            } else if (this.value == '225') {
+                                return 'NE';
+                            } else if (this.value == '270') {
+                                return 'E';
+                            } else if (this.value == '315') {
+                                return 'SE';
+                            }
+                        }
+                    }
+                }],
+
+                series: [{
+                    name: 'Degree Bottom',
+                    data: [0],
+                    dial: {
+                        baseWidth: 4,
+                        backgroundColor: '#C33',
+                        borderColor: '#900',
+                        borderWidth: 1,
+                        baseLength: 10,
+                        radius: 80
+                    },
+                    tooltip: {
+                        enabled: false
+                    }
+                }]	
+
+            });
+
+            // remove highcart logo
+            removeHighChartLogo();
+        };
+        
+        /**
+         *  This function initalizes the Compass Chart for wind direction and speed
+         */
+        function initWindCompassChart(containerId) {
+            if (typeof (window.windCompassChart) != "undefined") {
+                window.windCompassChart.destroy();
+            }
+           
+            window.windCompassChart = new Highcharts.Chart({
+
+  	      		chart: {
+  	      			renderTo: containerId,
+                    type: 'gauge',
+                    backgroundColor:'rgba(255, 255, 255, 0.1)',
+                    plotBackgroundImage: null,
+                    plotBorderWidth: 0,
+                    plotShadow: false
+                },
+
+                exporting: {
+                    enabled: false
+                },
+
+                tooltip: {
+                    enabled: false
+                },
+
+                title: {
+			        text: 'Windrichtung / Windgeschwindigkeit',
+		            style: {
+		                fontSize: '14px'
+		            }
 			    },
-			       
-			    // the value axis
-			    yAxis: [{
-		            showLastLabel: false,
-		            
-			        min: 0,
-			        max: 360,
+                pane: {
+                    startAngle: -180,
+                    endAngle: 180,
+                    size: [10],
+                    center: ['50%', '50%'],
+                    background: [{
+                        backgroundColor: {
+                            linearGradient: { x1: 0, y1: 0, x2: 0, y2: 1 },
+                            stops: [
+		                        [0, '#FFF'],
+		                        [1, '#333']
+                            ]
+                        },
+                        borderWidth: 0,
+                        outerRadius: '109%'
+                    }, {
+                        backgroundColor: {
+                            linearGradient: { x1: 0, y1: 0, x2: 0, y2: 1 },
+                            stops: [
+		                        [0, '#333'],
+		                        [1, '#FFF']
+                            ]
+                        },
+                        borderWidth: 1,
+                        outerRadius: '107%'
+                    }, {
+                        backgroundColor: {
+                            linearGradient: { x1: 0, y1: 0, x2: 0, y2: 1 },
+                            stops: [
+		                        [0, '#666'],
+		                        [1, '#0c0c0c']
+                            ]
+                        },
+                        borderWidth: 1,
+                        outerRadius: '107%'
+                    }, {
+                        backgroundColor: '#DDD',
+                        borderWidth: 1,
+                        outerRadius: '105%',
+                        innerRadius: '104%'
+                    }]
+                },
+
+                // the value axis
+                yAxis: [{
+                    min: 0,
+                    max: 360,
+
+                    minorTickInterval: 'auto',
+                    minorTickWidth: 1,
+                    minorTickLength: 5,
+                    minorTickPosition: 'inside',
+                    minorTickColor: '#fff',
+
+                    tickInterval: 30,
+                    tickWidth: 2,
+                    tickPosition: 'inside',
+                    tickLength: 8,
+                    tickColor: '#fff',
+                    labels: {
+                        style: {
+                            color: '#fff',
+                            fontSize: '8px'
+                        },
+                        step: 2,
+                        distance: -15,
+                         formatter: function () {
+                            if (this.value == 'N' || this.value == 'O' || this.value == '360') {
+                                return '180';
+                            } else if (this.value == '60') {
+                                return '240';
+                            } else if (this.value == '120') {
+                                return '300';
+                            } else if (this.value == '180') {
+                                return '0';
+                            } else if (this.value == '240') {
+                                return '60';
+                            } else if (this.value == '300') {
+                                return '120';
+                            }
+                        }
+                    }
+                }, {     
+                    showlastlabel: false,
+                    categories: ['N'],
+                    offset: 10,
+                    min: 0,
+                    max: 360,
+
+                    minorTickLength: 0,
+
+                    tickInterval: 45,
+                    tickWidth: 2,
+                    tickPosition: 'outside',
+                    tickLength: 3,
+                    tickColor: '#000',
+
+                    labels: {
+                        style: {
+                            fontSize: '12px',
+                            color: '#000'
+                        },
+                        distance: 15,
+                        formatter: function () {
+                            if (this.value == 'N' || this.value == 'O' || this.value == '360') {
+                                return 'S';
+                            } else if (this.value == '45') {
+                                return 'SW';
+                            } else if (this.value == '90') {
+                                return 'W';
+                            } else if (this.value == '135') {
+                                return 'NW';
+                            } else if (this.value == '180') {
+                                return 'N';
+                            } else if (this.value == '225') {
+                                return 'NE';
+                            } else if (this.value == '270') {
+                                return 'E';
+                            } else if (this.value == '315') {
+                                return 'SE';
+                            }
+                        }
+                    }
+                }],
+
+                series: [{
+                    name: 'Degree Bottom',
+                    data: [0],
+                    dial: {
+                        baseWidth: 4,
+                        backgroundColor: '#C33',
+                        borderColor: '#900',
+                        borderWidth: 1,
+                        baseLength: 10,
+                        radius: 80
+                    },
+                    tooltip: {
+                        enabled: false
+                    }
+                }]	
+
+            });
+
+            // remove highcart logo
+            removeHighChartLogo();
+        };
+        
+        /**
+         *  This function initalizes the Compass Chart for wave direction and height
+         */
+        function initWaveCompassChart(containerId) {
+            if (typeof (window.waveCompassChart) != "undefined") {
+                window.waveCompassChart.destroy();
+            }
+           
+            window.waveCompassChart = new Highcharts.Chart({
+
+  	      		chart: {
+  	      			renderTo: containerId,
+                    type: 'gauge',
+                    backgroundColor:'rgba(255, 255, 255, 0.1)',
+                    plotBackgroundImage: null,
+                    plotBorderWidth: 0,
+                    plotShadow: false
+                },
+
+                exporting: {
+                    enabled: false
+                },
+
+                tooltip: {
+                    enabled: false
+                },
+
+                title: {
+			        text: 'Wellenrichtung / Wellenhöhe',
+		            style: {
+		                fontSize: '14px'
+		            }
+			    },
+                pane: {
+                    startAngle: -180,
+                    endAngle: 180,
+                    size: [10],
+                    center: ['50%', '50%'],
+                    background: [{
+                        backgroundColor: {
+                            linearGradient: { x1: 0, y1: 0, x2: 0, y2: 1 },
+                            stops: [
+		                        [0, '#FFF'],
+		                        [1, '#333']
+                            ]
+                        },
+                        borderWidth: 0,
+                        outerRadius: '109%'
+                    }, {
+                        backgroundColor: {
+                            linearGradient: { x1: 0, y1: 0, x2: 0, y2: 1 },
+                            stops: [
+		                        [0, '#333'],
+		                        [1, '#FFF']
+                            ]
+                        },
+                        borderWidth: 1,
+                        outerRadius: '107%'
+                    }, {
+                        backgroundColor: {
+                            linearGradient: { x1: 0, y1: 0, x2: 0, y2: 1 },
+                            stops: [
+		                        [0, '#666'],
+		                        [1, '#0c0c0c']
+                            ]
+                        },
+                        borderWidth: 1,
+                        outerRadius: '107%'
+                    }, {
+                        backgroundColor: '#DDD',
+                        borderWidth: 1,
+                        outerRadius: '105%',
+                        innerRadius: '104%'
+                    }]
+                },
+
+                // the value axis
+                yAxis: [{
+                    min: 0,
+                    max: 360,
+
+                    minorTickInterval: 'auto',
+                    minorTickWidth: 1,
+                    minorTickLength: 5,
+                    minorTickPosition: 'inside',
+                    minorTickColor: '#fff',
+
+                    tickInterval: 30,
+                    tickWidth: 2,
+                    tickPosition: 'inside',
+                    tickLength: 8,
+                    tickColor: '#fff',
+                    labels: {
+                        style: {
+                            color: '#fff',
+                            fontSize: '8px'
+                        },
+                        step: 2,
+                        distance: -15,
+                         formatter: function () {
+                            if (this.value == 'N' || this.value == 'O' || this.value == '360') {
+                                return '180';
+                            } else if (this.value == '60') {
+                                return '240';
+                            } else if (this.value == '120') {
+                                return '300';
+                            } else if (this.value == '180') {
+                                return '0';
+                            } else if (this.value == '240') {
+                                return '60';
+                            } else if (this.value == '300') {
+                                return '120';
+                            }
+                        }
+                    }
+                }, {     
+                    showlastlabel: false,
+                    categories: ['N'],
+                    offset: 10,
+                    min: 0,
+                    max: 360,
+
+                    minorTickLength: 0,
+
+                    tickInterval: 45,
+                    tickWidth: 2,
+                    tickPosition: 'outside',
+                    tickLength: 3,
+                    tickColor: '#000',
+
+                    labels: {
+                        style: {
+                            fontSize: '12px',
+                            color: '#000'
+                        },
+                        distance: 15,
+                        formatter: function () {
+                            if (this.value == 'N' || this.value == 'O' || this.value == '360') {
+                                return 'S';
+                            } else if (this.value == '45') {
+                                return 'SW';
+                            } else if (this.value == '90') {
+                                return 'W';
+                            } else if (this.value == '135') {
+                                return 'NW';
+                            } else if (this.value == '180') {
+                                return 'N';
+                            } else if (this.value == '225') {
+                                return 'NE';
+                            } else if (this.value == '270') {
+                                return 'E';
+                            } else if (this.value == '315') {
+                                return 'SE';
+                            }
+                        }
+                    }
+                }],
+
+                series: [{
+                    name: 'Degree Bottom',
+                    data: [0],
+                    dial: {
+                        baseWidth: 4,
+                        backgroundColor: '#C33',
+                        borderColor: '#900',
+                        borderWidth: 1,
+                        baseLength: 10,
+                        radius: 80
+                    },
+                    tooltip: {
+                        enabled: false
+                    }
+                }]	
+
+            });
+
+            // remove highcart logo
+            removeHighChartLogo();
+        };
+
+        /**
+         *  This method inits the wind direction speed chart 
+         */
+        function initWindDirSpeedChart(containerId, data) {
+   			if (typeof (window.windDirSpeedChart) != "undefined") {
+                window.windDirSpeedChart.destroy();
+            }
+                   	
+        	window.windDirSpeedChart = new Highcharts.Chart({
+		       chart: {
+		       	 	renderTo: containerId,
+			        polar: true,
+			        type: 'column',
+		            backgroundColor:'rgba(255, 255, 255, 0.1)',
+		            plotBackgroundImage: null,
+		            plotBorderWidth: 0,
+		            plotShadow: false
+			    },
+		        
+		        exporting: {
+		            enabled: false
+		        },
+		        
+		        tooltip: {
+		            enabled: false
+		        },
+			    
+			    title: {
+			        text: 'Windrichtung / Windgeschwindigkeit',
+		            style: {
+		                fontSize: '14px'
+		            }
+			    },	    
+			    pane: {
+		            size: [11],
+		            center: ['50%', '50%']
+			    },	    
 			        
-			        minorTickInterval: 'auto',
-			        minorTickWidth: 1,
-			        minorTickLength: 5,
-			        minorTickPosition: 'inside',
-			        minorTickColor: '#fff',
-			
-			        tickPixelInterval: 30,
-			        tickWidth: 2,
-			        tickPosition: 'inside',
-			        tickLength: 8,
-			        tickColor: '#fff',
+			    xAxis: {
+			    	tickmarkPlacement: 'on'
+			    },
+		        
+		        legend: {
+		            enabled: false
+		        },
+			    plotOptions: {
+			        series: {
+			        	stacking: 'normal',
+			        	shadow: false,
+			        	groupPadding: 0,
+			        	pointPlacement: 'on'
+			        }
+			    },
+			    xAxis: [{
+		            categories: ['N', 'NNO', 'NO', 'ONO', 'O', 'OSO','SO', 'SSO', 'S', 'SSW', 'SW', 'WSW', 'W', 'WNW', 'NW', 'NNW'],
+		            labels: {
+		               style: {
+		                   fontSize: '9px'
+		               },
+		               distance: 9
+		            }
+		        }],
+			    yAxis: {
+			        min: 0,
+		            max: 5,
+		            tickInterval: 1,
+			        endOnTick: false,
+			        showLastLabel: true,
+			        title: {
+		                style: {
+		                    fontSize: '9px'
+		                },
+			        	text: 'Beaufort'
+			        },
 			        labels: {
 		                style: {
-		                     color: '#fff',
-		                     fontSize: '8px'
+		                    fontSize: '8px'
 		                },
-			            step: 2,
+			        	formatter: function () {
+			        		return this.value;
+			        	}
+			        }
+			    },	   
+		       	series: [{
+			            name: 'windTable',
+			            type: 'column',
+			            data: data //[0.0, 6.9, 0, 10, 0, 6.5, 3, 7.5, 8.3, 0, 3.9, 4.6, 0, 0, 0, 0]
+			    }]
+			});
+
+            // remove highcart logo
+            removeHighChartLogo();
+        }
+        
+             /**
+         *  This method inits the wave direction speed chart 
+         */
+        function initWaveDirHeightChart(containerId, data) {
+   			if (typeof (window.waveDirHeightChart) != "undefined") {
+                window.waveDirHeightChart.destroy();
+            }
+                   	
+        	window.waveDirHeightChart = new Highcharts.Chart({
+        	    	chart: {
+        	    		renderTo: containerId,
+				        polar: true,
+				        type: 'column',
+			            backgroundColor:'rgba(255, 255, 255, 0.1)',
+			            plotBackgroundImage: null,
+			            plotBorderWidth: 0,
+			            plotShadow: false
+				    },
+			        
+			        exporting: {
+			            enabled: false
+			        },
+			        
+			        tooltip: {
+			            enabled: false
+			        },
+				    
+				    title: {
+				        text: 'Wellenrichtung / Wellenhöhe',
+			            style: {
+			                fontSize: '14px'
+			            }
+				    },	    
+				    pane: {
+			            size: [11],
+			            center: ['50%', '50%']
+				    },	    
+				        
+				    xAxis: {
+				    	tickmarkPlacement: 'on'
+				    },
+			        
+			        legend: {
+			            enabled: false
+			        },
+				    plotOptions: {
+				        series: {
+				        	stacking: 'normal',
+				        	shadow: false,
+				        	groupPadding: 0,
+				        	pointPlacement: 'on'
+				        }
+				    },
+				    xAxis: [{
+			            categories: ['N', 'NNO', 'NO', 'ONO', 'O', 'OSO','SO', 'SSO', 'S', 'SSW', 'SW', 'WSW', 'W', 'WNW', 'NW', 'NNW'],
+			            labels: {
+			               style: {
+			                   fontSize: '9px'
+			               },
+			               distance: 9
+			            }
+			        }],     
+				    yAxis: {
+				        min: 0,
+			            max: 5,
+			            tickInterval: 1,
+				        endOnTick: false,
+				        showLastLabel: true,
+				        title: {
+			                style: {
+			                    fontSize: '9px'
+			                },
+				        	text: 'Meter'
+				        },
+				        labels: {
+			                style: {
+			                    fontSize: '8px'
+			                },
+				        	formatter: function () {
+				        		return this.value;
+				        	}
+				        }
+				    },	
+				    series: [{
+			            name: 'waveTable',
+			            type: 'column',
+			            data: data //[7.0, 6.9, 9.5, 0, 0, 1.5, 0, 7.5, 8.3, 2.3, 1.9, 1.6, 0, 1, 4, 5]
+			        }]
+	    		});
+
+            // remove highcart logo
+            removeHighChartLogo();
+        }
+        
+        /**
+         *  This function initalizes the Air Pressure Chart
+         */
+        function initAirPressureChart(containerId) {
+        	if (typeof (window.airPressureChart) != "undefined") {
+                window.airPressureChart.destroy();
+            }
+           
+           	window.airPressureChart = new Highcharts.Chart({
+        		chart: {
+			        renderTo: containerId,
+                    type: 'gauge',
+                    backgroundColor:'rgba(255, 255, 255, 0.1)',
+                    plotBackgroundImage: null,
+                    plotBorderWidth: 0,
+                    plotShadow: false
+			    },
+			    pane: {
+			    	startAngle: -150,
+			    	endAngle: 150,
+		            size: [11],
+		            center: ['50%', '55%']
+			    },
+			    exporting: {
+		            enabled: false
+		        },
+		        tooltip: {
+		            enabled: false
+		        },
+		        title: {
+		            text: 'Luftdruck',
+		            style: {
+		                fontSize: '14px'
+		            }
+		        },
+				yAxis: {
+					min: 960,
+					max: 1060,
+
+		            minorTickInterval: 1,
+		            minorTickWidth: 2,
+		            minorTickLength: 10,
+		            minorTickPosition: 'inside',
+
+		            tickInterval: 20,
+		            tickWidth: 3,
+		            tickLength: 15,
+		            tickPosition: 'inside',
+		            
+		            labels: {
+		                style: {
+		                    fontSize: '9px'
+		                }
+			        },
+
+		            title: {
+			            text: 'mBar',
+		                y: +15
+			        }
+				},
+			    series: [{
+		            name: "score",
+		            data: [990],
+					dial: {
+						radius: "87%",
+		                rearLength: "0%"
+					}
+		         }]
+        	});
+
+            // remove highcart logo
+            removeHighChartLogo();
+        };
+
+        /**
+         *  This function initalizes the clouds Chart
+         */
+        function initCloudsChart(containerId) {
+        	if (typeof (window.cloudsChart) != "undefined") {
+                window.cloudsChart.destroy();
+            }
+           
+           	window.cloudsChart = new Highcharts.Chart({
+        		chart: {
+			        renderTo: containerId,
+                    type: 'gauge',
+                    backgroundColor:'rgba(255, 255, 255, 0.1)',
+                    plotBackgroundImage: null,
+                    plotBorderWidth: 0,
+                    plotShadow: false
+			    },
+				pane: {
+		            startAngle: -150,
+		            endAngle: 150,
+		            size: [11],
+		            center: ['50%', '55%']
+		        },
+		        exporting: {
+		            enabled: false
+		        },
+		        tooltip: {
+		            enabled: false
+		        },
+		        title: {
+		            text: 'Bewölkung',
+		            style: {
+		                fontSize: '14px'
+		            }
+		        },
+		        yAxis: {
+		            min: 0,
+		            max: 1,
+
+		            minorTickInterval: 0.05,
+		            minorTickWidth: 2,
+		            minorTickLength: 8,
+		            minorTickPosition: 'inside',
+
+		            tickInterval: 0.2,
+		            tickWidth: 3,
+		            tickLength: 10,
+		            tickPosition: 'inside'
+		        },
+		        series: [{
+		            name: "score",
+		            data: [0.5],
+		            dial: {
+		                radius: "90%",
+		                rearLength: "0%"
+		            }
+		        }]
+        	});
+
+            // remove highcart logo
+           removeHighChartLogo();
+        };
+
+		/**
+         *  This function initalizes the temperature Chart
+         */
+        function initTemperatureChart(containerId) {
+        	if (typeof (window.temperatureChart) != "undefined") {
+                window.temperatureChart.destroy();
+            }          
+
+        	window.temperatureChart = new Highcharts.Chart({
+        		chart: {
+			        renderTo: containerId,
+                    type: 'gauge',
+                    backgroundColor:'rgba(255, 255, 255, 0.1)',
+                    plotBackgroundImage: null,
+                    plotBorderWidth: 0,
+                    plotShadow: false
+			    },
+		    	pane: {
+			    	startAngle: -150,
+			    	endAngle: 150,
+		            size: [11],
+		            center: ['50%', '55%']
+			    },
+			    exporting: {
+		            enabled: false
+		        },
+		        tooltip: {
+		            enabled: false
+		        },
+		        title: {
+		            text: 'Temperatur',
+		            style: {
+		                fontSize: '14px'
+		            }
+		        },
+				yAxis: {
+					min: -10,
+					max: 40,
+
+		            minorTickInterval: 1,
+		            minorTickWidth: 1,
+		            minorTickLength: 5,
+		            minorTickPosition: 'inside',
+
+		            tickInterval: 5,
+		            tickWidth: 3,
+		            tickLength: 10,
+		            tickPosition: 'inside',
+
+		            title: {
+			            text: 'C',
+		                y: +15
+			        },
+		            labels: {
+		                style: {
+		                    fontSize: '10px'
+		                },
+		                step: 1,
 		                distance: -15
 		            }
-			    },{
-		            categories: ['N'],
-		            offset: 10,  
-		            min: 0,
-			        max: 360,
-		            
-		            minorTickLength: 0,
-		            
-		            tickInterval: 45,
-			        tickWidth: 2,
-			        tickPosition: 'outside',
-			        tickLength: 3,
-			        tickColor: '#000',
-		                               
-			        labels: {
-		                style: {
-		                    fontSize: '12px',
-		                    color: '#000'
-		                },
-		                formatter: function() {
-		                    if (this.value == 'N' || this.value == 'O' || this.value == '360') {
-		                        return 'N';
-		                    } else if (this.value == '45') {
-		                        return 'NE';
-		                    } else if (this.value == '90') {
-		                        return 'E';
-		                    } else if (this.value == '135') {
-		                        return 'SE';
-		                    } else if (this.value == '180') {
-		                        return 'S';
-		                    } else if (this.value == '225') {
-		                        return 'SW';
-		                    } else if (this.value == '270') {
-		                        return 'W';
-		                    } else if (this.value == '315') {
-		                        return 'NW';
-		                    }
-		                },
-		                distance: 15
-		            }
-			    }],
-		        
+				},
 			    series: [{
-			        name: 'Degree Head',
-			        data: [180],
-		            dial: {
-		                    baseWidth: 4,
-		                    backgroundColor: '#C33',
-		                    borderColor: '#900',
-		                    borderWidth: 1,
-		                    rearLength: 20,
-		                    baseLength: 10,
-		                    radius: 80
-		           },
-		           tooltip: {
-		           		enabled: false
-			       }        
-			    }, {
-			        name: 'Degree Bottom',
-			        data: [0],
-		            dial: {
-		                    baseWidth: 4,
-		                    backgroundColor: '#C33',
-		                    borderColor: '#900',
-		                    borderWidth: 1,
-		                    baseLength: 10,
-		                    radius: 80
-		           },
-		           tooltip: {
-			            enabled: false
-			       }        
-			    }]
-			
-			});
-			
-			// remove highcart logo
-            $('#highcharts-' + window.chartIndex + ' svg text').last().remove();
-		};
+		            name: "score",
+		            data: [10],
+					dial: {
+						radius: "87%",
+		                rearLength: "0%"
+					}
+		         }]
+        	});
 
-        function initSpeedChart(container, data_x, data_y, waypoint_names, waypoint_ids, title, description){
+            removeHighChartLogo();
+        };
+
+
+        function initSpeedChart(container, data_x, data_y, waypoint_names, waypoint_ids, title, description) {
             $(container).highcharts({
                 chart: {
-                    height: 250
+                    height: 250,
+                    backgroundColor:'rgba(255, 255, 255, 0.1)',
+                    plotBackgroundImage: null,
+                    plotBorderWidth: 0,
+                    plotShadow: false
+                },
+                exporting: {
+                    enabled: false
                 },
                 plotOptions: {
                     series: {
                         cursor: 'pointer',
                         point: {
                             events: {
-                                click: function() {
-                                    var waypoint = $('#waypoint_'+waypoint_ids[this.x]);
+                                click: function () {
+                                    var waypoint = $('#waypoint_' + waypoint_ids[this.x]);
                                     scrollToWaypoint(waypoint);
                                 }
                             }
@@ -848,16 +1758,11 @@
                 yAxis: {
                     title: {
                         text: 'Speed [kn]'
-                    },
-                    plotLines: [{
-                        value: 0,
-                        width: 1,
-                        color: '#808080'
-                    }]
+                    }
                 },
                 tooltip: {
-                    formatter: function() {
-                        return  '<b>'+description+'</b><br>'+ waypoint_names[this.x-1] +': '+ this.y +'kn';
+                    formatter: function () {
+                        return '<b>' + description + '</b><br>' + waypoint_names[this.x - 1] + ': ' + this.y + 'kn';
                     }
                 },
                 series: [{
@@ -865,25 +1770,148 @@
                     data: data_y
                 }]
             });
-            // remove highchart logo
+            
+            removeHighChartLogo();
+        }
+
+        function initAirPressureCloudingTemperatureChart(container, data_x, air_pressure_data_y, cloudage_data_y, temperature_data_y, waypoint_ids) {
+            $(container).highcharts({
+                chart: {
+                    backgroundColor:'rgba(255, 255, 255, 0.1)',
+                    plotBackgroundImage: null,
+                    plotBorderWidth: 0,
+                    plotShadow: false
+                },
+                exporting: {
+                    enabled: false
+                },
+                plotOptions: {
+                    series: {
+                        cursor: 'pointer',
+                        point: {
+                            events: {
+                                click: function () {
+                                    var waypoint = $('#waypoint_' + waypoint_ids[this.x]);
+                                    scrollToWaypoint(waypoint);
+                                }
+                            }
+                        }
+                    }
+                },
+                legend: {
+                    enabled: false
+                },
+                title: {
+                    text: ""
+                },
+                xAxis: {
+                    categories: data_x
+                },
+                yAxis: [
+                    {
+                        title: {
+                            style: {
+                                color: 'black'
+                            },
+                            text: 'Air Pressure [x]'
+                        },
+                        max: 1500,
+                        min: 800
+                    },
+                    {
+                        title: {
+                            style: {
+                                color: 'blue'
+                            },
+                            text: 'Clouding [x]'
+                        },
+                        max : 1,
+                        min: 0
+                    },
+                    {
+                        title: {
+                            style: {
+                                color: 'green'
+                            },
+                            text: 'Temperature [°C]'
+                        },
+                        max: 45,
+                        min: -20
+                    }
+                ],
+                series: [
+                    {
+                        yAxis: 0,
+                        color: 'black',
+                        name: "air pressure",
+                        data: air_pressure_data_y
+                    },
+                    {
+                        yAxis: 1,
+                        color: 'blue',
+                        name: "clouding",
+                        data: cloudage_data_y
+                    },
+                    {
+                        yAxis: 2,
+                        color: 'green',
+                        name: "temperature",
+                        data: temperature_data_y
+                    }
+                ]
+            });
+
+            removeHighChartLogo();
+        }
+
+        /*
+         * remove initial highchart logo by using an Index for each chart
+         */
+        function removeHighChartLogo() {
+        	//TODO index has changed
+        	if (typeof (window.chartIndex) == "undefined") {
+                window.chartIndex = 0;
+            } else if (window.chartIndex < 4) {
+            	window.chartIndex += 4;
+            } else if (window.chartIndex < 14) {
+                window.chartIndex += 5;
+            } else if (window.chartIndex < 26) {
+             	window.chartIndex += 3;
+            } else {
+            	window.chartIndex += 2;
+            }
+                        
             $('#highcharts-' + window.chartIndex + ' svg text').last().remove();
         }
+        
+        /**
+         * This method hides the Distribution charts 
+         */
+        function hideDistributionCharts() {
+        	$('#details_charts_distribution').css("display", "none");
+            $('#details_weather_charts_distribution').css("display", "none");
+            $('#details_trip_weather_stats').css("display", "none");
+        }
+        
+        /**
+         * This method shows the Distribution charts 
+         */
+        function showDistributionCharts() {
+            $('#details_charts_distribution').css("display", "block");
+        	$('#details_weather_charts_distribution').css("display", "block");
+            $('#details_trip_weather_stats').css("display", "block");
+        }
+        
+        /**
+         * This method shows the Normal Charts for details 
+         */
+        function showCharts() {
+        	$('#details_charts').css("display", "block");            
+            $('#details_weather_charts').css("display", "block");
+        }
+        
+        
     </script>
-
-    <div id="menu_bar">
-        @logbookContent.menubar()
-    </div>
-
-
-    <div id="timeline_col">
-        @logbookContent.timeline()
-    </div>
-
-    @logbookContent.entries()
-
-    <div id="details_col">
-        @logbookContent.details()
-    </div>
 
 </body>
 

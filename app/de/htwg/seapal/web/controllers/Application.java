@@ -15,6 +15,7 @@ import de.htwg.seapal.web.views.html.appContent.signUpSeapal;
 import de.htwg.seapal.web.views.html.impressum;
 import de.htwg.seapal.web.views.html.index;
 import de.htwg.seapal.web.views.html.logbook;
+import de.htwg.seapal.web.views.html.forbiddenContent;
 import play.Routes;
 import play.data.DynamicForm;
 import play.mvc.Controller;
@@ -40,12 +41,22 @@ public class Application
         return ok(app.render());
     }
 
+    @play.mvc.Security.Authenticated(AccountAPI.Secured.class)
     public static Result logbook(){
-        return ok(logbook.render(new Logbook("394b2934-3918-444d-820c-abaf11e60fc7")));
+        return redirect("/logbook/505e4b46-517b-4c1e-ac96-3dc32400ff2a/2d6ce4e2-075e-47b2-9d7a-e094b06fbb44");  
+    }
+    
+    public static Result forbiddenContent() {
+    	return ok(forbiddenContent.render());
     }
 
     public static Result login() {
-        return ok(signInSeapal.render(DynamicForm.form(Account.class), routes.AccountAPI.login()));
+    	String returnUrl = request().getQueryString("returnUrl");
+    	if (returnUrl == null) {
+    		returnUrl = "";
+    	}
+    	
+        return ok(signInSeapal.render(DynamicForm.form(Account.class), routes.AccountAPI.login(), returnUrl));
     }
 
     public static Result forgotten() {

@@ -13,7 +13,7 @@ This document describe the struture of the Web APP.
 
 - lib : The static libraries which will be used by PLAY. Here is also
         "Seapal Core.jar" stored. For more information about the core
-        library go to "https://github.com/pakohan/de.htwg.seapal.core"
+        library go to "https://github.com/lukaseckert2/de.htwg.seapal.core"
         
 - project : Build specific settings for PLAY with SBT like the dependencies.
 

@@ -6,19 +6,21 @@
  */
 
 $(document).ready(function() {
-    //extend the input mask plugin to be able to input N which is North and S which is South for latitude and WE (West and East) for longitude.
-    $.extend($.inputmask.defaults.definitions, {
-        'c': { 
-            validator: "N|S",
-            cardinality: 1,
-            casing: "upper"
-        },
-        'd': {
-            validator: "W|E",
-            cardinality: 1,
-            casing: "upper"
-        }
-    });
+    if (typeof($.inputmask) != "undefined") {    
+	    //extend the input mask plugin to be able to input N which is North and S which is South for latitude and WE (West and East) for longitude.
+	    $.extend($.inputmask.defaults.definitions, {
+	        'c': { 
+	            validator: "N|S",
+	            cardinality: 1,
+	            casing: "upper"
+	        },
+	        'd': {
+	            validator: "W|E",
+	            cardinality: 1,
+	            casing: "upper"
+	        }
+	    });
+    };
     
     function coordinateHelpers() {
         function LatLngToDecimal(string) {
@@ -83,10 +85,22 @@ $(document).ready(function() {
         function getCoordinatesAsString(lat, lng) {
             return toLatLngString(lat, "lat") + " " + toLatLngString(lng, "lng");
         }
+        
+        /* Gets the latatude coordinate in a human readable format */
+        function getLatAsString(lat) {
+        	return toLatLngString(lat, "lat");
+        }
+        
+        /* Gets the longitude coordinate in a human readable format */
+        function getLngAsString(lng) {
+        	return toLatLngString(lng, "lng");
+        }
                 
         return {
             LatLngToDecimal  :   LatLngToDecimal,
-            getCoordinatesAsString : getCoordinatesAsString
+            getCoordinatesAsString : getCoordinatesAsString,
+            getLatAsString : getLatAsString,
+            getLngAsString : getLngAsString
         };
     }
     /* Gets the current coordinates in a human readable format array for use in the specific forms */
