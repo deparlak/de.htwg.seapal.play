@@ -2516,11 +2516,11 @@
                     obj.onMap = getOnMapMark(obj);
                     obj.owner = data.person.active != null ? data.person.active.owner : "Someone";;
                     // in Kelvin
-                    obj.temp = weatherData["temp"];
-                    obj.pressure = weatherData["pressure"];
-                    obj.humidity = weatherData["humidity"];
-                    obj.windSpeed = weatherData["speed"];
-                    obj.windDeg = weatherData["deg"];
+                    obj.temp = (weatherData["temp"] - 273,15).toFixed(1);
+                    obj.pressure = weatherData["pressure"].toFixed(1);
+                    obj.humidity = weatherData["humidity"].toFixed(1);
+                    obj.windSpeed = weatherData["speed"].toFixed(1);
+                    obj.windDeg = weatherData["deg"].toFixed(1);
                     obj.clouds = weatherData["clouds"];
                     obj.weatherIcon = weatherData["icon"];
                     data.waypoint.list[obj.id] = obj;

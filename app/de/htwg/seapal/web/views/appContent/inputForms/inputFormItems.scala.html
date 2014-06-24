@@ -405,32 +405,6 @@
     </div>
     <div class="row">
         <div class="col-12 col-sm-1" >
-            <label for="waypoint_temp">Temp</label>
-        </div>
-        <div class="col-12 col-sm-2">
-            <input type="text" name="waypoint_temp" tabindex="4" readonly {{bindData "temp"}} value="{{temp}}" />
-        </div>
-        <div class="col-12 col-sm-1">
-            <label for="waypoint_pressure">Pressure</label>
-        </div>
-        <div class="col-12 col-sm-2">
-            <input type="text" name="waypoint_pressure" tabindex="5" readonly {{bindData "pressure"}} value="{{pressure}}" />
-        </div>
-        <div class="col-12 col-sm-1">
-            <label for="waypoint_wind_speed">Speed</label>
-        </div>
-        <div class="col-12 col-sm-2">
-            <input type="text" name="waypoint_wind_speed" tabindex="6" readonly {{bindData "windSpeed"}} value="{{windSpeed}}" />
-        </div>
-        <div class="col-12 col-sm-1">
-            <label for="waypoint_wind_deg">Deg</label>
-        </div>
-        <div class="col-12 col-sm-2">
-            <input type="text" name="waypoint_wind_deg" tabindex="7" readonly {{bindData "windDeg"}} value="{{windDeg}}" />
-        </div>
-    </div>
-    <div class="row">
-        <div class="col-12 col-sm-1" >
             <label for="waypoint_COG">COG</label>
         </div>
         <div class="col-12 col-sm-2">
@@ -504,17 +478,60 @@
             <textarea name="waypoint_Notes" rows="10" tabindex="15" {{bindData "note"}}>{{note}}</textarea>
         </div>
         <div class="col-12 col-sm-6">
-            <ul>
-                <li><a href="#image"><span>Image</span></a></li>
-                <li><a href="#weather"><span>Weather Data</span></a></li>
-            </ul>
-            <div id="image">
-                <p>First tab is active by default:</p>
-                // <img src="{{image}}">
-            </div>
-            <div id="weather">
-                Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat.
-                Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat.
+            <div id="tabs">
+                <ul>
+                    <li><a href="#image"><span>Image</span></a></li>
+                    <li><a href="#weather"><span>Weather Data</span></a></li>
+                </ul>
+                <div id="image">
+                    <img src="{{image}}">
+                </div>
+                <div id="weather">
+                    <div class="row">
+                        <div class="col-12 col-sm-6" >
+                            <label for="waypoint_temp">Temperature</label>
+                        </div>
+                        <div class="col-12 col-sm-4">
+                            <input type="text" name="waypoint_temp" tabindex="4" {{bindData "temp"}} value="{{temp}}" />
+                        </div>
+                        <div class="col-12 col-sm-2" >
+                            <label for="waypoint_temp_unit">°C</label>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-12 col-sm-6">
+                            <label for="waypoint_pressure">Pressure</label>
+                        </div>
+                        <div class="col-12 col-sm-4">
+                            <input type="text" name="waypoint_pressure" tabindex="5" {{bindData "pressure"}} value="{{pressure}}" />
+                        </div>
+                        <div class="col-12 col-sm-2" >
+                            <label for="waypoint_pressure_unit">hPa</label>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-12 col-sm-6">
+                            <label for="waypoint_wind_speed">Wind Speed</label>
+                        </div>
+                        <div class="col-12 col-sm-4">
+                            <input type="text" name="waypoint_wind_speed" tabindex="6" {{bindData "windSpeed"}} value="{{windSpeed}}" />
+                        </div>
+                        <div class="col-12 col-sm-2" >
+                            <label for="waypoint_wind_speed_unit">m/s</label>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-12 col-sm-6">
+                            <label for="waypoint_wind_deg">Wind Direction</label>
+                        </div>
+                        <div class="col-12 col-sm-4">
+                            <input type="text" name="waypoint_wind_deg" tabindex="7" {{bindData "windDeg"}} value="{{windDeg}}" />
+                        </div>
+                        <div class="col-12 col-sm-2" >
+                            <label for="waypoint_wind_deg_unit">°</label>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
