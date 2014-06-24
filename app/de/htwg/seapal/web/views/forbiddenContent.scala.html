@@ -4,13 +4,13 @@
 	<meta http-equiv="content-type" content="text/html; charset=utf-8"/>
 	<link rel="stylesheet" type="text/css" href="@routes.Assets.at("css/bootstrap.min.css")">
 </head>
-<body style="background-color: #efe911">
+<body style="background-color: #5c5e64">
     <div style="text-align: center; padding-top: 5em">
-        <img src="@routes.Assets.at("images/logbook/lock.png")" alt="Forbidden" style="background-color: white" />
-        <h1 style="color: white">Sorry, but you may not access this page :(</h1>
+        <img src="@routes.Assets.at("images/logbook/lock2.png")" alt="Forbidden" style="background-color: #5c5e64; width: 128px; height: auto" />
+        <h3 style="color: white">Sorry, you have to be friends with the skipper of this trip to see this page :(</h3>
 
         <br /><br />
-        <a href="@de.htwg.seapal.web.controllers.routes.AccountAPI.logout" class="btn btn-primary">Logout</a>
+        <a href="@de.htwg.seapal.web.controllers.routes.AccountAPI.logout?returnUrl=@de.htwg.seapal.web.controllers.routes.Application.login()" class="btn btn-primary">Login as a different user</a>
     </div>
 </body>
 </html>

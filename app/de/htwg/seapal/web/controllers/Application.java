@@ -53,7 +53,7 @@ public class Application
     public static Result login() {
     	String returnUrl = request().getQueryString("returnUrl");
     	if (returnUrl == null) {
-    		returnUrl = "";
+    		returnUrl = routes.Application.app().url();
     	}
     	
         return ok(signInSeapal.render(DynamicForm.form(Account.class), routes.AccountAPI.login(), returnUrl));

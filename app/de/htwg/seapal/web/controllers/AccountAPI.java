@@ -1,6 +1,7 @@
 package de.htwg.seapal.web.controllers;
 
 import com.google.inject.Inject;
+
 import de.htwg.seapal.controller.IAccountController;
 import de.htwg.seapal.model.IAccount;
 import de.htwg.seapal.model.impl.Account;
@@ -10,7 +11,9 @@ import de.htwg.seapal.utils.logging.ILogger;
 import de.htwg.seapal.web.controllers.helpers.Menus;
 import de.htwg.seapal.web.views.html.appContent.signInSeapal;
 import de.htwg.seapal.web.views.html.appContent.signUpSeapal;
+
 import org.codehaus.jackson.node.ObjectNode;
+
 import play.data.DynamicForm;
 import play.data.Form;
 import play.libs.F;
@@ -265,9 +268,14 @@ public class AccountAPI
      */
     @play.mvc.Security.Authenticated(AccountAPI.Secured.class)
     public Result logout() {
+    	String returnUrl = request().getQueryString("returnUrl");
+    	if (returnUrl == null) {
+    		returnUrl = routes.Application.index().url();
+    	}
+    	
         session().clear();
         flash("success", "You've been logged out");
-        return redirect(routes.Application.index());
+        return redirect(returnUrl);
     }
 
     /**
