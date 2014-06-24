@@ -41,6 +41,7 @@ $(document).ready(function() {
                     break;
                 case "weather-icons":
                     $("#weather-icons").removeClass('icon-selected-weather').addClass('icon-notSelected-weather');
+                    map.destCustomLayer();
                     break;
                 case "test":
                     map.destTest();

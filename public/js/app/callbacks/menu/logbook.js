@@ -220,8 +220,10 @@ $(document).ready(function() {
         }
         var template = Handlebars.compile($('#waypoint_Template').text());
         var html = template(tmpWaypoint);
-        $('#waypointInputForm').html(html);            
+
+        $('#waypointInputForm').html(html);
         $('#modal-form_waypoint').modal('show');
+        $( "#tabs" ).tabs();
     }
 
     $('#modal-form_waypoint').submit(function() {

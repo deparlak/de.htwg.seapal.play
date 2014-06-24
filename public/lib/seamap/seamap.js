@@ -734,6 +734,13 @@
             "boat"          : null,
 			"_id"			: null,
 			"_rev" 			: null,
+            "temp"          : null,
+            "pressure"      : null,
+            "humidity"      : null,
+            "windSpeed"     : null,
+            "windDeg"       : null,
+            "clouds"        : null,
+            "weatherIcon"   : null,
 			"owner" 		: null
 		};
         
@@ -1153,19 +1160,17 @@
          * *********************************************************************************
          */
         this.initCustomLayer = function() {
-            google.maps.event.addListener(map, 'idle', function(ev){
                 initializeCustomLayer(map);
-            });
         }
+
         /**
         * *********************************************************************************
         * Destroy the Open Weather Map Layer.
         * *********************************************************************************
         */
         this.destCustomLayer = function() {
-            map.overlayMapTypes.pop(RainMap);
+                destroyCustomLayer();
         }
-
 
         /**
          * *********************************************************************************
@@ -1193,7 +1198,7 @@
         * *********************************************************************************
         */
         this.destOpenWeaterMap1 = function() {
-            map.overlayMapTypes.pop(RainMap);
+            map.overlayinitWeatherIconMapTypes.pop(RainMap);
         }
            
         /**
@@ -1236,43 +1241,6 @@
                     $("#" + list[i]).attr("x", x);
                 }
             }
-        }
-
-        this.initTest = function() {
-            var lngLat = map.getCenter();
-            var longitude = lngLat.lng();
-            var latitude = lngLat.lat();
-            var speed = 0;
-            var deg = 0;
-            var dfd = $.Deferred();
-            var url = "http://api.openweathermap.org/data/2.5/weather?lat=";
-            url += latitude;
-            url += "&lon=";
-            url += longitude;
-            url += "&cnt=1";
-            $.ajax({
-                type: "POST",
-                dataType: "jsonp",
-                url: url + "&callback=?",
-                async: false,
-                success: function (data) {
-                    speed = data.wind.speed;
-                    deg = data.wind.deg;
-                    alert("speed: " + speed + ", deg: " + deg);
-                    dfd.resolve(temperature);
-                },
-                error: function (errorData) {
-                    alert("Error while getting weather data :: " + errorData.status);
-                }
-            });
-            
-            //return dfd.promise();
-
-        }
-
-
-        this.destTest = function() {
-
         }
 
         /**
@@ -1489,6 +1457,7 @@
             $this.on("click", "#addNewRoute", handleAddNewRoute);
             $this.on("click", "#exitRouteCreation", handleExitRouteCreation);
             $this.on("click", "#setAsDestination", handleSetAsDestination);
+            $this.on("click", "#setWeatherForecast", handleSetWeatherForecast);
             $this.on("click", "#addNewDistanceRoute", handleAddNewDistanceRoute);
             $this.on("click", "#hideContextMenu", handleHideContextMenu);
         }
@@ -1960,9 +1929,11 @@
                     } else {
                         ctx += '<button id="exitRouteCreation" type="button" class="btn"><i class="icon-flag"></i> Finish Route Recording</button>';
                     }
+                    // ??? todo add icon-weather 
                     ctx += '<button id="addNewDistanceRoute" type="button" class="btn"><i class="icon-resize-full"></i> Distance from here</button>'
                         + '<button id="setAsDestination" type="button" class="btn"><i class="icon-star"></i> ' + target + '</button>'
-                        + '<button id="hideContextMenu" type="button" class="btn"><i class="icon-remove"></i> Close</button>'; 
+                        + '<button id="setWeatherForecast" type="button" class="btn"><i class="icon-star"></i> Weather Forecast</button>'
+                        + '<button id="hideContextMenu" type="button" class="btn"><i class="icon-remove"></i> Close</button>';
                     break;
                 case ContextMenuTypes.DELETE_MARKER:
                     ctx += '<button id="setAsMarkTarget" type="button" class="btn"><i class="icon-map-marker"></i> Set as Target</button>';
@@ -2398,8 +2369,19 @@
         function handleEditWaypoint() {
             dataCallback([event.EDIT_WAYPOINT], data.waypoint.active);
             hideContextMenu();
-        }        
+        }
         
+         /**
+        * *********************************************************************************
+        * Handler function for getting a weather forecast at current possition.
+        * Also closes the context menu and hides the crosshair.
+        * *********************************************************************************
+        */
+        function handleSetWeatherForecast() {
+            handleHideContextMenu();
+            postData(crosshairMarker.getPosition());
+        }
+
         /**
         * *********************************************************************************
         * Handler function for setting a target.
@@ -2493,23 +2475,58 @@
             */
             if (null != data.trip.active && null != data.trip.active._id && null != data.boat.active && null != data.boat.active._id) {
                 var boat = getCurrentBoatInformation();
-                var obj = self.getTemplate('waypoint');
-                obj.id = (idCounter++).toString();
-                obj.name = "Waypoint "+data.waypoint.count;
-                obj.lat = boat.pos.lat();
-                obj.lng = boat.pos.lng();
-                obj.cog = boat.course;
-                obj.sog = boat.speed;
-                obj.date = new Date().getTime();
-                if (image) {
-                    obj.image_thumb = image[0];
-                    obj.image_big = image[1];
-                }
-                obj.onMap = getOnMapMark(obj);
-                obj.owner = data.person.active != null ? data.person.active.owner : "Someone";;
-                data.waypoint.list[obj.id] = obj;
-                data.waypoint.count++;
-                dataCallback([event.SERVER_CREATE, event.CREATED_WAYPOINT], obj);
+
+                var weatherData;
+                var url = "http://api.openweathermap.org/data/2.5/weather?lat=";
+                url += boat.pos.lat();
+                url += "&lon="
+                url += boat.pos.lng();
+
+                $.ajax({
+                    type: "POST",
+                    dataType: "jsonp",
+                    url: url,
+                    async: true,
+                    success: function (data) {
+                        weatherData = new Array();
+                        weatherData["speed"] = data.wind.speed;
+                        weatherData["deg"] = data.wind.deg;
+                        weatherData["icon"] = data.weather[0].icon;
+                        weatherData["temp"] = data.main.temp;
+                        weatherData["clouds"] = data.clouds.all;
+                        weatherData["humidity"] = data.main.humidity;
+                        weatherData["pressure"] = data.main.pressure;
+                    },
+                    error: function (errorData) {
+                        alert("Error while getting weather data :: " + errorData.status);
+                    }
+                }).done(function() {
+                    var obj = self.getTemplate('waypoint');
+                    obj.id = (idCounter++).toString();
+                    obj.name = "Waypoint "+data.waypoint.count;
+                    obj.lat = boat.pos.lat();
+                    obj.lng = boat.pos.lng();
+                    obj.cog = boat.course;
+                    obj.sog = boat.speed;
+                    obj.date = new Date().getTime();
+                    if (image) {
+                        obj.image_thumb = image[0];
+                        obj.image_big = image[1];
+                    }
+                    obj.onMap = getOnMapMark(obj);
+                    obj.owner = data.person.active != null ? data.person.active.owner : "Someone";;
+                    // in Kelvin
+                    obj.temp = weatherData["temp"];
+                    obj.pressure = weatherData["pressure"];
+                    obj.humidity = weatherData["humidity"];
+                    obj.windSpeed = weatherData["speed"];
+                    obj.windDeg = weatherData["deg"];
+                    obj.clouds = weatherData["clouds"];
+                    obj.weatherIcon = weatherData["icon"];
+                    data.waypoint.list[obj.id] = obj;
+                    data.waypoint.count++;
+                    dataCallback([event.SERVER_CREATE, event.CREATED_WAYPOINT], obj);
+                });
             }
         }
         /**
