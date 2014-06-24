@@ -102,7 +102,7 @@ public class SimpleSimulator implements ISimulator {
 			wp.setWindDirection((baseWindDirection + Math.random() * 5) % 360.0);
 			wp.setWindSpeedBeaufort(baseWindSpeed + Math.random());
 			wp.setWavesHeight(baseWaveHeight + Math.random() * 0.3);
-			wp.setAtmosPressure(980 + Math.random() * 40);
+			wp.setAtmosPressure(950 + Math.random() * 100);
 			wp.setCloudage(Math.random());
 			
 			long nextDate = lastTimestamp + (long)(Math.random() * 89 + 1) * 60 * 1000;  // random time offset from 1-90 min in milliseconds
