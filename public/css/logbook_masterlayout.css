@@ -51,6 +51,12 @@ body {
     box-shadow: -2px 0px 9px 0px rgba(50, 50, 50, 0.41);
 }
 
+#details {
+    overflow: hidden; 
+    height: 100vh;
+    padding-bottom: 100px;
+}
+
 #filterBar {
     position: fixed;
     background-color: rgba(152, 152, 168, 0.5);
