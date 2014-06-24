@@ -34,7 +34,11 @@
     <li><a class='menu-icon icon-notSelected-boat action {{type}}{{id}}' data-id='{{id}}' data-type='{{type}}'>{{name}}</a></li>
 </script>
 
-<script id='template-SearchPlaces' type='text/x-handlebars-template'>   
+<script id='template-logbook' type='text/x-handlebars-template'>
+    <li><a class='menu-logbook selected-logbook action {{type}}{{id}}' data-id='{{id}}' data-type='{{type}}' data-boat='{{boat}}'>Show {{name}}</a></li>
+</script>
+
+<script id='template-SearchPlaces' type='text/x-handlebars-template'>
     {{#if error}}
         <li class='heading'>
             <div class='heading1'>
