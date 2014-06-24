@@ -201,3 +201,8 @@ and (max-width : 1224px) {
 .seamapsidebar div.buttons_bottom div {
     padding:10px;
 }
+
+#chart_small {
+    width: 650;
+    height: 200;
+}

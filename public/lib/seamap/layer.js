@@ -4,7 +4,7 @@ var sw;
 var ne;
 
 var overlay;
-var map;
+var backgroundMap;
 
 var listener;
 
@@ -19,7 +19,7 @@ function destroyCustomLayer() {
 
 // Initialize the map and the custom overlay.
 function initializeCustomLayer(googleMap) {
-  map = googleMap;
+  backgroundMap = googleMap;
   overlay = null;
   listener = null;
   weatherData = new Array();
@@ -27,24 +27,24 @@ function initializeCustomLayer(googleMap) {
   getWeatherInfos();
 
   // listener which is called by any change of the map (move in one direction or zoom in and out)
-  listener = google.maps.event.addListener(map, 'idle', function(ev){
+  listener = google.maps.event.addListener(backgroundMap, 'idle', function(ev){
     weatherData = new Array();
     getWeatherInfos();
   });
 }
 
 /** @constructor */
-function USGSOverlay(bounds, image, map) {
+function USGSOverlay(bounds, image, backgroundMap) {
 
   // Initialize all properties.
   this.bounds_ = bounds;
   this.image_ = image;
-  this.map_ = map;
+  this.map_ = backgroundMap;
   // keep all weather data of the layer
   this.div_ = null;
 
   // set this overlay on map
-  this.setMap(map);
+  this.setMap(backgroundMap);
 }
 
 /**
@@ -183,7 +183,7 @@ this.getWeatherInfos = function() {
     overlay.setMap(null);
   }
 
-  var bounds = map.getBounds();
+  var bounds = backgroundMap.getBounds();
   var nePoint = bounds.getNorthEast();
   var swPoint = bounds.getSouthWest();
   
@@ -192,8 +192,8 @@ this.getWeatherInfos = function() {
   url += swPoint.lat() + ",";
   url += nePoint.lng() + ",";
   url += nePoint.lat() + ",";
-  url += map.getZoom() + ",";
-  url += "EPSG%3A4326&callback=OpenLayers.Protocol.Script.registry.c20";
+  url += backgroundMap.getZoom() + ",";
+  url += "EPSG%3A4326&callback=?";
   $.ajax({
       type: "POST",
       dataType: "jsonp",
@@ -217,11 +217,12 @@ this.getWeatherInfos = function() {
         if (overlay != null) {
           overlay.setMap(null);
         }
+        getWeatherInfos();
       }
   }).done(function() {
     // ??? Vielleicht Bounds von Request verwenden
-    var bounds = map.getBounds();
-    overlay = new USGSOverlay(bounds, null, map);
+    var bounds = backgroundMap.getBounds();
+    overlay = new USGSOverlay(bounds, null, backgroundMap);
   });
 }
 
@@ -240,10 +241,10 @@ function checkClosestInfo(point) {
 
 // returns the offset between the current map position and the position of a wetherstation station
 function getPixelPosition(point) {
-  var scale = Math.pow(2, map.getZoom());
-  var nw = new google.maps.LatLng(map.getBounds().getNorthEast().lat(), map.getBounds().getSouthWest().lng());
-  var worldCoordinateNW = map.getProjection().fromLatLngToPoint(nw);
-  var worldCoordinate = map.getProjection().fromLatLngToPoint(point);
+  var scale = Math.pow(2, backgroundMap.getZoom());
+  var nw = new google.maps.LatLng(backgroundMap.getBounds().getNorthEast().lat(), backgroundMap.getBounds().getSouthWest().lng());
+  var worldCoordinateNW = backgroundMap.getProjection().fromLatLngToPoint(nw);
+  var worldCoordinate = backgroundMap.getProjection().fromLatLngToPoint(point);
   var pixelOffset = new google.maps.Point(Math.floor((worldCoordinate.x - worldCoordinateNW.x) * scale), Math.floor((worldCoordinate.y - worldCoordinateNW.y) * scale));
  
   return pixelOffset;

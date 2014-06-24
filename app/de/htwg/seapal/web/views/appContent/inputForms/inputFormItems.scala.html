@@ -405,36 +405,62 @@
     </div>
     <div class="row">
         <div class="col-12 col-sm-1" >
+            <label for="waypoint_temp">Temp</label>
+        </div>
+        <div class="col-12 col-sm-2">
+            <input type="text" name="waypoint_temp" tabindex="4" readonly {{bindData "temp"}} value="{{temp}}" />
+        </div>
+        <div class="col-12 col-sm-1">
+            <label for="waypoint_pressure">Pressure</label>
+        </div>
+        <div class="col-12 col-sm-2">
+            <input type="text" name="waypoint_pressure" tabindex="5" readonly {{bindData "pressure"}} value="{{pressure}}" />
+        </div>
+        <div class="col-12 col-sm-1">
+            <label for="waypoint_wind_speed">Speed</label>
+        </div>
+        <div class="col-12 col-sm-2">
+            <input type="text" name="waypoint_wind_speed" tabindex="6" readonly {{bindData "windSpeed"}} value="{{windSpeed}}" />
+        </div>
+        <div class="col-12 col-sm-1">
+            <label for="waypoint_wind_deg">Deg</label>
+        </div>
+        <div class="col-12 col-sm-2">
+            <input type="text" name="waypoint_wind_deg" tabindex="7" readonly {{bindData "windDeg"}} value="{{windDeg}}" />
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-12 col-sm-1" >
             <label for="waypoint_COG">COG</label>
         </div>
         <div class="col-12 col-sm-2">
-            <input type="text" name="waypoint_COG" tabindex="4" readonly {{bindData "cog"}} value="{{cog}}" />
+            <input type="text" name="waypoint_COG" tabindex="8" readonly {{bindData "cog"}} value="{{cog}}" />
         </div>
         <div class="col-12 col-sm-1">
             <label for="waypoint_SOG">SOG</label>
         </div>
         <div class="col-12 col-sm-2">
-            <input type="text" name="waypoint_SOG" tabindex="5" readonly {{bindData "sog"}} value="{{sog}}" />
+            <input type="text" name="waypoint_SOG" tabindex="9" readonly {{bindData "sog"}} value="{{sog}}" />
         </div>
         <div class="col-12 col-sm-1">
             <label for="waypoint_BTM">BTM</label>
         </div>
         <div class="col-12 col-sm-2">
-            <input type="text" name="waypoint_BTM" tabindex="6" readonly {{bindData "btm"}} value="{{btm}}" />
+            <input type="text" name="waypoint_BTM" tabindex="10" readonly {{bindData "btm"}} value="{{btm}}" />
         </div>
         <div class="col-12 col-sm-1">
             <label for="waypoint_DTM">DTM</label>
         </div>
         <div class="col-12 col-sm-2">
-            <input type="text" name="waypoint_DTM" tabindex="7" readonly {{bindData "dtm"}} value="{{dtm}}" />
-        </div>        
+            <input type="text" name="waypoint_DTM" tabindex="11" readonly {{bindData "dtm"}} value="{{dtm}}" />
+        </div>
     </div>
     <div class="row">
         <div class="col-12 col-sm-2">
             <label for="waypoint_maneuver">Maneuver</label>
         </div>
         <div class="col-12 col-sm-2">
-            <select name="waypoint_maneuver" tabindex="9" {{bindData "maneuver"}}>
+            <select name="waypoint_maneuver" tabindex="12" {{bindData "maneuver"}}>
                 {{#select maneuver}}
                 <option value="NONE">-</option>
                 <option value="waypoint_maneuver_mob">Man overboard</option>
@@ -448,7 +474,7 @@
             <label for="waypoint_headsail">Headsail</label>
         </div>
         <div class="col-12 col-sm-2">
-            <select name="waypoint_headsail" tabindex="10" {{bindData "foresail"}}>
+            <select name="waypoint_headsail" tabindex="13" {{bindData "foresail"}}>
                 {{#select foresail}}
                 <option value="NONE">-</option>
                 <option value="waypoint_headsail_jib">Jib</option>
@@ -461,7 +487,7 @@
             <label for="waypoint_mainsail">Mainsail</label>
         </div>
         <div class="col-12 col-sm-2">
-            <select name="waypoint_mainsail" tabindex="11" {{bindData "mainsail"}}>
+            <select name="waypoint_mainsail" tabindex="14" {{bindData "mainsail"}}>
                 {{#select mainsail}}
                 <option value="NONE">-</option>
                 <option value="waypoint_mainsail_jib">Jib</option>
@@ -474,11 +500,22 @@
         <div class="col-12 col-sm-1">
             <label for="waypoint_Notes">Notes</label>
         </div>
-        <div class="col-12 col-sm-5">                            
-            <textarea name="waypoint_Notes" rows="10" tabindex="9" {{bindData "note"}}>{{note}}</textarea>
+        <div class="col-12 col-sm-5">
+            <textarea name="waypoint_Notes" rows="10" tabindex="15" {{bindData "note"}}>{{note}}</textarea>
         </div>
-        <div class="col-12 col-sm-6">                            
-            <img src="{{image}}">
+        <div class="col-12 col-sm-6">
+            <ul>
+                <li><a href="#image"><span>Image</span></a></li>
+                <li><a href="#weather"><span>Weather Data</span></a></li>
+            </ul>
+            <div id="image">
+                <p>First tab is active by default:</p>
+                // <img src="{{image}}">
+            </div>
+            <div id="weather">
+                Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat.
+                Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat.
+            </div>
         </div>
     </div>
     <div class="inputForm-footer">
