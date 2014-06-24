@@ -98,7 +98,7 @@ public class SimpleSimulator implements ISimulator {
 			wp.setLng(tripCoords.get(2*n + 1));
 			wp.setCog(String.valueOf(Math.round(Math.random() * 360 * 100) / 100.0) + "°");  // round 0-360° to 2 decimal places
 			wp.setSog(String.valueOf(Math.round(Math.random() * 10 * 100) / 100.0) + " kn");   // round 0-10 to 2 decimal places
-			wp.setTempCelcius(baseTemperature + Math.random());
+			wp.setTempCelsius(baseTemperature + Math.random());
 			wp.setWindDirection((baseWindDirection + Math.random() * 5) % 360.0);
 			wp.setWindSpeedBeaufort(baseWindSpeed + Math.random());
 			wp.setWavesHeight(baseWaveHeight + Math.random() * 0.3);
