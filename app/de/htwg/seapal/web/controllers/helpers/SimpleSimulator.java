@@ -104,6 +104,7 @@ public class SimpleSimulator implements ISimulator {
 			wp.setWavesHeight(baseWaveHeight + Math.random() * 0.3);
 			wp.setAtmosPressure(950 + Math.random() * 100);
 			wp.setCloudage(Math.random());
+			wp.setHumidity(Math.random());
 			
 			long nextDate = lastTimestamp + (long)(Math.random() * 89 + 1) * 60 * 1000;  // random time offset from 1-90 min in milliseconds
 			wp.setDate(trip.getStartDate() + nextDate);   // in milliseconds!
