@@ -734,13 +734,11 @@
             "boat"          : null,
 			"_id"			: null,
 			"_rev" 			: null,
-            "temp"          : null,
-            "pressure"      : null,
+            "tempCelsius"          : null,
+            "atmosPressure"      : null,
             "humidity"      : null,
-            "windSpeed"     : null,
-            "windDeg"       : null,
-            "clouds"        : null,
-            "weatherIcon"   : null,
+            "windSpeedBeaufort"     : null,
+            "windDirection"       : null,
 			"owner" 		: null
 		};
         
@@ -2516,13 +2514,11 @@
                     obj.onMap = getOnMapMark(obj);
                     obj.owner = data.person.active != null ? data.person.active.owner : "Someone";;
                     // in Kelvin
-                    obj.temp = (weatherData["temp"] - 273,15).toFixed(1);
-                    obj.pressure = weatherData["pressure"].toFixed(1);
+                    obj.tempCelsius = (weatherData["temp"] - 273,15).toFixed(1);
+                    obj.atmosPressure = weatherData["pressure"].toFixed(1);
                     obj.humidity = weatherData["humidity"].toFixed(1);
-                    obj.windSpeed = weatherData["speed"].toFixed(1);
-                    obj.windDeg = weatherData["deg"].toFixed(1);
-                    obj.clouds = weatherData["clouds"];
-                    obj.weatherIcon = weatherData["icon"];
+                    obj.windSpeedBeaufort = weatherData["speed"].toFixed(1);
+                    obj.windDirection = weatherData["deg"].toFixed(1);
                     data.waypoint.list[obj.id] = obj;
                     data.waypoint.count++;
                     dataCallback([event.SERVER_CREATE, event.CREATED_WAYPOINT], obj);
