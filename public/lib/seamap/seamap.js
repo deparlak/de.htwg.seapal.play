@@ -1457,6 +1457,7 @@
             $this.on("click", "#addNewRoute", handleAddNewRoute);
             $this.on("click", "#exitRouteCreation", handleExitRouteCreation);
             $this.on("click", "#setAsDestination", handleSetAsDestination);
+            $this.on("click", "#setWeatherForecast", handleSetWeatherForecast);
             $this.on("click", "#addNewDistanceRoute", handleAddNewDistanceRoute);
             $this.on("click", "#hideContextMenu", handleHideContextMenu);
         }
@@ -1928,9 +1929,11 @@
                     } else {
                         ctx += '<button id="exitRouteCreation" type="button" class="btn"><i class="icon-flag"></i> Finish Route Recording</button>';
                     }
+                    // ??? todo add icon-weather 
                     ctx += '<button id="addNewDistanceRoute" type="button" class="btn"><i class="icon-resize-full"></i> Distance from here</button>'
                         + '<button id="setAsDestination" type="button" class="btn"><i class="icon-star"></i> ' + target + '</button>'
-                        + '<button id="hideContextMenu" type="button" class="btn"><i class="icon-remove"></i> Close</button>'; 
+                        + '<button id="setWeatherForecast" type="button" class="btn"><i class="icon-star"></i> Weather Forecast</button>'
+                        + '<button id="hideContextMenu" type="button" class="btn"><i class="icon-remove"></i> Close</button>';
                     break;
                 case ContextMenuTypes.DELETE_MARKER:
                     ctx += '<button id="setAsMarkTarget" type="button" class="btn"><i class="icon-map-marker"></i> Set as Target</button>';
@@ -2366,8 +2369,19 @@
         function handleEditWaypoint() {
             dataCallback([event.EDIT_WAYPOINT], data.waypoint.active);
             hideContextMenu();
-        }        
+        }
         
+         /**
+        * *********************************************************************************
+        * Handler function for getting a weather forecast at current possition.
+        * Also closes the context menu and hides the crosshair.
+        * *********************************************************************************
+        */
+        function handleSetWeatherForecast() {
+            handleHideContextMenu();
+            postData(crosshairMarker.getPosition());
+        }
+
         /**
         * *********************************************************************************
         * Handler function for setting a target.
@@ -2512,7 +2526,6 @@
                     data.waypoint.list[obj.id] = obj;
                     data.waypoint.count++;
                     dataCallback([event.SERVER_CREATE, event.CREATED_WAYPOINT], obj);
-                    alert("Temp: " + obj.temp + ", Speed: " + obj.windSpeed + ", Deg: " + obj.windDeg);
                 });
             }
         }
