@@ -55,7 +55,7 @@ The logbook pages are stored in 'logbookContent'.
   
 **For the Logbook**  
 The logbook has only one page, which is constructed from multiple view templates on the server side. All trip-specific contents are loaded using AJAX and inserted into page at client side.  
-This is achieved with the Handlebars javascript library which fills the HTML templates using the JSON objects from the server. These templates (<script>-Tags with type "x-handlebars-template") are usually stored at the locations where their instances would be inserted.  
+This is achieved with the Handlebars javascript library which fills the HTML templates using the JSON objects from the server. These templates ('''<script>'''-Tags with type "x-handlebars-template") are usually stored at the locations where their instances would be inserted.  
   
 The API requests are encapsulated in a "logbookapi.js" script, and the page itself only has to provide the callback functions that accept the trips, waypoints, ... that the server delivers.
 
