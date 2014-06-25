@@ -478,37 +478,70 @@
 
                 if (typeof (window.windCompassChart) != "undefined") {
                 	
-                	// change point                	
-                    var windDirPoint = window.windCompassChart.series[0].points[0];                    
-                    var newVal = waypointData.windDirection - 180;
-                    if (newVal < 0) {
-                        newVal = 360 + newVal;
-                    }
-                    windDirPoint.update(newVal);      
+                	// change point     
+                	if (typeof (waypointData.windDirection) != "undefined") {
+	                    var windDirPoint = window.windCompassChart.series[0].points[0];                    
+	                    var newDir = waypointData.windDirection - 180;
+	                    if (newDir < 0) {
+	                        newDir = 360 + newVal;
+	                    }
+	                    windDirPoint.update(newDir);   
+	                }   
                     
-                    // change dial length
-                    var windSpeedDial = window.windCompassChart.options.series[0].dial; 
-                    windSpeedDial.baseLength = waypointData.windSpeedBeaufort * 10;  
+                    // change yAxis title
+                    if (typeof (waypointData.windSpeedBeaufort) != "undefined") {
+                    	$('#windCompassTitle').html(waypointData.windSpeedBeaufort.toFixed(2));
+                    } else {
+                    	$('#windCompassTitle').html('');
+                    }                      
+                   
                     window.windCompassChart.redraw();
                 }
 
  				if (typeof (window.waveCompassChart) != "undefined") {
-                    //TODO fill
+                    // change point     
+                    if (typeof (waypointData.wavesDirection) != "undefined") {           	
+	                    var waveDirPoint = window.waveCompassChart.series[0].points[0];                    
+	                    var newWaveDir = waypointData.wavesDirection - 180;
+	                    if (newWaveDir < 0) {
+	                        newWaveDir = 360 + newWaveDir;
+	                    }
+	                    waveDirPoint.update(newWaveDir);
+					}
+					
+                    // change yAxis title
+                    if (typeof (waypointData.waveHeight) != "undefined") {
+                    	$('#waveCompassTitle').html(waypointData.waveHeight.toFixed(2));
+                    } else {
+                    	$('#waveCompassTitle').html('');
+                    }       
                     window.waveCompassChart.redraw();
                 }
 
                 if (typeof (window.airPressureChart) != "undefined") {
-                    //TODO fill
+                    // change point                	
+                    var airPressPoint = window.airPressureChart.series[0].points[0];                    
+                    var newPressure = parseFloat(waypointData.atmosPressure);
+                    airPressPoint.update(newPressure);
+                    
                     window.airPressureChart.redraw();
                 }
 
                 if (typeof (window.cloudsChart) != "undefined") {
-                    //TODO fill
+                    // change point                	
+                    var cloudPoint = window.cloudsChart.series[0].points[0];                    
+                    var newCloud = parseFloat(waypointData.cloudage);
+                    cloudPoint.update(newCloud);
+                    
                     window.cloudsChart.redraw();
                 }
 
                 if (typeof (window.temperatureChart) != "undefined") {
-                    //TODO fill
+                	// change point                	
+                    var tempPoint = window.temperatureChart.series[0].points[0];                    
+                    var newTemp = parseFloat(waypointData.tempCelsius);
+                    tempPoint.update(newTemp);
+                   
                     window.temperatureChart.redraw();
                 }
 
@@ -687,7 +720,9 @@
                     plotBorderWidth: 0,
                     plotShadow: false
                 },
-
+				credits: {
+                	enabled: false
+                },
                 title: {
                     text: '',
                     style: {
@@ -789,9 +824,6 @@
                 }]
 
             });
-
-            // remove highcart logo
-            removeHighChartLogo();
         }
 
 
@@ -812,6 +844,10 @@
                     plotBackgroundImage: null,
                     plotBorderWidth: 0,
                     plotShadow: false
+                },
+                
+                credits: {
+                	enabled: false
                 },
 
                 exporting: {
@@ -970,9 +1006,6 @@
                 }]	
 
             });
-
-            // remove highcart logo
-            removeHighChartLogo();
         };
         
         /**
@@ -993,7 +1026,9 @@
                     plotBorderWidth: 0,
                     plotShadow: false
                 },
-
+				credits: {
+                	enabled: false
+                },
                 exporting: {
                     enabled: false
                 },
@@ -1067,6 +1102,14 @@
                     tickPosition: 'inside',
                     tickLength: 8,
                     tickColor: '#fff',
+                    title: {
+                    	useHTML: true,
+                    	style: {
+                            color: '#fff',
+                        },
+                        y: +10,
+                    	text: '<div id="windCompassTitle"> test </div>'
+                    },
                     labels: {
                         style: {
                             color: '#fff',
@@ -1150,9 +1193,6 @@
                 }]	
 
             });
-
-            // remove highcart logo
-            removeHighChartLogo();
         };
         
         /**
@@ -1173,7 +1213,11 @@
                     plotBorderWidth: 0,
                     plotShadow: false
                 },
-
+                
+                credits: {
+                	enabled: false
+                },
+                
                 exporting: {
                     enabled: false
                 },
@@ -1247,6 +1291,14 @@
                     tickPosition: 'inside',
                     tickLength: 8,
                     tickColor: '#fff',
+                    title: {
+                    	useHTML: true,
+                    	style: {
+                            color: '#fff',
+                        },
+                        y: +10,	
+                    	text: '<div id="waveCompassTitle"> test </div>'                    	
+                    },
                     labels: {
                         style: {
                             color: '#fff',
@@ -1330,9 +1382,6 @@
                 }]	
 
             });
-
-            // remove highcart logo
-            removeHighChartLogo();
         };
 
         /**
@@ -1353,7 +1402,11 @@
 		            plotBorderWidth: 0,
 		            plotShadow: false
 			    },
-		        
+			    
+		        credits: {
+                	enabled: false
+                },
+                
 		        exporting: {
 		            enabled: false
 		        },
@@ -1407,7 +1460,8 @@
 		                style: {
 		                    fontSize: '9px'
 		                },
-			        	text: 'Beaufort'
+			        	text: 'Beaufort',
+			        	useHTML: true
 			        },
 			        labels: {
 		                style: {
@@ -1424,9 +1478,6 @@
 			            data: data //[0.0, 6.9, 0, 10, 0, 6.5, 3, 7.5, 8.3, 0, 3.9, 4.6, 0, 0, 0, 0]
 			    }]
 			});
-
-            // remove highcart logo
-            removeHighChartLogo();
         }
         
              /**
@@ -1447,7 +1498,9 @@
 			            plotBorderWidth: 0,
 			            plotShadow: false
 				    },
-			        
+			        credits: {
+                		enabled: false
+                	},
 			        exporting: {
 			            enabled: false
 			        },
@@ -1518,9 +1571,6 @@
 			            data: data //[7.0, 6.9, 9.5, 0, 0, 1.5, 0, 7.5, 8.3, 2.3, 1.9, 1.6, 0, 1, 4, 5]
 			        }]
 	    		});
-
-            // remove highcart logo
-            removeHighChartLogo();
         }
         
         /**
@@ -1540,6 +1590,9 @@
                     plotBorderWidth: 0,
                     plotShadow: false
 			    },
+			    credits: {
+                	enabled: false
+                },
 			    pane: {
 			    	startAngle: -150,
 			    	endAngle: 150,
@@ -1591,10 +1644,7 @@
 		                rearLength: "0%"
 					}
 		         }]
-        	});
-
-            // remove highcart logo
-            removeHighChartLogo();
+       		});
         };
 
         /**
@@ -1614,6 +1664,9 @@
                     plotBorderWidth: 0,
                     plotShadow: false
 			    },
+			    credits: {
+                	enabled: false
+                },
 				pane: {
 		            startAngle: -150,
 		            endAngle: 150,
@@ -1655,9 +1708,6 @@
 		            }
 		        }]
         	});
-
-            // remove highcart logo
-           removeHighChartLogo();
         };
 
 		/**
@@ -1677,6 +1727,9 @@
                     plotBorderWidth: 0,
                     plotShadow: false
 			    },
+			    credits: {
+                	enabled: false
+                },
 		    	pane: {
 			    	startAngle: -150,
 			    	endAngle: 150,
@@ -1730,8 +1783,6 @@
 					}
 		         }]
         	});
-
-            removeHighChartLogo();
         };
 
 
@@ -1743,6 +1794,9 @@
                     plotBackgroundImage: null,
                     plotBorderWidth: 0,
                     plotShadow: false
+                },
+                credits: {
+                	enabled: false
                 },
                 exporting: {
                     enabled: false
@@ -1785,8 +1839,6 @@
                     data: data_y
                 }]
             });
-            
-            removeHighChartLogo();
         }
 
         function initAirPressureCloudingTemperatureChart(container, data_x, air_pressure_data_y, cloudage_data_y, temperature_data_y, waypoint_ids) {
@@ -1796,6 +1848,9 @@
                     plotBackgroundImage: null,
                     plotBorderWidth: 0,
                     plotShadow: false
+                },
+                credits: {
+                	enabled: false
                 },
                 exporting: {
                     enabled: false
@@ -1875,28 +1930,6 @@
                     }
                 ]
             });
-
-            removeHighChartLogo();
-        }
-
-        /*
-         * remove initial highchart logo by using an Index for each chart
-         */
-        function removeHighChartLogo() {
-        	//TODO index has changed
-        	if (typeof (window.chartIndex) == "undefined") {
-                window.chartIndex = 0;
-            } else if (window.chartIndex < 4) {
-            	window.chartIndex += 4;
-            } else if (window.chartIndex < 14) {
-                window.chartIndex += 5;
-            } else if (window.chartIndex < 26) {
-             	window.chartIndex += 3;
-            } else {
-            	window.chartIndex += 2;
-            }
-                        
-            $('#highcharts-' + window.chartIndex + ' svg text').last().remove();
         }
         
         /**
