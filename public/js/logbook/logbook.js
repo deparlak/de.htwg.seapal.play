@@ -419,17 +419,24 @@ function onScrolledToWaypoint(node) {
     }
 
     scrollToWaypointTimeout = setTimeout(function () {
+    	// check waypoint Data
+    	if (typeof (waypointData) == "undefined") {
+    		return;
+    	}
+    	
         //console.log("onScrolledToWaypoint timeout called")
         hideDistributionCharts();
         showCharts();
         initialiseCharts();
 
         // mark waypoint in Map
-        if (typeof (map) != "undefined" && typeof (waypointData) != "undefined") {
+        if (typeof (map) != "undefined") {
             highlight_waypoint(new google.maps.LatLng(waypointData.lat, waypointData.lng));
         }
 
-        if (typeof (window.sogChart) != "undefined") {
+        if (typeof (window.sogChart) != "undefined") {     
+        	hideShowOneChartById('speedometer_sog', waypointData.sog);   	
+        	// change point
             var point = window.sogChart.series[0].points[0];
             var newVal = waypointData.sog.substr(0, waypointData.sog.lastIndexOf(' '));
             point.update(parseFloat(newVal));
@@ -437,20 +444,21 @@ function onScrolledToWaypoint(node) {
         }
 
         if (typeof (window.cogChart) != "undefined") {
-            //var pointH = window.cogChart.series[0].points[0];
+        	hideShowOneChartById('compass_cog', waypointData.cog);
+        	// change point
             var pointB = window.cogChart.series[0].points[0];
-            var newValH = parseFloat(waypointData.cog.substr(0, waypointData.sog.lastIndexOf(' ')));
+            var newValH = parseFloat(waypointData.cog.substr(0, waypointData.cog.length -1));
             var newValB = newValH - 180;
             if (newValB < 0) {
                 newValB = 360 + newValB;
             }
-            //pointH.update(newValH);
             pointB.update(newValB);
             window.cogChart.redraw();
         }
 
         if (typeof (window.windCompassChart) != "undefined") {
-
+			hideShowOneChartById('wind_compass', waypointData.windDirection, waypointData.windSpeedBeaufort);
+			
             // change point
             if (typeof (waypointData.windDirection) != "undefined") {
                 var windDirPoint = window.windCompassChart.series[0].points[0];
@@ -472,6 +480,8 @@ function onScrolledToWaypoint(node) {
         }
 
         if (typeof (window.waveCompassChart) != "undefined") {
+        	hideShowOneChartById('wave_compass', waypointData.wavesDirection, waypointData.waveHeight);
+        	
             // change point
             if (typeof (waypointData.wavesDirection) != "undefined") {
                 var waveDirPoint = window.waveCompassChart.series[0].points[0];
@@ -492,6 +502,8 @@ function onScrolledToWaypoint(node) {
         }
 
         if (typeof (window.airPressureChart) != "undefined") {
+        	hideShowOneChartById('air_pressure', waypointData.atmosPressure);
+        	
             // change point
             var airPressPoint = window.airPressureChart.series[0].points[0];
             var newPressure = parseFloat(waypointData.atmosPressure);
@@ -501,6 +513,8 @@ function onScrolledToWaypoint(node) {
         }
 
         if (typeof (window.cloudsChart) != "undefined") {
+        	hideShowOneChartById('clouds', waypointData.cloudage);
+        	
             // change point
             var cloudPoint = window.cloudsChart.series[0].points[0];
             var newCloud = parseFloat(waypointData.cloudage);
@@ -510,6 +524,8 @@ function onScrolledToWaypoint(node) {
         }
 
         if (typeof (window.temperatureChart) != "undefined") {
+        	hideShowOneChartById('temperature', waypointData.tempCelsius);
+        	
             // change point
             var tempPoint = window.temperatureChart.series[0].points[0];
             var newTemp = parseFloat(waypointData.tempCelsius);
@@ -542,25 +558,25 @@ function onScrolledToTripHeader(node) {
 
 function initialiseCharts(){
     //only call init once if there's no html content inside the matching div
-    if( ($.trim($('#speedometer_sog' ).html()) == '' && ($('#details_info' ).css('display') == 'block') )){
+    if( ($.trim($('#speedometer_sog' ).text()) == '' && ($('#details_info' ).css('display') == 'block') )){
         initSOGSpeedometer('speedometer_sog');
     }
-    if($.trim($('#compass_cog' ).html()) == '' && ($('#details_info' ).css('display') == 'block') ){
+    if($.trim($('#compass_cog' ).text()) == '' && ($('#details_info' ).css('display') == 'block') ){
         initCOGCompass('compass_cog');
     }
-    if($.trim($('#wind_compass' ).html()) == '' && ($('#details_weather' ).css('display') == 'block') ){
+    if($.trim($('#wind_compass' ).text()) == '' && ($('#details_weather' ).css('display') == 'block') ){
         initWindCompassChart('wind_compass');
     }
-    if($.trim($('#wave_compass').html()) == '' && ($('#details_weather' ).css('display') == 'block') ){
+    if($.trim($('#wave_compass').text()) == '' && ($('#details_weather' ).css('display') == 'block') ){
         initWaveCompassChart('wave_compass');
     }
-    if($.trim($('#air_pressure' ).html()) == '' && ($('#details_weather' ).css('display') == 'block') ){
+    if($.trim($('#air_pressure' ).text()) == '' && ($('#details_weather' ).css('display') == 'block') ){
         initAirPressureChart('air_pressure');
     }
-    if($.trim($('#clouds' ).html()) == '' && ($('#details_weather' ).css('display') == 'block') ){
+    if($.trim($('#clouds' ).text()) == '' && ($('#details_weather' ).css('display') == 'block') ){
         initCloudsChart('clouds');
     }
-    if($.trim($('#temperature' ).html()) == '' && ($('#details_weather' ).css('display') == 'block') ){
+    if($.trim($('#temperature' ).text()) == '' && ($('#details_weather' ).css('display') == 'block') ){
         initTemperatureChart('temperature');
     }
 }
@@ -570,19 +586,19 @@ function initialiseCharts(){
  */
 function initialiseDistributionCharts(tripData){
     // load speed table
-    if ( $.trim ( $ ( '#details_charts_distribution' ).html ( ) ) == '' && ($('#details_info' ).css('display') == 'block') ) {
+    if ( $.trim ( $ ( '#details_charts_distribution' ).text() ) == '' && ($('#details_info' ).css('display') == 'block') ) {
         initSpeedChart ( $ ( '#details_charts_distribution' ), tripData.data ( 'index_data_x' ), tripData.data ( 'speed_data_y' ), tripData.data ( 'waypoint_names' ), tripData.data ( 'waypoint_ids' ), tripData.data ( 'speed_title' ), tripData.data ( 'speed_description' ) ) ;
     }
     // load wind table
-    if ( $.trim ( $ ( '#wind_distribution' ).html ( ) ) == '' && ($('#details_weather' ).css('display') == 'block') ) {
+    if ( $.trim ( $ ( '#wind_distribution' ).text() ) == '' && ($('#details_weather' ).css('display') == 'block') ) {
         initWindDirSpeedChart ( 'wind_distribution', tripData.data ( 'wind_data' )) ;
     }
     // load wind table
-    if ( $.trim ( $ ( '#wave_distribution' ).html ( ) ) == '' && ($('#details_weather' ).css('display') == 'block') ) {
+    if ( $.trim ( $ ( '#wave_distribution' ).text() ) == '' && ($('#details_weather' ).css('display') == 'block') ) {
         initWaveDirHeightChart ( 'wave_distribution', tripData.data ( 'wave_data' ) ) ;
     }
     // load air pressure/clouding/temperature table
-    if ( $.trim ( $ ( '#air_pressure_cloudage_temperature_distribution' ).html ( ) ) == '' && ($('#details_weather' ).css('display') == 'block') ) {
+    if ( $.trim ( $ ( '#air_pressure_cloudage_temperature_distribution' ).text() ) == '' && ($('#details_weather' ).css('display') == 'block') ) {
         initAirPressureCloudingTemperatureChart ( '#air_pressure_cloudage_temperature_distribution', tripData.data ( 'index_data_x' ), tripData.data ( 'air_pressure_data_y' ), tripData.data ( 'cloudage_data_y' ), tripData.data ( 'temperature_data_y' ), tripData.data ( 'waypoint_ids' ) ) ;
     }
 }
@@ -695,9 +711,11 @@ function showDistributionCharts() {
 /**
  * This method shows the Normal Charts for details
  */
-function showCharts() {
+function showCharts(wayPoint) {
     $('#details_charts').css("display", "block");
     $('#details_weather_charts').css("display", "block");
+    
+    // hide charts with no data
 }
 
 /**
@@ -706,6 +724,22 @@ function showCharts() {
 function hideCharts() {
     $('#details_charts').css("display", "none");
     $('#details_weather_charts').css("display", "none");
+}
+
+
+/**
+ * Hides / showes the Chart if data is avaialable 
+ * @param {Object} htmlId
+ * @param {Object} data1
+ * @param {Object} data2
+ */
+function hideShowOneChartById(htmlId, data1, data2) {
+	// hide chart if there is no data	
+	if (typeof (data1) == "undefined" && typeof (data2) == "undefined") {
+		$('#'+ htmlId).css("display","none");
+	} else {
+		$('#'+ htmlId).css("display","inline");
+	}
 }
 
 // returns wether the elemente is in the viewport or not
