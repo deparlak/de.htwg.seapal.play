@@ -1,5 +1,3 @@
-var map;
-
 //HTML templates - Handlebars lib
 var tripTemplate;
 var waypointTemplate;
@@ -10,30 +8,29 @@ var timelineTripTemplate;
 var timelineWaypointTemplate;
 var timelineTripHeaderTemplate;
 
+var map;
+
 var dateFormatShort = "YYYY-MM-DD";
 var timeFormat = "h:mm:ss a";
 
 var isLoadingWaypoints = false;
-var data_loaded = false;
 var scrollToWaypointTimeout;
 
 var boatId;
 
-// set handler for HTTP-Forbidden errors:
-logbook.onForbidden = function () {
-    window.location.href = '@de.htwg.seapal.web.controllers.routes.Application.forbiddenContent()';
-}
-
+/**
+ * Initialises the logbook
+ * @param initialTripId - UUID of the initial trip
+ * @param boatId - UUID of the boat
+ */
 function initialiseLogbook(initialTripId, boatId){
     this.boatId = boatId;
-    var dateFormatShort = "YYYY-MM-DD";
-    var timeFormatShort = "mm:ss:zzz";
 
     // preloaded Images
     var expandImage = new Image();
     var contractImage = new Image();
-    expandImage.src = '@routes.Assets.at("images/logbook/expand-icon.png")';
-    contractImage.src = '@routes.Assets.at("images/logbook/contract-icon.png")';
+    expandImage.src = 'images/logbook/expand-icon.png';
+    contractImage.src = 'images/logbook/contract-icon.png';
 
     // compile the HTML templates with Handlebars lib
     tripTemplate = Handlebars.compile($('#tripTemplate').html());
@@ -124,19 +121,21 @@ function initialiseLogbook(initialTripId, boatId){
         $(this).toggleClass('active');
         applyEntryFilters();
     });
+
     $('#timeOffsetToggler').click(function () {
         var currentValue = parseInt($(this).html());
         var newValue = 0;
-        if (currentValue == 0)
+        if (currentValue == 0) {
             newValue = 5;
-        else if (currentValue == 5)
+        } else if (currentValue == 5) {
             newValue = 15;
-        else if (currentValue == 15)
+        } else if (currentValue == 15) {
             newValue = 30;
-        else if (currentValue == 30)
+        } else if (currentValue == 30) {
             newValue = 60;
-        else
+        } else {
             newValue = 0;
+        }
 
         $(this).html(newValue);
         applyEntryFilters();
@@ -145,12 +144,16 @@ function initialiseLogbook(initialTripId, boatId){
     // click handlers for panel toggle buttons in menubar
     $('#timelineToggler').click(function () { $('#timeline_col').toggleClass('forceOpen'); $('#details_col').removeClass('forceOpen'); });
     $('#detailsToggler').click(function () { $('#details_col').toggleClass('forceOpen'); $('#timeline_col').removeClass('forceOpen'); });
+
     // hide side panels if mouse leaves them
     $('#entries_col').mouseenter(function () { $('#details_col, #timeline_col').removeClass('forceOpen'); })
     $('#entries_col').click(function () { $('#details_col, #timeline_col').removeClass('forceOpen'); })
 };
 
-// changes the currently displayed trip to another one
+/**
+ * changes the currently displayed trip to another one
+ * @param tripId - UUID of the trip
+ */
 function changeTripTo(tripId) {
     if (tripId && tripId.length > 0) {
         $('#entries').html(ajaxLoaderTemplate({ loaderId: 'tripLoader' }));
@@ -164,7 +167,13 @@ function changeTripTo(tripId) {
     }
 }
 
-// Adds the function 'callback' as a handler when the users scrolls to the 'item'.
+/**
+ * Initialises the waypoint entries.
+ * Adds the function 'callback' as a handler when the users scrolls to the 'item'
+ * @param item - waypoint entry, that triggers the callback
+ * @param callback - function that should be called if the user scrolled to the item
+ * @param last_entry_node - previous waypoint entry
+ */
 function initWaypoint(item, callback, last_entry_node) {
     var offset_up = 10;
     var offset_down = parseInt($('#menu_bar').css("height")) + parseInt($(last_entry_node).css('height')) ;
@@ -186,7 +195,61 @@ function initWaypoint(item, callback, last_entry_node) {
     }, { offset: offset_up });
 }
 
-// callback of getTripData()
+/**
+ * Gets called if the previous trip has been loaded.
+ * (callbacks from getTripsOfBoat())
+ * @param trips
+ */
+function onReceivedPreviousTrip(trips) {
+    // enables or disables the "Load previous Trip" button depending on whether the currently loaded trip has a predecessor or not.
+    if (trips.length > 0) {
+        $('#prevTripName').html(trips[0].name);
+        $('#btnLoadPreviousTrip').attr('data-trip', trips[0]._id).css('display', 'block');
+        var scrollOffset = $('.tripHeader').offset().top - $('#entries_col').css("margin-top").replace("px", "");
+        //alert(scrollOffset);
+        $('html,body').prop('scrollTop', scrollOffset);
+        //$('.tripHeader')[0].scrollIntoView(true);
+    } else {
+        $('#btnLoadPreviousTrip').attr('data-trip', '').hide();
+    }
+}
+
+/**
+ * Gets called if the next trip has been loaded.
+ * (callbacks from getTripsOfBoat())
+ * @param trips
+ */
+function onReceivedNextTrip(trips) {
+    //enables or disables the "Load next Trip" button depending on
+    // whether the currently loaded trip has a successor or not.
+    if (trips.length > 0) {
+        $('#nextTripName').html(trips[0].name);
+        $('#btnLoadNextTrip').attr('data-trip', trips[0]._id).css('display', 'block');
+    } else {
+        $('#btnLoadNextTrip').attr('data-trip', '').hide();
+    }
+}
+
+/**
+ * Gets called if all trips have been loaded.
+ * (callback of logbook.getAllTripsOfBoat())
+ * @param trips
+ */
+function onReceivedAllTrips(trips) {
+    // Populate the inital timeline
+    var timelineContainer = $('.timeline_header');
+    $.each(trips, function (index, tripData) {
+        tripData.startDate = moment(new Date(tripData.startDate)).format(dateFormatShort);
+        timelineContainer.append(timelineTripTemplate(tripData));
+    });
+}
+
+/**
+ * Gets called if the trip has been loaded.
+ * (callback of getTripData())
+ * @param tripId - UUID of the trip
+ * @param tripData - Trip data
+ */
 function onReceivedTrip(tripId, tripData) {
     // prepare formatted datetime strings (required in handlebars templates)
     tripData.formattedStartDate = moment(new Date(tripData.startDate)).format(dateFormatShort + " " + timeFormat);
@@ -212,43 +275,12 @@ function onReceivedTrip(tripId, tripData) {
     loadMoreEntries(tripId, 0);  // 0 = all waypoints
 }
 
-// callbacks from getTripsOfBoat, receives a subset of the properties of the previous/next trip
-// enables or disables the "Load previous Trip" button depending on whether the currently loaded trip has a predecessor or not.
-function onReceivedPreviousTrip(trips) {
-    if (trips.length > 0) {
-        $('#prevTripName').html(trips[0].name);
-        $('#btnLoadPreviousTrip').attr('data-trip', trips[0]._id).css('display', 'block');
-        var scrollOffset = $('.tripHeader').offset().top - $('#entries_col').css("margin-top").replace("px", "");
-        //alert(scrollOffset);
-        $('html,body').prop('scrollTop', scrollOffset);
-        //$('.tripHeader')[0].scrollIntoView(true);
-    } else {
-        $('#btnLoadPreviousTrip').attr('data-trip', '').hide();
-    }
-}
-
-// callbacks from getTripsOfBoat, enables or disables the "Load next Trip" button
-// depending on whether the currently loaded trip has a successor or not.
-function onReceivedNextTrip(trips) {
-    if (trips.length > 0) {
-        $('#nextTripName').html(trips[0].name);
-        $('#btnLoadNextTrip').attr('data-trip', trips[0]._id).css('display', 'block');
-    } else {
-        $('#btnLoadNextTrip').attr('data-trip', '').hide();
-    }
-}
-
-// callback of logbook.getAllTripsOfBoat
-// Populates the inital timeline
-function onReceivedAllTrips(trips) {
-    var timelineContainer = $('.timeline_header');
-    $.each(trips, function (index, tripData) {
-        tripData.startDate = moment(new Date(tripData.startDate)).format(dateFormatShort);
-        timelineContainer.append(timelineTripTemplate(tripData));
-    });
-}
-
-// callback of getTripWaypoints()
+/**
+ * Gets called if waypoints have been loaded.
+ * (callback of getTripWaypoints())
+ * @param tripId - UUID of the trip that matches to the waypoints
+ * @param waypoints - all waypoints of the trip
+ */
 function onReceivedWaypoints(tripId, waypoints) {
     var tripContainer = $('#trip_' + tripId);
     var timelineTripContainer = $('#timeline-trip_container_' + tripId);
@@ -283,7 +315,6 @@ function onReceivedWaypoints(tripId, waypoints) {
 
     var map_waypoints = [];
 
-    //console.log(waypoints);
     // iterate all received waypoints and append the template to the container of the trip & the timelime
     $.each(waypoints, function (index, waypointData) {
         // unix timestamp -> formatted time
@@ -364,7 +395,13 @@ function onReceivedWaypoints(tripId, waypoints) {
     isLoadingWaypoints = false;
 }
 
-// insert values in a map object with 16 keys, each representing compass directions (22.5 degrees).
+/**
+ * insert values in a map object.The keys represent the compass directions (here 16 keys à 22.5 degrees)
+ * @param map - map the values should be inserted to
+ * @param degree_step - degrees that should be represented by one key
+ * @param degree - actual degree
+ * @param value - value that should be inserted at the degree's key
+ */
 function compassOrderdInsert(map, degree_step, degree, value){
     var key = Math.floor(degree/degree_step);
 
@@ -373,14 +410,22 @@ function compassOrderdInsert(map, degree_step, degree, value){
     }
 }
 
-// pushes all values of a map into an array
+/**
+ * pushes all values of a map into an array
+ * @param map - map containing the values
+ * @param array - array, the values should be pushed to
+ */
 function mapToArray(map, array){
     for (var key in map) {
         array.push(map[key]);
     }
 }
 
-// loads or appends waypoint entries to a trip
+/**
+ * Loads or appends waypoint entries to a trip
+ * @param tripId - UUID of the trip
+ * @param count - amount of entries that should be loaded
+ */
 function loadMoreEntries(tripId, count) {
     if (isLoadingWaypoints) {
         return;
@@ -399,7 +444,10 @@ function loadMoreEntries(tripId, count) {
     logbook.getTripWaypoints(tripId, loadedEntriesCount, count, onReceivedWaypoints);
 }
 
-// callback for trip container when scrolled to
+/**
+ * Gets called when the user scrolled to a waypoint
+ * @param node - waypoint entry
+ */
 function onScrolledToWaypoint(node) {
     $('.logbookEntry').removeClass("active");
     node.addClass("active");
@@ -414,13 +462,13 @@ function onScrolledToWaypoint(node) {
     }
     $('#details_text').html(entryDetailsTemplate(waypointData));
 
-
     if (typeof (scrollToWaypointTimeout) != undefined) {
         clearTimeout(scrollToWaypointTimeout);
     }
 
     scrollToWaypointTimeout = setTimeout(function () {
-        //console.log("onScrolledToWaypoint timeout called")
+        // gets called if the user stayed on a waypoint for more than 500ms
+
         hideDistributionCharts();
         showCharts();
         initialiseCharts();
@@ -523,13 +571,17 @@ function onScrolledToWaypoint(node) {
     }, 500);
 }
 
+/**
+ * Gets called if the trip header is active
+ * @param node - tripHeader entry
+ */
 function onScrolledToTripHeader(node) {
     if (typeof (scrollToWaypointTimeout) != undefined) {
         clearTimeout(scrollToWaypointTimeout);
     }
     $('.logbookEntry').removeClass("active");
 
-    $('#details_text').html(entryDetailsTemplate());
+    $('#details_text').html("");
     //zoom out map
     reset_map_zoom();
 
@@ -541,8 +593,11 @@ function onScrolledToTripHeader(node) {
     }
 }
 
+/**
+ * Inits the charts which show the waypoint specific data.
+ */
 function initialiseCharts(){
-    //only call init once if there's no html content inside the matching div
+    //only call init once if there's no html content inside the matching div and if the div is visible
     if( ($.trim($('#speedometer_sog' ).html()) == '' && ($('#details_info' ).css('display') == 'block') )){
         initSOGSpeedometer('speedometer_sog');
     }
@@ -567,7 +622,7 @@ function initialiseCharts(){
 }
 
 /**
- * Inits the charts which show the overview charts of the whole trip.
+ * Inits the charts which show the overview of the whole trip.
  */
 function initialiseDistributionCharts(tripData){
     // load speed table
@@ -587,7 +642,6 @@ function initialiseDistributionCharts(tripData){
         initAirPressureCloudingTemperatureChart ( '#air_pressure_cloudage_temperature_distribution', tripData.data ( 'index_data_x' ), tripData.data ( 'air_pressure_data_y' ), tripData.data ( 'cloudage_data_y' ), tripData.data ( 'temperature_data_y' ), tripData.data ( 'waypoint_ids' ) ) ;
     }
 }
-
 
 /**
  * Shows or hides waypoints based on the current filter settings
@@ -628,7 +682,9 @@ function applyEntryFilters() {
     window.setTimeout(function () { $.waypoints('refresh'); }, 750);
 }
 
-// callback of waypoint.js (invoked when the user scrolls to a logbook entry or trip header)
+/**
+ * callback of waypoint.js (invoked when the user scrolls to a logbook entry or trip header)
+ */
 function scrollToWaypoint(waypoint) {
     $('.logbookEntry').waypoint('disable');
     var offset = $(waypoint).offset().top - parseInt($('#menu_bar').css('height'));
@@ -646,7 +702,9 @@ function scrollToWaypoint(waypoint) {
     }, 'slow');
 }
 
-// click handler for the markers on the map
+/**
+ * click handler for the markers on the map
+ */
 function clicked_on_marker(marker) {
     var lat = marker.getPosition().lat();
     var lng = marker.getPosition().lng();
@@ -657,7 +715,7 @@ function clicked_on_marker(marker) {
 }
 
 /**
- * This method returns a waypoint depending on the lat lng
+ *  This method returns a waypoint depending on the lat lng
  */
 function getWaypointFromPosition(lat, lng) {
     var waypoint;
@@ -679,7 +737,7 @@ function getWaypointFromPosition(lat, lng) {
 }
 
 /**
- * This method hides the Distribution charts
+ *  This method hides the Distribution charts
  */
 function hideDistributionCharts() {
     $('#details_charts_distribution').css("display", "none");
@@ -688,7 +746,7 @@ function hideDistributionCharts() {
 }
 
 /**
- * This method shows the Distribution charts
+ *  This method shows the Distribution charts
  */
 function showDistributionCharts() {
     $('#details_charts_distribution').css("display", "block");
@@ -697,7 +755,7 @@ function showDistributionCharts() {
 }
 
 /**
- * This method shows the Normal Charts for details
+ *  This method shows the Normal Charts for details
  */
 function showCharts() {
     $('#details_charts').css("display", "block");
@@ -705,14 +763,16 @@ function showCharts() {
 }
 
 /**
- * This method hides the Normal Charts for details
+ *  This method hides the Normal Charts for details
  */
 function hideCharts() {
     $('#details_charts').css("display", "none");
     $('#details_weather_charts').css("display", "none");
 }
 
-// returns true if the element is in the viewport or not
+/**
+ *  returns true if the element is in the viewport or not
+ */
 $.fn.isOnScreen = function(){
     var win = $(window);
 
