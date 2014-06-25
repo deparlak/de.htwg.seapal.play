@@ -11,10 +11,14 @@ The backend is realized using Java and the Play Framework and makes use of
 CouchDB as database system. The classes which are shared with the native
 Android App (closed source) are located in a separate Seapal.Core project,
 these are mainly the model classes, non-web-related controllers and the DAO interfaces.   
-The core project can be found at https://github.com/lukaseckert2/de.htwg.seapal.core.
+The most recent fork of the core project can be found at [https://github.com/lukaseckert2/de.htwg.seapal.core](https://github.com/lukaseckert2/de.htwg.seapal.core).
+
+The database implementation is completely done in this project, so for modifications of the database or the model classes you need to change both the interfaces in the core project and this project.
 
 For testing purposes we use a free CouchDb instance at  
-https://seapaldev.couchappy.com/_utils/  (The admin credentials will be provided by Prof. Boger)
+[https://seapaldev.couchappy.com/_utils/](https://seapaldev.couchappy.com/_utils/)  (The admin credentials will be provided by Prof. Boger).
+
+To switch between testing and production mode, replace the Guice Module in `SeapalGlobal.createInjector()` (either `SeapalTestModule` or `SeapalImplModule`)
  
 
 ###1. The basic file structure
@@ -69,6 +73,7 @@ at the locations where their instances would be inserted.
 The API requests are encapsulated in a "logbookapi.js" script, and the page itself only has to provide the
 callback functions that accept the trips, waypoints, ... that the server delivers.
 
+The static resources of the logbook are separated from the other contents of the application and can be found in 'styles/logbook/...", "images/logbook/..." etc.
 
 **For the Tracking App**  
 The main libraries for the client side control flow are the menubar (public/lib/menubar) and the seamap (public/lib/seamap).

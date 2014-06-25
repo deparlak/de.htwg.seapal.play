@@ -140,7 +140,6 @@
                 return true;
             });
 
-            //$('#btnApplyFilter').click(function () { window.setTimeout(applyEntryFilters, 500) });
             map = new google.maps.Map(document.getElementById('map_canvas'));
 
             // click handlers for entry filter buttons
@@ -398,7 +397,7 @@
                 map[ key ] = value ;
             }
         }
-
+        
         // pushes all values of a map into an array
         function mapToArray(map, array){
             for (var key in map) {
