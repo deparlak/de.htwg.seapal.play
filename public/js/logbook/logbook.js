@@ -24,14 +24,14 @@ var boatId;
  * @param initialTripId - UUID of the initial trip
  * @param boatId - UUID of the boat
  */
-function initialiseLogbook(initialTripId, boatId){
+function initialiseLogbook(initialTripId, boatId, expandImageURL, contractImageURL){
     this.boatId = boatId;
 
     // preloaded Images
     var expandImage = new Image();
     var contractImage = new Image();
-    expandImage.src = 'images/logbook/expand-icon.png';
-    contractImage.src = 'images/logbook/contract-icon.png';
+    expandImage.src = expandImageURL;
+    contractImage.src = contractImageURL;
 
     // compile the HTML templates with Handlebars lib
     tripTemplate = Handlebars.compile($('#tripTemplate').html());
@@ -62,13 +62,15 @@ function initialiseLogbook(initialTripId, boatId){
 
         if (changeImage.src == expandImage.src) {
             changeImage.src = contractImage.src;
-            if(headId != 'details_map_head') {
-                $(this).next().toggle("slow", function(){
+
+            $(this).next().toggle("slow", function(){
+                if(headId != 'details_map_head') {
                     initialiseCharts ( ) ;
                     var tripHeader = $('#trip_header_'+initialTripId);
                     initialiseDistributionCharts(tripHeader);
-                });
-            }
+                }
+            });
+
         } else {
             changeImage.src = expandImage.src;
             $(this).next().toggle("slow");
@@ -780,7 +782,7 @@ function hideCharts() {
 }
 
 /**
- *  returns true if the element is in the viewport or not
+ *  returns true if the element is in the viewport
  */
 $.fn.isOnScreen = function(){
     var win = $(window);
