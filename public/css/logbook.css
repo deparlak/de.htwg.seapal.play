@@ -110,10 +110,19 @@ h3 {
     max-height: 2000em; /* only for transition */
 }
 
+	.logbookEntry .waypointEditButton {
+		display: none;
+		width: 16px;
+		height: auto;
+	}
+	
     .logbookEntry.active, .logbookEntry:first-child {
         opacity: 1;
     }
 
+	.logbookEntry.active .waypointEditButton {
+		display: inline;
+	}
 
 @media (max-width: 1024px) {
     .logbookEntry, .tripHeader {
