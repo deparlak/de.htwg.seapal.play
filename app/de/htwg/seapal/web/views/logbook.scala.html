@@ -131,12 +131,6 @@
 
             $('#details').dragscrollable({ dragSelector: '.dragscrollarea', acceptPropagatedEvent: true });
             $('#timeline').dragscrollable();
-            
-
-            //navbar
-            //menu_hover();
-            //var lis = $('.nav > li');
-            //menu_focus(lis[2], 3);
 
             //hotfix: hrefs didn't work anymore (click returns false anywere?!)
             $('.navbar .nav a').click(function (event) {
@@ -146,7 +140,6 @@
                 return true;
             });
 
-            //$('#btnApplyFilter').click(function () { window.setTimeout(applyEntryFilters, 500) });
             map = new google.maps.Map(document.getElementById('map_canvas'));
 
             // click handlers for entry filter buttons
@@ -235,25 +228,17 @@
             trip_header.data("tripData", tripData);  // store the DB object in this DOM element
 
             // lookup previous and next trip
-            logbook.getTripsOfBoat(boatId, tripData.startDate, 1, 1, 'true', onReceivedPreviousTrip);  // previous
-            logbook.getTripsOfBoat(boatId, tripData.startDate, 1, 1, 'false', onReceivedNextTrip);  // next
-
-            // show complete route on maps:  convert tripData.marks in array with lat lon objects
-            var map_waypoints = [];
-            for (i = 0; i < tripData.marks.length; i = i + 2) {
-                map_waypoints[i / 2] = new google.maps.LatLng(tripData.marks[i], tripData.marks[i + 1]);
-            }
-
-            // ???
-            initialize_waypoints(map_waypoints);
             // add handler for click on a waypoint marker in the map (scroll to waypoint position in entries view)
             setMarkerClickFunction(clicked_on_marker);
+            logbook.getTripsOfBoat(boatId, tripData.startDate, 1, 1, 'true', onReceivedPreviousTrip);  // previous
+            logbook.getTripsOfBoat(boatId, tripData.startDate, 1, 1, 'false', onReceivedNextTrip);  // next
 
             // get the waypoints of this trip
             loadMoreEntries(tripId, 0);  // 0 = all waypoints
         }
 
         // callbacks from getTripsOfBoat, receives a subset of the properties of the previous/next trip
+        // enables or disables the "Load previous Trip" button depending on whether the currently loaded trip has a predecessor or not.
         function onReceivedPreviousTrip(trips) {
             if (trips.length > 0) {
                 $('#prevTripName').html(trips[0].name);
@@ -267,6 +252,8 @@
             }
         }
 
+        // callbacks from getTripsOfBoat, enables or disables the "Load next Trip" button
+        // depending on whether the currently loaded trip has a successor or not.
         function onReceivedNextTrip(trips) {
             if (trips.length > 0) {
                 $('#nextTripName').html(trips[0].name);
@@ -319,6 +306,8 @@
             tripData.formattedDate = moment(new Date(tripData.startDate)).format(dateFormatShort);
             timelineTripContainer.append(timelineTripHeaderTemplate(tripData));
 
+            var map_waypoints = [];
+
             //console.log(waypoints);
             // iterate all received waypoints and append the template to the container of the trip & the timelime
             $.each(waypoints, function (index, waypointData) {
@@ -337,7 +326,6 @@
                 initWaypoint(entryNode, onScrolledToWaypoint, last_entry_node);
 
                 last_entry_node = entryNode;
-                //console.log(waypointData);
                 index_data_x.push(index + 1);
                 speed_data_y.push(parseFloat(waypointData.sog));
                 air_pressure_data_y.push(parseFloat(waypointData.atmosPressure));
@@ -348,8 +336,13 @@
 
                 compassOrderdInsert(wind_data_map, degree_step, waypointData.windDirection, waypointData.windSpeedBeaufort);
                 compassOrderdInsert(wave_data_map, degree_step, waypointData.windDirection, waypointData.wavesHeight);
+
+                map_waypoints[index] = new google.maps.LatLng(waypointData.lat, waypointData.lng);
             });
 
+            initialize_waypoints(map_waypoints);
+
+            // click handler for the waypoints
             $('.logbookEntry').click(function (e) {
                 if ($(e.target).is('img')) {
                     e.preventDefault();
@@ -401,7 +394,7 @@
                 map[ key ] = value ;
             }
         }
-
+        
         // pushes all values of a map into an array
         function mapToArray(map, array){
             for (var key in map) {
@@ -440,9 +433,6 @@
             	
             	waypointData.latRounded = coordHelper.getLatAsString(waypointData.lat);
             	waypointData.lngRounded = coordHelper.getLngAsString(waypointData.lng);
-            	
-               // waypointData.latRounded = ('' + waypointData.lat).substr(0, 7);
-               // waypointData.lngRounded = ('' + waypointData.lng).substr(0, 7);
             }
             $('#details_text').html(entryDetailsTemplate(waypointData));
 
@@ -483,27 +473,71 @@
                 }
 
                 if (typeof (window.windCompassChart) != "undefined") {
-                    //TODO fill
+                	
+                	// change point     
+                	if (typeof (waypointData.windDirection) != "undefined") {
+	                    var windDirPoint = window.windCompassChart.series[0].points[0];                    
+	                    var newDir = waypointData.windDirection - 180;
+	                    if (newDir < 0) {
+	                        newDir = 360 + newVal;
+	                    }
+	                    windDirPoint.update(newDir);   
+	                }   
+                    
+                    // change yAxis title
+                    if (typeof (waypointData.windSpeedBeaufort) != "undefined") {
+                    	$('#windCompassTitle').html(waypointData.windSpeedBeaufort.toFixed(2));
+                    } else {
+                    	$('#windCompassTitle').html('');
+                    }                      
+                   
                     window.windCompassChart.redraw();
                 }
 
  				if (typeof (window.waveCompassChart) != "undefined") {
-                    //TODO fill
+                    // change point     
+                    if (typeof (waypointData.wavesDirection) != "undefined") {           	
+	                    var waveDirPoint = window.waveCompassChart.series[0].points[0];                    
+	                    var newWaveDir = waypointData.wavesDirection - 180;
+	                    if (newWaveDir < 0) {
+	                        newWaveDir = 360 + newWaveDir;
+	                    }
+	                    waveDirPoint.update(newWaveDir);
+					}
+					
+                    // change yAxis title
+                    if (typeof (waypointData.waveHeight) != "undefined") {
+                    	$('#waveCompassTitle').html(waypointData.waveHeight.toFixed(2));
+                    } else {
+                    	$('#waveCompassTitle').html('');
+                    }       
                     window.waveCompassChart.redraw();
                 }
 
                 if (typeof (window.airPressureChart) != "undefined") {
-                    //TODO fill
+                    // change point                	
+                    var airPressPoint = window.airPressureChart.series[0].points[0];                    
+                    var newPressure = parseFloat(waypointData.atmosPressure);
+                    airPressPoint.update(newPressure);
+                    
                     window.airPressureChart.redraw();
                 }
 
                 if (typeof (window.cloudsChart) != "undefined") {
-                    //TODO fill
+                    // change point                	
+                    var cloudPoint = window.cloudsChart.series[0].points[0];                    
+                    var newCloud = parseFloat(waypointData.cloudage);
+                    cloudPoint.update(newCloud);
+                    
                     window.cloudsChart.redraw();
                 }
 
                 if (typeof (window.temperatureChart) != "undefined") {
-                    //TODO fill
+                	// change point                	
+                    var tempPoint = window.temperatureChart.series[0].points[0];                    
+                    var newTemp = parseFloat(waypointData.tempCelsius);
+                    tempPoint.update(newTemp);
+                   
                     window.temperatureChart.redraw();
                 }
 
@@ -554,6 +588,9 @@
             }
         }
 
+        /**
+        * Inits the charts which show the overview charts of the whole trip.
+        */
         function initialiseDistributionCharts(tripData){
             // load speed table
             if ( $.trim ( $ ( '#details_charts_distribution' ).html ( ) ) == '' && ($('#details_info' ).css('display') == 'block') ) {
@@ -613,6 +650,7 @@
             window.setTimeout(function () { $.waypoints('refresh'); }, 750);
         }
 
+        // callback of waypoint.js (invoked when the user scrolls to a logbook entry or trip header)
         function scrollToWaypoint(waypoint) {
             $('.logbookEntry').waypoint('disable');
             var offset = $(waypoint).offset().top - parseInt($('#menu_bar').css('height'));
@@ -630,6 +668,7 @@
             }, 'slow');
         }
 
+        // click handler for the markers on the map
         function clicked_on_marker(marker) {
             var lat = marker.getPosition().lat();
             var lng = marker.getPosition().lng();
@@ -641,7 +680,6 @@
 
         function getWaypointFromPosition(lat, lng) {
             var waypoint;
-            //console.log("lat: "+lat+" lng: "+lng);
 
             //hotfix: the longitude differs for some strange reasons... only after the 9th digit.
             //(object received with getTripData have different longitudes as objects received with getTripWaypoints?!)
@@ -678,7 +716,9 @@
                     plotBorderWidth: 0,
                     plotShadow: false
                 },
-
+				credits: {
+                	enabled: false
+                },
                 title: {
                     text: '',
                     style: {
@@ -780,9 +820,6 @@
                 }]
 
             });
-
-            // remove highcart logo
-            removeHighChartLogo();
         }
 
 
@@ -803,6 +840,10 @@
                     plotBackgroundImage: null,
                     plotBorderWidth: 0,
                     plotShadow: false
+                },
+                
+                credits: {
+                	enabled: false
                 },
 
                 exporting: {
@@ -961,9 +1002,6 @@
                 }]	
 
             });
-
-            // remove highcart logo
-            removeHighChartLogo();
         };
         
         /**
@@ -984,7 +1022,9 @@
                     plotBorderWidth: 0,
                     plotShadow: false
                 },
-
+				credits: {
+                	enabled: false
+                },
                 exporting: {
                     enabled: false
                 },
@@ -1058,6 +1098,14 @@
                     tickPosition: 'inside',
                     tickLength: 8,
                     tickColor: '#fff',
+                    title: {
+                    	useHTML: true,
+                    	style: {
+                            color: '#fff',
+                        },
+                        y: +10,
+                    	text: '<div id="windCompassTitle"> test </div>'
+                    },
                     labels: {
                         style: {
                             color: '#fff',
@@ -1141,9 +1189,6 @@
                 }]	
 
             });
-
-            // remove highcart logo
-            removeHighChartLogo();
         };
         
         /**
@@ -1164,7 +1209,11 @@
                     plotBorderWidth: 0,
                     plotShadow: false
                 },
-
+                
+                credits: {
+                	enabled: false
+                },
+                
                 exporting: {
                     enabled: false
                 },
@@ -1238,6 +1287,14 @@
                     tickPosition: 'inside',
                     tickLength: 8,
                     tickColor: '#fff',
+                    title: {
+                    	useHTML: true,
+                    	style: {
+                            color: '#fff',
+                        },
+                        y: +10,	
+                    	text: '<div id="waveCompassTitle"> test </div>'                    	
+                    },
                     labels: {
                         style: {
                             color: '#fff',
@@ -1321,9 +1378,6 @@
                 }]	
 
             });
-
-            // remove highcart logo
-            removeHighChartLogo();
         };
 
         /**
@@ -1344,7 +1398,11 @@
 		            plotBorderWidth: 0,
 		            plotShadow: false
 			    },
-		        
+			    
+		        credits: {
+                	enabled: false
+                },
+                
 		        exporting: {
 		            enabled: false
 		        },
@@ -1398,7 +1456,8 @@
 		                style: {
 		                    fontSize: '9px'
 		                },
-			        	text: 'Beaufort'
+			        	text: 'Beaufort',
+			        	useHTML: true
 			        },
 			        labels: {
 		                style: {
@@ -1415,9 +1474,6 @@
 			            data: data //[0.0, 6.9, 0, 10, 0, 6.5, 3, 7.5, 8.3, 0, 3.9, 4.6, 0, 0, 0, 0]
 			    }]
 			});
-
-            // remove highcart logo
-            removeHighChartLogo();
         }
         
              /**
@@ -1438,7 +1494,9 @@
 			            plotBorderWidth: 0,
 			            plotShadow: false
 				    },
-			        
+			        credits: {
+                		enabled: false
+                	},
 			        exporting: {
 			            enabled: false
 			        },
@@ -1509,9 +1567,6 @@
 			            data: data //[7.0, 6.9, 9.5, 0, 0, 1.5, 0, 7.5, 8.3, 2.3, 1.9, 1.6, 0, 1, 4, 5]
 			        }]
 	    		});
-
-            // remove highcart logo
-            removeHighChartLogo();
         }
         
         /**
@@ -1531,6 +1586,9 @@
                     plotBorderWidth: 0,
                     plotShadow: false
 			    },
+			    credits: {
+                	enabled: false
+                },
 			    pane: {
 			    	startAngle: -150,
 			    	endAngle: 150,
@@ -1582,10 +1640,7 @@
 		                rearLength: "0%"
 					}
 		         }]
-        	});
-
-            // remove highcart logo
-            removeHighChartLogo();
+       		});
         };
 
         /**
@@ -1605,6 +1660,9 @@
                     plotBorderWidth: 0,
                     plotShadow: false
 			    },
+			    credits: {
+                	enabled: false
+                },
 				pane: {
 		            startAngle: -150,
 		            endAngle: 150,
@@ -1646,9 +1704,6 @@
 		            }
 		        }]
         	});
-
-            // remove highcart logo
-           removeHighChartLogo();
         };
 
 		/**
@@ -1668,6 +1723,9 @@
                     plotBorderWidth: 0,
                     plotShadow: false
 			    },
+			    credits: {
+                	enabled: false
+                },
 		    	pane: {
 			    	startAngle: -150,
 			    	endAngle: 150,
@@ -1721,8 +1779,6 @@
 					}
 		         }]
         	});
-
-            removeHighChartLogo();
         };
 
 
@@ -1734,6 +1790,9 @@
                     plotBackgroundImage: null,
                     plotBorderWidth: 0,
                     plotShadow: false
+                },
+                credits: {
+                	enabled: false
                 },
                 exporting: {
                     enabled: false
@@ -1776,8 +1835,6 @@
                     data: data_y
                 }]
             });
-            
-            removeHighChartLogo();
         }
 
         function initAirPressureCloudingTemperatureChart(container, data_x, air_pressure_data_y, cloudage_data_y, temperature_data_y, waypoint_ids) {
@@ -1787,6 +1844,9 @@
                     plotBackgroundImage: null,
                     plotBorderWidth: 0,
                     plotShadow: false
+                },
+                credits: {
+                	enabled: false
                 },
                 exporting: {
                     enabled: false
@@ -1866,28 +1926,6 @@
                     }
                 ]
             });
-
-            removeHighChartLogo();
-        }
-
-        /*
-         * remove initial highchart logo by using an Index for each chart
-         */
-        function removeHighChartLogo() {
-        	//TODO index has changed
-        	if (typeof (window.chartIndex) == "undefined") {
-                window.chartIndex = 0;
-            } else if (window.chartIndex < 4) {
-            	window.chartIndex += 4;
-            } else if (window.chartIndex < 14) {
-                window.chartIndex += 5;
-            } else if (window.chartIndex < 26) {
-             	window.chartIndex += 3;
-            } else {
-            	window.chartIndex += 2;
-            }
-                        
-            $('#highcharts-' + window.chartIndex + ' svg text').last().remove();
         }
         
         /**
