@@ -203,6 +203,12 @@ and (max-width : 1224px) {
 }
 
 #chart_small {
-    width: 650;
-    height: 200;
+    width: 850;
+    height: 460;
+}
+
+.ui-widget-header {
+  /* ??? Farbe von jQuery-ui überschreiben bei weather forecast*/
+  background: auto !important;
+    background-color: #026899 !important;
 }

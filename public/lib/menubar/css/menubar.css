@@ -261,6 +261,13 @@ input.menubar-search:focus {
         height: 60px;
 }
 
+/* spezify logbook menu*/
+.menu-logbook::before {
+        content:"";
+        margin-right:20px;
+        margin:0px 0px 0px 20px;
+}
+
 /* spezify what comes before the icons of the menu */
 .menubar-icon::before {
         display: inline-block;

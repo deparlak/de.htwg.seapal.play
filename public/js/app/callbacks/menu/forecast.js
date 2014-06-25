@@ -9,8 +9,8 @@ $(function() {
 			effect: "explode",
 			duration: 1000
 		},
-		height: 260,
-		width: 700,
+		height: 460,
+		width: 850,
 	});
 });
 
@@ -63,11 +63,11 @@ function showHourlyForecastChart() {
 		time.push( new Date( forecast[i].dt * 1000 + time_zone) );
 		wind.push(forecast[i].wind.speed);
 	}
-    alert(wind);
+
 	$('#chart_small').highcharts({
         chart: {
-            width: 650,
-            height: 200,
+            width: 800,
+            height: 400,
             zoomType: 'xy'
         },
         credits: {
@@ -75,6 +75,9 @@ function showHourlyForecastChart() {
         },
         title: {
             text: city
+        },
+        subtitle: {
+            text: 'Open Weather Maps'
         },
         xAxis: [{
             categories: time,
@@ -137,10 +140,11 @@ function showHourlyForecastChart() {
         },
         legend: {
             layout: 'vertical',
+            margin: 20,
             align: 'left',
-            x: 50,
+            x: 0,
             verticalAlign: 'top',
-            y: -15,
+            y: -18,
             floating: true,
             backgroundColor: (Highcharts.theme && Highcharts.theme.legendBackgroundColor) || '#FFFFFF'
         },
