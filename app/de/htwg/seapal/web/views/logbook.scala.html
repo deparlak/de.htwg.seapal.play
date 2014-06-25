@@ -27,9 +27,12 @@
                     window.location.href = '@de.htwg.seapal.web.controllers.routes.Application.forbiddenContent()';
                 }
 
+                var expandImage = '@routes.Assets.at("images/logbook/expand-icon.png")';
+                var contractImage = '@routes.Assets.at("images/logbook/contract-icon.png")';
+
                 var initialTripId = '@Model.getInitialTripId()';
                 var boatId = '@Model.getBoatId()';
-                initialiseLogbook(initialTripId, boatId);
+                initialiseLogbook(initialTripId, boatId, expandImage, contractImage);
             });
         </script>
     </body>
