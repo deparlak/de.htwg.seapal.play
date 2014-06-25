@@ -535,12 +535,12 @@ function onScrolledToWaypoint(node) {
         }
 
         if (typeof (window.waveCompassChart) != "undefined") {
-        	hideShowOneChartById('wave_compass', waypointData.wavesDirection, waypointData.waveHeight);
+        	hideShowOneChartById('wave_compass', waypointData.windDirection, waypointData.wavesHeight);
         	
             // change point
-            if (typeof (waypointData.wavesDirection) != "undefined") {
+            if (typeof (waypointData.windDirection) != "undefined") {
                 var waveDirPoint = window.waveCompassChart.series[0].points[0];
-                var newWaveDir = waypointData.wavesDirection - 180;
+                var newWaveDir = waypointData.windDirection - 180;
                 if (newWaveDir < 0) {
                     newWaveDir = 360 + newWaveDir;
                 }
@@ -548,8 +548,8 @@ function onScrolledToWaypoint(node) {
             }
 
             // change yAxis title
-            if (typeof (waypointData.waveHeight) != "undefined") {
-                $('#waveCompassTitle').html(waypointData.waveHeight.toFixed(2));
+            if (typeof (waypointData.wavesHeight) != "undefined") {
+                $('#waveCompassTitle').html(waypointData.wavesHeight.toFixed(2));
             } else {
                 $('#waveCompassTitle').html('');
             }
