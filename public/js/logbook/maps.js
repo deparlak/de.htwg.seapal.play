@@ -14,18 +14,18 @@ function initialize_waypoints(map_waypoints) {
     map.fitBounds(bounds);
 
     //drawing waypoints
-    var marker_image = {
-        url: '/assets/images/ann_route.png',
-        size: new google.maps.Size(36, 36),
-        origin: new google.maps.Point(0,0),
-        anchor: new google.maps.Point(6, 34)
+    var circle = {
+        path: google.maps.SymbolPath.CIRCLE,
+        scale: 4,
+        strokeColor: '#17bb00',
+        strokeWeight:5
     };
 
     for (i = 0; i < map_waypoints.length; ++i) {
         //console.log(map_waypoints[i]);
         var marker = new google.maps.Marker({
             position: map_waypoints[i],
-            icon: marker_image
+            icon: circle
         });
         markers.push(marker);
         marker.setMap(map);
@@ -34,7 +34,7 @@ function initialize_waypoints(map_waypoints) {
     //connecting waypoints
     mark_connections = new google.maps.Polyline({
         path: map_waypoints,
-        strokeColor: '#FF0000'
+        strokeColor: '#17bb00'
     });
 
     mark_connections.setMap(map);
