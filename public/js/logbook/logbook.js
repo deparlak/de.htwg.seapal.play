@@ -148,6 +148,13 @@ function initialiseLogbook(initialTripId, boatId){
     // hide side panels if mouse leaves them
     $('#entries_col').mouseenter(function () { $('#details_col, #timeline_col').removeClass('forceOpen'); })
     $('#entries_col').click(function () { $('#details_col, #timeline_col').removeClass('forceOpen'); })
+    
+    // click handler for edit-icon of waypoints
+    $('#entries').on('click', '.waypointEditButton', function () {
+        var dbObject = $(this).parent('.logbookEntry').data('waypointData');  // waypoint instance from DB
+        //$('#waypointEditorPopup .modal-content').html(waypointEditorTemplate(dbObject));
+        $('#waypointEditorPopup').modal();
+    });
 };
 
 /**

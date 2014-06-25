@@ -14,6 +14,15 @@
     <a href="#" id="btnLoadNextTrip" class="NextPrevTripButton" style="margin-top: 5em; background-image: url(@routes.Assets.at("images/logbook/nexttrip.png"))"><span class="btnTitle">Load Next Trip</span><br /><span id="nextTripName"><!-- AJAX content --></span></a>
 </div>
 
+
+<div id="waypointEditorPopup" class="modal fade">
+	<div class="modal-dialog">
+		<div class="modal-content">
+		Trullala
+		</div>
+	</div>
+</div>
+
 <script type="x/handlebars-template" id="tripTemplate">
     <div class="tripContainer" id="trip_{{_id}}">
         <div class="tripHeader" id="trip_header_{{_id}}">
@@ -45,8 +54,9 @@
     </div>
 </script>
 
-    <script type="x/handlebars-template" id="waypointTemplate">
+<script type="x/handlebars-template" id="waypointTemplate">
         <div class="logbookEntry {{#if note}}hasNote{{/if}} {{#if image_thumb}}hasImage{{/if}}" id="waypoint_{{_id}}">
+            <div style="float: right"><img class="waypointEditButton" src="@routes.Assets.at("images/logbook/pen.png")" alt="Edit" style="width: 16px; height: auto"/></div>
             <b>{{name}}</b><br />
 
             {{#if image_thumb}}
@@ -58,19 +68,22 @@
             <span>{{note}}</span>
             <br style="clear: both" />
         </div>
-    </script>
+</script>
 
-    <script type="x/handlebars-template" id="ajaxLoaderTemplate">
+<!--  Waypoint Editor Template -->
+@appContent.inputForms.inputFormItemsWaypoint()
+
+<script type="x/handlebars-template" id="ajaxLoaderTemplate">
         <div id="{{loaderId}}" class="ajaxLoader" style="text-align: center; margin: 2em">
             <br style="clear: both" />
             <img src="@routes.Assets.at("images/logbook/ajax-loader.gif")" />
             <br style="clear: both" />
         </div>
-    </script>
+</script>
 
-    <script type="x/handlebars-template" id="loadMoreEntriesTemplate">
+<script type="x/handlebars-template" id="loadMoreEntriesTemplate">
         <div class="loadMoreSection" data-tripid="{{tripId}}" style="text-align: center">
             <a data-tripid="{{tripId}}" href="#" class="btn btn-primary btnLoadMoreEntries">Load more...</a>
         </div>
-    </script>
+</script>
 
