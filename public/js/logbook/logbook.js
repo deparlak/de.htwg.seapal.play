@@ -9,6 +9,7 @@ var entryDetailsTemplate;
 var timelineTripTemplate;
 var timelineWaypointTemplate;
 var timelineTripHeaderTemplate;
+var waypointEditorTemplate;
 
 var dateFormatShort = "YYYY-MM-DD";
 var timeFormat = "h:mm:ss a";
@@ -43,8 +44,9 @@ function initialiseLogbook(initialTripId, boatId){
     entryDetailsTemplate = Handlebars.compile($('#entryDetailsTemplate').html());
     timelineTripTemplate = Handlebars.compile($('#timelineTripTemplate').html());
     timelineWaypointTemplate = Handlebars.compile($('#timelineWaypointTemplate').html());
-    timelineTripHeaderTemplate = Handlebars.compile($('#timelineTripHeaderTemplate' ).html());
-
+    timelineTripHeaderTemplate = Handlebars.compile($('#timelineTripHeaderTemplate').html());
+    waypointEditorTemplate = Handlebars.compile($('#waypointEditorTemplate').html());
+    	
     // load the initial trip
     changeTripTo(initialTripId);
 
@@ -150,9 +152,9 @@ function initialiseLogbook(initialTripId, boatId){
     $('#entries_col').click(function () { $('#details_col, #timeline_col').removeClass('forceOpen'); })
     
     // click handler for edit-icon of waypoints
-    $('#entries').on('click', '.waypointEditButton', function () {
-        var dbObject = $(this).parent('.logbookEntry').data('waypointData');  // waypoint instance from DB
-        //$('#waypointEditorPopup .modal-content').html(waypointEditorTemplate(dbObject));
+    $('#entries').on('click', '.waypointEditButton', function (element) {
+        var dbObject = $(this).closest('.logbookEntry').data('waypointData');  // waypoint instance from DB
+        $('#waypointEditorPopup .modal-content').html(waypointEditorTemplate(dbObject));
         $('#waypointEditorPopup').modal();
     });
 };

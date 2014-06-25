@@ -56,7 +56,7 @@
 
 <script type="x/handlebars-template" id="waypointTemplate">
         <div class="logbookEntry {{#if note}}hasNote{{/if}} {{#if image_thumb}}hasImage{{/if}}" id="waypoint_{{_id}}">
-            <div style="float: right"><img class="waypointEditButton" src="@routes.Assets.at("images/logbook/pen.png")" alt="Edit" style="width: 16px; height: auto"/></div>
+            <div style="float: right"><img class="waypointEditButton" src="@routes.Assets.at("images/logbook/pen.png")" alt="Edit" /></div>
             <b>{{name}}</b><br />
 
             {{#if image_thumb}}
