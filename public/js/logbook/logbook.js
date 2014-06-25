@@ -205,8 +205,6 @@ function onReceivedTrip(tripId, tripData) {
     trip_header.data("tripData", tripData);  // store the DB object in this DOM element
 
     // lookup previous and next trip
-    // add handler for click on a waypoint marker in the map (scroll to waypoint position in entries view)
-    setMarkerClickFunction(clicked_on_marker);
     logbook.getTripsOfBoat(boatId, tripData.startDate, 1, 1, 'true', onReceivedPreviousTrip);  // previous
     logbook.getTripsOfBoat(boatId, tripData.startDate, 1, 1, 'false', onReceivedNextTrip);  // next
 
@@ -318,6 +316,9 @@ function onReceivedWaypoints(tripId, waypoints) {
     });
 
     initialize_waypoints(map_waypoints);
+
+    // add handler for click on a waypoint marker in the map (scroll to waypoint position in entries view)
+    setMarkerClickFunction(clicked_on_marker);
 
     // click handler for the waypoints
     $('.logbookEntry').click(function (e) {
@@ -655,6 +656,9 @@ function clicked_on_marker(marker) {
     }
 }
 
+/**
+ * This method returns a waypoint depending on the lat lng
+ */
 function getWaypointFromPosition(lat, lng) {
     var waypoint;
 
@@ -708,7 +712,7 @@ function hideCharts() {
     $('#details_weather_charts').css("display", "none");
 }
 
-// returns wether the elemente is in the viewport or not
+// returns true if the element is in the viewport or not
 $.fn.isOnScreen = function(){
     var win = $(window);
 
