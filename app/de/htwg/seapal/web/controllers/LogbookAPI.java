@@ -47,6 +47,9 @@ public class LogbookAPI extends Controller {
 		return ok(logbook.render(new Logbook(tripId.toString(), boatId.toString())));
 	}
 
+	/**
+	 * Returns a sailing trip.
+	 */
 	@play.mvc.Security.Authenticated(AccountAPI.SecuredAPI.class)
 	public Result getTripById(UUID tripId) {
 		String userId = session(IAccountController.AUTHN_COOKIE_KEY);
