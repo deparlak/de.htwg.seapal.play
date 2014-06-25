@@ -476,7 +476,18 @@
                 }
 
                 if (typeof (window.windCompassChart) != "undefined") {
-                    //TODO fill
+                	
+                	// change point                	
+                    var windDirPoint = window.windCompassChart.series[0].points[0];                    
+                    var newVal = waypointData.windDirection - 180;
+                    if (newVal < 0) {
+                        newVal = 360 + newVal;
+                    }
+                    windDirPoint.update(newVal);      
+                    
+                    // change dial length
+                    var windSpeedDial = window.windCompassChart.options.series[0].dial; 
+                    windSpeedDial.baseLength = waypointData.windSpeedBeaufort * 10;  
                     window.windCompassChart.redraw();
                 }
 
