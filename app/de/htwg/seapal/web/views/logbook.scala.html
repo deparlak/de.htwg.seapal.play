@@ -235,19 +235,10 @@
             trip_header.data("tripData", tripData);  // store the DB object in this DOM element
 
             // lookup previous and next trip
-            logbook.getTripsOfBoat(boatId, tripData.startDate, 1, 1, 'true', onReceivedPreviousTrip);  // previous
-            logbook.getTripsOfBoat(boatId, tripData.startDate, 1, 1, 'false', onReceivedNextTrip);  // next
-
-            // show complete route on maps:  convert tripData.marks in array with lat lon objects
-            var map_waypoints = [];
-            for (i = 0; i < tripData.marks.length; i = i + 2) {
-                map_waypoints[i / 2] = new google.maps.LatLng(tripData.marks[i], tripData.marks[i + 1]);
-            }
-
-            // ???
-            initialize_waypoints(map_waypoints);
             // add handler for click on a waypoint marker in the map (scroll to waypoint position in entries view)
             setMarkerClickFunction(clicked_on_marker);
+            logbook.getTripsOfBoat(boatId, tripData.startDate, 1, 1, 'true', onReceivedPreviousTrip);  // previous
+            logbook.getTripsOfBoat(boatId, tripData.startDate, 1, 1, 'false', onReceivedNextTrip);  // next
 
             // get the waypoints of this trip
             loadMoreEntries(tripId, 0);  // 0 = all waypoints
@@ -319,6 +310,8 @@
             tripData.formattedDate = moment(new Date(tripData.startDate)).format(dateFormatShort);
             timelineTripContainer.append(timelineTripHeaderTemplate(tripData));
 
+            var map_waypoints = [];
+
             //console.log(waypoints);
             // iterate all received waypoints and append the template to the container of the trip & the timelime
             $.each(waypoints, function (index, waypointData) {
@@ -348,7 +341,11 @@
 
                 compassOrderdInsert(wind_data_map, degree_step, waypointData.windDirection, waypointData.windSpeedBeaufort);
                 compassOrderdInsert(wave_data_map, degree_step, waypointData.windDirection, waypointData.wavesHeight);
+
+                map_waypoints[index] = new google.maps.LatLng(waypointData.lat, waypointData.lng);
             });
+
+            initialize_waypoints(map_waypoints);
 
             $('.logbookEntry').click(function (e) {
                 if ($(e.target).is('img')) {
