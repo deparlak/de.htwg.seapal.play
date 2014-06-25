@@ -1,5 +1,5 @@
 <!-- Waypoint template -->
-<script type="text/x-handlebars" id="waypoint_Template">
+<script type="text/x-handlebars" id="waypointEditorTemplate">
     <div class="row">
         <div class="col-12 col-sm-1">
             <label for="waypoint_titel">Titel</label>
@@ -112,7 +112,7 @@
                             <input type="text" name="waypoint_temp" tabindex="4" {{bindData "tempCelsius"}} value="{{tempCelsius}}" />
                         </div>
                         <div class="col-12 col-sm-2" >
-                            <label for="waypoint_temp_unit">°C</label>
+                            <label for="waypoint_temp_unit">&deg;C</label>
                         </div>
                     </div>
                     <div class="row">
@@ -145,7 +145,7 @@
                             <input type="text" name="waypoint_wind_deg" tabindex="7" {{bindData "windDirection"}} value="{{windDirection}}" />
                         </div>
                         <div class="col-12 col-sm-2" >
-                            <label for="waypoint_wind_deg_unit">°</label>
+                            <label for="waypoint_wind_deg_unit">&deg;</label>
                         </div>
                     </div>
                 </div>
