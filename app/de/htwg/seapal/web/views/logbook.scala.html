@@ -131,12 +131,6 @@
 
             $('#details').dragscrollable({ dragSelector: '.dragscrollarea', acceptPropagatedEvent: true });
             $('#timeline').dragscrollable();
-            
-
-            //navbar
-            //menu_hover();
-            //var lis = $('.nav > li');
-            //menu_focus(lis[2], 3);
 
             //hotfix: hrefs didn't work anymore (click returns false anywere?!)
             $('.navbar .nav a').click(function (event) {
@@ -146,7 +140,6 @@
                 return true;
             });
 
-            //$('#btnApplyFilter').click(function () { window.setTimeout(applyEntryFilters, 500) });
             map = new google.maps.Map(document.getElementById('map_canvas'));
 
             // click handlers for entry filter buttons
@@ -245,6 +238,7 @@
         }
 
         // callbacks from getTripsOfBoat, receives a subset of the properties of the previous/next trip
+        // enables or disables the "Load previous Trip" button depending on whether the currently loaded trip has a predecessor or not.
         function onReceivedPreviousTrip(trips) {
             if (trips.length > 0) {
                 $('#prevTripName').html(trips[0].name);
@@ -258,6 +252,8 @@
             }
         }
 
+        // callbacks from getTripsOfBoat, enables or disables the "Load next Trip" button
+        // depending on whether the currently loaded trip has a successor or not.
         function onReceivedNextTrip(trips) {
             if (trips.length > 0) {
                 $('#nextTripName').html(trips[0].name);
@@ -330,7 +326,6 @@
                 initWaypoint(entryNode, onScrolledToWaypoint, last_entry_node);
 
                 last_entry_node = entryNode;
-                //console.log(waypointData);
                 index_data_x.push(index + 1);
                 speed_data_y.push(parseFloat(waypointData.sog));
                 air_pressure_data_y.push(parseFloat(waypointData.atmosPressure));
@@ -347,6 +342,7 @@
 
             initialize_waypoints(map_waypoints);
 
+            // click handler for the waypoints
             $('.logbookEntry').click(function (e) {
                 if ($(e.target).is('img')) {
                     e.preventDefault();
@@ -398,7 +394,7 @@
                 map[ key ] = value ;
             }
         }
-
+        
         // pushes all values of a map into an array
         function mapToArray(map, array){
             for (var key in map) {
@@ -437,9 +433,6 @@
             	
             	waypointData.latRounded = coordHelper.getLatAsString(waypointData.lat);
             	waypointData.lngRounded = coordHelper.getLngAsString(waypointData.lng);
-            	
-               // waypointData.latRounded = ('' + waypointData.lat).substr(0, 7);
-               // waypointData.lngRounded = ('' + waypointData.lng).substr(0, 7);
             }
             $('#details_text').html(entryDetailsTemplate(waypointData));
 
@@ -480,7 +473,18 @@
                 }
 
                 if (typeof (window.windCompassChart) != "undefined") {
-                    //TODO fill
+                	
+                	// change point                	
+                    var windDirPoint = window.windCompassChart.series[0].points[0];                    
+                    var newVal = waypointData.windDirection - 180;
+                    if (newVal < 0) {
+                        newVal = 360 + newVal;
+                    }
+                    windDirPoint.update(newVal);      
+                    
+                    // change dial length
+                    var windSpeedDial = window.windCompassChart.options.series[0].dial; 
+                    windSpeedDial.baseLength = waypointData.windSpeedBeaufort * 10;  
                     window.windCompassChart.redraw();
                 }
 
@@ -551,6 +555,9 @@
             }
         }
 
+        /**
+        * Inits the charts which show the overview charts of the whole trip.
+        */
         function initialiseDistributionCharts(tripData){
             // load speed table
             if ( $.trim ( $ ( '#details_charts_distribution' ).html ( ) ) == '' && ($('#details_info' ).css('display') == 'block') ) {
@@ -610,6 +617,7 @@
             window.setTimeout(function () { $.waypoints('refresh'); }, 750);
         }
 
+        // callback of waypoint.js (invoked when the user scrolls to a logbook entry or trip header)
         function scrollToWaypoint(waypoint) {
             $('.logbookEntry').waypoint('disable');
             var offset = $(waypoint).offset().top - parseInt($('#menu_bar').css('height'));
@@ -627,6 +635,7 @@
             }, 'slow');
         }
 
+        // click handler for the markers on the map
         function clicked_on_marker(marker) {
             var lat = marker.getPosition().lat();
             var lng = marker.getPosition().lng();
@@ -638,7 +647,6 @@
 
         function getWaypointFromPosition(lat, lng) {
             var waypoint;
-            //console.log("lat: "+lat+" lng: "+lng);
 
             //hotfix: the longitude differs for some strange reasons... only after the 9th digit.
             //(object received with getTripData have different longitudes as objects received with getTripWaypoints?!)
