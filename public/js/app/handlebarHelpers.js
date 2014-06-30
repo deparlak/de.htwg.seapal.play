@@ -59,7 +59,8 @@ $(document).ready(function() {
 
     Handlebars.registerHelper('dateToString', function(date) {
         var tmp = new Date(date);
-        return tmp.toLocaleDateString("de-DE");
+        //return tmp.toLocaleDateString("de-DE");
+        return moment(tmp).format(dateFormat + " " + timeFormat);
     });
 
     Handlebars.registerHelper('timeDateToString', function(date) {
@@ -70,6 +71,7 @@ $(document).ready(function() {
     });
 
     function stringToDate(string) {
-        return new Date(string.substring(6,10), string.substring(3,5) -1, string.substring(0,2)).getTime();
+    	return moment(string, dateFormat + " " + timeFormat).toDate();
+        //return new Date(string.substring(6,10), string.substring(3,5) -1, string.substring(0,2)).getTime();
     }
 });

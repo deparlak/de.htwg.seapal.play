@@ -12,7 +12,7 @@ var tripEditorTemplate;
 
 var map;
 
-var dateFormatShort = "YYYY-MM-DD";
+var dateFormat = "YYYY-MM-DD";
 var timeFormat = "h:mm:ss a";
 
 var isLoadingWaypoints = false;
@@ -272,7 +272,7 @@ function onReceivedAllTrips(trips) {
     // Populate the inital timeline
     var timelineContainer = $('.timeline_header');
     $.each(trips, function (index, tripData) {
-        tripData.startDate = moment(new Date(tripData.startDate)).format(dateFormatShort);
+        tripData.startDate = moment(new Date(tripData.startDate)).format(dateFormat);
         timelineContainer.append(timelineTripTemplate(tripData));
     });
 }
@@ -285,8 +285,8 @@ function onReceivedAllTrips(trips) {
  */
 function onReceivedTrip(tripId, tripData) {
     // prepare formatted datetime strings (required in handlebars templates)
-    tripData.formattedStartDate = moment(new Date(tripData.startDate)).format(dateFormatShort + " " + timeFormat);
-    tripData.formattedEndDate = moment(new Date(tripData.endDate)).format(dateFormatShort + " " + timeFormat);
+    tripData.formattedStartDate = moment(new Date(tripData.startDate)).format(dateFormat + " " + timeFormat);
+    tripData.formattedEndDate = moment(new Date(tripData.endDate)).format(dateFormat + " " + timeFormat);
 
     // hide the loading animations
     $('#tripLoader').remove();
@@ -343,7 +343,7 @@ function onReceivedWaypoints(tripId, waypoints) {
     // hide ajax loader in this trip container
     $('#entryLoader' + tripId).remove();
 
-    tripData.formattedDate = moment(new Date(tripData.startDate)).format(dateFormatShort);
+    tripData.formattedDate = moment(new Date(tripData.startDate)).format(dateFormat);
     timelineTripContainer.append(timelineTripHeaderTemplate(tripData));
 
     var map_waypoints = [];
@@ -351,7 +351,7 @@ function onReceivedWaypoints(tripId, waypoints) {
     // iterate all received waypoints and append the template to the container of the trip & the timelime
     $.each(waypoints, function (index, waypointData) {
         // unix timestamp -> formatted time
-        waypointData.formattedDate = moment(new Date(waypointData.date)).format(dateFormatShort);
+        waypointData.formattedDate = moment(new Date(waypointData.date)).format(dateFormat);
         waypointData.formattedTime = moment(new Date(waypointData.date)).format(timeFormat);
         minTemp = (waypointData.tempCelsius < minTemp) ? waypointData.tempCelsius : minTemp;
         maxTemp = (waypointData.tempCelsius > maxTemp) ? waypointData.tempCelsius : maxTemp;
