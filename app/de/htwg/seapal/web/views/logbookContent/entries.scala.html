@@ -56,7 +56,6 @@
 
 <script type="x/handlebars-template" id="waypointTemplate">
         <div class="logbookEntry {{#if note}}hasNote{{/if}} {{#if image_thumb}}hasImage{{/if}}" id="waypoint_{{_id}}">
-            <div style="float: right"><img class="waypointEditButton" src="@routes.Assets.at("images/logbook/pen.png")" alt="Edit" /></div>
             <b>{{name}}</b><br />
 
             {{#if image_thumb}}
@@ -66,12 +65,13 @@
             {{/if}}
 
             <span>{{note}}</span>
+<div style="float: right"><img class="waypointEditButton" src="@routes.Assets.at("images/logbook/pen.png")" alt="Edit" /></div>
             <br style="clear: both" />
         </div>
 </script>
 
 <!--  Waypoint Editor Template -->
-@appContent.inputForms.inputFormItemsWaypoint()
+@appContent.inputForms.form_waypointeditor()
 
 <script type="x/handlebars-template" id="ajaxLoaderTemplate">
         <div id="{{loaderId}}" class="ajaxLoader" style="text-align: center; margin: 2em">

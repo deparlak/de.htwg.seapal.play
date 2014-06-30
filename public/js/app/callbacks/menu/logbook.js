@@ -228,7 +228,7 @@ $(document).ready(function() {
         } else {
             tmpWaypoint.image = "/assets/images/no_image.png";
         }
-        var template = Handlebars.compile($('#waypointEditorTemplate').text());
+        var template = Handlebars.compile($('#waypointEditorTemplate').html());
         var html = template(tmpWaypoint);
 
         $('#waypointInputForm').html(html);
