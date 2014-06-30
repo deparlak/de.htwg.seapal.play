@@ -372,13 +372,7 @@ function onReceivedWaypoints(tripId, waypoints) {
     setMarkerClickFunction(clicked_on_marker);
 
     // click handler for the waypoints
-    $('.logbookEntry').click(function (e) {
-        if ($(e.target).is('img')) {
-            e.preventDefault();
-            return;
-        }
-        scrollToWaypoint($(this));
-    });
+    $('.logbookEntry').click(onClickedOnWaypoint);
 
     // set trip weather stats if available
     if (minTemp != 1000) {
@@ -603,6 +597,17 @@ function onScrolledToWaypoint(node) {
 }
 
 /**
+ * Click handler for waypoint entries.
+ */
+function onClickedOnWaypoint(e) {
+    if ($(e.target).is('img')) {
+        e.preventDefault();
+        return;
+    }
+    scrollToWaypoint($(this));
+}
+
+/**
  * Gets called if the trip header is active
  * @param node - tripHeader entry
  */
@@ -788,6 +793,7 @@ function postModifiedWaypoint(e) {
             $('#waypoint_' + baseWaypoint._id).replaceWith(waypointTemplate(boundWaypoint));
             entryNode = $('#waypoint_' + baseWaypoint._id);
             entryNode.data('waypointData', boundWaypoint);
+            entryNode.click(onClickedOnWaypoint);
             initWaypoint(entryNode, onScrolledToWaypoint, last_entry_node);
             window.setTimeout(function () { $.waypoints('refresh'); }, 200);
 
