@@ -709,7 +709,7 @@ function applyEntryFilters() {
  */
 function scrollToWaypoint(waypoint) {
     $('.logbookEntry').waypoint('disable');
-    var offset = $(waypoint).offset().top - parseInt($('#menu_bar').css('height'));
+    var offset = $(waypoint).offset().top - parseInt($('#menu_bar').css('height')) -1;
     $('html, body').animate({
         scrollTop: offset
     }, {
