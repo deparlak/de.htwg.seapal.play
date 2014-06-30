@@ -156,8 +156,16 @@ function initialiseLogbook(initialTripId, boatId, expandImageURL, contractImageU
     // click handler for edit-icon of waypoints
     $('#entries').on('click', '.waypointEditButton', function (element) {
         var dbObject = $(this).closest('.logbookEntry').data('waypointData');  // waypoint instance from DB
-        $('#waypointEditorPopup .modal-content').html(waypointEditorTemplate(dbObject));
+        
+        if(dbObject.image_thumb != null) {                       
+        	dbObject.image = "api/photo/"+tmpWaypoint._id+"/"+tmpWaypoint.type+".jpg";
+        } else {
+        	dbObject.image = "/assets/images/no_image.png";
+        }
+        
+        $('#waypointEditorPopup .formContent').html(waypointEditorTemplate(dbObject));
         $('#waypointEditorPopup').modal();
+        $( "#tabs" ).tabs();
     });
 };
 

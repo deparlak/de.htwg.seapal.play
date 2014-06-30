@@ -18,7 +18,10 @@
 <div id="waypointEditorPopup" class="modal fade">
 	<div class="modal-dialog">
 		<div class="modal-content">
-		Trullala
+		<form action="@de.htwg.seapal.web.controllers.routes.MainAPI.createDocument("waypoint")" method="post" class="formContent">
+			<!--  Waypoint Editor Template -->
+			@appContent.inputForms.form_waypointeditor()
+		</form>
 		</div>
 	</div>
 </div>
@@ -69,9 +72,6 @@
             <br style="clear: both" />
         </div>
 </script>
-
-<!--  Waypoint Editor Template -->
-@appContent.inputForms.form_waypointeditor()
 
 <script type="x/handlebars-template" id="ajaxLoaderTemplate">
         <div id="{{loaderId}}" class="ajaxLoader" style="text-align: center; margin: 2em">
