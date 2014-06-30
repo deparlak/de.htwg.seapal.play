@@ -2,6 +2,7 @@ package de.htwg.seapal.web.controllers;
 
 import java.io.FileNotFoundException;
 import java.io.InputStream;
+import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
 
@@ -21,9 +22,13 @@ import de.htwg.seapal.database.impl.WaypointDatabase;
 import de.htwg.seapal.database.IWaypointDatabase.WaypointPictureBean;
 import de.htwg.seapal.model.IModel;
 import de.htwg.seapal.model.ITrip;
+import de.htwg.seapal.model.IBoat;
 import de.htwg.seapal.model.IWaypoint;
+import de.htwg.seapal.utils.logging.ILogger;
 import de.htwg.seapal.web.models.Logbook;
 import de.htwg.seapal.web.views.html.logbook;
+
+import java.util.Collection;
 
 /**
  * Handles http requests to /LogbookAPI
@@ -39,7 +44,38 @@ public class LogbookAPI extends Controller {
 
 	@Inject
 	private IAccountController accountController;
+	
+	@Inject
+	private ILogger logger;
 
+	/**
+     * initial loading of first boat and trip of the user
+     * @return logbook page
+     */
+    @play.mvc.Security.Authenticated(AccountAPI.Secured.class)
+    public Result logbook(){
+    	String userId = session(IAccountController.AUTHN_COOKIE_KEY);
+    	
+    	Collection<? extends IModel> boatList = mainController.getOwnDocuments("boat", userId);
+    	
+    	if (boatList.isEmpty()) {
+    		return redirect(routes.Application.index());
+    	}
+    	IModel initialBoat = boatList.iterator().next();
+    	    	
+    	Collection<? extends IModel> tripList = mainController.getByParent("trip", "boat", userId, initialBoat.getUUID());
+    	
+    	if (tripList.isEmpty()) {
+    		return redirect(routes.Application.index());
+    	}
+    	
+    	IModel initialTrip = tripList.iterator().next();
+    	return index(initialBoat.getUUID(), initialTrip.getUUID());
+    	    	
+    	// Test Trip with default user
+        //return redirect("/logbook/505e4b46-517b-4c1e-ac96-3dc32400ff2a/2d6ce4e2-075e-47b2-9d7a-e094b06fbb44");  
+    }
+	
 
 	@play.mvc.Security.Authenticated(AccountAPI.Secured.class)
 	public Result index(UUID boatId, UUID tripId) {
