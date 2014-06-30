@@ -8,6 +8,7 @@ var timelineTripTemplate;
 var timelineWaypointTemplate;
 var timelineTripHeaderTemplate;
 var waypointEditorTemplate;
+var tripEditorTemplate;
 
 var map;
 
@@ -43,7 +44,8 @@ function initialiseLogbook(initialTripId, boatId, expandImageURL, contractImageU
     timelineWaypointTemplate = Handlebars.compile($('#timelineWaypointTemplate').html());
     timelineTripHeaderTemplate = Handlebars.compile($('#timelineTripHeaderTemplate').html());
     waypointEditorTemplate = Handlebars.compile($('#waypointEditorTemplate').html());
-    	
+    tripEditorTemplate = Handlebars.compile($('#track_Template').html());
+
     // load the initial trip
     changeTripTo(initialTripId);
 
@@ -168,6 +170,17 @@ function initialiseLogbook(initialTripId, boatId, expandImageURL, contractImageU
     });
     // click handler for postback of an edited waypoint
     $('#waypointInputForm').submit(postModifiedWaypoint);
+
+    // click handler for edit-icon of tripHeader
+    $('#entries').on('click', '.tripEditButton', function (element) {
+        var dbObject = $(this).closest('.tripHeader').data('tripData');
+
+        $('#trackInputForm').html(tripEditorTemplate(dbObject));
+        $('#trackInputForm').data('tripHeaderObj', dbObject);
+        $('#tripEditorPopup').modal();
+    });
+    // click handler for postback of an edited tripHeader
+    $('#trackInputForm').submit(postModifiedTripHeader);
 };
 
 /**
@@ -464,6 +477,7 @@ function loadMoreEntries(tripId, count) {
  */
 function onScrolledToWaypoint(node) {
     $('.logbookEntry').removeClass("active");
+    $('.tripHeader').removeClass("active");
     node.addClass("active");
 
     // change details
@@ -612,10 +626,12 @@ function onClickedOnWaypoint(e) {
  * @param node - tripHeader entry
  */
 function onScrolledToTripHeader(node) {
+    $('.logbookEntry').removeClass("active");
+    node.addClass("active");
+
     if (typeof (scrollToWaypointTimeout) != undefined) {
         clearTimeout(scrollToWaypointTimeout);
     }
-    $('.logbookEntry').removeClass("active");
 
     $('#details_text').html("");
     //zoom out map
@@ -806,6 +822,41 @@ function postModifiedWaypoint(e) {
             alert('Update of waypoint failed!');
         })
     $('#waypointEditorPopup').modal('hide');
+    e.preventDefault();
+    return false;
+}
+
+/**
+ * Called when the tripHeader editor form is submitted.
+ */
+function postModifiedTripHeader(e){
+    var form = $(this);
+    var baseTripHeader = form.data('tripHeaderObj');
+
+    // helper function which binds the text fields within #trackInputForm to the original tripHeader object:
+    var boundTripHeader = Handlebars.getBoundData(baseTripHeader, '#trackInputForm');
+
+    // post to server:
+    $.ajax(form.attr('action'), { data: JSON.stringify(boundTripHeader), contentType: 'application/json', type: 'POST' })
+        .success(function (updatedObject) {
+            var tripHeader = $('#trip_header_' + baseTripHeader._id);
+
+            // refresh the waypoint entry
+            tripHeader.replaceWith(tripTemplate(boundTripHeader));
+            tripHeader = $('#trip_header_' + baseTripHeader._id);
+            boundTripHeader._rev = updatedObject._rev;  // remember new revision id
+            tripHeader.data('tripData', boundTripHeader);
+            initWaypoint(tripHeader, onScrolledToTripHeader, tripHeader);
+            window.setTimeout(function () { $.waypoints('refresh'); }, 200);
+
+            // refresh the timeline entry
+            $('#timeline-trip_' + baseTripHeader._id + " .timeline-body").html(boundTripHeader.name);
+            $('#timeline-trip_header_' + baseTripHeader._id + " .timeline-body").html(boundTripHeader.name);
+        })
+        .fail(function () {
+            alert('Update of tripHeader failed!');
+        })
+    $('#tripEditorPopup').modal('hide');
     e.preventDefault();
     return false;
 }
