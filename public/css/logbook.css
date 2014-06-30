@@ -108,27 +108,26 @@ h3 {
     -webkit-transition: max-height 0.5s, padding 0.5s, opacity 0.5s;
     transition: max-height 0.5s, padding 0.5s, opacity 0.5s;
     max-height: 2000em; /* only for transition */
+    clear: both;
 }
 
-.logbookEntry .waypointEditButton {
+.logbookEntry .waypointEditButton  {
     display: none;
-    width: 16px;
+    width: 14px;
     height: auto;
+    cursor: pointer;
+    margin-left: 0.5em;
+    opacity: 0.5;
 }
 
 .tripHeader .tripEditButton {
-    cursor: pointer;
     display: none;
     width: 16px;
     height: auto;
+    cursor: pointer;
+    margin-left: 0.5em;
+    opacity: 0.5;
 }
-
-.tripHeader .tripEditButton:hover {
-    background-color: rgba(255, 255, 255, 0.4);
-    border: 1px solid rgba(255, 255, 255, 0.00);
-    text-decoration: none;
-}
-
 
 .logbookEntry.active, .logbookEntry:first-child {
     opacity: 1;
@@ -146,6 +145,12 @@ h3 {
     .logbookEntry, .tripHeader {
         padding: 1em 0.5em;
     }
+}
+
+.waypointThumb {
+	margin-right: 0.5em;
+	margin-top: 3px;
+	float: left;
 }
 
 .imageholder {
@@ -314,4 +319,8 @@ label {
 #map_canvas {
     height: 100%;
     width: 100%;
+}
+
+#details_info {
+	text-align: center;
 }
