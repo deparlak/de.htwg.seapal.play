@@ -1,10 +1,7 @@
 package de.htwg.seapal.web.controllers;
 
-import com.google.inject.Inject;
-
 import de.htwg.seapal.model.impl.Account;
 import de.htwg.seapal.model.impl.SignupAccount;
-import de.htwg.seapal.utils.logging.ILogger;
 import de.htwg.seapal.web.controllers.helpers.Menus;
 import de.htwg.seapal.web.models.Logbook;
 import de.htwg.seapal.web.views.html.app;
@@ -23,11 +20,7 @@ import play.mvc.Result;
 import play.mvc.With;
 
 @With(Menus.class)
-public class Application
-        extends Controller {
-
-    @Inject
-    private ILogger logger;
+public class Application extends Controller {
 
     public static Result index() {
         return ok(index.render());
@@ -39,11 +32,6 @@ public class Application
 
     public static Result app() {
         return ok(app.render());
-    }
-
-    @play.mvc.Security.Authenticated(AccountAPI.Secured.class)
-    public static Result logbook(){
-        return redirect("/logbook/505e4b46-517b-4c1e-ac96-3dc32400ff2a/2d6ce4e2-075e-47b2-9d7a-e094b06fbb44");  
     }
     
     public static Result forbiddenContent() {

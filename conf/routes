@@ -4,8 +4,6 @@
 GET           /                                                                                         de.htwg.seapal.web.controllers.Application.index()
 GET           /impressum                                                                                de.htwg.seapal.web.controllers.Application.impressum()
 GET           /app                                                                                      de.htwg.seapal.web.controllers.Application.app()
-GET           /logbook                                                                                  de.htwg.seapal.web.controllers.Application.logbook()
-
 
 GET           /api/$document<(boat|mark|route|trip|waypoint|person)>/$id<[0-9a-fA-F\-]+>                @de.htwg.seapal.web.controllers.MainAPI.singleDocument(id: UUID, document: String)
 DELETE        /api/$document<(boat|mark|route|trip|waypoint)>/$id<[0-9a-fA-F\-]+>                       @de.htwg.seapal.web.controllers.MainAPI.deleteDocument(id: UUID, document: String)
@@ -53,6 +51,7 @@ GET           /simulation/generateTrip                                          
 POST          /simulation/generateTrip                                                                  @de.htwg.seapal.web.controllers.SimulationAPI.generateTrip()
 
 # Logbook routes
+GET           /logbook                                                                                  @de.htwg.seapal.web.controllers.LogbookAPI.logbook()
 GET           /logbook/$boatId<[0-9a-fA-F\-]+>/$tripId<[0-9a-fA-F\-]+>                                  @de.htwg.seapal.web.controllers.LogbookAPI.index(boatId: UUID, tripId: UUID)
 GET           /logbook/tripData/$tripId<[0-9a-fA-F\-]+>	                                                @de.htwg.seapal.web.controllers.LogbookAPI.getTripById(tripId: UUID)
 GET           /logbook/tripPhotos/$tripId<[0-9a-fA-F\-]+>/$startIndex<[0-9]+>/$count<[0-9]+>            @de.htwg.seapal.web.controllers.LogbookAPI.getPhotosOfTrip(tripId: UUID, startIndex: Int, count: Int)
