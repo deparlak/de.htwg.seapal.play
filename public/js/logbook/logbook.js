@@ -782,7 +782,7 @@ function postModifiedWaypoint(e) {
     var boundWaypoint = Handlebars.getBoundData(baseWaypoint, '#waypointInputForm');
     // post to server:
     $.ajax(form.attr('action'), { data: JSON.stringify(boundWaypoint), contentType: 'application/json', type: 'POST' })
-        .success(function () {
+        .success(function (updatedObject) {
             var entryNode = $('#waypoint_' + baseWaypoint._id)
             // get previous element for scroll handler calculations
             last_entry_node = entryNode.prev();
@@ -790,9 +790,11 @@ function postModifiedWaypoint(e) {
                 last_entry_node = entryNode.parent();
 
             // refresh the waypoint entry 
-            $('#waypoint_' + baseWaypoint._id).replaceWith(waypointTemplate(boundWaypoint));
-            entryNode = $('#waypoint_' + baseWaypoint._id);
-            entryNode.data('waypointData', boundWaypoint);
+            entryNode.replaceWith(waypointTemplate(boundWaypoint));
+            entryNode = $('#waypoint_' + baseWaypoint._id);  // get new DOM element for this ID
+            boundWaypoint._rev = updatedObject._rev;  // remember new revision id
+            entryNode.data('waypointData', boundWaypoint);    // store DB object with DOM node again
+            // restore UI handlers
             entryNode.click(onClickedOnWaypoint);
             initWaypoint(entryNode, onScrolledToWaypoint, last_entry_node);
             window.setTimeout(function () { $.waypoints('refresh'); }, 200);
