@@ -51,9 +51,17 @@ body {
     box-shadow: -2px 0px 9px 0px rgba(50, 50, 50, 0.41);
 }
 
+#timeline {
+    overflow: hidden;
+    max-height: 100vh;
+    font-size: 10pt;
+    padding-bottom: 100px;
+}
+
 #details {
     overflow: hidden; 
-    height: 100vh;
+    max-height: 100vh;
+    padding-bottom: 100px;
     padding-bottom: 100px;
 }
 

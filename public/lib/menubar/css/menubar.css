@@ -79,6 +79,19 @@
 }
 
 /* TODO the trigger of the tools */
+.menubar-menu-main li.home-trigger {
+	position: absolute;
+    left : 60px;            /* the position of the menu trigger */
+    width: 60px;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+/* TODO the trigger of the tools */
 .menubar-menu-main li.tools-trigger {
     position: absolute;
     right : 0px;            /* the position of the toolbar trigger */
@@ -521,6 +534,9 @@ input.menubar-search:focus {
 .icon-searchedCoordinate::before{
         content: "\f08d"  
 }
+.icon-home::before {
+		content: "\f08d"
+}
 
 /* if an icon anchor has a span, hide the span */
 
@@ -537,6 +553,8 @@ input.menubar-search:focus {
         display: block;
         overflow: hidden;
 }
+
+
 
 
 /*****************************************************************************/
@@ -557,6 +575,28 @@ input.menubar-search:focus {
 
 /* the menu is selected */
 .menubar-icon-menu.menubar-selected::before {
+        color:blue;
+}
+/*****************************************************************************/
+
+/*****************************************************************************/
+/* the home initial style */
+.menubar-icon-home::before {
+        margin-left: -15px;
+        vertical-align: -2px;
+        width: 30px;
+        height: 3px;
+        content: "\f015";
+}
+
+/* the menu is hovered */
+.no-touch .menubar-icon-home:hover::before,
+.no-touch .menubar-icon-home.menubar-selected:hover::before {
+        color:blue;
+}
+
+/* the menu is selected */
+.menubar-icon-home.menubar-selected::before {
         color:blue;
 }
 /*****************************************************************************/

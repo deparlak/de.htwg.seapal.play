@@ -16,17 +16,41 @@
 
 
 <div id="waypointEditorPopup" class="modal fade">
-	<div class="modal-dialog">
+    <div class="inputForm-modal inputForm_Waypoint-modal">
 		<div class="modal-content">
-		Trullala
+            <div class="modal-header">
+                <button class="close" aria-hidden="true" data-dismiss="modal" type="button">x</button>
+                <h4 class="modal-title">Edit waypoints</h4>
+            </div>
+            <div class="inputForm-content">
+                <form id="waypointInputForm" action="@de.htwg.seapal.web.controllers.routes.MainAPI.createDocument("waypoint")" method="post" class="form_global form_waypoint">
+                    @appContent.inputForms.form_waypointeditor()
+                </form>
+            </div>
 		</div>
 	</div>
+</div>
+
+<div id="tripEditorPopup" class="modal fade">
+    <div class="inputForm-modal inputForm_Track-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button class="close" aria-hidden="true" data-dismiss="modal" type="button">x</button>
+                <h4 class="modal-title">Edit track</h4>
+            </div>
+            <div class="inputForm-content">
+                <form id="trackInputForm" class="form_global form_track" action="@de.htwg.seapal.web.controllers.routes.MainAPI.createDocument("trip")" method="post">
+                    @appContent.inputForms.form_trackeditor()
+                </form>
+            </div>
+        </div>
+    </div>
 </div>
 
 <script type="x/handlebars-template" id="tripTemplate">
     <div class="tripContainer" id="trip_{{_id}}">
         <div class="tripHeader" id="trip_header_{{_id}}">
-            <h3>{{name}}</h3>
+            <h3>{{name}}<img class="tripEditButton" src="@routes.Assets.at("images/logbook/pen.png")" alt="Edit" /></h3>
             <table style="min-width: 80%">
                 <tr>
                     <td><b>Route:</b></td>
@@ -49,6 +73,11 @@
                         {{/if}}
                     </td>
                 </tr>
+                <tr>
+                    <td colspan="2">
+                        {{notes}}
+                    </td>
+                </tr>
             </table>
         </div>
     </div>
@@ -56,22 +85,19 @@
 
 <script type="x/handlebars-template" id="waypointTemplate">
         <div class="logbookEntry {{#if note}}hasNote{{/if}} {{#if image_thumb}}hasImage{{/if}}" id="waypoint_{{_id}}">
-            <div style="float: right"><img class="waypointEditButton" src="@routes.Assets.at("images/logbook/pen.png")" alt="Edit" /></div>
-            <b>{{name}}</b><br />
+            <b>{{name}}</b>&nbsp;<img class="waypointEditButton" src="@routes.Assets.at("images/logbook/pen.png")" alt="Edit" />
+			<br />
 
             {{#if image_thumb}}
             <a href="/logbook/waypointPhoto/{{_id}}" data-lightbox="highres_{{_id}}">
-                <img src="{{image_thumb}}" alt="" style="float: left" />
+                <img src="{{image_thumb}}" alt="" class="waypointThumb" />
             </a>
             {{/if}}
 
             <span>{{note}}</span>
-            <br style="clear: both" />
+			<br style="clear: both" />
         </div>
 </script>
-
-<!--  Waypoint Editor Template -->
-@appContent.inputForms.inputFormItemsWaypoint()
 
 <script type="x/handlebars-template" id="ajaxLoaderTemplate">
         <div id="{{loaderId}}" class="ajaxLoader" style="text-align: center; margin: 2em">

@@ -16,10 +16,10 @@
     display: none;
 }
 
-    .panelToggler:hover {
-        background-color: #b2b2b2;
-        text-decoration: none;
-    }
+.panelToggler:hover {
+    background-color: #b2b2b2;
+    text-decoration: none;
+}
 
 #pictures {
     background: #FFFFFF;
@@ -92,13 +92,13 @@ h3 {
     color: white;
 }
 
-    .tripHeader td {
-        vertical-align: top;
-    }
+.tripHeader td {
+    vertical-align: top;
+}
 
-    .tripHeader h3 {
-        color: rgb(18, 36, 66);
-    }
+.tripHeader h3 {
+    color: rgb(18, 36, 66);
+}
 
 .logbookEntry {
     padding: 1em 2em;
@@ -108,26 +108,49 @@ h3 {
     -webkit-transition: max-height 0.5s, padding 0.5s, opacity 0.5s;
     transition: max-height 0.5s, padding 0.5s, opacity 0.5s;
     max-height: 2000em; /* only for transition */
+    clear: both;
 }
 
-	.logbookEntry .waypointEditButton {
-		display: none;
-		width: 16px;
-		height: auto;
-	}
-	
-    .logbookEntry.active, .logbookEntry:first-child {
-        opacity: 1;
-    }
+.logbookEntry .waypointEditButton  {
+    display: none;
+    width: 14px;
+    height: auto;
+    cursor: pointer;
+    margin-left: 0.5em;
+    opacity: 0.5;
+}
 
-	.logbookEntry.active .waypointEditButton {
-		display: inline;
-	}
+.tripHeader .tripEditButton {
+    display: none;
+    width: 16px;
+    height: auto;
+    cursor: pointer;
+    margin-left: 0.5em;
+    opacity: 0.5;
+}
+
+.logbookEntry.active, .logbookEntry:first-child {
+    opacity: 1;
+}
+
+.logbookEntry.active .waypointEditButton {
+    display: inline;
+}
+
+.tripHeader.active .tripEditButton {
+    display: inline;
+}
 
 @media (max-width: 1024px) {
     .logbookEntry, .tripHeader {
         padding: 1em 0.5em;
     }
+}
+
+.waypointThumb {
+	margin-right: 0.5em;
+	margin-top: 3px;
+	float: left;
 }
 
 .imageholder {
@@ -136,10 +159,10 @@ h3 {
     margin-right: auto;
 }
 
-    .imageholder a img {
-        max-width: 45%;
-        display: inline;
-    }
+.imageholder a img {
+    max-width: 45%;
+    display: inline;
+}
 
 .logbookEntry img {
     max-width: 100%;
@@ -176,13 +199,13 @@ label {
     color: #686771;
 }
 
-    .NextPrevTripButton:hover {
-        text-decoration: none;
-    }
-    .NextPrevTripButton .btnTitle {
-        color: rgb(18, 36, 66);
-        font-size: 14pt;
-    }
+.NextPrevTripButton:hover {
+    text-decoration: none;
+}
+.NextPrevTripButton .btnTitle {
+    color: rgb(18, 36, 66);
+    font-size: 14pt;
+}
 
 .timeline-inverted.filtered {
     max-height: 0;
@@ -222,12 +245,6 @@ label {
 }
 
 /* -------  timeline customization  -------- */
-
-#timeline {
-    overflow: hidden;
-    height: 100vh;
-    font-size: 10pt;
-}
 
 .timeline:before {
     background-color: #c2c2c2; /* color of middle line of timeline */
@@ -296,4 +313,8 @@ label {
 #map_canvas {
     height: 100%;
     width: 100%;
+}
+
+#details_info {
+	text-align: center;
 }

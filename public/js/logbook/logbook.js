@@ -8,10 +8,11 @@ var timelineTripTemplate;
 var timelineWaypointTemplate;
 var timelineTripHeaderTemplate;
 var waypointEditorTemplate;
+var tripEditorTemplate;
 
 var map;
 
-var dateFormatShort = "YYYY-MM-DD";
+var dateFormat = "YYYY-MM-DD";
 var timeFormat = "h:mm:ss a";
 
 var isLoadingWaypoints = false;
@@ -43,7 +44,8 @@ function initialiseLogbook(initialTripId, boatId, expandImageURL, contractImageU
     timelineWaypointTemplate = Handlebars.compile($('#timelineWaypointTemplate').html());
     timelineTripHeaderTemplate = Handlebars.compile($('#timelineTripHeaderTemplate').html());
     waypointEditorTemplate = Handlebars.compile($('#waypointEditorTemplate').html());
-    	
+    tripEditorTemplate = Handlebars.compile($('#track_Template').html());
+
     // load the initial trip
     changeTripTo(initialTripId);
 
@@ -156,9 +158,29 @@ function initialiseLogbook(initialTripId, boatId, expandImageURL, contractImageU
     // click handler for edit-icon of waypoints
     $('#entries').on('click', '.waypointEditButton', function (element) {
         var dbObject = $(this).closest('.logbookEntry').data('waypointData');  // waypoint instance from DB
-        $('#waypointEditorPopup .modal-content').html(waypointEditorTemplate(dbObject));
+        if(dbObject.image_thumb != null) {                       
+            dbObject.image = "/api/photo/" + dbObject._id + "/waypoint.jpg";
+        } else {
+        	dbObject.image = "/assets/images/no_image.png";
+        }
+        $('#waypointInputForm').html(waypointEditorTemplate(dbObject));
+        $('#waypointInputForm').data('waypointObj', dbObject);
         $('#waypointEditorPopup').modal();
+        $( "#tabs" ).tabs();
     });
+    // click handler for postback of an edited waypoint
+    $('#waypointInputForm').submit(postModifiedWaypoint);
+
+    // click handler for edit-icon of tripHeader
+    $('#entries').on('click', '.tripEditButton', function (element) {
+        var dbObject = $(this).closest('.tripHeader').data('tripData');
+
+        $('#trackInputForm').html(tripEditorTemplate(dbObject));
+        $('#trackInputForm').data('tripHeaderObj', dbObject);
+        $('#tripEditorPopup').modal();
+    });
+    // click handler for postback of an edited tripHeader
+    $('#trackInputForm').submit(postModifiedTripHeader);
 };
 
 /**
@@ -250,7 +272,7 @@ function onReceivedAllTrips(trips) {
     // Populate the inital timeline
     var timelineContainer = $('.timeline_header');
     $.each(trips, function (index, tripData) {
-        tripData.startDate = moment(new Date(tripData.startDate)).format(dateFormatShort);
+        tripData.startDate = moment(new Date(tripData.startDate)).format(dateFormat);
         timelineContainer.append(timelineTripTemplate(tripData));
     });
 }
@@ -263,8 +285,8 @@ function onReceivedAllTrips(trips) {
  */
 function onReceivedTrip(tripId, tripData) {
     // prepare formatted datetime strings (required in handlebars templates)
-    tripData.formattedStartDate = moment(new Date(tripData.startDate)).format(dateFormatShort + " " + timeFormat);
-    tripData.formattedEndDate = moment(new Date(tripData.endDate)).format(dateFormatShort + " " + timeFormat);
+    tripData.formattedStartDate = moment(new Date(tripData.startDate)).format(dateFormat + " " + timeFormat);
+    tripData.formattedEndDate = moment(new Date(tripData.endDate)).format(dateFormat + " " + timeFormat);
 
     // hide the loading animations
     $('#tripLoader').remove();
@@ -284,6 +306,12 @@ function onReceivedTrip(tripId, tripData) {
 
     // get the waypoints of this trip
     loadMoreEntries(tripId, 0);  // 0 = all waypoints
+
+    clearDistributionCharts();
+
+    //Collapse all other trip Timeline entries
+
+    $('.timeline_container :not(#timeline-trip_container_'+tripId+')').fadeOut("slow");
 }
 
 /**
@@ -321,7 +349,7 @@ function onReceivedWaypoints(tripId, waypoints) {
     // hide ajax loader in this trip container
     $('#entryLoader' + tripId).remove();
 
-    tripData.formattedDate = moment(new Date(tripData.startDate)).format(dateFormatShort);
+    tripData.formattedDate = moment(new Date(tripData.startDate)).format(dateFormat);
     timelineTripContainer.append(timelineTripHeaderTemplate(tripData));
 
     var map_waypoints = [];
@@ -329,13 +357,13 @@ function onReceivedWaypoints(tripId, waypoints) {
     // iterate all received waypoints and append the template to the container of the trip & the timelime
     $.each(waypoints, function (index, waypointData) {
         // unix timestamp -> formatted time
-        waypointData.formattedDate = moment(new Date(waypointData.date)).format(dateFormatShort);
+        waypointData.formattedDate = moment(new Date(waypointData.date)).format(dateFormat);
         waypointData.formattedTime = moment(new Date(waypointData.date)).format(timeFormat);
         minTemp = (waypointData.tempCelsius < minTemp) ? waypointData.tempCelsius : minTemp;
         maxTemp = (waypointData.tempCelsius > maxTemp) ? waypointData.tempCelsius : maxTemp;
         // append to trip in timeline panel
         timelineTripContainer.append(timelineWaypointTemplate(waypointData));
-
+        
         // append to trip in entries panel
         tripContainer.append(waypointTemplate(waypointData));
         var entryNode = $('#waypoint_' + waypointData._id);
@@ -363,13 +391,7 @@ function onReceivedWaypoints(tripId, waypoints) {
     setMarkerClickFunction(clicked_on_marker);
 
     // click handler for the waypoints
-    $('.logbookEntry').click(function (e) {
-        if ($(e.target).is('img')) {
-            e.preventDefault();
-            return;
-        }
-        scrollToWaypoint($(this));
-    });
+    $('.logbookEntry').click(onClickedOnWaypoint);
 
     // set trip weather stats if available
     if (minTemp != 1000) {
@@ -461,6 +483,7 @@ function loadMoreEntries(tripId, count) {
  */
 function onScrolledToWaypoint(node) {
     $('.logbookEntry').removeClass("active");
+    $('.tripHeader').removeClass("active");
     node.addClass("active");
 
     // change details
@@ -594,14 +617,27 @@ function onScrolledToWaypoint(node) {
 }
 
 /**
+ * Click handler for waypoint entries.
+ */
+function onClickedOnWaypoint(e) {
+    if ($(e.target).is('img')) {
+        e.preventDefault();
+        return;
+    }
+    scrollToWaypoint($(this));
+}
+
+/**
  * Gets called if the trip header is active
  * @param node - tripHeader entry
  */
 function onScrolledToTripHeader(node) {
+    $('.logbookEntry').removeClass("active");
+    node.addClass("active");
+
     if (typeof (scrollToWaypointTimeout) != undefined) {
         clearTimeout(scrollToWaypointTimeout);
     }
-    $('.logbookEntry').removeClass("active");
 
     $('#details_text').html("");
     //zoom out map
@@ -665,6 +701,13 @@ function initialiseDistributionCharts(tripData){
     }
 }
 
+function clearDistributionCharts(){
+    $ ( '#details_charts_distribution').html("");
+    $ ( '#wind_distribution').html("");
+    $ ( '#wave_distribution' ).html("");
+    $ ( '#air_pressure_cloudage_temperature_distribution' ).html("");
+}
+
 /**
  * Shows or hides waypoints based on the current filter settings
  */
@@ -709,7 +752,7 @@ function applyEntryFilters() {
  */
 function scrollToWaypoint(waypoint) {
     $('.logbookEntry').waypoint('disable');
-    var offset = $(waypoint).offset().top - parseInt($('#menu_bar').css('height'));
+    var offset = $(waypoint).offset().top - parseInt($('#menu_bar').css('height')) -1;
     $('html, body').animate({
         scrollTop: offset
     }, {
@@ -756,6 +799,79 @@ function getWaypointFromPosition(lat, lng) {
         }
     });
     return waypoint;
+}
+
+/**
+ * Called when the waypoint editor form is submitted.
+ */
+function postModifiedWaypoint(e) {
+    var form = $(this);
+    var baseWaypoint = form.data('waypointObj');
+    // helper function which binds the text fields within #waypointInputForm to the original waypoint object:
+    var boundWaypoint = Handlebars.getBoundData(baseWaypoint, '#waypointInputForm');
+    // post to server:
+    $.ajax(form.attr('action'), { data: JSON.stringify(boundWaypoint), contentType: 'application/json', type: 'POST' })
+        .success(function (updatedObject) {
+            var entryNode = $('#waypoint_' + baseWaypoint._id)
+            // get previous element for scroll handler calculations
+            last_entry_node = entryNode.prev();
+            if (last_entry_node.length == 0)
+                last_entry_node = entryNode.parent();
+
+            // refresh the waypoint entry 
+            entryNode.replaceWith(waypointTemplate(boundWaypoint));
+            entryNode = $('#waypoint_' + baseWaypoint._id);  // get new DOM element for this ID
+            boundWaypoint._rev = updatedObject._rev;  // remember new revision id
+            entryNode.data('waypointData', boundWaypoint);    // store DB object with DOM node again
+            // restore UI handlers
+            entryNode.click(onClickedOnWaypoint);
+            initWaypoint(entryNode, onScrolledToWaypoint, last_entry_node);
+            window.setTimeout(function () { $.waypoints('refresh'); }, 200);
+
+            // refresh the timeline entry
+            $('#timeline-wp-container_' + baseWaypoint._id).replaceWith(timelineWaypointTemplate(boundWaypoint));
+        })
+        .fail(function () {
+            alert('Update of waypoint failed!');
+        })
+    $('#waypointEditorPopup').modal('hide');
+    e.preventDefault();
+    return false;
+}
+
+/**
+ * Called when the tripHeader editor form is submitted.
+ */
+function postModifiedTripHeader(e){
+    var form = $(this);
+    var baseTripHeader = form.data('tripHeaderObj');
+
+    // helper function which binds the text fields within #trackInputForm to the original tripHeader object:
+    var boundTripHeader = Handlebars.getBoundData(baseTripHeader, '#trackInputForm');
+
+    // post to server:
+    $.ajax(form.attr('action'), { data: JSON.stringify(boundTripHeader), contentType: 'application/json', type: 'POST' })
+        .success(function (updatedObject) {
+            var tripHeader = $('#trip_header_' + baseTripHeader._id);
+
+            // refresh the waypoint entry
+            tripHeader.replaceWith(tripTemplate(boundTripHeader));
+            tripHeader = $('#trip_header_' + baseTripHeader._id);
+            boundTripHeader._rev = updatedObject._rev;  // remember new revision id
+            tripHeader.data('tripData', boundTripHeader);
+            initWaypoint(tripHeader, onScrolledToTripHeader, tripHeader);
+            window.setTimeout(function () { $.waypoints('refresh'); }, 200);
+
+            // refresh the timeline entry
+            $('#timeline-trip_' + baseTripHeader._id + " .timeline-body").html(boundTripHeader.name);
+            $('#timeline-trip_header_' + baseTripHeader._id + " .timeline-body").html(boundTripHeader.name);
+        })
+        .fail(function () {
+            alert('Update of tripHeader failed!');
+        })
+    $('#tripEditorPopup').modal('hide');
+    e.preventDefault();
+    return false;
 }
 
 /**

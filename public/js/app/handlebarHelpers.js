@@ -10,21 +10,25 @@ $(document).ready(function() {
         return "id=handlebar-id-" + key;
     });
 
-    Handlebars.getBoundData = function(obj) {
+    Handlebars.getBoundData = function (obj, container) {
+        if (typeof(container) === 'undefined') {
+            container = 'body';
+        }
+
         for ( property in obj ) {
             /* if there is no handlebar */
-            if (null == document.getElementById('handlebar-id-'+property)) {
+            var boundInputElement = $(container + ' #handlebar-id-' + property);
+            if (boundInputElement.length == 0)
                 continue;
-            }
             
-            if ($('#handlebar-id-'+property).attr('type') == 'number') {
-                obj[property] = parseInt($('#handlebar-id-'+property).val());
+            if (boundInputElement.attr('type') == 'number') {
+                obj[property] = parseInt(boundInputElement.val());
             } else {
-                obj[property] = $('#handlebar-id-'+property).val();
+                obj[property] = boundInputElement.val();
             }
 
-            if ($('#handlebar-id-'+property).hasClass('datepicker')) {
-                obj[property] = stringToDate($('#handlebar-id-'+property).val());
+            if (boundInputElement.hasClass('datepicker')) {
+                obj[property] = stringToDate(boundInputElement.val());
             }
         }
         return obj;
@@ -55,7 +59,8 @@ $(document).ready(function() {
 
     Handlebars.registerHelper('dateToString', function(date) {
         var tmp = new Date(date);
-        return tmp.toLocaleDateString("de-DE");
+        //return tmp.toLocaleDateString("de-DE");
+        return moment(tmp).format(dateFormat + " " + timeFormat);
     });
 
     Handlebars.registerHelper('timeDateToString', function(date) {
@@ -66,6 +71,7 @@ $(document).ready(function() {
     });
 
     function stringToDate(string) {
-        return new Date(string.substring(6,10), string.substring(3,5) -1, string.substring(0,2)).getTime();
+    	return moment(string, dateFormat + " " + timeFormat).toDate();
+        //return new Date(string.substring(6,10), string.substring(3,5) -1, string.substring(0,2)).getTime();
     }
 });
