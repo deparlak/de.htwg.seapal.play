@@ -162,9 +162,12 @@ function initialiseLogbook(initialTripId, boatId, expandImageURL, contractImageU
         	dbObject.image = "/assets/images/no_image.png";
         }
         $('#waypointInputForm').html(waypointEditorTemplate(dbObject));
+        $('#waypointInputForm').data('waypointObj', dbObject);
         $('#waypointEditorPopup').modal();
         $( "#tabs" ).tabs();
     });
+    // click handler for postback of an edited waypoint
+    $('#waypointInputForm').submit(postModifiedWaypoint);
 };
 
 /**
@@ -762,6 +765,25 @@ function getWaypointFromPosition(lat, lng) {
         }
     });
     return waypoint;
+}
+
+/**
+ * Called when the waypoint editor form is submitted.
+ */
+function postModifiedWaypoint(e) {
+    var form = $(this);
+    var baseObject = form.data('waypointObj');
+    var boundData = Handlebars.getBoundData(baseObject, '#waypointInputForm');
+    $.ajax(form.attr('action'), { data: JSON.stringify(boundData), contentType: 'application/json', type: 'POST' })
+        .success(function (data) {
+            alert('updated:' + data);
+        })
+        .fail(function () {
+            alert('ufailount');
+        })
+    $('#waypointEditorPopup').modal('hide');
+    e.preventDefault();
+    return false;
 }
 
 /**
