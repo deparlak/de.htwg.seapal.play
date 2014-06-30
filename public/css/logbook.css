@@ -246,12 +246,6 @@ label {
 
 /* -------  timeline customization  -------- */
 
-#timeline {
-    overflow: hidden;
-    height: 100vh;
-    font-size: 10pt;
-}
-
 .timeline:before {
     background-color: #c2c2c2; /* color of middle line of timeline */
 }

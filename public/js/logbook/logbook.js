@@ -12,7 +12,7 @@ var tripEditorTemplate;
 
 var map;
 
-var dateFormatShort = "YYYY-MM-DD";
+var dateFormat = "YYYY-MM-DD";
 var timeFormat = "h:mm:ss a";
 
 var isLoadingWaypoints = false;
@@ -272,7 +272,7 @@ function onReceivedAllTrips(trips) {
     // Populate the inital timeline
     var timelineContainer = $('.timeline_header');
     $.each(trips, function (index, tripData) {
-        tripData.startDate = moment(new Date(tripData.startDate)).format(dateFormatShort);
+        tripData.startDate = moment(new Date(tripData.startDate)).format(dateFormat);
         timelineContainer.append(timelineTripTemplate(tripData));
     });
 }
@@ -285,8 +285,8 @@ function onReceivedAllTrips(trips) {
  */
 function onReceivedTrip(tripId, tripData) {
     // prepare formatted datetime strings (required in handlebars templates)
-    tripData.formattedStartDate = moment(new Date(tripData.startDate)).format(dateFormatShort + " " + timeFormat);
-    tripData.formattedEndDate = moment(new Date(tripData.endDate)).format(dateFormatShort + " " + timeFormat);
+    tripData.formattedStartDate = moment(new Date(tripData.startDate)).format(dateFormat + " " + timeFormat);
+    tripData.formattedEndDate = moment(new Date(tripData.endDate)).format(dateFormat + " " + timeFormat);
 
     // hide the loading animations
     $('#tripLoader').remove();
@@ -306,6 +306,12 @@ function onReceivedTrip(tripId, tripData) {
 
     // get the waypoints of this trip
     loadMoreEntries(tripId, 0);  // 0 = all waypoints
+
+    clearDistributionCharts();
+
+    //Collapse all other trip Timeline entries
+
+    $('.timeline_container :not(#timeline-trip_container_'+tripId+')').fadeOut("slow");
 }
 
 /**
@@ -343,7 +349,7 @@ function onReceivedWaypoints(tripId, waypoints) {
     // hide ajax loader in this trip container
     $('#entryLoader' + tripId).remove();
 
-    tripData.formattedDate = moment(new Date(tripData.startDate)).format(dateFormatShort);
+    tripData.formattedDate = moment(new Date(tripData.startDate)).format(dateFormat);
     timelineTripContainer.append(timelineTripHeaderTemplate(tripData));
 
     var map_waypoints = [];
@@ -351,7 +357,7 @@ function onReceivedWaypoints(tripId, waypoints) {
     // iterate all received waypoints and append the template to the container of the trip & the timelime
     $.each(waypoints, function (index, waypointData) {
         // unix timestamp -> formatted time
-        waypointData.formattedDate = moment(new Date(waypointData.date)).format(dateFormatShort);
+        waypointData.formattedDate = moment(new Date(waypointData.date)).format(dateFormat);
         waypointData.formattedTime = moment(new Date(waypointData.date)).format(timeFormat);
         minTemp = (waypointData.tempCelsius < minTemp) ? waypointData.tempCelsius : minTemp;
         maxTemp = (waypointData.tempCelsius > maxTemp) ? waypointData.tempCelsius : maxTemp;
@@ -693,6 +699,13 @@ function initialiseDistributionCharts(tripData){
     if ( $.trim ( $ ( '#air_pressure_cloudage_temperature_distribution' ).text() ) == '' && ($('#details_weather' ).css('display') == 'block') ) {
         initAirPressureCloudingTemperatureChart ( '#air_pressure_cloudage_temperature_distribution', tripData.data ( 'index_data_x' ), tripData.data ( 'air_pressure_data_y' ), tripData.data ( 'cloudage_data_y' ), tripData.data ( 'temperature_data_y' ), tripData.data ( 'waypoint_ids' ) ) ;
     }
+}
+
+function clearDistributionCharts(){
+    $ ( '#details_charts_distribution').html("");
+    $ ( '#wind_distribution').html("");
+    $ ( '#wave_distribution' ).html("");
+    $ ( '#air_pressure_cloudage_temperature_distribution' ).html("");
 }
 
 /**
