@@ -19,22 +19,40 @@
     <div class="inputForm-modal inputForm_Waypoint-modal">
 		<div class="modal-content">
             <div class="modal-header">
-                <button class="close" aria-hidden="true" data-dismiss="modal" type="button">X</button>
+                <button class="close" aria-hidden="true" data-dismiss="modal" type="button">x</button>
                 <h4 class="modal-title">Edit waypoints</h4>
             </div>
             <div class="inputForm-content">
-                <form action="@de.htwg.seapal.web.controllers.routes.MainAPI.createDocument("waypoint")" method="post" id="waypointInputForm" class="form_global form_waypoint">
-                @appContent.inputForms.form_waypointeditor()
+                <form id="waypointInputForm" action="@de.htwg.seapal.web.controllers.routes.MainAPI.createDocument("waypoint")" method="post" class="form_global form_waypoint">
+                    @appContent.inputForms.form_waypointeditor()
                 </form>
             </div>
 		</div>
 	</div>
 </div>
 
+<div id="tripEditorPopup" class="modal fade">
+    <div class="inputForm-modal inputForm_Track-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button class="close" aria-hidden="true" data-dismiss="modal" type="button">x</button>
+                <h4 class="modal-title">Edit track</h4>
+            </div>
+            <div class="inputForm-content">
+                <form id="trackInputForm" class="form_global form_track" action="@de.htwg.seapal.web.controllers.routes.MainAPI.createDocument("trip")" method="post">
+                    @appContent.inputForms.form_trackeditor()
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
 <script type="x/handlebars-template" id="tripTemplate">
     <div class="tripContainer" id="trip_{{_id}}">
         <div class="tripHeader" id="trip_header_{{_id}}">
             <h3>{{name}}</h3>
+            <div style="float: right"><img class="tripEditButton" src="@routes.Assets.at("images/logbook/pen.png")" alt="Edit" /></div>
+
             <table style="min-width: 80%">
                 <tr>
                     <td><b>Route:</b></td>
@@ -55,6 +73,11 @@
                         {{#if crew}}
                         <br />with {{crew}}
                         {{/if}}
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="2">
+                        {{notes}}
                     </td>
                 </tr>
             </table>

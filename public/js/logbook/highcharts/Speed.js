@@ -1,4 +1,4 @@
-function initSpeedChart(container, data_x, data_y, waypoint_names, waypoint_ids, title, description) {
+function initSpeedChart(container, data_x, data_y, waypoint_names, waypoint_ids, description) {
     $(container).highcharts({
         chart: {
             height: 250,
@@ -30,7 +30,7 @@ function initSpeedChart(container, data_x, data_y, waypoint_names, waypoint_ids,
             enabled: false
         },
         title: {
-            text: title,
+            text: "",
             x: -20 //center
         },
         xAxis: {
