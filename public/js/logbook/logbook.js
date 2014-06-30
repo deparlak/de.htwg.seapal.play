@@ -156,14 +156,12 @@ function initialiseLogbook(initialTripId, boatId, expandImageURL, contractImageU
     // click handler for edit-icon of waypoints
     $('#entries').on('click', '.waypointEditButton', function (element) {
         var dbObject = $(this).closest('.logbookEntry').data('waypointData');  // waypoint instance from DB
-        
         if(dbObject.image_thumb != null) {                       
-        	dbObject.image = "api/photo/"+tmpWaypoint._id+"/"+tmpWaypoint.type+".jpg";
+            dbObject.image = "/api/photo/" + dbObject._id + "/waypoint.jpg";
         } else {
         	dbObject.image = "/assets/images/no_image.png";
         }
-        
-        $('#waypointEditorPopup .formContent').html(waypointEditorTemplate(dbObject));
+        $('#waypointInputForm').html(waypointEditorTemplate(dbObject));
         $('#waypointEditorPopup').modal();
         $( "#tabs" ).tabs();
     });
@@ -717,7 +715,7 @@ function applyEntryFilters() {
  */
 function scrollToWaypoint(waypoint) {
     $('.logbookEntry').waypoint('disable');
-    var offset = $(waypoint).offset().top - parseInt($('#menu_bar').css('height'));
+    var offset = $(waypoint).offset().top - parseInt($('#menu_bar').css('height')) -1;
     $('html, body').animate({
         scrollTop: offset
     }, {

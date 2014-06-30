@@ -16,12 +16,17 @@
 
 
 <div id="waypointEditorPopup" class="modal fade">
-	<div class="modal-dialog">
+    <div class="inputForm-modal inputForm_Waypoint-modal">
 		<div class="modal-content">
-		<form action="@de.htwg.seapal.web.controllers.routes.MainAPI.createDocument("waypoint")" method="post" class="formContent">
-			<!--  Waypoint Editor Template -->
-			@appContent.inputForms.form_waypointeditor()
-		</form>
+            <div class="modal-header">
+                <button class="close" aria-hidden="true" data-dismiss="modal" type="button">X</button>
+                <h4 class="modal-title">Edit waypoints</h4>
+            </div>
+            <div class="inputForm-content">
+                <form action="@de.htwg.seapal.web.controllers.routes.MainAPI.createDocument("waypoint")" method="post" id="waypointInputForm" class="form_global form_waypoint">
+                @appContent.inputForms.form_waypointeditor()
+                </form>
+            </div>
 		</div>
 	</div>
 </div>
@@ -68,7 +73,7 @@
             {{/if}}
 
             <span>{{note}}</span>
-<div style="float: right"><img class="waypointEditButton" src="@routes.Assets.at("images/logbook/pen.png")" alt="Edit" /></div>
+            <div style="float: right"><img class="waypointEditButton" src="@routes.Assets.at("images/logbook/pen.png")" alt="Edit" /></div>
             <br style="clear: both" />
         </div>
 </script>
