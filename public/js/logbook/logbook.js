@@ -168,6 +168,12 @@ function initialiseLogbook(initialTripId, boatId, expandImageURL, contractImageU
     });
     // click handler for postback of an edited waypoint
     $('#waypointInputForm').submit(postModifiedWaypoint);
+    
+    
+    // click handler for edit-icon of trips
+     $('#entries').on('click', '.tripEditButton', function (element) {
+     	$('#tripEditorPopup').modal();
+     });
 };
 
 /**
