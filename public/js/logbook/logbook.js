@@ -350,7 +350,7 @@ function onReceivedWaypoints(tripId, waypoints) {
         maxTemp = (waypointData.tempCelsius > maxTemp) ? waypointData.tempCelsius : maxTemp;
         // append to trip in timeline panel
         timelineTripContainer.append(timelineWaypointTemplate(waypointData));
-
+        
         // append to trip in entries panel
         tripContainer.append(waypointTemplate(waypointData));
         var entryNode = $('#waypoint_' + waypointData._id);
@@ -378,13 +378,7 @@ function onReceivedWaypoints(tripId, waypoints) {
     setMarkerClickFunction(clicked_on_marker);
 
     // click handler for the waypoints
-    $('.logbookEntry').click(function (e) {
-        if ($(e.target).is('img')) {
-            e.preventDefault();
-            return;
-        }
-        scrollToWaypoint($(this));
-    });
+    $('.logbookEntry').click(onClickedOnWaypoint);
 
     // set trip weather stats if available
     if (minTemp != 1000) {
@@ -609,6 +603,17 @@ function onScrolledToWaypoint(node) {
 }
 
 /**
+ * Click handler for waypoint entries.
+ */
+function onClickedOnWaypoint(e) {
+    if ($(e.target).is('img')) {
+        e.preventDefault();
+        return;
+    }
+    scrollToWaypoint($(this));
+}
+
+/**
  * Gets called if the trip header is active
  * @param node - tripHeader entry
  */
@@ -778,14 +783,33 @@ function getWaypointFromPosition(lat, lng) {
  */
 function postModifiedWaypoint(e) {
     var form = $(this);
-    var baseObject = form.data('waypointObj');
-    var boundData = Handlebars.getBoundData(baseObject, '#waypointInputForm');
-    $.ajax(form.attr('action'), { data: JSON.stringify(boundData), contentType: 'application/json', type: 'POST' })
-        .success(function (data) {
-            alert('updated:' + data);
+    var baseWaypoint = form.data('waypointObj');
+    // helper function which binds the text fields within #waypointInputForm to the original waypoint object:
+    var boundWaypoint = Handlebars.getBoundData(baseWaypoint, '#waypointInputForm');
+    // post to server:
+    $.ajax(form.attr('action'), { data: JSON.stringify(boundWaypoint), contentType: 'application/json', type: 'POST' })
+        .success(function (updatedObject) {
+            var entryNode = $('#waypoint_' + baseWaypoint._id)
+            // get previous element for scroll handler calculations
+            last_entry_node = entryNode.prev();
+            if (last_entry_node.length == 0)
+                last_entry_node = entryNode.parent();
+
+            // refresh the waypoint entry 
+            entryNode.replaceWith(waypointTemplate(boundWaypoint));
+            entryNode = $('#waypoint_' + baseWaypoint._id);  // get new DOM element for this ID
+            boundWaypoint._rev = updatedObject._rev;  // remember new revision id
+            entryNode.data('waypointData', boundWaypoint);    // store DB object with DOM node again
+            // restore UI handlers
+            entryNode.click(onClickedOnWaypoint);
+            initWaypoint(entryNode, onScrolledToWaypoint, last_entry_node);
+            window.setTimeout(function () { $.waypoints('refresh'); }, 200);
+
+            // refresh the timeline entry
+            $('#timeline-wp-container_' + baseWaypoint._id).replaceWith(timelineWaypointTemplate(boundWaypoint));
         })
         .fail(function () {
-            alert('ufailount');
+            alert('Update of waypoint failed!');
         })
     $('#waypointEditorPopup').modal('hide');
     e.preventDefault();
