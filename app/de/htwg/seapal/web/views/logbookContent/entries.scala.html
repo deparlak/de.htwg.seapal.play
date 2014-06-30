@@ -50,9 +50,7 @@
 <script type="x/handlebars-template" id="tripTemplate">
     <div class="tripContainer" id="trip_{{_id}}">
         <div class="tripHeader" id="trip_header_{{_id}}">
-            <h3>{{name}}</h3>
-            <div style="float: right"><img class="tripEditButton" src="@routes.Assets.at("images/logbook/pen.png")" alt="Edit" /></div>
-
+            <h3>{{name}}<img class="tripEditButton" src="@routes.Assets.at("images/logbook/pen.png")" alt="Edit" /></h3>
             <table style="min-width: 80%">
                 <tr>
                     <td><b>Route:</b></td>
@@ -92,12 +90,12 @@
 
             {{#if image_thumb}}
             <a href="/logbook/waypointPhoto/{{_id}}" data-lightbox="highres_{{_id}}">
-                <img src="{{image_thumb}}" alt="" style="float: left" />
+                <img src="{{image_thumb}}" alt="" class="waypointThumb" />
             </a>
             {{/if}}
 
             <span>{{note}}</span>
-            <br style="clear: both" />
+			<br style="clear: both" />
         </div>
 </script>
 
