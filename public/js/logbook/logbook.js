@@ -306,6 +306,12 @@ function onReceivedTrip(tripId, tripData) {
 
     // get the waypoints of this trip
     loadMoreEntries(tripId, 0);  // 0 = all waypoints
+
+    clearDistributionCharts();
+
+    //Collapse all other trip Timeline entries
+
+    $('.timeline_container :not(#timeline-trip_container_'+tripId+')').fadeOut("slow");
 }
 
 /**
@@ -693,6 +699,13 @@ function initialiseDistributionCharts(tripData){
     if ( $.trim ( $ ( '#air_pressure_cloudage_temperature_distribution' ).text() ) == '' && ($('#details_weather' ).css('display') == 'block') ) {
         initAirPressureCloudingTemperatureChart ( '#air_pressure_cloudage_temperature_distribution', tripData.data ( 'index_data_x' ), tripData.data ( 'air_pressure_data_y' ), tripData.data ( 'cloudage_data_y' ), tripData.data ( 'temperature_data_y' ), tripData.data ( 'waypoint_ids' ) ) ;
     }
+}
+
+function clearDistributionCharts(){
+    $ ( '#details_charts_distribution').html("");
+    $ ( '#wind_distribution').html("");
+    $ ( '#wave_distribution' ).html("");
+    $ ( '#air_pressure_cloudage_temperature_distribution' ).html("");
 }
 
 /**
