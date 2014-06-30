@@ -168,16 +168,6 @@ $(document).ready(function() {
     });
     /* END---------------------------- route ------------------------------- */
 
-    /* START-------------------------- logbook ------------------------------- */
-
-    menu.addCallback('leftclick', 'selected-logbook', function (self) {
-        var boatID  = self.data('boat');
-        var tripID = self.data('id');
-        window.location.href = "http://localhost:9000/logbook/" + boatID + "/" + tripID;
-    });
-
-    /* END---------------------------- logbook ------------------------------- */
-
     /* START-------------------------- track and waypoint------------------------------- */
     var tmpTrack;
     var tmpWaypoint;

@@ -208,7 +208,15 @@ and (max-width : 1224px) {
 }
 
 .ui-widget-header {
-  /* ??? Farbe von jQuery-ui überschreiben bei weather forecast*/
-  background: auto !important;
+  background: none !important;
     background-color: #026899 !important;
 }
+
+.ui-dialog-titlebar {
+  background-color: #026899 !important;
+}
+
+.ui-dialog-titlebar-close {
+  
+}
+
