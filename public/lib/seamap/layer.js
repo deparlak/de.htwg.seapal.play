@@ -177,11 +177,6 @@ USGSOverlay.prototype.onRemove = function() {
 
 // ajax request at openweathermap.org. Get weather data from an area.
 this.getWeatherInfos = function() {
-  
-  // destroy old overlay
-  if (overlay != null) {
-    overlay.setMap(null);
-  }
 
   var bounds = backgroundMap.getBounds();
   var nePoint = bounds.getNorthEast();
@@ -213,15 +208,25 @@ this.getWeatherInfos = function() {
           }
       },
       error: function (errorData) {
-        alert("Error while getting weather data :: " + errorData.status);
+        
         if (overlay != null) {
           overlay.setMap(null);
         }
-        getWeatherInfos();
+
+        // Response is JSON not JSONP, OpenWaetherMaps bug
+        if (errorData.status == 200) {
+          getWeatherInfos();
+        } else {
+          alert("Error while getting weather data :: " + errorData.status);
+        }
+        
       }
   }).done(function() {
-    // ??? Vielleicht Bounds von Request verwenden
     var bounds = backgroundMap.getBounds();
+    // destroy old overlay
+    if (overlay != null) {
+      overlay.setMap(null);
+    }
     overlay = new USGSOverlay(bounds, null, backgroundMap);
   });
 }
