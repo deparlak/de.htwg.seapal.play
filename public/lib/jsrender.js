@@ -670,7 +670,7 @@
 				item = compile(undefined, item);
 			} else if ("" + name === name) { // name must be a string
 				if (item === null) {
-					// If item is null, delete this entries
+					// If item is null, delete this entry
 					delete thisStore[name];
 				} else {
 					thisStore[name] = compile ? (item = compile(name, item, parentTmpl, storeName, storeSettings)) : item;

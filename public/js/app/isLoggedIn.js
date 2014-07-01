@@ -31,7 +31,7 @@ $(document).ready(function() {
 
                 request.done(function (friendResponse, textStatus, jqXHR){
                     for (var i in friendResponse) {
-                        /* friend entries not exist, set the info about the new friend now. */
+                        /* friend entry not exist, set the info about the new friend now. */
                         if (-1 == friend_list.indexOf(friendResponse[i]._id)) {
                             friend_list.push(friendResponse[i]._id);
                             map.set('person', friendResponse[i]);
