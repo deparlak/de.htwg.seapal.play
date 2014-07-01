@@ -9,7 +9,7 @@ $(function() {
 			effect: "explode",
 			duration: 1000
 		},
-		height: 460,
+		height: 470,
 		width: 850,
 	});
 });
@@ -51,17 +51,17 @@ function showHourlyForecastChart() {
 	var cnt=0;
 	var time = new Array();
 	var tmp = new Array();
-	var pres = new Array();
-	var wind = new Array();
+	var windDeg = new Array();
+	var windSpeed = new Array();
 	for(var i = 0; i < forecast.length; i ++){
 		var dt = new Date(forecast[i].dt * 1000);
 		if( curdate > dt ) continue;
 		if(cnt > 10) break;
 		cnt++;
 		tmp.push( Math.round(10*(forecast[i].main.temp))/10 );
-		pres.push( Math.round(10*(forecast[i].main.pressure))/10 );
+		windDeg.push( Math.round(10*(forecast[i].wind.deg))/10 );
 		time.push( new Date( forecast[i].dt * 1000 + time_zone) );
-		wind.push(forecast[i].wind.speed);
+		windSpeed.push(forecast[i].wind.speed);
 	}
 
 	$('#chart_small').highcharts({
@@ -107,13 +107,13 @@ function showHourlyForecastChart() {
         }, { // Secondary yAxis
             gridLineWidth: 0,
             title: {
-                text: 'Pressure',
+                text: 'Wind Direction',
                 style: {
                     color: 'blue'
                 }
             },
             labels: {
-                format: '{value} hPa',
+                format: '{value} °',
                 style: {
                     color: 'blue'
                 }
@@ -122,7 +122,7 @@ function showHourlyForecastChart() {
         }, { // Tertiary yAxis
             gridLineWidth: 0,
             title: {
-                text: 'Wind',
+                text: 'Wind Speed',
                 style: {
                     color: 'green'
                 }
@@ -149,21 +149,21 @@ function showHourlyForecastChart() {
             backgroundColor: (Highcharts.theme && Highcharts.theme.legendBackgroundColor) || '#FFFFFF'
         },
         series: [{
-            name: 'Pressure',
+            name: ' Wind Direction',
             type: 'spline',
             color: 'blue',
             yAxis: 1,
-            data: pres,
+            data: windDeg,
             tooltip: {
-                valueSuffix: ' hPa'
+                valueSuffix: ' °'
             }
 
         }, {
-            name: 'Wind',
+            name: 'Wind Speed',
             type: 'spline',
             color: 'green',
             yAxis: 2,
-            data: wind,
+            data: windSpeed,
             marker: {
                 enabled: false
             },
