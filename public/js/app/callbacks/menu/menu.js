@@ -12,11 +12,11 @@ $(document).ready(function() {
 
     /* on close of the menu, hide all menu-footers which are possible open. */
     menu.on('close', function () {
-        $('.menu-timeline').removeClass('visible').addClass('hidden');
+        $('.menu-footer').removeClass('visible').addClass('hidden');
     });
     /* if we move in a menu back, than we also have to remove all menu-footers which are possible open. */
     menu.addCallback('leftclick', 'icon-menuBack', function (self) {
-        $('.menu-timeline').removeClass('visible').addClass('hidden');
+        $('.menu-footer').removeClass('visible').addClass('hidden');
     });
 
     menu.addCallback('leftclick', 'icon-fullscreen', function (self) {

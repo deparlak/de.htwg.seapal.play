@@ -33,12 +33,12 @@ $(document).ready(function() {
         if (history[active].length > 20) {
             history[active].pop();
         }
-        //set new history entries to begin to show the latest searched things first.
+        //set new history entry to begin to show the latest searched things first.
         history[active].unshift(search);
     }
     
     function removeFromHistory(of) {
-        //remove the last insert entries from the history.
+        //remove the last insert entry from the history.
         if (!(history[of] === undefined)){
             history[of].shift();
         }
@@ -146,7 +146,7 @@ $(document).ready(function() {
         }
     }); 
     
-    /* callback for a selection of a history entries */
+    /* callback for a selection of a history entry */
     tools.addCallback('leftclick', 'icon-previousSearch', function (self) {
         if (active == "#SearchCoordinates") {
             $('#search-searchPosition').inputmask('remove');

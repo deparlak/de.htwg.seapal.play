@@ -265,7 +265,7 @@
                 if (('boat' == type || 'person' == type) && 2 == data[type].count) {
                     self.select(type, newObj.id);
                 }
-            /* if the object already exist, go to the entries and update all entries's */
+            /* if the object already exist, go to the entry and update all entry's */
             } else if (obj.id != null){
                 checkId(type, obj.id);
                 var modified = copyObjAttr(type, data[type].list[obj.id], obj);
