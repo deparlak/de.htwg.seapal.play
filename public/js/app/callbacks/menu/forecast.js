@@ -1,3 +1,4 @@
+/* contains all weather forecast info from openweathermap */
 $(function() {
 	$( "#chart_small" ).dialog({
 		autoOpen: false,
@@ -21,12 +22,11 @@ var time_zone = 1000 * (new Date().getTimezoneOffset())*(-60);
 var url = null;
 var city = null;
 
-function postData(position) {
+function getWeatherForecast(position) {
 
 	var lat = position.lat();
 	var lng = position.lng();
 
-	// url= "http://api.openweathermap.org/data/2.5/forecast?lat=47.662782760137446&lon=9.205708103179973?callback=test?&units=metric";
 	url = "http://api.openweathermap.org/data/2.5/forecast?lat=" + lat + "&lon=" + lng + "?callback=test?&units=metric";
 
   	$.ajax({

@@ -1,5 +1,7 @@
 function windIcon(deg, speed, num) {
+  // compass with lable
   var langWindDir = new Array("N", "NNE", "NE", "ENE","E", "ESE", "SE", "SSE","S", "SSW", "SW", "WSW","W", "WNW", "NW", "NNW");
+  // color of needle
   var windColor;
 
 
@@ -7,6 +9,7 @@ function windIcon(deg, speed, num) {
     return langWindDir[Math.floor(((parseInt($winddir) + 11.25) / 22.5))];
   }
 
+  // color of different wind speed
   function getColor() {
     if (speed < 1.5) {
       return 'rgba(0, 0, 180, 1.0)'; // dark blue
@@ -142,7 +145,6 @@ function windIcon(deg, speed, num) {
             }
         }],
         tooltip: {
-          //valueSuffix: ' km/h'
           enabled: false,
         },
         pivot: {

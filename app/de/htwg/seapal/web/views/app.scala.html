@@ -21,45 +21,45 @@
                 <li id="menu" class="menu-trigger">
                     <a class="menubar-icon menubar-icon-menu"><span></span></a>
                     <nav class="menubar-menu-wrapper">             
-                        <div id="removeItem-timeline" class="menu-timeline btn-group-justified menubar-optionsSelector hidden" style="z-index: 10;"  data-toggle="buttons">
-                            <label class="btn action menu-timeline-item removeItemOk">
+                        <div id="removeItem-footer" class="menu-footer btn-group-justified menubar-optionsSelector hidden" style="z-index: 10;"  data-toggle="buttons">
+                            <label class="btn action menu-footer-item removeItemOk">
                                 <input type="radio"><i class="fa fa-check"></i>
                             </label>
-                            <label class="btn action menu-timeline-item removeItemCancel">
+                            <label class="btn action menu-footer-item removeItemCancel">
                                 <input type="radio"><i class="fa fa-times"></i>
                             </label>
                         </div>
                     
-                        <div id="account-timeline" class="menu-timeline btn-group-justified menubar-optionsSelector hidden" data-toggle="buttons">
+                        <div id="account-footer" class="menu-footer btn-group-justified menubar-optionsSelector hidden" data-toggle="buttons">
 
                         </div>
                         
-                        <div id="crew-timeline" class="menu-timeline btn-group-justified menubar-optionsSelector hidden" data-toggle="buttons">
-                            <label class="btn action menu-timeline-item logbookCrewAdd">
+                        <div id="crew-footer" class="menu-footer btn-group-justified menubar-optionsSelector hidden" data-toggle="buttons">
+                            <label class="btn action menu-footer-item logbookCrewAdd">
                                 <input type="radio"><i class="fa fa-plus"></i>
                             </label>
                         </div>
                         
-                        <div id="boats-timeline" class="menu-timeline btn-group-justified menubar-optionsSelector hidden" data-toggle="buttons">
-                            <label class="btn action menu-timeline-item logbookBoatsAdd">
+                        <div id="boats-footer" class="menu-footer btn-group-justified menubar-optionsSelector hidden" data-toggle="buttons">
+                            <label class="btn action menu-footer-item logbookBoatsAdd">
                                 <input type="radio"><i class="fa fa-plus"></i>
                             </label>
-                            <label class="btn action menu-timeline-item logbookRemove">
+                            <label class="btn action menu-footer-item logbookRemove">
                                 <input type="radio"><i class="fa fa-trash-o"></i>
                             </label>
                         </div>
                          
-                        <div id="logbook-timeline" class="menu-timeline btn-group-justified menubar-optionsSelector hidden" data-toggle="buttons">
-                            <label class="btn action menu-timeline-item logbookTrackAdd">
+                        <div id="logbook-footer" class="menu-footer btn-group-justified menubar-optionsSelector hidden" data-toggle="buttons">
+                            <label class="btn action menu-footer-item logbookTrackAdd">
                                 <input type="radio"><i class="fa fa-plus"></i>
                             </label>
-                            <label class="btn action menu-timeline-item logbookRemove">
+                            <label class="btn action menu-footer-item logbookRemove">
                                 <input type="radio"><i class="fa fa-trash-o"></i>
                             </label>
                         </div>
                     
-                        <div id="menu-marksRoutesTracks-timeline" class="menu-timeline btn-group-justified menubar-optionsSelector hidden" data-toggle="buttons">
-                            <label class="btn action menu-timeline-item marksRoutesTracksRemove">
+                        <div id="menu-marksRoutesTracks-footer" class="menu-footer btn-group-justified menubar-optionsSelector hidden" data-toggle="buttons">
+                            <label class="btn action menu-footer-item marksRoutesTracksRemove">
                                 <input type="radio"><i class="fa fa-trash-o"></i>
                             </label>
                         </div>
@@ -80,25 +80,20 @@
                                 <li><a class="menu-icon icon-settings action">Settings</a></li>
                             </ul>
 
- <!-- ???-->                           <ul id="menu-weather" class="menubar-menu inactive-menu-list">
+                           <ul id="menu-weather" class="menubar-menu inactive-menu-list">
                                 <li><a class="menu-icon icon-menuBack link" data-link="menu-main">Back</a></li>
                                 <!-- selector to switch between different weather data -->
                                 <li>
                                     <div class="btn-group-justified menubar-optionsSelector" data-toggle="buttons">
                                         <label class="btn btn-primary action weather active" data-name="#current-weather">
-                                            <input type="radio">Current Weather
+                                            <input type="radio">Weather
                                         </label>
-<!--
-                                        <label class="btn btn-primary action weather" data-name="#weather-forecast">
-                                            <input type="radio">Weather Forecast
-                                        </label>
--->
                                     </div>
                                 </li>
                                 <div id="current-weather" class="active-weather">
                                     <li class="heading">
                                         <div class="heading1">
-                                            Select Layer Current
+                                            Select Layer Current Weather
                                         </div>
                                     </li>
                                     <div id="weater-layers">
@@ -119,15 +114,19 @@
                                         </li>
                                     </div>
                                 </div>
-                                <div id="weather-forecast" class="inactive-weather">
+<!--                                 <div id="weather-forecast" class="inactive-weather">
                                     <li class="heading">
                                         <div class="heading1">
-                                            Select Layer Forecast
+                                            Select Weather Forecast
                                         </div>
                                     </li>
-                                    <div id="weater-layers"></div>
-                                </div>
-  <!--??? -->                           </ul>
+                                    <div id="weater-forecast">
+                                        <li>
+                                            <a class="menu-icon action icon-notSelected-weather" data-type="weather" data-id="wind" id="wind">Wind</a>
+                                        </li>
+                                    </div>
+                                </div> -->
+                          </ul>
                             
                             <ul id="menu-logbook" class="menubar-menu inactive-menu-list">
                                 <li><a class="menu-icon icon-menuBack link" data-link="menu-main">Back</a></li>
@@ -317,7 +316,6 @@
            
         <div id="map_canvas" style="height: 100%; position: absolute; top: 0; bottom: -200px; left: 0; right: 0; z-index: 0;"></div>
         <div id="chart_small"></div>
-        <div id="weather-input-error"></div>
         
         @appContent.footer()
     </body>

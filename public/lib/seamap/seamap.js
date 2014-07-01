@@ -5,6 +5,9 @@
 */
 
 (function( $, window ){
+
+    const NUMBER_OVERLAYS = 5;
+
     /**
     * *************************************************************************************
     * Default Options
@@ -174,17 +177,7 @@
                     new google.maps.Point(37,37))    
             }
         }
-    };
-
-    /**
-    * *************************************************************************************
-    * Variable for Google Icon- and Cloud-Layer
-    * *************************************************************************************
-    */
-    var iconLayerGoogle = null;
-    var cloudLayerGoogle = null;
-    var stations = null;
-    var current = null;
+    };  
 	
     /**
     * *************************************************************************************
@@ -1139,7 +1132,10 @@
         */
         function init() {
             map = new google.maps.Map(element, options.map);
-            // initOpenSeaMaps();
+            for (var i = 0; i <= NUMBER_OVERLAYS; i++) {
+                map.overlayMapTypes.push(null);
+            }
+            initOpenSeaMaps();
             
             if ( options.mode !== "NOTINTERACTIVE" ) {
                 initContextMenu();
@@ -1149,12 +1145,9 @@
             initCrosshairMarker();
         }
 
-// ???>
-        var RainMap;
-
         /**
          * *********************************************************************************
-         * Initializes the Custom Google-Maps Layer.
+         * Initializes the Custom Open Weather Map Layer.
          * *********************************************************************************
          */
         this.initCustomLayer = function() {
@@ -1163,133 +1156,11 @@
 
         /**
         * *********************************************************************************
-        * Destroy the Open Weather Map Layer.
+        * Destroy the Custom Open Weather Map Layer.
         * *********************************************************************************
         */
         this.destCustomLayer = function() {
                 destroyCustomLayer();
-        }
-
-        /**
-         * *********************************************************************************
-         * Initializes the Open Weather Map Layer.
-         * *********************************************************************************
-         */
-        this.initOpenWeaterMap1 = function() {
-            RainMap = new google.maps.ImageMapType({
-            getTileUrl: function (coord, zoom) {
-            return "http://tile.openweathermap.org/map/wind/" + zoom + "/" + coord.x + "/" + coord.y + ".png";
-            },
-            tileSize: new google.maps.Size(256, 256),
-            isPng: true,
-            alt: "RainMap",
-            name: "RainMap",
-            maxZoom: 19
-            });
-            RainMap.setOpacity(0.5);
-
-        map.overlayMapTypes.push(RainMap);
-        }
-        /**
-        * *********************************************************************************
-        * Destroy the Open Weather Map Layer.
-        * *********************************************************************************
-        */
-        this.destOpenWeaterMap1 = function() {
-            map.overlayinitWeatherIconMapTypes.pop(RainMap);
-        }
-           
-        /**
-         * *********************************************************************************
-         * Initializes the Open Weather Map Layer.
-         * *********************************************************************************
-         */
-        this.initOpenWeaterMap = function() {
-            map = new OpenLayers.Map("map_canvas", {
-                projection: 'EPSG:3857',
-                layers: [
-                    new OpenLayers.Layer.Google(
-                    "Google Streets", // the default
-                    {numZoomLevels: 20}
-                )],
-
-                center: new OpenLayers.LonLat(9.2, 47.7)
-                // Google.v3 uses web mercator as projection, so we have to
-                // transform our coordinates
-                .transform('EPSG:4326', 'EPSG:3857'),
-                zoom: 10
-            });
-
-
-            stations = new OpenLayers.Layer.Vector.OWMStations("Stations");
-            current =  new OpenLayers.Layer.Vector.OWMWeather("Current weather");
-            map.addLayers([current]);
-            //map.overlayMapTypes.push(stations);
-            //addIcons();
-
-        }
-
-        this.addIcons = function() {
-
-            var list = $("image").map(function(){return $(this).attr("id");}).get();
-            for (var i = 0; i < list.length; i++) {
-                if (list[i].indexOf("OpenLayers_Geometry_Point_") != -1) {
-                    var x = $("#" + list[i]).attr("x");
-                    x += 100;
-                    $("#" + list[i]).attr("x", x);
-                }
-            }
-        }
-
-        /**
-         * *********************************************************************************
-         * Destroy the Open Weather Map Layer.
-         * *********************************************************************************
-         */
-        this.destOpenWeaterMap = function() {
-            map.destroy();
-        }
-
-        /**
-         * *********************************************************************************
-         * Initializes the Google Weather Icons overlay.
-         * *********************************************************************************
-         */
-        this.initWeatherIcon = function() {
-            iconLayerGoogle = new google.maps.weather.WeatherLayer({
-                temperatureUnits: google.maps.weather.TemperatureUnit.FAHRENHEIT
-              });
-
-            iconLayerGoogle.setMap(map);
-        }
-        
-        /**
-         * *********************************************************************************
-         * Destroy the Google Weather Icons overlay.
-         * *********************************************************************************
-         */
-        this.destWeatherIcon = function() {
-            iconLayerGoogle.setMap(null);
-        }
-
-        /**
-         * *********************************************************************************
-         * Initializes the Google Weather cloud radar overlay.
-         * *********************************************************************************
-         */
-        
-        this.initCloudLayer = function() {
-            cloudLayerGoogle = new google.maps.weather.CloudLayer();
-            cloudLayerGoogle.setMap(map);
-        }
-        
-        /**
-         * *********************************************************************************
-         * Destroy the Google Weather cloud radar overlay.
-         * *********************************************************************************
-         */
-        this.destCloudLayer = function() {
-            cloudLayerGoogle.setMap(null);
         }
         
         /**
@@ -1298,7 +1169,7 @@
          * *********************************************************************************
          */
         this.initPrecipitation = function() {
-            map.overlayMapTypes.setAt(0, new google.maps.ImageMapType({
+            map.overlayMapTypes.setAt(1, new google.maps.ImageMapType({
                 getTileUrl: function(coord, zoom) {
                     return "http://www.openportguide.org/tiles/actual/precipitation/5/" + zoom + "/" + coord.x + "/" + coord.y + ".png"
                 },
@@ -1318,7 +1189,7 @@
          * *********************************************************************************
          */
         this.destPrecipitation = function() {
-            map.overlayMapTypes.removeAt(0);
+            map.overlayMapTypes.setAt(1, null);
         }
         
         /**
@@ -1327,7 +1198,7 @@
          * *********************************************************************************
          */
         this.initWaveHeight = function() {
-            map.overlayMapTypes.setAt(1, new google.maps.ImageMapType({
+            map.overlayMapTypes.setAt(2, new google.maps.ImageMapType({
                 getTileUrl: function(coord, zoom) {
                     return "http://www.openportguide.org/tiles/actual/significant_wave_height/5/" + zoom + "/" + coord.x + "/" + coord.y + ".png"
                 },
@@ -1347,7 +1218,7 @@
          * *********************************************************************************
          */
         this.destWaveHeight = function() {
-            map.overlayMapTypes.removeAt(1);
+            map.overlayMapTypes.setAt(2, null);
         }
          
         /**
@@ -1356,7 +1227,7 @@
          * *********************************************************************************
          */
         this.initTemperature = function() {
-            map.overlayMapTypes.setAt(2, new google.maps.ImageMapType({
+            map.overlayMapTypes.setAt(3, new google.maps.ImageMapType({
                 getTileUrl: function(coord, zoom) {
                     return "http://www.openportguide.org/tiles/actual/air_temperature/5/" + zoom + "/" + coord.x + "/" + coord.y + ".png"
                 },
@@ -1376,7 +1247,7 @@
          * *********************************************************************************
          */
         this.destTemperature = function() {
-            map.overlayMapTypes.removeAt(2);
+            map.overlayMapTypes.setAt(3, null);
         }
         
         /**
@@ -1385,7 +1256,7 @@
          * *********************************************************************************
          */
         this.initWind = function() {
-            map.overlayMapTypes.setAt(3, new google.maps.ImageMapType({
+            map.overlayMapTypes.setAt(4, new google.maps.ImageMapType({
                 getTileUrl: function(coord, zoom) {
                     return "http://www.openportguide.org/tiles/actual/wind_vector/5/" + zoom + "/" + coord.x + "/" + coord.y + ".png";
                 },
@@ -1405,18 +1276,16 @@
          * *********************************************************************************
          */
         this.destWind = function() {
-            map.overlayMapTypes.removeAt(3);
+            map.overlayMapTypes.setAt(4, null);
         }
 
-// <???
         /**
         * *********************************************************************************
         * Initializes the OpenSeamaps overlay.
         * *********************************************************************************
         */
         function initOpenSeaMaps() {
-// ???            map.overlayMapTypes.push(new google.maps.ImageMapType({
-            map.overlayMapTypes.setAt(4, new google.maps.ImageMapType({
+            map.overlayMapTypes.setAt(5, new google.maps.ImageMapType({
                 getTileUrl: function(coord, zoom) {
                     return "http://tiles.openseamap.org/seamark/" + zoom + "/" + coord.x + "/" + coord.y + ".png";
                 },
@@ -1426,16 +1295,15 @@
             }));
         }
 
-// ???>
         /**
          * *********************************************************************************
          * Destroy the OpenSeamaps overlay.
          * *********************************************************************************
          */
+         // function not used yet
         this.destOpenSeaMaps = function() {
-            map.overlayMapTypes.removeAt(4);
+            map.overlayMapTypes.setAt(5, null);
         }
-// <???
 
         /**
         * *********************************************************************************
@@ -1927,7 +1795,7 @@
                     } else {
                         ctx += '<button id="exitRouteCreation" type="button" class="btn"><i class="icon-flag"></i> Finish Route Recording</button>';
                     }
-                    // ??? todo add icon-weather 
+                    // ??? todo add icon-weather instead of icon-star for weather forecast
                     ctx += '<button id="addNewDistanceRoute" type="button" class="btn"><i class="icon-resize-full"></i> Distance from here</button>'
                         + '<button id="setAsDestination" type="button" class="btn"><i class="icon-star"></i> ' + target + '</button>'
                         + '<button id="setWeatherForecast" type="button" class="btn"><i class="icon-star"></i> Weather Forecast</button>'
@@ -2377,7 +2245,7 @@
         */
         function handleSetWeatherForecast() {
             handleHideContextMenu();
-            postData(crosshairMarker.getPosition());
+            getWeatherForecast(crosshairMarker.getPosition());
         }
 
         /**
@@ -2474,6 +2342,7 @@
             if (null != data.trip.active && null != data.trip.active._id && null != data.boat.active && null != data.boat.active._id) {
                 var boat = getCurrentBoatInformation();
 
+                // get the current weather data from open weather map
                 var weatherData;
                 var url = "http://api.openweathermap.org/data/2.5/weather?lat=";
                 url += boat.pos.lat();
@@ -2513,7 +2382,7 @@
                     }
                     obj.onMap = getOnMapMark(obj);
                     obj.owner = data.person.active != null ? data.person.active.owner : "Someone";;
-                    // in Kelvin
+                    // temperature is in kelvin calculate to celsius
                     obj.tempCelsius = parseFloat((weatherData["temp"] - 273,15).toFixed(1));
                     obj.atmosPressure = parseFloat(weatherData["pressure"].toFixed(1));
                     obj.humidity = parseFloat(weatherData["humidity"].toFixed(1));
