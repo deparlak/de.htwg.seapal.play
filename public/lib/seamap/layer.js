@@ -1,9 +1,9 @@
-// container which contains all weather info from openweathermap
+// contains all weather info from openweathermap
 var weatherData;
 var sw;
 var ne;
 
-var overlay;
+var overlay = new Array();
 var backgroundMap;
 
 var listener;
@@ -12,15 +12,14 @@ USGSOverlay.prototype = new google.maps.OverlayView();
 
 function destroyCustomLayer() {
   google.maps.event.removeListener(listener);
-  if (overlay != null) {
-    overlay.setMap(null);
+  while (overlay[0]) {
+    overlay.pop().setMap(null);
   }
 }
 
 // Initialize the map and the custom overlay.
 function initializeCustomLayer(googleMap) {
   backgroundMap = googleMap;
-  overlay = null;
   listener = null;
   weatherData = new Array();
 
@@ -209,9 +208,9 @@ this.getWeatherInfos = function() {
       },
       error: function (errorData) {
         
-        if (overlay != null) {
-          overlay.setMap(null);
-        }
+          while (overlay[0]) {
+            overlay.pop().setMap(null);
+          }
 
         // Response is JSON not JSONP, OpenWaetherMaps bug
         if (errorData.status == 200) {
@@ -224,10 +223,10 @@ this.getWeatherInfos = function() {
   }).done(function() {
     var bounds = backgroundMap.getBounds();
     // destroy old overlay
-    if (overlay != null) {
-      overlay.setMap(null);
+    while (overlay[0]) {
+      overlay.pop().setMap(null);
     }
-    overlay = new USGSOverlay(bounds, null, backgroundMap);
+    overlay.push(new USGSOverlay(bounds, null, backgroundMap));
   });
 }
 
