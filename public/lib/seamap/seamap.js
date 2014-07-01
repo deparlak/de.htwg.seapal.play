@@ -2056,7 +2056,8 @@
             activateTrack(obj.id); 
             data.trip.count++;
             data.waypoint.count = 1;
-            dataCallback([event.CREATED_TRACK, event.SERVER_CREATE], obj);
+            dataCallback(event.SERVER_CREATE, obj);
+            dataCallback(event.CREATED_TRACK, obj);
         }
 		
         /**
