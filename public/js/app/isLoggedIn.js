@@ -255,7 +255,13 @@ $(document).ready(function() {
         /* callback handler that will be called on success */
         request.done(function (response, textStatus, jqXHR){
             /* restore the object id and set the response object to the map storage (because the _rev and _id changed). */
-			response.id = objectId;
+			if (self.type == "trip") {
+                self.id = response._id;
+                response.id = response._id;
+            } else {
+                response.id = objectId;
+            }
+   
             response.type = self.type;
             response.image_big = null;
 			map.set(response.type, response);
