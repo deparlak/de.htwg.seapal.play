@@ -253,7 +253,7 @@ $(document).ready(function() {
         });
 
         /* callback handler that will be called on success */
-        request.done(function (response, textStatus, jqXHR){           
+        request.done(function (response, textStatus, jqXHR){
             response.id = objectId;
             response.type = self.type;
             response.image_big = null;
@@ -261,10 +261,7 @@ $(document).ready(function() {
 			
 			 /* restore the object id and set the response object to the map storage (because the _rev and _id changed). */
 			if (self.newTripFlag) {
-                self.id = response._id;
-                $('.icon-selected-'+self.type).removeClass('icon-selected-'+self.type).addClass('icon-notSelected-'+self.type);
-                $("#tracks").append(templateCreatedTrip(self));
-                $("#logbook-trips").append(templateLogbook(self));
+                $('#trip' + objectId).prop('href', 'logbook/' + self.boat + '/' + response._id);
             }
 			
             /* If we have uploaded an item with an image (mark, waypoint, ...) we have to upload the image file now */

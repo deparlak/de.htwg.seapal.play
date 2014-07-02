@@ -767,7 +767,7 @@
 			"_id" 			: null,
 			"_rev" 			: null,
 			"owner" 		: null,
-            "newTripFlag"   : null
+            "newTripFlag"   : null,
 		};
         
         var templateBoat =
@@ -815,7 +815,7 @@
 		   Using the dataCallback make sure that the user cannot change the object, because
 		   sending the original object would make it possible for the user.
 		*/
-		dataCallback = function(events, obj) {		
+		var dataCallback = function(events, obj) {		
 			/* 
 				send copy to all event listeners.
 				Each listener get its own copy
@@ -2058,7 +2058,7 @@
             data.trip.count++;
             data.waypoint.count = 1;
             obj.newTripFlag = true;
-            dataCallback([event.SERVER_CREATE], obj);
+            dataCallback([event.CREATED_TRACK, event.SERVER_CREATE], obj);
         }
 		
         /**

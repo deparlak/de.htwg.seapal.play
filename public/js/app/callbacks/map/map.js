@@ -13,10 +13,10 @@ $(document).ready(function() {
     var templateLoadedMark = Handlebars.compile($("#template-loadedMark").html());
     var templateLoadedBoat = Handlebars.compile($("#template-loadedBoat").html());
     var templatePerson = Handlebars.compile($("#template-person").html());
-    templateLogbook = Handlebars.compile($("#template-logbook").html());
+    var templateLogbook = Handlebars.compile($("#template-logbook").html());
     
 	var templateCreatedRoute = Handlebars.compile($("#template-createdRoute").html());
-    templateCreatedTrip = Handlebars.compile($("#template-createdTrip").html());
+    var templateCreatedTrip = Handlebars.compile($("#template-createdTrip").html());
     var templateCreatedMark = Handlebars.compile($("#template-createdMark").html());
 	
 	/* this callback will be called if an object was loaded from the server */
