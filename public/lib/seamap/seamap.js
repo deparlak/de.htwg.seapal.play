@@ -815,7 +815,7 @@
 		   Using the dataCallback make sure that the user cannot change the object, because
 		   sending the original object would make it possible for the user.
 		*/
-		var dataCallback = function(events, obj) {		
+		dataCallback = function(events, obj) {		
 			/* 
 				send copy to all event listeners.
 				Each listener get its own copy
