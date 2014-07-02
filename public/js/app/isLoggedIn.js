@@ -31,7 +31,7 @@ $(document).ready(function() {
 
                 request.done(function (friendResponse, textStatus, jqXHR){
                     for (var i in friendResponse) {
-                        /* friend entry not exist, set the info about the new friend now. */
+                        /* friend entries not exist, set the info about the new friend now. */
                         if (-1 == friend_list.indexOf(friendResponse[i]._id)) {
                             friend_list.push(friendResponse[i]._id);
                             map.set('person', friendResponse[i]);
@@ -255,12 +255,13 @@ $(document).ready(function() {
         /* callback handler that will be called on success */
         request.done(function (response, textStatus, jqXHR){
             /* restore the object id and set the response object to the map storage (because the _rev and _id changed). */
-			if (self.type == "trip") {
+			if (self.newTripFlag) {
                 self.id = response._id;
+                dataCallback([event.CREATED_TRACK], self);
+                //$("#logbook-trips").append(templateLogbook(self));
             }
-            response.id = objectId;
 
-   
+            response.id = objectId;
             response.type = self.type;
             response.image_big = null;
 			map.set(response.type, response);

@@ -265,7 +265,7 @@
                 if (('boat' == type || 'person' == type) && 2 == data[type].count) {
                     self.select(type, newObj.id);
                 }
-            /* if the object already exist, go to the entry and update all entry's */
+            /* if the object already exist, go to the entries and update all entries's */
             } else if (obj.id != null){
                 checkId(type, obj.id);
                 var modified = copyObjAttr(type, data[type].list[obj.id], obj);
@@ -766,7 +766,8 @@
             "boat"          : null,
 			"_id" 			: null,
 			"_rev" 			: null,
-			"owner" 		: null
+			"owner" 		: null,
+            "newTripFlag"   : null
 		};
         
         var templateBoat =
@@ -2056,8 +2057,8 @@
             activateTrack(obj.id); 
             data.trip.count++;
             data.waypoint.count = 1;
-            dataCallback(event.SERVER_CREATE, obj);
-            dataCallback(event.CREATED_TRACK, obj);
+            obj.newTripFlag = true;
+            dataCallback([event.SERVER_CREATE], obj);
         }
 		
         /**
