@@ -5,6 +5,9 @@
  * 
  */
 
+var dateFormat = "YYYY-MM-DD";
+var timeFormat = "h:mm:ss a";
+
 $(document).ready(function() {
     $(document).bind("contextmenu", function(e) {
         return false;

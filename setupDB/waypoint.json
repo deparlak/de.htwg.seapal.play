@@ -13,6 +13,15 @@
        },
        "trip": {
          "map":"(doc)->\n if doc? and doc.trip? and doc.owner.length? and doc.owner.length > 0 and doc.trip.length? and doc.trip.length > 0\n  emit \"#{doc.owner}#{doc.trip}\", doc"
+       },
+       "pictures": {
+           "map": "(doc) -> if doc.image_thumb\n   emit doc.trip, {waypointId: doc._id, thumbPicture: doc.image_thumb}"
+       },
+       "byTrip": {
+           "map": "(doc)->\n  emit \"#{doc.trip}#{doc.date}\", doc"
+       },
+       "byTripMinimalData": {
+           "map": "(doc)->\n  emit \"#{doc.trip}#{doc.date}\", {id: doc._id, name: doc.name, date: doc.date, image_thumb: doc.image_thumb}"
        }
    },
    "filters": {

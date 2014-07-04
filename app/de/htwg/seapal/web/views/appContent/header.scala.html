@@ -15,20 +15,33 @@
 <link type="text/css" rel="stylesheet" href="@routes.Assets.at("lib/menubar/css/menubar.css")" />
 <link type="text/css" rel="stylesheet" href="@routes.Assets.at("lib/datepicker/css/datepicker.css")" />
 <link type="text/css" rel="stylesheet" href="@routes.Assets.at("css/seamap.css")" />
+<link type="text/css" rel="stylesheet" href="@routes.Assets.at("css/layer.css")" />
 <link type="text/css" rel="stylesheet" href="@routes.Assets.at("css/signInSeapal.css")" />
 <link type="text/css" rel="stylesheet" href="@routes.Assets.at("css/inputForms.css")" />
+<link type="text/css" rel="stylesheet" href="http://code.jquery.com/ui/1.10.4/themes/smoothness/jquery-ui.css">
 
 <!-- JS -->
-<script type="text/javascript" src="@routes.Assets.at("lib/jquery.js")"></script>
+
+<!-- <script type="text/javascript" src="@routes.Assets.at("lib/jquery.js")"></script>
+<script type="text/javascript" src="@routes.Assets.at("lib/jquery-ui.min.js")"></script> -->
+  
+<script type="text/javascript" src="http://code.jquery.com/jquery-1.10.2.js"></script>
 <script type="text/javascript" src="@routes.Assets.at("lib/jquery.inputmask.js")"></script>
+<script type="text/javascript" src="http://code.jquery.com/ui/1.10.4/jquery-ui.js"></script>
 <script type="text/javascript" src="@routes.Assets.at("lib/bootstrap/js/bootstrap.min.js")"></script>
-<script type="text/javascript" src="https://maps.google.com/maps/api/js?key=AIzaSyAL6gKFmwH7gDXmmAW-5VqkW_HbJG7_QLA&sensor=false&libraries=places"></script>
+<script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=false&libraries=weather&libraries=places"></script>
+<script type="text/javascript" src="http://openlayers.org/api/OpenLayers.js"></script>
+<script type="text/javascript" src="http://openweathermap.org/js/OWM.OpenLayers.1.3.6.js"></script>
+<script type="text/javascript" src="http://code.highcharts.com/highcharts.js"></script>
+<script type="text/javascript" src="http://code.highcharts.com/highcharts-more.js"></script>
 <script type="text/javascript" src="@routes.Assets.at("lib/label.js")"></script>
 <script type="text/javascript" src="@routes.Assets.at("lib/modalOutput/modalOutput.js")"></script>
 <script type="text/javascript" src="@routes.Assets.at("lib/menubar/js/classie.js")"></script>
 <script type="text/javascript" src="@routes.Assets.at("lib/menubar/js/menubar.js")"></script>
+<script type="text/javascript" src="@routes.Assets.at("lib/seamap/windIcon.js")"></script>
 <script type="text/javascript" src="@routes.Assets.at("lib/seamap/seamap.js")"></script>
 <script type="text/javascript" src="@routes.Assets.at("lib/modernizr.js")"></script>
+<script type="text/javascript" src="@routes.Assets.at("js/logbook/moment.min.js")"></script>
 <script type="text/javascript" src="@routes.Assets.at("lib/handlebars/handlebars-v1.1.2.js")"></script>
 <script type="text/javascript" src="@routes.Assets.at("lib/fullscreen/fullscreen.js")"></script>
 <script type="text/javascript" src="@routes.Assets.at("lib/camera/camera.js")"></script>
@@ -46,8 +59,11 @@
 <script type="text/javascript" src="@routes.Assets.at("js/app/callbacks/tools/tools.js")"></script>
 <script type="text/javascript" src="@routes.Assets.at("js/app/callbacks/tools/searchPosition.js")"></script>
 <script type="text/javascript" src="@routes.Assets.at("js/app/callbacks/tools/camera.js")"></script>
+<script type="text/javascript" src="@routes.Assets.at("js/app/callbacks/menu/weather.js")"></script>
+<script type="text/javascript" src="@routes.Assets.at("js/app/callbacks/menu/forecast.js")"></script>
+<script type="text/javascript" src="@routes.Assets.at("lib/seamap/layer.js")"></script>
 
-@if(session.contains("id")) {  
+@if(session.contains("id")) {
     <script type="text/javascript" src="@routes.Assets.at("js/app/isLoggedIn.js")"></script>
 } else {
     <script type="text/javascript" src="@routes.Assets.at("js/app/isLoggedOut.js")"></script>

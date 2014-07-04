@@ -1,0 +1,53 @@
+
+<div id="timeline">
+    <ul id="base" class="timeline dragger timeline_header">
+        <!-- AJAX content -->
+    </ul>
+</div>
+
+
+<script type="x/handlebars-template" id="timelineTripTemplate">
+    <li>
+        <div class="timeline-panel expandable" id="timeline-trip_{{_id}}">
+            <div class="timeline-heading">
+                {{startDate}}
+            </div>
+            <div class="timeline-body">
+                {{name}}
+            </div>
+        </div>
+    </li>
+    <ul id="timeline-trip_container_{{_id}}" class="timeline timeline_container">
+        <!-- to add timeline waypoints -->
+    </ul>
+</script>
+
+<script type="x/handlebars-template" id="timelineWaypointTemplate">
+    <li class="timeline-inverted {{#if note}}hasNote{{/if}} {{#if image_thumb}}hasImage{{/if}}" id="timeline-wp-container_{{_id}}">
+        <div id="timeline-waypoint_{{_id}}" class="timeline-panel clickable">
+            {{#if image_thumb}}
+            <img src="{{image_thumb}}" alt="" class="timeline-img" />
+            {{/if}}
+
+            <div class="timeline-heading">
+                {{formattedDate}}
+            </div>
+            <div class="timeline-body">
+                {{name}}
+            </div>
+        </div>
+    </li>
+</script>
+
+<script type="x/handlebars-template" id="timelineTripHeaderTemplate">
+    <li class="timeline-inverted hasNote hasImage" id="timeline-tripHeader-container_{{_id}}">
+        <div id="timeline-trip_header_{{_id}}" class="timeline-panel clickable">
+            <div class="timeline-heading">
+            {{formattedDate}}
+            </div>
+            <div class="timeline-body">
+            {{name}}
+            </div>
+        </div>
+    </li>
+</script>

@@ -19,3 +19,6 @@ public/video/bg.mp4
 public/video/bg.webm
 public/video/bg2.mp4
 public/video/bg2.webm
+/.cache
+/startplay.bat
+/bin

@@ -17,7 +17,7 @@
                 <i class="fa fa-play fa-lg"></i>
             </a>
         <div class="container" style="z-index: 2;  position: relative;"> 
-            <ul class="menubar-menu-main">
+            <ul class="menubar-menu-main">            	
                 <li id="menu" class="menu-trigger">
                     <a class="menubar-icon menubar-icon-menu"><span></span></a>
                     <nav class="menubar-menu-wrapper">             
@@ -50,12 +50,7 @@
                         </div>
                          
                         <div id="logbook-footer" class="menu-footer btn-group-justified menubar-optionsSelector hidden" data-toggle="buttons">
-                            <label class="btn action menu-footer-item logbookTrackAdd">
-                                <input type="radio"><i class="fa fa-plus"></i>
-                            </label>
-                            <label class="btn action menu-footer-item logbookRemove">
-                                <input type="radio"><i class="fa fa-trash-o"></i>
-                            </label>
+                            
                         </div>
                     
                         <div id="menu-marksRoutesTracks-footer" class="menu-footer btn-group-justified menubar-optionsSelector hidden" data-toggle="buttons">
@@ -74,11 +69,59 @@
                                 <li><a class="menu-icon icon-charts action">Navigation Charts</a></li>
                                 <li><a class="menu-icon icon-addOns action">Add-ons</a></li>
                                 <li><a class="menu-icon icon-poi action">Points of Interest</a></li>
-                                <li><a class="menu-icon icon-weather action">Weather</a></li>
+                                <li><a class="menu-icon icon-weather link" data-link="menu-weather">Weather</a></li>
                                 <li><a class="menu-icon icon-alarms action">Alarms</a></li>
                                 <li><a class="menu-icon icon-info action">Info</a></li>
                                 <li><a class="menu-icon icon-settings action">Settings</a></li>
-                            </ul>                        
+                            </ul>
+
+                           <ul id="menu-weather" class="menubar-menu inactive-menu-list">
+                                <li><a class="menu-icon icon-menuBack link" data-link="menu-main">Back</a></li>
+                                <!-- selector to switch between different weather data -->
+                                <li>
+                                    <div class="btn-group-justified menubar-optionsSelector" data-toggle="buttons">
+                                        <label class="btn btn-primary action weather active" data-name="#current-weather">
+                                            <input type="radio">Weather
+                                        </label>
+                                    </div>
+                                </li>
+                                <div id="current-weather" class="active-weather">
+                                    <li class="heading">
+                                        <div class="heading1">
+                                            Select Layer Current Weather
+                                        </div>
+                                    </li>
+                                    <div id="weater-layers">
+                                        <li>
+                                            <a class="menu-icon action icon-notSelected-weather" data-type="weather" data-id="wind" id="wind">Wind</a>
+                                        </li>
+                                        <li>
+                                            <a class="menu-icon action icon-notSelected-weather" data-type="weather" data-id="temperature" id="temperature">Temperature</a>
+                                        </li>
+                                        <li>
+                                            <a class="menu-icon action icon-notSelected-weather" data-type="weather" data-id="waveHeight" id="waveHeight">Wave Height</a>
+                                        </li>
+                                        <li>
+                                            <a class="menu-icon action icon-notSelected-weather" data-type="weather" data-id="precipitate" id="precipitate">Precipitate</a>
+                                        </li>
+                                        <li>
+                                            <a class="menu-icon action icon-notSelected-weather" data-type="weather" data-id="weather-icons" id="weather-icons">Weather Icons</a>
+                                        </li>
+                                    </div>
+                                </div>
+<!--                                 <div id="weather-forecast" class="inactive-weather">
+                                    <li class="heading">
+                                        <div class="heading1">
+                                            Select Weather Forecast
+                                        </div>
+                                    </li>
+                                    <div id="weater-forecast">
+                                        <li>
+                                            <a class="menu-icon action icon-notSelected-weather" data-type="weather" data-id="wind" id="wind">Wind</a>
+                                        </li>
+                                    </div>
+                                </div> -->
+                          </ul>
                             
                             <ul id="menu-logbook" class="menubar-menu inactive-menu-list">
                                 <li><a class="menu-icon icon-menuBack link" data-link="menu-main">Back</a></li>
@@ -211,6 +254,10 @@
                     </nav>
                 </li>
                 
+                <li id="home" class="home-trigger">
+                	<a class="menubar-icon menubar-icon-home" href="@de.htwg.seapal.web.controllers.routes.Application.index()"><span></span></a>
+            	</li>
+                
                 <li id="tools" class="tools-trigger">
                     <a class="menubar-icon menubar-icon-tools"><span></span></a>
                     <nav class="menubar-tools-wrapper">
@@ -263,6 +310,7 @@
         </div><!-- /container -->
            
         <div id="map_canvas" style="height: 100%; position: absolute; top: 0; bottom: -200px; left: 0; right: 0; z-index: 0;"></div>
+        <div id="chart_small"></div>
         
         @appContent.footer()
     </body>

@@ -1,6 +1,7 @@
 package de.htwg.seapal.web.controllers;
 
 import com.google.inject.Inject;
+
 import de.htwg.seapal.controller.IAccountController;
 import de.htwg.seapal.model.IAccount;
 import de.htwg.seapal.model.impl.Account;
@@ -10,7 +11,9 @@ import de.htwg.seapal.utils.logging.ILogger;
 import de.htwg.seapal.web.controllers.helpers.Menus;
 import de.htwg.seapal.web.views.html.appContent.signInSeapal;
 import de.htwg.seapal.web.views.html.appContent.signUpSeapal;
+
 import org.codehaus.jackson.node.ObjectNode;
+
 import play.data.DynamicForm;
 import play.data.Form;
 import play.libs.F;
@@ -96,23 +99,29 @@ public class AccountAPI
      * @return a redirect to the app or to the form telling why it failed.
      */
     public Result login() {
+    	String returnUrl = routes.Application.app().url();
+    	String[] returnUrls = request().body().asFormUrlEncoded().get("returnUrl");
+    	if (returnUrl != null && returnUrls.length > 0) {
+    		returnUrl = returnUrls[0];
+    	}
+    	
         Form<Account> filledForm = DynamicForm.form(Account.class).bindFromRequest();
         if (filledForm.hasErrors()) {
             flash("errors", filledForm.errorsAsJson().toString());
-            return badRequest(signInSeapal.render(filledForm, routes.AccountAPI.login()));
+            return badRequest(signInSeapal.render(filledForm, routes.AccountAPI.login(), returnUrl));
         }
 
         IAccount account = controller.authenticate(filledForm.get());
 
         if (account == null) {
             flash("errors", "Authentication failed");
-            return badRequest(signInSeapal.render(filledForm, routes.AccountAPI.login()));
+            return badRequest(signInSeapal.render(filledForm, routes.AccountAPI.login(), returnUrl));
         }
 
         session().clear();
         session(IAccountController.AUTHN_COOKIE_KEY, account.getUUID().toString());
         flash("success", "You've been logged in");
-        return redirect(routes.Application.app());
+        return redirect(returnUrl);
     }
 
     /**
@@ -234,7 +243,7 @@ public class AccountAPI
             for (String mode : modes) {
                 if (mode.equals("cancel")) {
                     flash("errors", "Login Failed");
-                    return badRequest(signInSeapal.render(null, routes.AccountAPI.login()));
+                    return badRequest(signInSeapal.render(null, routes.AccountAPI.login(), ""));
                 }
             }
         }
@@ -245,7 +254,7 @@ public class AccountAPI
         IAccount person = controller.googleLogin(userInfo.attributes, userInfo.id);
         if (person == null) {
             flash("errors", "Login Failed");
-            return badRequest(signInSeapal.render(null, routes.AccountAPI.login()));
+            return badRequest(signInSeapal.render(null, routes.AccountAPI.login(), ""));
         }
 
         session().clear();
@@ -259,9 +268,14 @@ public class AccountAPI
      */
     @play.mvc.Security.Authenticated(AccountAPI.Secured.class)
     public Result logout() {
+    	String returnUrl = request().getQueryString("returnUrl");
+    	if (returnUrl == null) {
+    		returnUrl = routes.Application.index().url();
+    	}
+    	
         session().clear();
         flash("success", "You've been logged out");
-        return redirect(routes.Application.index());
+        return redirect(returnUrl);
     }
 
     /**
@@ -293,7 +307,7 @@ public class AccountAPI
 
         @Override
         public Result onUnauthorized(Context ctx) {
-            return redirect(routes.Application.login());
+            return redirect(routes.Application.login() + "?returnUrl=" + ctx.request().uri());
         }
 
     }

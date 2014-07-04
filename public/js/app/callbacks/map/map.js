@@ -13,6 +13,7 @@ $(document).ready(function() {
     var templateLoadedMark = Handlebars.compile($("#template-loadedMark").html());
     var templateLoadedBoat = Handlebars.compile($("#template-loadedBoat").html());
     var templatePerson = Handlebars.compile($("#template-person").html());
+    var templateLogbook = Handlebars.compile($("#template-logbook").html());
     
 	var templateCreatedRoute = Handlebars.compile($("#template-createdRoute").html());
     var templateCreatedTrip = Handlebars.compile($("#template-createdTrip").html());
@@ -26,8 +27,8 @@ $(document).ready(function() {
             /* a trip is only a track if there are some marks */
             if (self.marks.length > 0) {
                 $("#tracks").append(templateLoadedTrip(self));
-            }
-            $("#logbook-trips").append(templateLoadedTrip(self));
+                $("#logbook-trips").append(templateLogbook(self));
+            }     
         } else if (self.type == 'mark') {
             $("#marks").append(templateLoadedMark(self));
         } else if (self.type == 'boat') {
@@ -77,7 +78,7 @@ $(document).ready(function() {
     map.addCallback(events.CREATED_TRACK, function (self) {
         $('.icon-selected-'+self.type).removeClass('icon-selected-'+self.type).addClass('icon-notSelected-'+self.type);
         $("#tracks").append(templateCreatedTrip(self));
-        $("#logbook-trips").append(templateCreatedTrip(self));
+        $("#logbook-trips").append(templateLogbook(self));
     });
 
 	/* this callback will be called when a mark was added */

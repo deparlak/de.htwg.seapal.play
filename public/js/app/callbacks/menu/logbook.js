@@ -17,7 +17,7 @@ $(document).ready(function() {
     /* when we open logbook submenu, we have to visible the footer for the submenu */
     menu.addCallback('leftclick', 'icon-logbook', function (self) {
         removeItem.disable();
-        $(active+"-footer").removeClass('hidden').addClass('visible'); 
+        $(active+"-footer").removeClass('hidden').addClass('visible');
     });
     
     /* when we swith one of the submenus */
@@ -31,7 +31,7 @@ $(document).ready(function() {
         $(active+"-footer").removeClass('visible').addClass('hidden');
         active = self.data('name');
         /* be sure that the default footer is visible */
-        $(active+"-footer").removeClass('hidden').addClass('visible'); 
+        $(active+"-footer").removeClass('hidden').addClass('visible');
     });
     
     menu.addCallback('leftclick', ['icon-notSelected-boat', 'icon-notSelected-person'], function (self) {
@@ -218,10 +218,12 @@ $(document).ready(function() {
         } else {
             tmpWaypoint.image = "/assets/images/no_image.png";
         }
-        var template = Handlebars.compile($('#waypoint_Template').text());
+        var template = Handlebars.compile($('#waypointEditorTemplate').html());
         var html = template(tmpWaypoint);
-        $('#waypointInputForm').html(html);            
+
+        $('#waypointInputForm').html(html);
         $('#modal-form_waypoint').modal('show');
+        $( "#tabs" ).tabs();
     }
 
     $('#modal-form_waypoint').submit(function() {

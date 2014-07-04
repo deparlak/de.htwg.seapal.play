@@ -201,3 +201,22 @@ and (max-width : 1224px) {
 .seamapsidebar div.buttons_bottom div {
     padding:10px;
 }
+
+#chart_small {
+    width: 850;
+    height: 460;
+}
+
+.ui-widget-header {
+  background: none !important;
+    background-color: #026899 !important;
+}
+
+.ui-dialog-titlebar {
+  background-color: #026899 !important;
+}
+
+.ui-dialog-titlebar-close {
+  
+}
+

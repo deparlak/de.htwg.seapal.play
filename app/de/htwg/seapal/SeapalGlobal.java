@@ -1,7 +1,10 @@
 package de.htwg.seapal;
 
+import java.util.Locale;
+
 import com.google.inject.Guice;
 import com.google.inject.Injector;
+
 import de.htwg.seapal.module.SeapalTestModule;
 import de.htwg.seapal.utils.logging.ILogger;
 import play.Application;
@@ -25,7 +28,7 @@ public class SeapalGlobal
     private static Injector createInjector() {
         return Guice.createInjector(new SeapalTestModule());
     }
-
+    
     @Override
     public <A> A getControllerInstance(Class<A> controllerClass)
             throws Exception {
@@ -36,6 +39,7 @@ public class SeapalGlobal
     @Override
     public void onStart(Application app) {
         logger.info("GLOBAL", "Maps app has started");
+        Locale.setDefault(new Locale("en"));
     }
 
     @Override

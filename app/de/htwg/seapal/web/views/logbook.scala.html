@@ -1,0 +1,39 @@
+@(Model : de.htwg.seapal.web.models.Logbook)
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>SeaPal Logbook</title>
+        @logbookContent.header()
+    </head>
+    <body>
+        @logbookContent.entries()
+
+        <div id="menu_bar">
+            @logbookContent.menubar()
+        </div>
+
+        <div id="timeline_col">
+            @logbookContent.timeline()
+        </div>
+
+        <div id="details_col">
+            @logbookContent.details()
+        </div>
+
+        <script type="text/javascript">
+            $(document).ready(function () {
+                // set handler for HTTP-Forbidden errors:
+                logbook.onForbidden = function () {
+                    window.location.href = '@de.htwg.seapal.web.controllers.routes.Application.forbiddenContent()';
+                }
+
+                var expandImage = '@routes.Assets.at("images/logbook/expand-icon.png")';
+                var contractImage = '@routes.Assets.at("images/logbook/contract-icon.png")';
+
+                var initialTripId = '@Model.getInitialTripId()';
+                var boatId = '@Model.getBoatId()';
+                initialiseLogbook(initialTripId, boatId, expandImage, contractImage);
+            });
+        </script>
+    </body>
+</html>

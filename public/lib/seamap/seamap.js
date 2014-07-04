@@ -3,7 +3,11 @@
 * @version ENGLISH
 * @author Julian Mueller
 */
+
 (function( $, window ){
+
+    const NUMBER_OVERLAYS = 5;
+
     /**
     * *************************************************************************************
     * Default Options
@@ -173,7 +177,7 @@
                     new google.maps.Point(37,37))    
             }
         }
-    };
+    };  
 	
     /**
     * *************************************************************************************
@@ -261,7 +265,7 @@
                 if (('boat' == type || 'person' == type) && 2 == data[type].count) {
                     self.select(type, newObj.id);
                 }
-            /* if the object already exist, go to the entry and update all entry's */
+            /* if the object already exist, go to the entries and update all entries's */
             } else if (obj.id != null){
                 checkId(type, obj.id);
                 var modified = copyObjAttr(type, data[type].list[obj.id], obj);
@@ -723,6 +727,11 @@
             "boat"          : null,
 			"_id"			: null,
 			"_rev" 			: null,
+            "tempCelsius"          : null,
+            "atmosPressure"      : null,
+            "humidity"      : null,
+            "windSpeedBeaufort"     : null,
+            "windDirection"       : null,
 			"owner" 		: null
 		};
         
@@ -757,7 +766,8 @@
             "boat"          : null,
 			"_id" 			: null,
 			"_rev" 			: null,
-			"owner" 		: null
+			"owner" 		: null,
+            "newTripFlag"   : null,
 		};
         
         var templateBoat =
@@ -948,7 +958,7 @@
             return true;
         }
 		
-		/* define the select method for a route */
+		/* define the deselect method for a route */
 		data.route.deselectMethod = function(id) {
 			if (!data.route.active || data.route.active.id != id) {
 				throw("Illegal call of data.route.deselectMethod, beacause only the active route can be hidden.");
@@ -968,7 +978,7 @@
             return true;
 		};
         
-		/* define the select method for a track */
+		/* define the deselect method for a track */
 		data.trip.deselectMethod = function(id) {
 			if (!data.trip.active || data.trip.active.id != id) {
 				throw("Illegal call of data.trip.deselectMethod, beacause only the active track can be hidden.");
@@ -980,10 +990,10 @@
 			/* hide the active trip now */
 			hideActiveTrack();
             return true;
-		};	
+		};
 
 		/* define the select method for a mark */
-		data.mark.selectMethod	 = function(id){
+		data.mark.selectMethod = function(id){
 			if (!data.mark.list[id].onMap) {
 				data.mark.list[id].onMap = getOnMapMark(data.mark.list[id]);
 			}
@@ -1118,18 +1128,156 @@
         /**
         * *********************************************************************************
         * Initializes the GoogleMaps with OpenSeaMaps overlay, the context menu, the
-        * boat animation and the default route.
+        * boat animation, the default route and weather layers.
         * *********************************************************************************
         */
         function init() {
             map = new google.maps.Map(element, options.map);
+            for (var i = 0; i <= NUMBER_OVERLAYS; i++) {
+                map.overlayMapTypes.push(null);
+            }
             initOpenSeaMaps();
             
             if ( options.mode !== "NOTINTERACTIVE" ) {
-                initContextMenu();    
+                initContextMenu();
                 initGoogleMapsListeners();
             }
+
             initCrosshairMarker();
+        }
+
+        /**
+         * *********************************************************************************
+         * Initializes the Custom Open Weather Map Layer.
+         * *********************************************************************************
+         */
+        this.initCustomLayer = function() {
+                initializeCustomLayer(map);
+        }
+
+        /**
+        * *********************************************************************************
+        * Destroy the Custom Open Weather Map Layer.
+        * *********************************************************************************
+        */
+        this.destCustomLayer = function() {
+                destroyCustomLayer();
+        }
+        
+        /**
+         * *********************************************************************************
+         * Initializes the OpenPortGuide precipitation overlay.
+         * *********************************************************************************
+         */
+        this.initPrecipitation = function() {
+            map.overlayMapTypes.setAt(1, new google.maps.ImageMapType({
+                getTileUrl: function(coord, zoom) {
+                    return "http://www.openportguide.org/tiles/actual/precipitation/5/" + zoom + "/" + coord.x + "/" + coord.y + ".png"
+                },
+                tileSize: new google.maps.Size(256, 256),
+                name: "Precipitation",
+                maxZoom: 7
+            }));
+            
+            if(map.getZoom() > 7){
+                map.setZoom(7);
+            }
+        }
+        
+        /**
+         * *********************************************************************************
+         * Destroy the OpenPortGuide precipitation overlay.
+         * *********************************************************************************
+         */
+        this.destPrecipitation = function() {
+            map.overlayMapTypes.setAt(1, null);
+        }
+        
+        /**
+         * *********************************************************************************
+         * Initializes the OpenPortGuide wave height overlay.
+         * *********************************************************************************
+         */
+        this.initWaveHeight = function() {
+            map.overlayMapTypes.setAt(2, new google.maps.ImageMapType({
+                getTileUrl: function(coord, zoom) {
+                    return "http://www.openportguide.org/tiles/actual/significant_wave_height/5/" + zoom + "/" + coord.x + "/" + coord.y + ".png"
+                },
+                tileSize: new google.maps.Size(256, 256),
+                name: "WaveHeight",
+                maxZoom: 7
+            }));
+            
+            if(map.getZoom() > 7){
+                map.setZoom(7);
+            }
+        }
+        
+        /**
+         * *********************************************************************************
+         * Destroy the OpenPortGuide wave height overlay.
+         * *********************************************************************************
+         */
+        this.destWaveHeight = function() {
+            map.overlayMapTypes.setAt(2, null);
+        }
+         
+        /**
+         * *********************************************************************************
+         * Initializes the OpenPortGuide temperature overlay.
+         * *********************************************************************************
+         */
+        this.initTemperature = function() {
+            map.overlayMapTypes.setAt(3, new google.maps.ImageMapType({
+                getTileUrl: function(coord, zoom) {
+                    return "http://www.openportguide.org/tiles/actual/air_temperature/5/" + zoom + "/" + coord.x + "/" + coord.y + ".png"
+                },
+                tileSize: new google.maps.Size(256, 256),
+                name: "Temperature",
+                maxZoom: 7
+            }));
+            
+            if(map.getZoom() > 7){
+                map.setZoom(7);
+            }
+        }
+        
+        /**
+         * *********************************************************************************
+         * Destroy the OpenPortGuide temperature overlay.
+         * *********************************************************************************
+         */
+        this.destTemperature = function() {
+            map.overlayMapTypes.setAt(3, null);
+        }
+        
+        /**
+         * *********************************************************************************
+         * Initializes the OpenPortGuide wind overlay.
+         * *********************************************************************************
+         */
+        this.initWind = function() {
+            map.overlayMapTypes.setAt(4, new google.maps.ImageMapType({
+                getTileUrl: function(coord, zoom) {
+                    return "http://www.openportguide.org/tiles/actual/wind_vector/5/" + zoom + "/" + coord.x + "/" + coord.y + ".png";
+                },
+                tileSize: new google.maps.Size(256, 256),
+                name: "Wind",
+                maxZoom: 7
+            }));
+            
+            if(map.getZoom() > 7){
+                map.setZoom(7);
+            }
+        }
+        
+        /**
+         * *********************************************************************************
+         * Destroy the OpenPortGuide wind overlay.
+         * *********************************************************************************
+         */
+        this.destWind = function() {
+            map.overlayMapTypes.setAt(4, null);
         }
 
         /**
@@ -1138,7 +1286,7 @@
         * *********************************************************************************
         */
         function initOpenSeaMaps() {
-            map.overlayMapTypes.push(new google.maps.ImageMapType({
+            map.overlayMapTypes.setAt(5, new google.maps.ImageMapType({
                 getTileUrl: function(coord, zoom) {
                     return "http://tiles.openseamap.org/seamark/" + zoom + "/" + coord.x + "/" + coord.y + ".png";
                 },
@@ -1146,6 +1294,16 @@
                 name: "OpenSeaMap",
                 maxZoom: 18
             }));
+        }
+
+        /**
+         * *********************************************************************************
+         * Destroy the OpenSeamaps overlay.
+         * *********************************************************************************
+         */
+         // function not used yet
+        this.destOpenSeaMaps = function() {
+            map.overlayMapTypes.setAt(5, null);
         }
 
         /**
@@ -1166,6 +1324,7 @@
             $this.on("click", "#addNewRoute", handleAddNewRoute);
             $this.on("click", "#exitRouteCreation", handleExitRouteCreation);
             $this.on("click", "#setAsDestination", handleSetAsDestination);
+            $this.on("click", "#setWeatherForecast", handleSetWeatherForecast);
             $this.on("click", "#addNewDistanceRoute", handleAddNewDistanceRoute);
             $this.on("click", "#hideContextMenu", handleHideContextMenu);
         }
@@ -1637,9 +1796,11 @@
                     } else {
                         ctx += '<button id="exitRouteCreation" type="button" class="btn"><i class="icon-flag"></i> Finish Route Recording</button>';
                     }
+                    // ??? todo add icon-weather instead of icon-star for weather forecast
                     ctx += '<button id="addNewDistanceRoute" type="button" class="btn"><i class="icon-resize-full"></i> Distance from here</button>'
                         + '<button id="setAsDestination" type="button" class="btn"><i class="icon-star"></i> ' + target + '</button>'
-                        + '<button id="hideContextMenu" type="button" class="btn"><i class="icon-remove"></i> Close</button>'; 
+                        + '<button id="setWeatherForecast" type="button" class="btn"><i class="icon-star"></i> Weather Forecast</button>'
+                        + '<button id="hideContextMenu" type="button" class="btn"><i class="icon-remove"></i> Close</button>';
                     break;
                 case ContextMenuTypes.DELETE_MARKER:
                     ctx += '<button id="setAsMarkTarget" type="button" class="btn"><i class="icon-map-marker"></i> Set as Target</button>';
@@ -1896,6 +2057,7 @@
             activateTrack(obj.id); 
             data.trip.count++;
             data.waypoint.count = 1;
+            obj.newTripFlag = true;
             dataCallback([event.CREATED_TRACK, event.SERVER_CREATE], obj);
         }
 		
@@ -2075,8 +2237,19 @@
         function handleEditWaypoint() {
             dataCallback([event.EDIT_WAYPOINT], data.waypoint.active);
             hideContextMenu();
-        }        
+        }
         
+         /**
+        * *********************************************************************************
+        * Handler function for getting a weather forecast at current possition.
+        * Also closes the context menu and hides the crosshair.
+        * *********************************************************************************
+        */
+        function handleSetWeatherForecast() {
+            handleHideContextMenu();
+            getWeatherForecast(crosshairMarker.getPosition());
+        }
+
         /**
         * *********************************************************************************
         * Handler function for setting a target.
@@ -2170,23 +2343,57 @@
             */
             if (null != data.trip.active && null != data.trip.active._id && null != data.boat.active && null != data.boat.active._id) {
                 var boat = getCurrentBoatInformation();
-                var obj = self.getTemplate('waypoint');
-                obj.id = (idCounter++).toString();
-                obj.name = "Waypoint "+data.waypoint.count;
-                obj.lat = boat.pos.lat();
-                obj.lng = boat.pos.lng();
-                obj.cog = boat.course;
-                obj.sog = boat.speed;
-                obj.date = new Date().getTime();
-                if (image) {
-                    obj.image_thumb = image[0];
-                    obj.image_big = image[1];
-                }
-                obj.onMap = getOnMapMark(obj);
-                obj.owner = data.person.active != null ? data.person.active.owner : "Someone";;
-                data.waypoint.list[obj.id] = obj;
-                data.waypoint.count++;
-                dataCallback([event.SERVER_CREATE, event.CREATED_WAYPOINT], obj);
+
+                // get the current weather data from open weather map
+                var weatherData;
+                var url = "http://api.openweathermap.org/data/2.5/weather?lat=";
+                url += boat.pos.lat();
+                url += "&lon="
+                url += boat.pos.lng();
+
+                $.ajax({
+                    type: "POST",
+                    dataType: "jsonp",
+                    url: url,
+                    async: true,
+                    success: function (data) {
+                        weatherData = new Array();
+                        weatherData["speed"] = data.wind.speed;
+                        weatherData["deg"] = data.wind.deg;
+                        weatherData["icon"] = data.weather[0].icon;
+                        weatherData["temp"] = data.main.temp;
+                        weatherData["clouds"] = data.clouds.all;
+                        weatherData["humidity"] = data.main.humidity;
+                        weatherData["pressure"] = data.main.pressure;
+                    },
+                    error: function (errorData) {
+                        alert("Error while getting weather data :: " + errorData.status);
+                    }
+                }).done(function() {
+                    var obj = self.getTemplate('waypoint');
+                    obj.id = (idCounter++).toString();
+                    obj.name = "Waypoint "+data.waypoint.count;
+                    obj.lat = boat.pos.lat();
+                    obj.lng = boat.pos.lng();
+                    obj.cog = boat.course;
+                    obj.sog = boat.speed;
+                    obj.date = new Date().getTime();
+                    if (image) {
+                        obj.image_thumb = image[0];
+                        obj.image_big = image[1];
+                    }
+                    obj.onMap = getOnMapMark(obj);
+                    obj.owner = data.person.active != null ? data.person.active.owner : "Someone";;
+                    // temperature is in kelvin calculate to celsius
+                    obj.tempCelsius = parseFloat((weatherData["temp"] - 273,15).toFixed(1));
+                    obj.atmosPressure = parseFloat(weatherData["pressure"].toFixed(1));
+                    obj.humidity = parseFloat(weatherData["humidity"].toFixed(1));
+                    obj.windSpeedBeaufort = parseFloat(weatherData["speed"].toFixed(1));
+                    obj.windDirection = parseFloat(weatherData["deg"].toFixed(1));
+                    data.waypoint.list[obj.id] = obj;
+                    data.waypoint.count++;
+                    dataCallback([event.SERVER_CREATE, event.CREATED_WAYPOINT], obj);
+                });
             }
         }
         /**
