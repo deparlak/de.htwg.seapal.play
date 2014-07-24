@@ -11,5 +11,6 @@ libraryDependencies ++= Seq(
   javaEbean,
   cache,
   javaWs,
-  "com.google.inject" % "guice" % "3.0"
+  "com.google.inject"       % "guice"   % "3.0",
+  "com.google.code.gson"    % "gson"    % "2.2.4"
 )
