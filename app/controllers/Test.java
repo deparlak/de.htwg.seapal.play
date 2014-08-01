@@ -15,7 +15,12 @@ public class Test extends Controller {
     Repository<Result, User> repository;
     
     public Promise<Result> create(String name) {
-        Promise<Result> response = repository.create(new User());
+        Options o = new SessionOptions();
+        User u = new User();
+        u.setEmail("email");
+        u.setName("user3");
+        u.setPassword("password");
+        Promise<Result> response = repository.create(new User(), o);
         return response.map(resp -> resp);
     }
 }

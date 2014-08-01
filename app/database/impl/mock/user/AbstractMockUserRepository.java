@@ -15,23 +15,22 @@ public abstract class AbstractMockUserRepository<R> implements Repository<R, Use
     protected abstract R failure(String message);
 
     @Override
-    public Promise<R> create(User document) {
-        logger.info("try to create user");
-        return Promise.promise(() -> success("Successfully created user"));
+    public Promise<R> create(User document, Options options) {
+        return Promise.promise(() -> success("ok"));
     }
 
     @Override
-    public Promise<R> delete(User document) {
-        return Promise.promise(() -> success("Successfully deleted user"));
+    public Promise<R> delete(User document, Options options) {
+        return Promise.promise(() -> success("ok"));
     }
 
     @Override
-    public Promise<R> update(User document) {
-        return Promise.promise(() -> success("Successfully updated user"));
+    public Promise<R> update(User document, Options options) {
+        return Promise.promise(() -> success("ok"));
     }
 
     @Override
-    public Promise<R> query(Specification specification) {
+    public Promise<R> query(Specification specification, Options options) {
         return Promise.promise(() -> failure("Query on user is not supported"));
     }
 
