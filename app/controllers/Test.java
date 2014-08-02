@@ -18,9 +18,16 @@ public class Test extends Controller {
         Options o = new SessionOptions();
         User u = new User();
         u.setEmail("email");
-        u.setName("user3");
+        u.setName("user");
         u.setPassword("password");
-        Promise<Result> response = repository.create(new User(), o);
+        Promise<Result> response = repository.create(u, o);
+        return response.map(resp -> resp);
+    }
+    
+    public Promise<Result> delete() {
+        Options o = new SessionOptions();
+        o.setUsername("user");
+        Promise<Result> response = repository.delete(null, o);
         return response.map(resp -> resp);
     }
 }
