@@ -11,7 +11,7 @@ import play.mvc.Action;
 import play.mvc.Http.Request;
 
 public class Global extends GlobalSettings {
-    private final ALogger logger = Logger.of("logger");
+    private final ALogger logger = Logger.of(getClass().getName());
      
     @Override
     @SuppressWarnings("rawtypes")
