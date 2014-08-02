@@ -33,9 +33,8 @@ public class CouchbaseUserRepository<R> implements Repository<R, User>{
         logger.debug("create a user.");
         
         return holder.post(Json.toJson(document)).map(response -> {
-            logger.debug("got response");
-            logger.debug(response.getStatusText());
-
+            logger.debug("Got response of create a user : "+response.getStatusText());
+            
             if (201 == response.getStatus()) {
                 return status.ok("Created user");
             } else if (409 == response.getStatus())  {
@@ -56,8 +55,7 @@ public class CouchbaseUserRepository<R> implements Repository<R, User>{
         logger.debug("delete a user.");
         
         return holder.delete().map(response -> {
-            logger.debug("got response");
-            logger.debug(response.getStatusText());
+            logger.debug("Got response of delete a user : "+response.getStatusText());
 
             if (201 == response.getStatus()) {
                 return status.ok("deleted user");
