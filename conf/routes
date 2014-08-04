@@ -24,3 +24,10 @@ GET      /logout                                               	@de.htwg.seapal.
 
 GET      /todo                                                  de.htwg.seapal.web.controllers.Application.todo()
 GET		 /todo                                                  de.htwg.seapal.web.controllers.Application.todo()
+
+
+HEAD   	/database/*url          								@de.htwg.seapal.web.controllers.Database.proxyHead(url)
+GET   	/database/*url          								@de.htwg.seapal.web.controllers.Database.proxyGet(url)
+PUT   	/database/*url          								@de.htwg.seapal.web.controllers.Database.proxyPut(url)
+POST   	/database/*url          								@de.htwg.seapal.web.controllers.Database.proxyPost(url)
+DELETE	/database/*url          								@de.htwg.seapal.web.controllers.Database.proxyDelete(url)

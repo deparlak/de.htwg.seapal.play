@@ -33,14 +33,10 @@ public class PlayResultReturnWrapper implements ReturnWrapper<Result>{
         return play.mvc.Controller.internalServerError(message);
     }
 
-
-    @Override
     public Result notSupported(String message) {
         return play.mvc.Controller.internalServerError(message);
     }
 
-
-    @Override
     public Result authorized(String message) {
         return play.mvc.Controller.ok(message);
     }

@@ -26,7 +26,7 @@ public class Account extends Controller {
     public Result logout() {
         return redirect(routes.Application.app());
     }
-	
+
     public Result login() {
         return redirect(routes.Application.app());
     }
