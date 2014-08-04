@@ -1,0 +1,39 @@
+@(form: Form[de.htwg.seapal.model.Account], link: play.api.mvc.Call)
+<!DOCTYPE HTML>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv='content-type' content='text/html; charset=utf-8'/>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta name='keywords' content='sea navigation, Seapal, sign up'/>
+        <meta name='description' content='Create an account for Seapal.'/>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+        <title>SeaPal Sign Up</title>
+        <link type="text/css" rel="stylesheet" href="@routes.Assets.at("lib/bootstrap/css/bootstrap.min.css")" />
+        <link type="text/css" rel="stylesheet" href="@routes.Assets.at("css/signInSeapal.css")" />
+        <script src="http://code.jquery.com/jquery-latest.js"></script>
+        <script src="@routes.Assets.at("lib/bootstrap/js/bootstrap.min.js")"></script>
+        <script type="text/javascript" src="@routes.Assets.at("lib/modalOutput/modalOutput.js")"></script>
+ <script type='text/javascript' src="@routes.Assets.at("validate_signup.js")"></script>
+
+ </head>
+
+    <body>
+        <div class="account-wall">
+            <img class="profile-img" src="@routes.Assets.at("images/seapal_launcher.png")" alt="Seapal">
+            <div class="error-message">
+            @if(flash.contains("errors")) {
+                    <p>@flash.get("errors")</p>
+            }
+            </div>
+            @helper.form(link, 'class -> "form-signInSeapal", 'name -> "register") {
+                <input type="email" class="form-control" name="email" placeholder="Enter your Email" required autofocus>
+                <input type="text" class="form-control" name="firstName" placeholder="First name" required>
+                <input type="text" class="form-control" name="lastName" placeholder="Last name" required>
+                <input type="password" class="form-control" name="password" id="password" placeholder="Choose your Password" required>
+                <input type="password" class="form-control" name="cpass" id="cpass" placeholder="Confirm your Password" required>
+                <input class="btn btn-lg btn-success btn-block" type="submit" value="Sign Up for Seapal">
+                <span class="clearfix"></span>
+            }
+    </body>
+</html>

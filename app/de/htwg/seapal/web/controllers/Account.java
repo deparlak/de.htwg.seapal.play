@@ -1,0 +1,54 @@
+package de.htwg.seapal.web.controllers;
+
+import java.util.regex.Pattern;
+
+import com.google.inject.Inject;
+import com.google.inject.name.Named;
+
+import de.htwg.seapal.database.Options;
+import de.htwg.seapal.database.Repository;
+import de.htwg.seapal.database.SessionOptions;
+import de.htwg.seapal.web.views.html.signUpSeapal;
+import play.data.DynamicForm;
+import play.data.Form;
+import play.libs.F.Promise;
+import play.mvc.Controller;
+import play.mvc.Result;
+
+public class Account extends Controller {
+    private static final Pattern EMAIL_PATTERN = Pattern.compile("^[_A-Za-z0-9-\\+]+(\\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$");
+    private static final int MIN_LENGTH = 8;
+    
+    @Inject 
+    @Named("AccountRepository")
+    Repository<Result, de.htwg.seapal.model.Account> repository;
+    
+    public Result logout() {
+        return redirect(routes.Application.app());
+    }
+	
+    public Result login() {
+        return redirect(routes.Application.app());
+    }
+    
+    public Promise<Result> signup() {
+        Form<de.htwg.seapal.model.Account> filledForm = DynamicForm.form(de.htwg.seapal.model.Account.class).bindFromRequest();
+        if (filledForm.hasErrors()) {
+            flash("errors", filledForm.errorsAsJson().toString());
+            return Promise.promise(() -> badRequest(signUpSeapal.render(filledForm, routes.Account.signup())));
+        }
+        de.htwg.seapal.model.Account account = filledForm.get();
+        if (!EMAIL_PATTERN.matcher(account.getEmail()).matches()) {
+            flash("errors", "Please enter a valid email adress!");
+            return Promise.promise(() ->  badRequest(signUpSeapal.render(filledForm, routes.Account.signup())));
+        }
+
+        if (!(account.getPassword().length() >= MIN_LENGTH)) {
+            flash("errors", "The password you've entered is to short. Use at least " + MIN_LENGTH + " characters!");
+            return Promise.promise(() ->  badRequest(signUpSeapal.render(filledForm, routes.Account.signup())));
+        }
+        
+        Options session = new SessionOptions();
+        return repository.create(account, session).map(resp -> resp);
+    }
+}
