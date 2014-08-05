@@ -37,5 +37,9 @@ public class Application extends Controller {
     public static Result todo() {
         return ok("TODO");
     }
+	
+    public static Result test() {
+        return ok(test.render());
+    }
 
 }

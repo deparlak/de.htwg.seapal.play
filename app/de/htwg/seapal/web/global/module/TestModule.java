@@ -22,7 +22,7 @@ public class TestModule extends AbstractModule {
         
         
         
-        bind(String.class).annotatedWith(Names.named("Database Controller - SyncGateway Client URL")).toInstance("http://localhost:4984/");  
+        bind(String.class).annotatedWith(Names.named("Database Controller - SyncGateway Client URL")).toInstance("http://localhost:4984/sync_gateway/");  
         bind(String.class).annotatedWith(Names.named("CouchbaseAccountRepository - URL")).toInstance("http://localhost:4985/sync_gateway/_user/");        
         bind(Integer.class).annotatedWith(Names.named("CouchbaseAccountRepository - Timeout")).toInstance(120000);   
         

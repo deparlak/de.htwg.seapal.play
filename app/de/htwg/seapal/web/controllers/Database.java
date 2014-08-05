@@ -13,15 +13,17 @@ import play.mvc.Result;
 
 
 public class Database extends Controller {
+    private final int URL_SPLIT_INDEX = 10;
     private final ALogger logger = Logger.of(getClass().getName());
     
     @Inject
     @Named("Database Controller - SyncGateway Client URL")
     private String baseUrl;
     
-    public Promise<Result> proxyHead(String url) {
-        WSRequestHolder holder = WS.url(baseUrl+url);
-        logger.debug("HEAD proxy request to syncGateway : "+baseUrl+url);
+    public Promise<Result> proxyHead() {
+        String url = baseUrl + request().uri().substring(URL_SPLIT_INDEX);
+        WSRequestHolder holder = WS.url(url);
+        logger.debug("HEAD proxy request to syncGateway : "+url);
         
         return holder.head().map(response -> {
             logger.debug("HEAD Got response from syncGateway : "+response.getStatusText());
@@ -29,9 +31,10 @@ public class Database extends Controller {
         });
     }
     
-    public Promise<Result> proxyGet(String url) {
-        WSRequestHolder holder = WS.url(baseUrl+url);
-        logger.debug("GET proxy request to syncGateway : "+baseUrl+url);
+    public Promise<Result> proxyGet() {
+        String url = baseUrl + request().uri().substring(URL_SPLIT_INDEX);
+        WSRequestHolder holder = WS.url(url);
+        logger.debug("GET proxy request to syncGateway : "+url);
         
         return holder.get().map(response -> {
             logger.debug("GET Got response from syncGateway : "+response.getStatusText());
@@ -39,9 +42,10 @@ public class Database extends Controller {
         });
     }
     
-    public Promise<Result> proxyPut(String url) {
-        WSRequestHolder holder = WS.url(baseUrl+url);
-        logger.debug("PUT proxy request to syncGateway : "+baseUrl+url);
+    public Promise<Result> proxyPut() {
+        String url = baseUrl + request().uri().substring(URL_SPLIT_INDEX);
+        WSRequestHolder holder = WS.url(url);
+        logger.debug("PUT proxy request to syncGateway : "+url);
         
         return holder.put(request().body().asText()).map(response -> {
             logger.debug("PUT Got response from syncGateway : "+response.getStatusText());
@@ -49,9 +53,10 @@ public class Database extends Controller {
         });
     }
     
-    public Promise<Result> proxyPost(String url) {
-        WSRequestHolder holder = WS.url(baseUrl+url);
-        logger.debug("PUT proxy request to syncGateway : "+baseUrl+url);
+    public Promise<Result> proxyPost() {
+        String url = baseUrl + request().uri().substring(URL_SPLIT_INDEX);
+        WSRequestHolder holder = WS.url(url);
+        logger.debug("PUT proxy request to syncGateway : "+url);
         
         return holder.post(request().body().asText()).map(response -> {
             logger.debug("PUT Got response from syncGateway : "+response.getStatusText());
@@ -59,9 +64,10 @@ public class Database extends Controller {
         });
     }
     
-    public Promise<Result> proxyDelete(String url) {
-        WSRequestHolder holder = WS.url(baseUrl+url);
-        logger.debug("PUT proxy request to syncGateway : "+baseUrl+url);
+    public Promise<Result> proxyDelete() {
+        String url = baseUrl + request().uri().substring(URL_SPLIT_INDEX);
+        WSRequestHolder holder = WS.url(url);
+        logger.debug("PUT proxy request to syncGateway : "+url);
 
         return holder.delete().map(response -> {
             logger.debug("PUT Got response from syncGateway : "+response.getStatusText());

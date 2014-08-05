@@ -8,6 +8,7 @@ GET     /impressum                                            	de.htwg.seapal.we
 GET     /app                                                  	de.htwg.seapal.web.controllers.Application.app()
 GET     /login													de.htwg.seapal.web.controllers.Application.login()
 GET     /signup                                               	de.htwg.seapal.web.controllers.Application.signup()
+GET     /test                                               	de.htwg.seapal.web.controllers.Application.test()
 
 #GET     /forbidden												de.htwg.seapal.web.controllers.Application.forbiddenContent()
 
@@ -26,8 +27,8 @@ GET      /todo                                                  de.htwg.seapal.w
 GET		 /todo                                                  de.htwg.seapal.web.controllers.Application.todo()
 
 
-HEAD   	/database/*url          								@de.htwg.seapal.web.controllers.Database.proxyHead(url)
-GET   	/database/*url          								@de.htwg.seapal.web.controllers.Database.proxyGet(url)
-PUT   	/database/*url          								@de.htwg.seapal.web.controllers.Database.proxyPut(url)
-POST   	/database/*url          								@de.htwg.seapal.web.controllers.Database.proxyPost(url)
-DELETE	/database/*url          								@de.htwg.seapal.web.controllers.Database.proxyDelete(url)
+HEAD   	/database/		          								@de.htwg.seapal.web.controllers.Database.proxyHead()
+GET   	/database/		          								@de.htwg.seapal.web.controllers.Database.proxyGet()
+PUT   	/database/		          								@de.htwg.seapal.web.controllers.Database.proxyPut()
+POST   	/database/		          								@de.htwg.seapal.web.controllers.Database.proxyPost()
+DELETE	/database/		          								@de.htwg.seapal.web.controllers.Database.proxyDelete()
