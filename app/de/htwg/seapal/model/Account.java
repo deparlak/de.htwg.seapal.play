@@ -6,6 +6,16 @@ public class Account {
     private String firstName;
     private String lastName;
     
+    public Account() {
+        
+    }
+    
+    public Account(Account document) {
+        this.password = document.password;
+        this.email = document.email;
+        this.firstName = document.firstName;
+        this.lastName = document.lastName;
+    }
     public String getPassword() {
         return password;
     }

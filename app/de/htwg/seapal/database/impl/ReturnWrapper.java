@@ -7,6 +7,6 @@ public interface ReturnWrapper<R> {
     R unauthorized(String message);
     R forbidden(String message);
     R internalServerError(String message);
-    R notSupported(String string);
+    R notSupported(String message);
     R authorized(String message);
 }

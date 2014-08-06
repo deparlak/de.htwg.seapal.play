@@ -13,7 +13,7 @@ import play.mvc.Result;
 
 
 public class Database extends Controller {
-    private final int URL_SPLIT_INDEX = 10;
+    private static final int URL_SPLIT_INDEX = 10;
     private final ALogger logger = Logger.of(getClass().getName());
     
     @Inject

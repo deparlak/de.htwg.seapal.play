@@ -31,10 +31,12 @@ public class CouchbaseAccountRepository<R> implements Repository<R, Account>{
 
     @Override
     public Promise<R> create(Account document, Options options) {
+        CouchbaseAccount couchDocument = new CouchbaseAccount(document);
+
         WSRequestHolder holder = WS.url(url).setTimeout(timeout);
         logger.debug("create an account.");
         
-        return holder.post(Json.toJson(document)).map(response -> {
+        return holder.post(Json.toJson(couchDocument)).map(response -> {
             logger.debug("Got response of create an account : "+response.getStatusText());
             
             if (201 == response.getStatus()) {
@@ -42,7 +44,7 @@ public class CouchbaseAccountRepository<R> implements Repository<R, Account>{
             } else if (409 == response.getStatus())  {
                 return status.badRequest("Account already exist");
             } else {
-                return status.badRequest(response.getStatusText());
+                return status.badRequest(response.asJson().get("reason").asText());
             }
         }).recoverWith(throwable -> Promise.promise(() -> {
             logger.warn("Server not reachable");
@@ -62,7 +64,7 @@ public class CouchbaseAccountRepository<R> implements Repository<R, Account>{
             if (201 == response.getStatus()) {
                 return status.ok("deleted account");
             } else {
-                return status.badRequest(response.getStatusText());
+                return status.badRequest(response.asJson().get("reason").asText());
             }
         }).recoverWith(throwable -> Promise.promise(() -> {
             logger.warn("Server not reachable");

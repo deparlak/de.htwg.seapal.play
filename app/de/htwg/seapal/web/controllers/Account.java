@@ -2,6 +2,7 @@ package de.htwg.seapal.web.controllers;
 
 import java.util.regex.Pattern;
 
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
 
@@ -21,14 +22,14 @@ public class Account extends Controller {
     
     @Inject 
     @Named("AccountRepository")
-    Repository<Result, de.htwg.seapal.model.Account> repository;
+    Repository<ObjectNode, de.htwg.seapal.model.Account> accountRepository;
     
     public Result logout() {
-        return redirect(routes.Application.app());
+        return redirect(routes.Application.test());
     }
 
     public Result login() {
-        return redirect(routes.Application.app());
+        return redirect(routes.Application.test());
     }
     
     public Promise<Result> signup() {
@@ -49,6 +50,13 @@ public class Account extends Controller {
         }
         
         Options session = new SessionOptions();
-        return repository.create(account, session).map(resp -> resp);
+        return accountRepository.create(account, session).map(resp -> {
+            if (resp.has("error")) {
+                flash("errors", resp.get("error").asText());
+                return badRequest(signUpSeapal.render(filledForm, routes.Account.signup())); 
+            } else {
+                return redirect(routes.Application.test());
+            }
+        });
     }
 }

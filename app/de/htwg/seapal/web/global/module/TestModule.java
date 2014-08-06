@@ -1,7 +1,6 @@
 package de.htwg.seapal.web.global.module;
 
-import play.mvc.Result;
-
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.inject.AbstractModule;
 import com.google.inject.TypeLiteral;
 import com.google.inject.name.Names;
@@ -16,8 +15,8 @@ public class TestModule extends AbstractModule {
     @Override
     protected void configure() {
         // configure database configuration
-        bind(new TypeLiteral<ReturnWrapper<Result>>(){}).annotatedWith(Names.named("CouchbaseAccountRepository - ReturnWrapper")).to(PlayResultReturnWrapper.class);
-        bind(new TypeLiteral<Repository<Result, Account>>(){}).annotatedWith(Names.named("AccountRepository")).to(new TypeLiteral<CouchbaseAccountRepository<Result>>(){});
+        bind(new TypeLiteral<ReturnWrapper<ObjectNode>>(){}).annotatedWith(Names.named("CouchbaseAccountRepository - ReturnWrapper")).to(JsonReturnWrapper.class);
+        bind(new TypeLiteral<Repository<ObjectNode, Account>>(){}).annotatedWith(Names.named("AccountRepository")).to(new TypeLiteral<CouchbaseAccountRepository<ObjectNode>>(){});
         
         
         
