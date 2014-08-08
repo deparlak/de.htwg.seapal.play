@@ -24,9 +24,8 @@ GET      /logout                                               	@de.htwg.seapal.
 
 
 GET      /todo                                                  de.htwg.seapal.web.controllers.Application.todo()
-GET		 /todo                                                  de.htwg.seapal.web.controllers.Application.todo()
 
-
+# Proxy to database
 HEAD   	/database/*path	          								@de.htwg.seapal.web.controllers.Database.proxyHead(path)
 HEAD   	/database/		          								@de.htwg.seapal.web.controllers.Database.proxyHead(path="")
 GET   	/database/*path		          							@de.htwg.seapal.web.controllers.Database.proxyGet(path)
