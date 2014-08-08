@@ -20,17 +20,17 @@ public class CouchbaseSessionRepository<R> implements Repository<R, Account>{
     private final ALogger logger = Logger.of(getClass().getName());
     
     @Inject
-    @Named("SyncGateway - User URL")
-    private String userUrl;
-    @Inject
     @Named("SyncGateway - Session URL")
     private String sessionUrl;
     @Inject
     @Named("CouchbaseSessionRepository - ReturnWrapper")
-    ReturnWrapper<R> status;
+    private ReturnWrapper<R> status;
 
     @Override
     public Promise<R> create(Account document, Options options) {
+        if (null == document) {
+            return Promise.promise(() -> status.unauthorized(""));
+        }
         CouchbaseAccount couchDocument = new CouchbaseAccount(document);
         logger.info("Get a session from the sync Gateway");
 

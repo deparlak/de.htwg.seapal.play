@@ -14,7 +14,7 @@ import play.mvc.Result;
 public class Test extends Controller {
     @Inject 
     @Named("UserRepository")
-    Repository<Result, Account> repository;
+    private Repository<Result, Account> repository;
     
     public Promise<Result> create(String name) {
         Options o = new SessionOptions();

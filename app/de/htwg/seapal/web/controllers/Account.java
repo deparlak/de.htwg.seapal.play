@@ -23,18 +23,21 @@ public class Account extends Controller {
     
     @Inject 
     @Named("AccountRepository")
-    Repository<ObjectNode, de.htwg.seapal.model.Account> accountRepository;
+    private Repository<ObjectNode, de.htwg.seapal.model.Account> accountRepository;
     @Inject 
     @Named("SessionRepository")
-    Repository<ObjectNode, de.htwg.seapal.model.Account> sessionRepository;
+    private Repository<ObjectNode, de.htwg.seapal.model.Account> sessionRepository;
+    @Inject 
+    @Named("AuthRepository")
+    private Repository<ObjectNode, de.htwg.seapal.model.Account> authRepository;
     @Inject 
     @Named("SyncGatewayCookieName")
-    String sessionCookie;
+    private String sessionCookie;
     
     @play.mvc.Security.Authenticated(Secured.class)
     public Result logout() {
         session().clear();
-        return redirect(routes.Application.test());
+        return redirect(routes.Application.login());
     }
 
     public Promise<Result> login() {
@@ -46,8 +49,22 @@ public class Account extends Controller {
         
         de.htwg.seapal.model.Account account = filledForm.get();
         Options session = new SessionOptions();
+
+//        final Promise<WSResponse> responseThreePromise = WS.url(urlOne).get()
+//                .flatMap(responseOne -> WS.url(responseOne.getBody()).get())
+//                .flatMap(responseTwo -> WS.url(responseTwo.getBody()).get());
+//        
+        //call the Auth Repository and check if the user get access.
+        final Promise<ObjectNode> retVal = authRepository.create(account, session)
+            .flatMap(authResponse -> {
+                    if (authResponse.has("error")) {
+                        return Promise.pure(authResponse);
+                    }
+                    return sessionRepository.create(account, session);
+            });
         
-        return sessionRepository.create(account, session).map(resp -> {
+        //Return an error or the user session, provided by the sessionRepository
+        return retVal.map(resp -> { 
             if (resp.has("error")) {
                 flash("errors", resp.get("error").asText());
                 return badRequest(signInSeapal.render(filledForm, routes.Account.login())); 

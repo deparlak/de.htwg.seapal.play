@@ -21,9 +21,9 @@ public class Database extends Controller {
     private String baseUrl;
     @Inject 
     @Named("SyncGatewayCookieName")
-    String sessionCookie;
+    private String sessionCookie;
     
-    //@play.mvc.Security.Authenticated(Secured.class)
+    @play.mvc.Security.Authenticated(SecuredJson.class)
     public Promise<Result> proxyHead(String path) {
         String url = baseUrl + path + request().uri().substring(URL_SPLIT_INDEX);
         WSRequestHolder holder = WS.url(url);
@@ -36,7 +36,7 @@ public class Database extends Controller {
         });
     }
     
-    //@play.mvc.Security.Authenticated(Secured.class)
+    @play.mvc.Security.Authenticated(SecuredJson.class)
     public Promise<Result> proxyGet(String path) {
         String url = baseUrl + path + request().uri().substring(URL_SPLIT_INDEX);
         WSRequestHolder holder = WS.url(url);
@@ -51,7 +51,7 @@ public class Database extends Controller {
         });
     }
     
-    //@play.mvc.Security.Authenticated(Secured.class)
+    @play.mvc.Security.Authenticated(SecuredJson.class)
     public Promise<Result> proxyPut(String path) {
         String url = baseUrl + path + request().uri().substring(URL_SPLIT_INDEX);
         WSRequestHolder holder = WS.url(url);
@@ -65,7 +65,7 @@ public class Database extends Controller {
         });
     }
     
-    //@play.mvc.Security.Authenticated(Secured.class)
+    @play.mvc.Security.Authenticated(SecuredJson.class)
     public Promise<Result> proxyPost(String path) {
         String url = baseUrl + path + request().uri().substring(URL_SPLIT_INDEX);
         WSRequestHolder holder = WS.url(url);
@@ -78,7 +78,7 @@ public class Database extends Controller {
         });
     }
     
-    //@play.mvc.Security.Authenticated(Secured.class)
+    @play.mvc.Security.Authenticated(SecuredJson.class)
     public Promise<Result> proxyDelete(String path) {
         String url = baseUrl + path + request().uri().substring(URL_SPLIT_INDEX);
         WSRequestHolder holder = WS.url(url);
