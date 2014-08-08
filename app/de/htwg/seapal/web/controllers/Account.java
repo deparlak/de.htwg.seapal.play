@@ -33,7 +33,6 @@ public class Account extends Controller {
     
     @play.mvc.Security.Authenticated(Secured.class)
     public Result logout() {
-   //     response().discardCookie(sessionCookie);
         session().clear();
         return redirect(routes.Application.test());
     }
@@ -55,7 +54,6 @@ public class Account extends Controller {
             } else {
                 System.out.println("Session : "+resp.get("ok").asText());
                 session(sessionCookie, resp.get("ok").asText());
-       //         response().setCookie(sessionCookie, resp.get("ok").asText());
                 return redirect(routes.Application.test());
             }
         });
