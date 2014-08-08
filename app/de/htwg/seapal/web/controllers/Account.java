@@ -49,13 +49,9 @@ public class Account extends Controller {
         
         de.htwg.seapal.model.Account account = filledForm.get();
         Options session = new SessionOptions();
-
-//        final Promise<WSResponse> responseThreePromise = WS.url(urlOne).get()
-//                .flatMap(responseOne -> WS.url(responseOne.getBody()).get())
-//                .flatMap(responseTwo -> WS.url(responseTwo.getBody()).get());
-//        
-        //call the Auth Repository and check if the user get access.
-        final Promise<ObjectNode> retVal = authRepository.create(account, session)
+      
+        // Call the Authentication check and create a Session afterwards or return an error
+        final Promise<ObjectNode> authResult = authRepository.create(account, session)
             .flatMap(authResponse -> {
                     if (authResponse.has("error")) {
                         return Promise.pure(authResponse);
@@ -63,8 +59,8 @@ public class Account extends Controller {
                     return sessionRepository.create(account, session);
             });
         
-        //Return an error or the user session, provided by the sessionRepository
-        return retVal.map(resp -> { 
+        // Return the result of the Authentication and Session call
+        return authResult.map(resp -> { 
             if (resp.has("error")) {
                 flash("errors", resp.get("error").asText());
                 return badRequest(signInSeapal.render(filledForm, routes.Account.login())); 
