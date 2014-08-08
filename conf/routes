@@ -27,8 +27,13 @@ GET      /todo                                                  de.htwg.seapal.w
 GET		 /todo                                                  de.htwg.seapal.web.controllers.Application.todo()
 
 
-HEAD   	/database/		          								@de.htwg.seapal.web.controllers.Database.proxyHead()
-GET   	/database/		          								@de.htwg.seapal.web.controllers.Database.proxyGet()
-PUT   	/database/		          								@de.htwg.seapal.web.controllers.Database.proxyPut()
-POST   	/database/		          								@de.htwg.seapal.web.controllers.Database.proxyPost()
-DELETE	/database/		          								@de.htwg.seapal.web.controllers.Database.proxyDelete()
+HEAD   	/database/*path	          								@de.htwg.seapal.web.controllers.Database.proxyHead(path)
+HEAD   	/database/		          								@de.htwg.seapal.web.controllers.Database.proxyHead(path="")
+GET   	/database/*path		          							@de.htwg.seapal.web.controllers.Database.proxyGet(path)
+GET   	/database/		    	      							@de.htwg.seapal.web.controllers.Database.proxyGet(path="")
+PUT   	/database/*path		          							@de.htwg.seapal.web.controllers.Database.proxyPut(path)
+PUT   	/database/			          							@de.htwg.seapal.web.controllers.Database.proxyPut(path="")
+POST   	/database/*path		          							@de.htwg.seapal.web.controllers.Database.proxyPost(path)
+POST   	/database/			          							@de.htwg.seapal.web.controllers.Database.proxyPost(path="")
+DELETE	/database/*path		          							@de.htwg.seapal.web.controllers.Database.proxyDelete(path)
+DELETE	/database/			          							@de.htwg.seapal.web.controllers.Database.proxyDelete(path="")

@@ -9,4 +9,5 @@ public interface ReturnWrapper<R> {
     R internalServerError(String message);
     R notSupported(String message);
     R authorized(String message);
+    R cookie(String name, String value);
 }

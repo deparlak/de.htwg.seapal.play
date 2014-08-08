@@ -1,5 +1,7 @@
 package de.htwg.seapal.database.impl.couchbase;
 
+import org.apache.commons.codec.binary.Hex;
+
 import de.htwg.seapal.model.Account;
 
 public class CouchbaseAccount extends Account {
@@ -7,7 +9,8 @@ public class CouchbaseAccount extends Account {
 
     public CouchbaseAccount(Account document) {
         super(document);
-        this.name = document.getEmail();
+        this.name = Hex.encodeHexString(document.getEmail().getBytes(/* charset */));
+        System.out.println(this.name);
     }
 
     public String getName() {

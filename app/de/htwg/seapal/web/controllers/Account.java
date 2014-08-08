@@ -9,6 +9,7 @@ import com.google.inject.name.Named;
 import de.htwg.seapal.database.Options;
 import de.htwg.seapal.database.Repository;
 import de.htwg.seapal.database.SessionOptions;
+import de.htwg.seapal.web.views.html.signInSeapal;
 import de.htwg.seapal.web.views.html.signUpSeapal;
 import play.data.DynamicForm;
 import play.data.Form;
@@ -23,13 +24,41 @@ public class Account extends Controller {
     @Inject 
     @Named("AccountRepository")
     Repository<ObjectNode, de.htwg.seapal.model.Account> accountRepository;
+    @Inject 
+    @Named("SessionRepository")
+    Repository<ObjectNode, de.htwg.seapal.model.Account> sessionRepository;
+    @Inject 
+    @Named("SyncGatewayCookieName")
+    String sessionCookie;
     
+    @play.mvc.Security.Authenticated(Secured.class)
     public Result logout() {
+   //     response().discardCookie(sessionCookie);
+        session().clear();
         return redirect(routes.Application.test());
     }
 
-    public Result login() {
-        return redirect(routes.Application.test());
+    public Promise<Result> login() {
+        Form<de.htwg.seapal.model.Account> filledForm = DynamicForm.form(de.htwg.seapal.model.Account.class).bindFromRequest();
+        if (filledForm.hasErrors()) {
+            flash("errors", filledForm.errorsAsJson().toString());
+            return Promise.promise(() -> badRequest(signUpSeapal.render(filledForm, routes.Account.signup())));
+        }
+        
+        de.htwg.seapal.model.Account account = filledForm.get();
+        Options session = new SessionOptions();
+        
+        return sessionRepository.create(account, session).map(resp -> {
+            if (resp.has("error")) {
+                flash("errors", resp.get("error").asText());
+                return badRequest(signInSeapal.render(filledForm, routes.Account.login())); 
+            } else {
+                System.out.println("Session : "+resp.get("ok").asText());
+                session(sessionCookie, resp.get("ok").asText());
+       //         response().setCookie(sessionCookie, resp.get("ok").asText());
+                return redirect(routes.Application.test());
+            }
+        });
     }
     
     public Promise<Result> signup() {
@@ -55,7 +84,7 @@ public class Account extends Controller {
                 flash("errors", resp.get("error").asText());
                 return badRequest(signUpSeapal.render(filledForm, routes.Account.signup())); 
             } else {
-                return redirect(routes.Application.test());
+                return redirect(routes.Application.login());
             }
         });
     }

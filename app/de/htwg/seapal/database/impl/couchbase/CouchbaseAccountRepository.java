@@ -20,11 +20,8 @@ public class CouchbaseAccountRepository<R> implements Repository<R, Account>{
     private final ALogger logger = Logger.of(getClass().getName());
     
     @Inject
-    @Named("CouchbaseAccountRepository - URL")
+    @Named("SyncGateway - User URL")
     private String url;
-    @Inject
-    @Named("CouchbaseAccountRepository - Timeout")
-    private Integer timeout;
     @Inject
     @Named("CouchbaseAccountRepository - ReturnWrapper")
     ReturnWrapper<R> status;
@@ -33,7 +30,7 @@ public class CouchbaseAccountRepository<R> implements Repository<R, Account>{
     public Promise<R> create(Account document, Options options) {
         CouchbaseAccount couchDocument = new CouchbaseAccount(document);
 
-        WSRequestHolder holder = WS.url(url).setTimeout(timeout);
+        WSRequestHolder holder = WS.url(url);
         logger.debug("create an account.");
         
         return holder.post(Json.toJson(couchDocument)).map(response -> {
@@ -55,7 +52,7 @@ public class CouchbaseAccountRepository<R> implements Repository<R, Account>{
 
     @Override
     public Promise<R> delete(Account document, Options options) {
-        WSRequestHolder holder = WS.url(url+options.getUsername()).setTimeout(timeout);
+        WSRequestHolder holder = WS.url(url+options.getUsername());
         logger.debug("delete an account.");
         
         return holder.delete().map(response -> {

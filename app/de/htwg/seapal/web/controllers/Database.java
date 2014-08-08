@@ -17,60 +17,76 @@ public class Database extends Controller {
     private final ALogger logger = Logger.of(getClass().getName());
     
     @Inject
-    @Named("Database Controller - SyncGateway Client URL")
+    @Named("SyncGateway - URL")
     private String baseUrl;
+    @Inject 
+    @Named("SyncGatewayCookieName")
+    String sessionCookie;
     
-    public Promise<Result> proxyHead() {
-        String url = baseUrl + request().uri().substring(URL_SPLIT_INDEX);
+    @play.mvc.Security.Authenticated(Secured.class)
+    public Promise<Result> proxyHead(String path) {
+        String url = baseUrl + path + request().uri().substring(URL_SPLIT_INDEX);
         WSRequestHolder holder = WS.url(url);
-        logger.debug("HEAD proxy request to syncGateway : "+url);
+        holder.setHeader("Cookie", sessionCookie + "=" + session().get(sessionCookie) + ";");
+        logger.info("HEAD proxy request to syncGateway : "+url);
         
         return holder.head().map(response -> {
-            logger.debug("HEAD Got response from syncGateway : "+response.getStatusText());
+            logger.info("HEAD Got response from syncGateway : "+response.getStatusText());
             return status(response.getStatus(), response.getBody());
         });
     }
     
-    public Promise<Result> proxyGet() {
-        String url = baseUrl + request().uri().substring(URL_SPLIT_INDEX);
+    @play.mvc.Security.Authenticated(Secured.class)
+    public Promise<Result> proxyGet(String path) {
+        String url = baseUrl + path + request().uri().substring(URL_SPLIT_INDEX);
         WSRequestHolder holder = WS.url(url);
-        logger.debug("GET proxy request to syncGateway : "+url);
+        holder.setHeader("Cookie", sessionCookie + "=" + session().get(sessionCookie) + ";");
+        logger.info("GET proxy request to syncGateway : " + url);
+        logger.info("Set cookie " + sessionCookie + " : " + session().get(sessionCookie));
         
         return holder.get().map(response -> {
-            logger.debug("GET Got response from syncGateway : "+response.getStatusText());
+            logger.info("GET Got response from syncGateway : "+response.getStatusText());
+            logger.info(response.toString());
             return status(response.getStatus(), response.getBody());
         });
     }
     
-    public Promise<Result> proxyPut() {
-        String url = baseUrl + request().uri().substring(URL_SPLIT_INDEX);
+    @play.mvc.Security.Authenticated(Secured.class)
+    public Promise<Result> proxyPut(String path) {
+        String url = baseUrl + path + request().uri().substring(URL_SPLIT_INDEX);
         WSRequestHolder holder = WS.url(url);
-        logger.debug("PUT proxy request to syncGateway : "+url);
+        holder.setHeader("Cookie", sessionCookie + "=" + session().get(sessionCookie) + ";");
+        logger.info("PUT proxy request to syncGateway : "+url);
+        logger.info("PUT body : "+request().body().asJson().toString());
         
-        return holder.put(request().body().asText()).map(response -> {
-            logger.debug("PUT Got response from syncGateway : "+response.getStatusText());
+        return holder.put(request().body().asJson()).map(response -> {
+            logger.info("PUT Got response from syncGateway : "+response.getStatusText());
             return status(response.getStatus(), response.getBody());
         });
     }
     
-    public Promise<Result> proxyPost() {
-        String url = baseUrl + request().uri().substring(URL_SPLIT_INDEX);
+    @play.mvc.Security.Authenticated(Secured.class)
+    public Promise<Result> proxyPost(String path) {
+        String url = baseUrl + path + request().uri().substring(URL_SPLIT_INDEX);
         WSRequestHolder holder = WS.url(url);
-        logger.debug("PUT proxy request to syncGateway : "+url);
+        holder.setHeader("Cookie", sessionCookie + "=" + session().get(sessionCookie) + ";");
+        logger.info("PUT proxy request to syncGateway : "+url);
         
         return holder.post(request().body().asText()).map(response -> {
-            logger.debug("PUT Got response from syncGateway : "+response.getStatusText());
+            logger.info("PUT Got response from syncGateway : "+response.getStatusText());
             return status(response.getStatus(), response.getBody());
         });
     }
     
-    public Promise<Result> proxyDelete() {
-        String url = baseUrl + request().uri().substring(URL_SPLIT_INDEX);
+    @play.mvc.Security.Authenticated(Secured.class)
+    public Promise<Result> proxyDelete(String path) {
+        String url = baseUrl + path + request().uri().substring(URL_SPLIT_INDEX);
         WSRequestHolder holder = WS.url(url);
-        logger.debug("PUT proxy request to syncGateway : "+url);
+        holder.setHeader("Cookie", sessionCookie + "=" + session().get(sessionCookie) + ";");
+        logger.info("PUT proxy request to syncGateway : "+url);
 
         return holder.delete().map(response -> {
-            logger.debug("PUT Got response from syncGateway : "+response.getStatusText());
+            logger.info("PUT Got response from syncGateway : "+response.getStatusText());
             return status(response.getStatus(), response.getBody());
         });
     }

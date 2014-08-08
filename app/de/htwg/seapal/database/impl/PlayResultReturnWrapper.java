@@ -40,4 +40,8 @@ public class PlayResultReturnWrapper implements ReturnWrapper<Result>{
     public Result authorized(String message) {
         return play.mvc.Controller.ok(message);
     }
+
+    public Result cookie(String name, String value) {
+        return play.mvc.Controller.ok("Successfully set cookie.");
+    }
 }

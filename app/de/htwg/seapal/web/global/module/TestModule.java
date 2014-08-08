@@ -7,7 +7,7 @@ import com.google.inject.name.Names;
 
 import de.htwg.seapal.database.Repository;
 import de.htwg.seapal.database.impl.*;
-import de.htwg.seapal.database.impl.couchbase.CouchbaseAccountRepository;
+import de.htwg.seapal.database.impl.couchbase.*;
 import de.htwg.seapal.model.Account;
 
 public class TestModule extends AbstractModule {
@@ -18,13 +18,15 @@ public class TestModule extends AbstractModule {
         bind(new TypeLiteral<ReturnWrapper<ObjectNode>>(){}).annotatedWith(Names.named("CouchbaseAccountRepository - ReturnWrapper")).to(JsonReturnWrapper.class);
         bind(new TypeLiteral<Repository<ObjectNode, Account>>(){}).annotatedWith(Names.named("AccountRepository")).to(new TypeLiteral<CouchbaseAccountRepository<ObjectNode>>(){});
         
+        bind(new TypeLiteral<ReturnWrapper<ObjectNode>>(){}).annotatedWith(Names.named("CouchbaseSessionRepository - ReturnWrapper")).to(JsonReturnWrapper.class);
+        bind(new TypeLiteral<Repository<ObjectNode, Account>>(){}).annotatedWith(Names.named("SessionRepository")).to(new TypeLiteral<CouchbaseSessionRepository<ObjectNode>>(){});
         
+         
         
-        
-        bind(String.class).annotatedWith(Names.named("Database Controller - SyncGateway Client URL")).toInstance("http://localhost:4984/sync_gateway/");  
-        bind(String.class).annotatedWith(Names.named("CouchbaseAccountRepository - URL")).toInstance("http://localhost:4985/sync_gateway/_user/");        
-        bind(Integer.class).annotatedWith(Names.named("CouchbaseAccountRepository - Timeout")).toInstance(120000);   
-        
+        bind(String.class).annotatedWith(Names.named("SyncGateway - URL")).toInstance("http://localhost:4984/sync_gateway/");
+        bind(String.class).annotatedWith(Names.named("SyncGateway - User URL")).toInstance("http://localhost:4985/sync_gateway/_user/"); 
+        bind(String.class).annotatedWith(Names.named("SyncGateway - Session URL")).toInstance("http://localhost:4985/sync_gateway/_session");
+        bind(String.class).annotatedWith(Names.named("SyncGatewayCookieName")).toInstance("SyncGatewaySession");
         
 //        bind(Integer.class).annotatedWith(Names.named("databasePort")).toInstance(80);
 //        bind(String.class).annotatedWith(Names.named("databaseURL")).toInstance("http://roroettg.iriscouch.com");        

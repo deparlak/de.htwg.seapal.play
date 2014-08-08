@@ -44,4 +44,13 @@ public class JsonReturnWrapper implements ReturnWrapper<ObjectNode> {
     public ObjectNode authorized(String message) {
         return factory.objectNode().put("error", message);
     }
+
+    @Override
+    public ObjectNode cookie(String name, String value) {
+        ObjectNode node = factory.objectNode();
+        node.put("type", "cookie");
+        node.put("name", name);
+        node.put("value", value);
+        return node;
+    }
 }
