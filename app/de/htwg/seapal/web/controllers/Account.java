@@ -53,10 +53,10 @@ public class Account extends Controller {
         // Call the Authentication check and create a Session afterwards or return an error
         final Promise<ObjectNode> authResult = authRepository.create(account, session)
             .flatMap(authResponse -> {
-                    if (authResponse.has("error")) {
-                        return Promise.pure(authResponse);
-                    }
-                    return sessionRepository.create(account, session);
+                if (authResponse.has("error")) {
+                    return Promise.pure(authResponse);
+                }
+                return sessionRepository.create(account, session);
             });
         
         // Return the result of the Authentication and Session call
