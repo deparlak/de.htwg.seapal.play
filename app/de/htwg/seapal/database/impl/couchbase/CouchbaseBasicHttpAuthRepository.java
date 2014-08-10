@@ -39,7 +39,10 @@ public class CouchbaseBasicHttpAuthRepository<R> implements Repository<R, Accoun
             } else {
                 return status.badRequest(response.asJson().get("reason").asText());
             }
-        });
+        }).recoverWith(throwable -> Promise.promise(() -> {
+            logger.warn("Server not reachable");
+            return status.internalServerError("Server not reachable");
+        }));
     }
 
     @Override
