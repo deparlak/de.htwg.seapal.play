@@ -3,36 +3,36 @@
 # ~~~~
 
 # Static pages
-GET		/														de.htwg.seapal.web.controllers.Application.index()
-GET     /impressum                                            	de.htwg.seapal.web.controllers.Application.impressum()
-GET     /app                                                  	de.htwg.seapal.web.controllers.Application.app()
-GET     /login													de.htwg.seapal.web.controllers.Application.login()
-GET     /signup                                               	de.htwg.seapal.web.controllers.Application.signup()
-GET     /test                                               	de.htwg.seapal.web.controllers.Application.test()
+GET     /                                                      de.htwg.seapal.web.controllers.Application.index()
+GET     /impressum                                             de.htwg.seapal.web.controllers.Application.impressum()
+GET     /app                                                   de.htwg.seapal.web.controllers.Application.app()
+GET     /login                                                 de.htwg.seapal.web.controllers.Application.login()
+GET     /signup                                                de.htwg.seapal.web.controllers.Application.signup()
+GET     /test                                                  de.htwg.seapal.web.controllers.Application.test()
 
-#GET     /forbidden												de.htwg.seapal.web.controllers.Application.forbiddenContent()
+#GET     /forbidden                                            de.htwg.seapal.web.controllers.Application.forbiddenContent()
 
 
 # Map static resources from the /public folder to the /assets URL path
-GET      /assets/*file                                      	controllers.Assets.at(path="/public", file)
+GET      /assets/*file                                         controllers.Assets.at(path="/public", file)
 
 
-POST     /signup                                               	@de.htwg.seapal.web.controllers.Account.signup()
-POST     /login                                                	@de.htwg.seapal.web.controllers.Account.login()
-GET      /logout                                               	@de.htwg.seapal.web.controllers.Account.logout()
+POST     /signup                                               @de.htwg.seapal.web.controllers.Account.signup()
+POST     /login                                                @de.htwg.seapal.web.controllers.Account.login()
+GET      /logout                                               @de.htwg.seapal.web.controllers.Account.logout()
 
 
 
-GET      /todo                                                  de.htwg.seapal.web.controllers.Application.todo()
+GET      /todo                                                 de.htwg.seapal.web.controllers.Application.todo()
 
 # Proxy to database
-HEAD   	/database/*path	          								@de.htwg.seapal.web.controllers.Database.proxyHead(path)
-HEAD   	/database/		          								@de.htwg.seapal.web.controllers.Database.proxyHead(path="")
-GET   	/database/*path		          							@de.htwg.seapal.web.controllers.Database.proxyGet(path)
-GET   	/database/		    	      							@de.htwg.seapal.web.controllers.Database.proxyGet(path="")
-PUT   	/database/*path		          							@de.htwg.seapal.web.controllers.Database.proxyPut(path)
-PUT   	/database/			          							@de.htwg.seapal.web.controllers.Database.proxyPut(path="")
-POST   	/database/*path		          							@de.htwg.seapal.web.controllers.Database.proxyPost(path)
-POST   	/database/			          							@de.htwg.seapal.web.controllers.Database.proxyPost(path="")
-DELETE	/database/*path		          							@de.htwg.seapal.web.controllers.Database.proxyDelete(path)
-DELETE	/database/			          							@de.htwg.seapal.web.controllers.Database.proxyDelete(path="")
+HEAD     /database/*path                                        @de.htwg.seapal.web.controllers.Database.proxyHead(path)
+HEAD     /database/                                             @de.htwg.seapal.web.controllers.Database.proxyHead(path="")
+GET      /database/*path                                        @de.htwg.seapal.web.controllers.Database.proxyGet(path)
+GET      /database/                                             @de.htwg.seapal.web.controllers.Database.proxyGet(path="")
+PUT      /database/*path                                        @de.htwg.seapal.web.controllers.Database.proxyPut(path)
+PUT      /database/                                             @de.htwg.seapal.web.controllers.Database.proxyPut(path="")
+POST     /database/*path                                        @de.htwg.seapal.web.controllers.Database.proxyPost(path)
+POST     /database/                                             @de.htwg.seapal.web.controllers.Database.proxyPost(path="")
+DELETE   /database/*path                                        @de.htwg.seapal.web.controllers.Database.proxyDelete(path)
+DELETE   /database/                                             @de.htwg.seapal.web.controllers.Database.proxyDelete(path="")
