@@ -3,8 +3,6 @@ package de.htwg.seapal.database.impl.couchbase;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.codec.binary.Hex;
-
 import de.htwg.seapal.model.Account;
 
 public class CouchbaseAccount extends Account {
@@ -13,7 +11,7 @@ public class CouchbaseAccount extends Account {
 
     public CouchbaseAccount(Account document) {
         super(document);
-        this.name = Hex.encodeHexString(document.getEmail().getBytes(/* charset */));
+        this.name = document.getEmail();
         this.admin_channels = new ArrayList<String>();
         this.admin_channels.add(this.name);
         this.admin_channels.add("test");

@@ -11,7 +11,6 @@ import play.libs.ws.WSRequestHolder;
 import play.mvc.Controller;
 import play.mvc.Result;
 
-
 public class Database extends Controller {
     private static final int URL_SPLIT_INDEX = 10;
     private final ALogger logger = Logger.of(getClass().getName());
@@ -78,6 +77,8 @@ public class Database extends Controller {
     }
     
     @play.mvc.Security.Authenticated(SecuredJson.class)
+    // some client side API's like pouchdb send an invalid json body, so we ignore the body.
+    @play.mvc.BodyParser.Of(play.mvc.BodyParser.Empty.class)
     public Promise<Result> proxyDelete(String path) {
         String url = baseUrl + request().uri().substring(URL_SPLIT_INDEX);
         WSRequestHolder holder = WS.url(url);
