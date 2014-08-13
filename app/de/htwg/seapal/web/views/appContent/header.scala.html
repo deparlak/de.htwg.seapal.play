@@ -63,7 +63,7 @@
 <script type="text/javascript" src="@routes.Assets.at("js/app/callbacks/menu/forecast.js")"></script>
 <script type="text/javascript" src="@routes.Assets.at("lib/seamap/layer.js")"></script>
 
-@if(session.contains("id")) {
+@if(session.contains("user")) {
     <script type="text/javascript" src="@routes.Assets.at("js/app/isLoggedIn.js")"></script>
 } else {
     <script type="text/javascript" src="@routes.Assets.at("js/app/isLoggedOut.js")"></script>

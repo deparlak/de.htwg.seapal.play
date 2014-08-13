@@ -4,11 +4,16 @@
         <script type="text/javascript" src="@routes.Assets.at("lib/pouchdb-2.2.3.min.js")"></script>
         <script type="text/javascript" src="@routes.Assets.at("lib/jquery-2.1.1.min.js")"></script>
 		<script type="text/javascript" src="@routes.Assets.at("js/test.js")"></script>
+		<script type="text/javascript">
+			var seapal = {};
+			seapal.user = "@session.get("user")";
+		</script>
     </head>
     <body>
 		Test running, check console output</br>
         <input type="button" id="createTestBoat" value="Create test boat">
         <input type="button" id="createTestMark" value="Create test mark">
+        <input type="button" id="multipleCreate" value="Multiple Doc create">
         <input type="button" id="createFriendRequest" value="Send a friend request">
         <input type="button" id="acceptFriendRequest" value="Accept a friend request">
         <input type="button" id="rejectFriendRequest" value="Reject a friend request">

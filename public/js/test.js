@@ -3,18 +3,20 @@
 $(document).ready(function(){
     console.log( "ready!" );
     var idCounter = {};
-    var user = "test@test.de";
+    var user = seapal.user;
+    
+    if (user == '') {
+        console.log("error no user");
+    } else {
+        console.log("hello : "+user);
+    }
     
     var db = new PouchDB('http://localhost:9000/database/');
     console.log(db);
 
    
     allDocsOptions = {};
-    allDocsOptions.include_docs = false;
-//    allDocsOptions.startkey = "username/boat/0";
- //   allDocsOptions.endkey = "username/boat/99";
-    
-  //  db.get('username/boat/1', function(err, doc) { console.log(doc);});
+    allDocsOptions.include_docs = true;
     
     db.allDocs(allDocsOptions, function(err, response) {
         console.log("FETCH DOCS RESULT");
@@ -47,16 +49,14 @@ $(document).ready(function(){
         console.log(idCounter);
     });
 
-    var changes = db.changes({
-        since: 'now',
-        live: true
-    }).on('change', function(change) { 
-        console.log(change);    
-    }).on('error', function(err) { 
-        console.log(err);
-    }).on('uptodate', function(info) { 
+    db.changes({since : 'now', live : true})
+      .on('change', function (info) {
         console.log(info);
-    });
+      }).on('complete', function (info) {
+        console.log(info);
+      }).on('error', function (err) {
+        console.log(err);
+      });
     
     var getId = function (type) {
         idStr = idCounter[type].toString();
@@ -67,17 +67,16 @@ $(document).ready(function(){
         return user + '/' + type + '/' + idStr;
     }
     
-    
-    $('#createTestBoat').click(function(){
+    var createDoc = function(type) {
         var doc = 
         {
             owner       : user,
-            title       : 'Irgend ein Boot',
-            type        : 'boat',
-            _id         : getId('boat'),
+            title       : 'Irgend ein '+type,
+            type        : type,
+            _id         : getId(type),
             _rev        : null
         };
-        console.log(doc);
+
         db.put(doc, function (err, response) { 
             if (err) {
                 console.log(err);
@@ -85,30 +84,47 @@ $(document).ready(function(){
                 console.log(response);
             }
         });
+    };
+    
+    var bulkDoc = function (type) {
+        console.log('START');
+        all_docs = [];
+        for (var i = 0; i < 100; i++) {
+            var doc = 
+            {
+                owner       : user,
+                title       : 'Irgend ein '+type,
+                type        : type,
+                _id         : getId(type),
+                _rev        : null
+            };
+            all_docs.push(doc);
+        }
+        console.log('END');
+        db.bulkDocs(all_docs, function (err, response) { 
+            if (err) {
+                console.log(err);
+            } else {
+                console.log(response);
+            }
+        });
+    };
+    
+    $('#createTestBoat').click(function(){
+        createDoc('boat');
     });
     
     $('#createTestMark').click(function(){
-        var doc = 
-        {
-            owner       : user,
-            title       : 'Irgend ein Mark',
-            type        : 'mark',
-            _id         : getId('mark'),
-            _rev        : null
-        };
-        console.log(doc);
-        db.put(doc, function (err, response) { 
-            if (err) {
-                console.log(err);
-            } else {
-                console.log(response);
-            }
-        });
+        createDoc('mark');
+    });
+    
+    $('#multipleCreate').click(function(){
+        bulkDoc('boat');
     });
     
     $('#createFriendRequest').click(function() {
         from = user;
-        to = 'user@user.de';
+        to = (user == 'user@user.de') ? 'test@test.de' : 'user@user.de';
         // set same ordering, no matter from which address the request will be sent
         first = (to > from) ? to : from;
         second = (first == to) ? from : to;
@@ -118,6 +134,7 @@ $(document).ready(function(){
             type        : 'friend',
             to          : to,
             from        : from,
+            access      : false,
             _id         : 'friend'+'/'+first+'/'+second,
             _rev        : null
         };
@@ -133,7 +150,7 @@ $(document).ready(function(){
     
     $('#acceptFriendRequest').click(function() {
         from = user;
-        to = 'user@user.de';
+        to = (user == 'user@user.de') ? 'test@test.de' : 'user@user.de';
         // set same ordering, no matter from which address the request will be sent
         first = (to > from) ? to : from;
         second = (first == to) ? from : to;
@@ -143,14 +160,21 @@ $(document).ready(function(){
             if (err) {
                 console.log(err);
             } else {
-                db.put(response, function(err, response) { console.log(err);});
+                response.access = true;
+                db.put(response, function(err, response) { 
+                    if (err) {
+                        console.log(err);
+                    } else {
+                        console.log(response);
+                    }
+                });
             }
         });
     });
     
     $('#rejectFriendRequest').click(function() {
         from = user;
-        to = 'user@user.de';
+        to = (user == 'user@user.de') ? 'test@test.de' : 'user@user.de';
         // set same ordering, no matter from which address the request will be sent
         first = (to > from) ? to : from;
         second = (first == to) ? from : to;
@@ -160,7 +184,13 @@ $(document).ready(function(){
             if (err) {
                 console.log(err);
             } else {
-                db.remove(response._id, response._rev, function(err, response) { console.log(err);});
+                db.remove(response, function(err, response) { 
+                    if (err) {
+                        console.log(err);
+                    } else {
+                        console.log(response);
+                    }
+                });
             }
         });
     });
