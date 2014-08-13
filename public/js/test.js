@@ -2,7 +2,7 @@
 
 $(document).ready(function(){
     console.log( "ready!" );
-    var idCounter = {};
+    var docStore = {};
     var user = seapal.user;
     
     if (user == '') {
@@ -14,11 +14,7 @@ $(document).ready(function(){
     var db = new PouchDB('http://localhost:9000/database/');
     console.log(db);
 
-   
-    allDocsOptions = {};
-    allDocsOptions.include_docs = true;
-    
-    db.allDocs(allDocsOptions, function(err, response) {
+    db.allDocs({include_docs : true}, function(err, response) {
         console.log("FETCH DOCS RESULT");
         if (err) {
             console.log(err);
@@ -27,40 +23,53 @@ $(document).ready(function(){
             console.log(response);
             // go through all docs and generate the doc id counter
             for (var i in response.rows) {
-                // split key of document
-                obj = response.rows[i].key.split('/');
-                // we expect username/type/id
-                if (3 != obj.length) continue;
-                // create documents is only in own docs possible
-                if (user != obj[0]) continue;
-                // if type is not in idCount, create it
-                if (!idCounter[obj[1]]) idCounter[obj[1]] = 1;
-                // increment idCount for the type
-                idCounter[obj[1]]++;
+                storeDocument(response.rows[i].doc)     
             }
+            console.log(docStore);
         }
-        console.log(idCounter);
-        if (!idCounter['boat'] || 0 >= idCounter['boat']) {
-            idCounter['boat'] = 1;
-        }
-        if (!idCounter['mark'] || 0 >= idCounter['mark']) {
-            idCounter['mark'] = 1;
-        }
-        console.log(idCounter);
     });
 
-    db.changes({since : 'now', live : true})
-      .on('change', function (info) {
-        console.log(info);
-      }).on('complete', function (info) {
-        console.log(info);
-      }).on('error', function (err) {
-        console.log(err);
-      });
+    db.changes({since : 'now', live : true, include_docs : true})
+        .on('change', function (info) {
+            console.log(info);
+            storeDocument(info.doc);
+        }).on('complete', function (info) {
+            console.log(info);
+        }).on('error', function (err) {
+            console.log(err);
+        });
+        
+    var storeDocument = function (doc) {
+        // split key of document
+        var obj = doc._id.split('/');
+        // we expect username/type/id, if this is not given, we ignore the document
+        if (3 != obj.length) return;
+        var user = obj[0];
+        var type = obj[1];
+        var id = obj[2];
+        // check if user is already in docStore
+        if (undefined === docStore[user]) docStore[user] = {};
+        // check if document type is in docStore
+        if (undefined === docStore[user][type]) docStore[user][type] = {_counter : 0};
+        // check if it was not a document deletion
+        if (undefined !== doc._deleted) {
+            // check if it is a document update or not
+            if (undefined === docStore[user][type][id]) docStore[user][type]['_counter']++;
+            // store the document
+            docStore[user][type][id] = doc;
+            // check if document was stored in before and call the hook
+        } else {
+            // remove the document from the docStore
+            delete docStore[user][type][id];
+            // call the hook for the deleted document
+        }
+    };
     
     var getId = function (type) {
-        idStr = idCounter[type].toString();
-        idCounter[type]++;
+        if (undefined === docStore[user]) docStore[user] = {};
+        if (undefined === docStore[user][type]) docStore[user][type] = {_counter : 0};
+        docStore[user][type]['_counter']++;
+        idStr = docStore[user][type]['_counter'].toString();
         for (var i = idStr.length; i < 6; i++) {
             idStr = "0" + idStr;
         }
