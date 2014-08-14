@@ -1134,11 +1134,12 @@
         */
         function init() {
             map = new google.maps.Map(element, options.map);
-            for (var i = 0; i <= NUMBER_OVERLAYS; i++) {
+            // TODO enable
+    /*        for (var i = 0; i <= NUMBER_OVERLAYS; i++) {
                 map.overlayMapTypes.push(null);
             }
             initOpenSeaMaps();
-            
+    */        
             if ( options.mode !== "NOTINTERACTIVE" ) {
                 initContextMenu();
                 initGoogleMapsListeners();

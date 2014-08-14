@@ -167,18 +167,30 @@ $(document).ready(function() {
     $('#modal-form_addCrewman').submit(function(event) {
         $('#modal-form_addCrewman').modal('hide');
 
-        $('#email_addCrewman').val()
+        from = seapal.user;
+        to = $('#email_addCrewman').val();
+        // set same ordering, no matter from which address the request will be sent
+        first = (to > from) ? to : from;
+        second = (first == to) ? from : to;
+        
+        var doc = 
+        {
+            type        : 'friend',
+            to          : to,
+            from        : from,
+            access      : false,
+            _id         : 'friend'+'/'+first+'/'+second,
+            _rev        : null
+        };
 
-        /* callback handler that will be called on success */
-        request.done(function (response, textStatus, jqXHR){
-            output.info("Friend request send");
+        db.put(doc, function (err, response) { 
+            if (err) {
+                output.error("Friend request failed: " + err);
+            } else {
+                output.info("Friend request send");
+            }
         });
-
-        /* callback handler that will be called on failure */
-        request.fail(function (jqXHR, textStatus, errorThrown){
-            var res = JSON.parse(jqXHR.responseText);            
-			output.error("Friend request failed: " + res.error);
-        });
+        
         return false;
     });
 
