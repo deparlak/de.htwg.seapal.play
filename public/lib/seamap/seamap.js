@@ -676,6 +676,7 @@
             "birth"             : null,
             "city"              : null,
             "country"           : null,
+            "email"             : null,
             "firstname"         : null,
             "lastname"          : null,
             "mobile"            : null,

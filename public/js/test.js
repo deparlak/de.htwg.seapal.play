@@ -43,7 +43,31 @@ $(document).ready(function(){
         // split key of document
         var obj = doc._id.split('/');
         // we expect username/type/id, if this is not given, we ignore the document
-        if (3 != obj.length) return;
+        // friends or friend requests have the format friend/emailUserA/emailUserB
+        if (3 != obj.length) return;    
+        
+        //if it is a friend, we have to save the email of the friend as the key and not the own.
+        if ('friend' == obj[0]) {
+            var type = obj[0];
+            var mailA = obj[1];
+            var mailB = obj[2];
+            var friendMail = (mailA == seapal.user) ? mailB : mailA;
+            // some checks to build docStore correct
+            if (undefined === docStore[type]) docStore[type] = {_counter : 0};
+            if (undefined === doc._deleted) {
+                if (undefined === docStore[type][friendMail]) docStore[type]['_counter']++;
+                // store the document
+                docStore[type][friendMail] = doc;
+                // check if document was stored in before and call the hook
+            } else {
+                // remove the document from the docStore
+                delete docStore[type][friendMail];
+                // call the hook for the deleted document
+            }
+            return;
+        }
+        
+        // it is not friend document
         var user = obj[0];
         var type = obj[1];
         var id = obj[2];
@@ -52,7 +76,7 @@ $(document).ready(function(){
         // check if document type is in docStore
         if (undefined === docStore[user][type]) docStore[user][type] = {_counter : 0};
         // check if it was not a document deletion
-        if (undefined !== doc._deleted) {
+        if (undefined === doc._deleted) {
             // check if it is a document update or not
             if (undefined === docStore[user][type][id]) docStore[user][type]['_counter']++;
             // store the document
