@@ -25,6 +25,7 @@
 <!-- <script type="text/javascript" src="@routes.Assets.at("lib/jquery.js")"></script>
 <script type="text/javascript" src="@routes.Assets.at("lib/jquery-ui.min.js")"></script> -->
   
+<script type="text/javascript" src="@routes.Assets.at("lib/pouchdb-2.2.3.min.js")"></script>
 <script type="text/javascript" src="http://code.jquery.com/jquery-1.10.2.js"></script>
 <script type="text/javascript" src="@routes.Assets.at("lib/jquery.inputmask.js")"></script>
 <script type="text/javascript" src="http://code.jquery.com/ui/1.10.4/jquery-ui.js"></script>
@@ -64,6 +65,10 @@
 <script type="text/javascript" src="@routes.Assets.at("lib/seamap/layer.js")"></script>
 
 @if(session.contains("user")) {
+    <script type="text/javascript">
+        var seapal = {};
+        seapal.user = "@session.get("user")";
+    </script>
     <script type="text/javascript" src="@routes.Assets.at("js/app/isLoggedIn.js")"></script>
 } else {
     <script type="text/javascript" src="@routes.Assets.at("js/app/isLoggedOut.js")"></script>

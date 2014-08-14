@@ -27,6 +27,7 @@ $(document).ready(function() {
             for (var i in response.rows) {
                 storeDocument(response.rows[i].doc)     
             }
+            console.log(docStore);
         }
     });
     
