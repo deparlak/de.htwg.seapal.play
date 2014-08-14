@@ -113,8 +113,10 @@ $(document).ready(function() {
     // to it's original form. For this action we have this helper functions.
     var idtoHex = function (tmp) {
         var str = '';
+     
         for (var i = 0; i < tmp.length; i++) {
-            str += tmp.charCodeAt(i.toString(16)) + ' ';
+            c = tmp.charCodeAt(i);
+            str += c.toString(16) + ' ';
         }
         return str;
     };
@@ -122,12 +124,13 @@ $(document).ready(function() {
     var idtoString = function (tmp) {
         var arr = tmp.split(' ');
         var str = '';
- 
+     
         for (var i = 0; i < arr.length; i++) {
             c = String.fromCharCode( parseInt(arr[i], 16) );
             str += c;
         }
-        return str;
+        // The conversion add a extra character to the string, remove it
+        return str.substring(0, str.length-1);
     };
     
  	/* this callback will be called if an object was updated by a user */
@@ -138,14 +141,19 @@ $(document).ready(function() {
         $("#logbook-boats").html("");
         $("#marks").html("");
         
-        console.log('TODO');
-        console.log(self);
-        return;
+        // extract the user id.
+        var user = idtoString(self._id);
 
+        // run through each document type and set it to the map.
         ['boat', 'route', 'mark', 'trip', 'waypoint'].forEach(function(type) {
-            response[type].map( function(item) {
-                map.set(type, item);
-            });
+            if (undefined !== docStore[user][type]) {
+                keys = Object.keys(docStore[user][type]);
+                keys.splice(keys.indexOf('_counter'), 1);
+                keys.map( function(item) {
+                    docStore[user][type][item]._id = idtoHex(docStore[user][type][item]._id);
+                    map.set(type, docStore[user][type][item]);
+                });
+            }
         });
     });
 
@@ -159,11 +167,7 @@ $(document).ready(function() {
     $('#modal-form_addCrewman').submit(function(event) {
         $('#modal-form_addCrewman').modal('hide');
 
-        /* post to server */
-        request = $.ajax({
-            url         : "/api/sendFriendRequestMail/"+$('#email_addCrewman').val(),
-            type        : "get",
-        });
+        $('#email_addCrewman').val()
 
         /* callback handler that will be called on success */
         request.done(function (response, textStatus, jqXHR){
