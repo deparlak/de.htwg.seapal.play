@@ -8,70 +8,78 @@
 $(document).ready(function() {
     events = map.getEvents();
     var templateFriendRequests = Handlebars.compile($("#template-friendRequests").html());
+    var user = seapal.user;
+    // TODO we use docStore to handle all documents, because replication is actually not working with pouchdb to couchbase sync gateway.
+    // If the bug is fixed, we should use the replication instead of this variable.
+    // See https://github.com/pouchdb/pouchdb/issues/1666
+    var docStore = {};
 
-    /* local list to store friend requests */
-    var receivedRequests = {};
-    /* local friend list, which can be checked for new friends */
-    var friend_list = [];
-    /* method to call friend request list cylic */
-    var friendRequest = function(){
-        request = $.ajax({
-            url         : "api/account",
-            type        : "get",
-            contentType : "application/json",
-        });
-        request.done(function (response, textStatus, jqXHR){
-            /* check if friend_list changed */
-            if (friend_list.length != response.friend_list.length) {
-                request = $.ajax({
-                    url         : "api/person/friends",
-                    type        : "get",
-                    contentType : "application/json"
-                });
-
-                request.done(function (friendResponse, textStatus, jqXHR){
-                    for (var i in friendResponse) {
-                        /* friend entries not exist, set the info about the new friend now. */
-                        if (-1 == friend_list.indexOf(friendResponse[i]._id)) {
-                            friend_list.push(friendResponse[i]._id);
-                            map.set('person', friendResponse[i]);
-                        }
-                        /* delete the new friend from the receivedRequests if it was already stored there */
-                        $("#friendRequests"+friendResponse[i].owner).remove();
-                        delete receivedRequests[friendResponse[i].owner];
-                        if (0 == Object.keys(receivedRequests).length) {
-                            $("#logbook-friendRequests").hide();
-                        } 
-                    }
-                });
+    var db = new PouchDB('http://localhost:9000/database/');
+    
+    // initial start up code, which fetch all docs and store them to the docStore.
+    // This call should be replaced with a PouchDB.sync()
+    db.allDocs({include_docs : true}, function(err, response) {
+        console.log("FETCH DOCS RESULT");
+        if (err) {
+            output.error(err);
+        } else {
+            // run through all docs and store them in the docStore
+            for (var i in response.rows) {
+                storeDocument(response.rows[i].doc)     
             }
-            /* check if a friend request occurred */
-            if (Object.keys(receivedRequests).length != response.receivedRequests.length) {
-                request = $.ajax({
-                    url         : "api/names",
-                    type        : "get",
-                    contentType : "application/json"
-                });
-
-                request.done(function (personResponse, textStatus, jqXHR){
-                    /* run through all requests and check if they will already be displayed. */
-                    for (var i in personResponse) {
-                        if (undefined === receivedRequests[personResponse[i].owner]) {
-                            $("#friendRequests").append(templateFriendRequests(personResponse[i]));
-                            receivedRequests[personResponse[i].owner] = personResponse[i];
-                        }
-                    }
-                    /* there are no friend requests */
-                    if (0 == Object.keys(receivedRequests).length) {
-                        $("#logbook-friendRequests").hide();
-                    } else {
-                        $("#logbook-friendRequests").show();
-                    }
-                });
-            }
+        }
+    });
+    
+    // listen on database changes with longpoll. This call can be removed if PouchDB.sync() is working.
+    db.changes({since : 'now', live : true, include_docs : true})
+        .on('change', function (info) {
+            console.log(info);
+            storeDocument(info.doc);
+        }).on('complete', function (info) {
+            console.log(info);
+        }).on('error', function (err) {
+            console.log(err);
         });
+    
+    //helper function to store a document in the docStore variable
+    var storeDocument = function (doc) {
+        // split key of document
+        var obj = doc._id.split('/');
+        // we expect username/type/id, if this is not given, we ignore the document
+        if (3 != obj.length) return;
+        var user = obj[0];
+        var type = obj[1];
+        var id = obj[2];
+        // check if user is already in docStore
+        if (undefined === docStore[user]) docStore[user] = {};
+        // check if document type is in docStore
+        if (undefined === docStore[user][type]) docStore[user][type] = {_counter : 0};
+        // check if it was not a document deletion
+        if (undefined !== doc._deleted) {
+            // check if it is a document update or not
+            if (undefined === docStore[user][type][id]) docStore[user][type]['_counter']++;
+            // store the document
+            docStore[user][type][id] = doc;
+            // check if document was stored in before and call the hook
+        } else {
+            // remove the document from the docStore
+            delete docStore[user][type][id];
+            // call the hook for the deleted document
+        }
     };
-
+    
+    // Helper function to generate the id, with which a document should be stored on the server.
+    var getId = function (type) {
+        if (undefined === docStore[user]) docStore[user] = {};
+        if (undefined === docStore[user][type]) docStore[user][type] = {_counter : 0};
+        docStore[user][type]['_counter']++;
+        idStr = docStore[user][type]['_counter'].toString();
+        for (var i = idStr.length; i < 6; i++) {
+            idStr = "0" + idStr;
+        }
+        return user + '/' + type + '/' + idStr;
+    }
+    
  	/* this callback will be called if an object was updated by a user */
     map.addCallback([events.SWITCHED_PERSON], function (self) {
         $("#tracks").html("");
@@ -79,59 +87,25 @@ $(document).ready(function() {
         $("#routes").html("");
         $("#logbook-boats").html("");
         $("#marks").html("");
+        
+        console.log('TODO');
+        console.log(self);
+        return;
 
-        /* startup code initialise objects from the server */
-        request = $.ajax({
-            url         : "api/all/"+self.owner,
-            type        : "get",
-            contentType : "application/json",
-        });
-
-        /* callback handler that will be called on success */
-        request.done(function (response, textStatus, jqXHR){
-            ['boat', 'route', 'mark', 'trip', 'waypoint'].forEach(function(type) {
-                response[type].map( function(item) {
-                    map.set(type, item);
-                });
+        ['boat', 'route', 'mark', 'trip', 'waypoint'].forEach(function(type) {
+            response[type].map( function(item) {
+                map.set(type, item);
             });
         });
     });
 
-    /* startup code initialise objects from the server */
-    request = $.ajax({
-        url         : "api/all/own",
-        type        : "get",
-        contentType : "application/json",
-    });
-
-    /* callback handler that will be called on success */
-    request.done(function (response, textStatus, jqXHR){
-        response.person_info.map( function(item) {
-            map.set('person', item);
-        });
-        /* check if settings are available */
-        if (response.setting_info.length) {
-            map.initGlobalSettings(response.setting_info[0]);
-        }
-        /* trigger friend list */
-        friendRequest();
-        /* set cylcic friend request every minute */
-        setInterval(friendRequest, 60000);
-    });
-
-    /* callback handler that will be called on failure */
-    request.fail(function (jqXHR, textStatus, errorThrown){
-        var res = JSON.parse(jqXHR.responseText);
-        output.error(res.error);
-    });
-
-    /* callback for adding a crew member */
+    /* callback to open the modal with which a friend request can be send */
     menu.addCallback('leftclick', 'logbookCrewAdd', function (self) {
         menu.disableAutoClose();
         $('#modal-form_addCrewman').modal('show');
     });
 
-    /* on click of button to sent the friend request */
+    /* on click of button to sent a friend request */
     $('#modal-form_addCrewman').submit(function(event) {
         $('#modal-form_addCrewman').modal('hide');
 
@@ -207,7 +181,7 @@ $(document).ready(function() {
         }
     );
 
-	/* this callback will be called if marks where loaded from the server */
+	/* this callback will be called if a document (mark, route, track,...) should be removed from the server */
     map.addCallback(events.SERVER_REMOVE, function (self) {
         /* if there is no _id from the server, this object was not uploaded, so we do not send a server request. */
         if (null == self._id) return;
@@ -225,7 +199,7 @@ $(document).ready(function() {
         });
     });
 
-	/* this callback will be called if marks where loaded from the server */
+	/* this callback will be called if a document (mark, route, track,...) should be created on the server */
     map.addCallback(events.SERVER_CREATE, function (self) {
         /*
             we set the id which will be used by the client as a handle for the object to null,
@@ -290,17 +264,11 @@ $(document).ready(function() {
         });
     });
 
+    /* this callback will be called if settings (unit for distance, logging interval,...) should be saved to the server */
     map.addCallback(events.UPDATED_SETTINGS, function (self) {
-        request = $.ajax({
-            url         : "/api/settings",
-            type        : "post",
-            contentType : "application/json",
-            data        : JSON.stringify(self),
-        });
-
-        request.done(function (response, textStatus, jqXHR){
-            /* set response from server back to settings, because the _id and _rev changed. */
-            map.initGlobalSettings(response);
-        });
+        console.log('TODO');
+        console.log(self);
+        /* set response from server back to settings, because the _id and _rev changed. */
+        //map.initGlobalSettings(response);
     });
 });
