@@ -9,6 +9,8 @@ $(document).ready(function() {
     events = map.getEvents();
     var templateFriendRequests = Handlebars.compile($("#template-friendRequests").html());
     var user = seapal.user;
+    // prefix to store the returned id of the map object, which uses it's own internal id structure.
+    var MAP_ID = 'id';
     // TODO we use docStore to handle all documents, because replication is actually not working with pouchdb to couchbase sync gateway.
     // If the bug is fixed, we should use the replication instead of this variable.
     // See https://github.com/pouchdb/pouchdb/issues/1666
@@ -29,7 +31,7 @@ $(document).ready(function() {
             }
             console.log(docStore);
             // set the active person, to the logged in user.
-            map.set('person', {_id : idtoHex(user), _rev : 'some_rev', email : user});
+            map.set('person', {type : 'person', _id : user, _rev : 'some_rev', email : user, owner : user});
         }
     });
     
@@ -142,7 +144,9 @@ $(document).ready(function() {
         $("#marks").html("");
         
         // extract the user id.
-        var user = idtoString(self._id);
+        var user = self._id;
+        // return if there are no documents for this user
+        if (undefined === docStore[user]) return;
 
         // run through each document type and set it to the map.
         ['boat', 'route', 'mark', 'trip', 'waypoint'].forEach(function(type) {
@@ -150,8 +154,7 @@ $(document).ready(function() {
                 keys = Object.keys(docStore[user][type]);
                 keys.splice(keys.indexOf('_counter'), 1);
                 keys.map( function(item) {
-                    docStore[user][type][item]._id = idtoHex(docStore[user][type][item]._id);
-                    map.set(type, docStore[user][type][item]);
+                    docStore[user][type][item][MAP_ID] = map.set(type, docStore[user][type][item]);
                 });
             }
         });
@@ -271,62 +274,38 @@ $(document).ready(function() {
             we set the id which will be used by the client as a handle for the object to null,
             because the server will interpret an 'id' as a '_id'.
         */
-        var objectId = self.id;
-        var image_big = null;
-        self.id = null;
+        console.log(self);
 
-        /*
-            If we like to upload an image, save the image to a variable,
-            because the image has to be uploaded seperatly.
-        */
-        if (self.image_big) {
-            image_big = self.image_big
-            self.image_big = null;
+        // if there is no _id actually.
+        if (!self._id || null == self._id) {
+            self._id = getId(self.type);
+            // object is not in docStore, because it was created by the map, so set the object to the docStore
+            docStore[user][self.type][self._id] = self;
         }
-
-        /* post to server */
-        request = $.ajax({
-            url         : "api/"+self.type,
-            type        : "post",
-            contentType : "application/json",
-            data        : JSON.stringify(self),
-        });
-
-        /* callback handler that will be called on success */
-        request.done(function (response, textStatus, jqXHR){
-            response.id = objectId;
-            response.type = self.type;
-            response.image_big = null;
-			map.set(response.type, response);
-			
-			 /* restore the object id and set the response object to the map storage (because the _rev and _id changed). */
+        // delete all object fields, which we not like to upload to the server.
+        delete self.id;
+        delete self.image_big;
+        
+        db.put(self, function (err, response) { 
+            if (err) {
+                console.log(err);
+                output.error(err);
+                return;
+            }
+            console.log('ok');
+            return;
+            
+            // TODO this has to  be done in the db.changes() callback where the successfully uploaded object will be synched.
+            
+			/* restore the object id and set the response object to the map storage (because the _rev and _id changed). */
 			if (self.newTripFlag) {
-                $('#trip' + objectId).prop('href', 'logbook/' + self.boat + '/' + response._id);
+                $('#trip' + id).prop('href', 'logbook/' + self.boat + '/' + response._id);
             }
 			
             /* If we have uploaded an item with an image (mark, waypoint, ...) we have to upload the image file now */
             if (image_big) {
-                var formData = new FormData();
-                formData.append("picture", image_big);
-
-                var xhr = new XMLHttpRequest();
-                xhr.onreadystatechange = function () {
-                    if (xhr.readyState == 4) {
-                        var json = JSON.parse(xhr.responseText);
-                        /* Adding an attachement changes the revision, so we have to set the revision */
-                        response._rev = json._rev;
-                        map.set(response.type, response);
-                    }
-                }
-                xhr.open("POST", "/api/photo/"+response._id+"/"+self.type);
-                xhr.send(formData);
+                console.log("TODO : image upload should be implemented.")
             }
-        });
-
-        /* callback handler that will be called on failure */
-        request.fail(function (jqXHR, textStatus, errorThrown){
-            var res = JSON.parse(jqXHR.responseText);
-            output.error(res.error);
         });
     });
 

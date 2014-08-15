@@ -253,7 +253,7 @@
             /* if there is no client id, but a server id the object just has to be added */
             if ((!obj.id || obj.id == null) && obj._id != null && obj._rev != null) {
                 newObj = self.getTemplate(type);
-                newObj.id = obj._id;
+                newObj.id = (idCounter++).toString();
                 data[type].list[newObj.id] = newObj;
                 data[type].count++;
                 copyObjAttr(type, newObj, obj);
@@ -265,7 +265,8 @@
                 if (('boat' == type || 'person' == type) && 2 == data[type].count) {
                     self.select(type, newObj.id);
                 }
-            /* if the object already exist, go to the entries and update all entries's */
+                obj = newObj;
+            /* if the object already exist, go to the entries and update all entries */
             } else if (obj.id != null){
                 checkId(type, obj.id);
                 var modified = copyObjAttr(type, data[type].list[obj.id], obj);
@@ -292,9 +293,12 @@
                 if (('boat' == type || 'person' == type) && 2 == data[type].count) {
                     self.select(type, newObj.id);
                 }
+                obj = newObj;
             } else {
                 throw("Not expected case in map.set(..)");
             }
+            // return the id, with which the element can be selected.
+            return obj.id;
         };
         
         /* helper method to copy only the elements to a obj */
