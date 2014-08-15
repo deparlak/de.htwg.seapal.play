@@ -78,7 +78,7 @@ $(document).ready(function() {
         // it is not friend document
         var user = obj[0];
         var type = obj[1];
-        var id = obj[2];
+        var _id = obj[2];
         // check if user is already in docStore
         if (undefined === docStore[user]) docStore[user] = {};
         // check if document type is in docStore
@@ -86,14 +86,15 @@ $(document).ready(function() {
         // check if it was not a document deletion
         if (undefined === doc._deleted) {
             // check if it is a document update or not
-            if (undefined === docStore[user][type][id]) docStore[user][type]['_counter']++;
+            if (undefined === docStore[user][type][_id]) docStore[user][type]['_counter']++;
             // store the document
-            docStore[user][type][id] = doc;
+            docStore[user][type][_id] = doc;
             // check if document was stored in before and call the hook
         } else {
+            // call remove method in the map
+            if (docStore[user][type][MAP_ID]) map.remove(type, docStore[user][type][MAP_ID]);
             // remove the document from the docStore
-            delete docStore[user][type][id];
-            // call the hook for the deleted document
+            delete docStore[user][type][_id];
         }
     };
     
@@ -209,37 +210,14 @@ $(document).ready(function() {
         $('#rejectCrewRequest').on('click', function() {
             $('#modal-form_confirmCrewRequest').modal('hide');
 
-            request = $.ajax({
-                url         : "api/abortFriendRequest/"+self.data('id'),
-                type        : "get"
-            });
-            /* callback handler that will be called on success */
-            request.done(function (response, textStatus, jqXHR){
-                $("#friendRequests"+self.data('id')).remove();
-                delete receivedRequests[self.data('id')];
-                if (0 == Object.keys(receivedRequests).length) {
-                    friendRequest();
-                    $("#logbook-friendRequests").hide();
-                }
-            });
+            console.log(self.data('id'));
+            $("#logbook-friendRequests").hide();
         });
 
         $('#confirmCrewRequest').on('click', function() {
             $('#modal-form_confirmCrewRequest').modal('hide');
-
-            request = $.ajax({
-                url         : "api/sendFriendRequest/"+self.data('id'),
-                type        : "get"
-            });
-            /* callback handler that will be called on success */
-            request.done(function (response, textStatus, jqXHR){
-                $("#friendRequests"+self.data('id')).remove();
-                delete receivedRequests[self.data('id')];
-                if (0 == Object.keys(receivedRequests).length) {
-                    friendRequest();
-                    $("#logbook-friendRequests").hide();
-                }
-            });
+            console.log(self.data('id'));
+            $("#logbook-friendRequests").hide();
         });
     });
 
@@ -255,16 +233,10 @@ $(document).ready(function() {
         /* if there is no _id from the server, this object was not uploaded, so we do not send a server request. */
         if (null == self._id) return;
 
-        /* post to server */
-        request = $.ajax({
-            url         : "api/"+self.type+"/"+self._id,
-            type        : "delete"
-        });
-
-        /* callback handler that will be called on failure */
-        request.fail(function (jqXHR, textStatus, errorThrown){
-			var res = JSON.parse(jqXHR.responseText);
-            output.error(res.error);
+        db.remove(self, function(err, response) { 
+            if (err) {
+                output.error(err);
+            }
         });
     });
 
