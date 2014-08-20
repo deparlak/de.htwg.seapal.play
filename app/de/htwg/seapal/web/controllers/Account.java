@@ -68,7 +68,7 @@ public class Account extends Controller {
                 System.out.println("Session : "+resp.get("ok").asText());
                 session(sessionCookie, resp.get("ok").asText());
                 session("user", account.getEmail());
-                return redirect(routes.Application.test());
+                return redirect(routes.Application.app());
             }
         });
     }

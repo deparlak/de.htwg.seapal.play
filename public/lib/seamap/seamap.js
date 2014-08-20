@@ -230,7 +230,7 @@
             callbacks[e].add(method);
         };
         /* remove a route,mark,track,boat,... */
-        this.remove = function(type, id) {
+        this.remove = function(type, id, silent) {
             var ok = true;
 			dataParameterCheck(type, id, null);
 			/* check if a remove method is defined which has to be called. 
@@ -241,8 +241,10 @@
 				ok = data[type].removeMethod(id);
 			}
             if (ok) {
-                /* remove the element now from the list */
-                dataCallback([event.SERVER_REMOVE], data[type].list[id]);
+                if (!silent) {
+                    /* remove the element now from the list */
+                    dataCallback([event.SERVER_REMOVE], data[type].list[id]);
+                }
                 delete data[type].list[id];
             }
         };
@@ -528,7 +530,8 @@
             trackingDelay      : 5,
             waypointDelay      : 1, 
             historyTrend       : 1,
-            circleRadius       : 250
+            circleRadius       : 250,
+            type               : "settings"
         };
 
         /* The settings for the alarms */

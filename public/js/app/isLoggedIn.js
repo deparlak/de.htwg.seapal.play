@@ -25,13 +25,14 @@ $(document).ready(function() {
         if (err) {
             output.error(err);
         } else {
+            // set the active person, to the logged in user.
+            map.set('person', {type : 'person', _id : seapal.user+'/person', _rev : 'some_rev', email : user, owner : user});
+            console.log(response);
             // run through all docs and store them in the docStore
             for (var i in response.rows) {
                 storeDocument(response.rows[i].doc)     
             }
             console.log(docStore);
-            // set the active person, to the logged in user.
-            map.set('person', {type : 'person', _id : user, _rev : 'some_rev', email : user, owner : user});
         }
     });
     
@@ -50,6 +51,13 @@ $(document).ready(function() {
     var storeDocument = function (doc) {
         // split key of document
         var obj = doc._id.split('/');
+        
+        // check if it is a settings document
+        if (2 == obj.length && obj[0] == seapal.user && obj[1] == 'settings') {
+            map.initGlobalSettings(doc);
+            return;
+        }
+        
         // we expect username/type/id, if this is not given, we ignore the document
         // friends or friend requests have the format friend/emailUserA/emailUserB
         if (3 != obj.length) return;    
@@ -60,17 +68,40 @@ $(document).ready(function() {
             var mailA = obj[1];
             var mailB = obj[2];
             var friendMail = (mailA == seapal.user) ? mailB : mailA;
+            var id = idtoHex(friendMail);
             // some checks to build docStore correct
             if (undefined === docStore[type]) docStore[type] = {_counter : 0};
+            
+            // check if the friend request is in the html and has be removed.
+            if ( $("#friendRequests"+id).length != 0) {
+                $("#friendRequests"+id).remove();
+                if ($("#friendRequests li").text() == "") {
+                    $("#logbook-friendRequests").hide();
+                }
+            }
+            
             if (undefined === doc._deleted) {
                 if (undefined === docStore[type][friendMail]) docStore[type]['_counter']++;
+                if (docStore[type][friendMail] && docStore[type][friendMail][MAP_ID]) {
+                    doc[MAP_ID] = docStore[type][friendMail][MAP_ID];
+                }
                 // store the document
                 docStore[type][friendMail] = doc;
-                // check if document was stored in before and call the hook
+                // check if it is a friend request, because than the access rights are not set.
+                if (false == doc.access && doc.from != seapal.user && $("#friendRequests"+id).length == 0) {
+                    $("#friendRequests").append(templateFriendRequests({from : doc.from, id : id}));
+                    $("#logbook-friendRequests").show();
+                } else {
+                    // no friend request, already a friend.
+                    docStore[type][friendMail][MAP_ID] = map.set('person', {id : doc[MAP_ID], type : 'person', _id : friendMail+'/person', _rev : 'some_rev', email : friendMail, owner : friendMail});
+                }
             } else {
+                // remove the document from the map
+                if (docStore[type][friendMail] && docStore[type][friendMail][MAP_ID]) {
+                    map.remove('person', docStore[type][friendMail][MAP_ID], true);
+                }
                 // remove the document from the docStore
                 delete docStore[type][friendMail];
-                // call the hook for the deleted document
             }
             return;
         }
@@ -92,7 +123,7 @@ $(document).ready(function() {
             // check if document was stored in before and call the hook
         } else {
             // call remove method in the map
-            if (docStore[user][type][MAP_ID]) map.remove(type, docStore[user][type][MAP_ID]);
+            if (docStore[user][type][MAP_ID]) map.remove(type, docStore[user][type][MAP_ID], true);
             // remove the document from the docStore
             delete docStore[user][type][_id];
         }
@@ -119,13 +150,13 @@ $(document).ready(function() {
      
         for (var i = 0; i < tmp.length; i++) {
             c = tmp.charCodeAt(i);
-            str += c.toString(16) + ' ';
+            str += c.toString(16) + '_';
         }
         return str;
     };
     
     var idtoString = function (tmp) {
-        var arr = tmp.split(' ');
+        var arr = tmp.split('_');
         var str = '';
      
         for (var i = 0; i < arr.length; i++) {
@@ -145,10 +176,12 @@ $(document).ready(function() {
         $("#marks").html("");
         
         // extract the user id.
-        var user = self._id;
+        user = self._id;
         // return if there are no documents for this user
         if (undefined === docStore[user]) return;
 
+        console.log(user);
+        console.log(docStore.user);
         // run through each document type and set it to the map.
         ['boat', 'route', 'mark', 'trip', 'waypoint'].forEach(function(type) {
             if (undefined !== docStore[user][type]) {
@@ -201,7 +234,7 @@ $(document).ready(function() {
     /* Callback for confirm crew request */
     menu.addCallback('leftclick', 'icon-friendRequests', function (self) {
         var template = Handlebars.compile($("#confirmCrewRequest_Template").text());
-        var html = template(receivedRequests[self.data('id')]);
+        var html = template(self.data);
         $('#confirmCrewRequestInputForm').html(html);
 
         menu.disableAutoClose();
@@ -209,15 +242,26 @@ $(document).ready(function() {
 
         $('#rejectCrewRequest').on('click', function() {
             $('#modal-form_confirmCrewRequest').modal('hide');
-
-            console.log(self.data('id'));
-            $("#logbook-friendRequests").hide();
+            doc = docStore['friend'][self.data('from')];
+            doc.access = false;
+            
+            db.remove(doc, function(err, response) { 
+                if (err) {
+                    output.error(err);
+                }
+            });
         });
 
         $('#confirmCrewRequest').on('click', function() {
             $('#modal-form_confirmCrewRequest').modal('hide');
-            console.log(self.data('id'));
-            $("#logbook-friendRequests").hide();
+            doc = docStore['friend'][self.data('from')];
+            doc.access = true;
+            
+            db.put(doc, function(err, response) { 
+                if (err) {
+                    output.error(err);
+                }
+            });
         });
     });
 
@@ -285,7 +329,12 @@ $(document).ready(function() {
     map.addCallback(events.UPDATED_SETTINGS, function (self) {
         console.log('TODO');
         console.log(self);
-        /* set response from server back to settings, because the _id and _rev changed. */
-        //map.initGlobalSettings(response);
+        // set the id of the settings document
+        self._id = seapal.user + '/settings';
+        db.put(self, function(err, response) { 
+            if (err) {
+                console.log(err);
+            }
+        });
     });
 });
