@@ -8,7 +8,7 @@
 $(document).ready(function() {
     events = map.getEvents();
     var templateFriendRequests = Handlebars.compile($("#template-friendRequests").html());
-    var user = seapal.user;
+    var selectedUser = seapal.user;
     // prefix to store the returned id of the map object, which uses it's own internal id structure.
     var MAP_ID = 'id';
     // TODO we use docStore to handle all documents, because replication is actually not working with pouchdb to couchbase sync gateway.
@@ -25,13 +25,15 @@ $(document).ready(function() {
         if (err) {
             output.error(err);
         } else {
-            // set the active person, to the logged in user.
-            map.set('person', {type : 'person', _id : seapal.user+'/person', _rev : 'some_rev', email : user, owner : user});
             console.log(response);
+            // set the active person, to the logged in user.
+            docStore[seapal.user] = {person : {}};
+            docStore[seapal.user]['person'][MAP_ID] = map.set('person', {type : 'person', _id : seapal.user, _rev : 'some_rev', email : seapal.user, owner : seapal.user});
             // run through all docs and store them in the docStore
             for (var i in response.rows) {
                 storeDocument(response.rows[i].doc)     
             }
+            map.select('person', docStore[seapal.user]['person'][MAP_ID]);
             console.log(docStore);
         }
     });
@@ -49,6 +51,8 @@ $(document).ready(function() {
     
     //helper function to store a document in the docStore variable
     var storeDocument = function (doc) {
+        // id which come are set here are invalid
+        delete doc.id;
         // split key of document
         var obj = doc._id.split('/');
         
@@ -91,14 +95,23 @@ $(document).ready(function() {
                 if (false == doc.access && doc.from != seapal.user && $("#friendRequests"+id).length == 0) {
                     $("#friendRequests").append(templateFriendRequests({from : doc.from, id : id}));
                     $("#logbook-friendRequests").show();
+                } else if (doc.from == seapal.user) {
+                    // this request was sent by us. Don't set it to any list and wait for a request of the user which we asked.
                 } else {
                     // no friend request, already a friend.
-                    docStore[type][friendMail][MAP_ID] = map.set('person', {id : doc[MAP_ID], type : 'person', _id : friendMail+'/person', _rev : 'some_rev', email : friendMail, owner : friendMail});
+                    docStore[type][friendMail][MAP_ID] = map.set('person', {id : doc[MAP_ID], type : 'person', _id : friendMail, _rev : 'some_rev', email : friendMail, owner : friendMail});
                 }
             } else {
                 // remove the document from the map
                 if (docStore[type][friendMail] && docStore[type][friendMail][MAP_ID]) {
                     map.remove('person', docStore[type][friendMail][MAP_ID], true);
+                    // remove from the gui
+                    $('.person'+docStore[type][friendMail][MAP_ID]).remove();
+                    // check if we have to switch the person (if the actual selected user is the user who quit the friend
+                    if (friendMail == selectedUser) {
+                        output.warning("Selected own logbook, because the friendship to "+friendMail+" was quit.");
+                        map.select('person', docStore[seapal.user]['person'][MAP_ID]);
+                    }
                 }
                 // remove the document from the docStore
                 delete docStore[type][friendMail];
@@ -109,21 +122,30 @@ $(document).ready(function() {
         // it is not friend document
         var user = obj[0];
         var type = obj[1];
-        var _id = obj[2];
+        var _id = doc._id;
+
         // check if user is already in docStore
         if (undefined === docStore[user]) docStore[user] = {};
         // check if document type is in docStore
         if (undefined === docStore[user][type]) docStore[user][type] = {_counter : 0};
         // check if it was not a document deletion
         if (undefined === doc._deleted) {
-            // check if it is a document update or not
-            if (undefined === docStore[user][type][_id]) docStore[user][type]['_counter']++;
+
+            // check if it is a new document
+            if (undefined === docStore[user][type][_id]) {
+                docStore[user][type]['_counter']++;
+                docStore[user][type][_id] = {};
+            }
+            // get the id if it exist.
+            var tmp = docStore[user][type][_id][MAP_ID];
             // store the document
             docStore[user][type][_id] = doc;
-            // check if document was stored in before and call the hook
+            docStore[user][type][_id][MAP_ID] = tmp;
+            // call the set method in the map
+            docStore[user][type][_id][MAP_ID] = map.set(type, docStore[user][type][_id]);
         } else {
             // call remove method in the map
-            if (docStore[user][type][MAP_ID]) map.remove(type, docStore[user][type][MAP_ID], true);
+            if (docStore[user][type][_id] && docStore[user][type][_id][MAP_ID]) map.remove(type, docStore[user][type][_id][MAP_ID], true);
             // remove the document from the docStore
             delete docStore[user][type][_id];
         }
@@ -131,14 +153,14 @@ $(document).ready(function() {
     
     // Helper function to generate the id, with which a document should be stored on the server.
     var getId = function (type) {
-        if (undefined === docStore[user]) docStore[user] = {};
-        if (undefined === docStore[user][type]) docStore[user][type] = {_counter : 0};
-        docStore[user][type]['_counter']++;
-        idStr = docStore[user][type]['_counter'].toString();
+        if (undefined === docStore[selectedUser]) docStore[selectedUser] = {};
+        if (undefined === docStore[selectedUser][type]) docStore[selectedUser][type] = {_counter : 0};
+        docStore[selectedUser][type]['_counter']++;
+        idStr = docStore[selectedUser][type]['_counter'].toString();
         for (var i = idStr.length; i < 6; i++) {
             idStr = "0" + idStr;
         }
-        return user + '/' + type + '/' + idStr;
+        return selectedUser + '/' + type + '/' + idStr;
     }
     
     // document id's are used in many parts by the seapal-app e.g. as id's for html documents.
@@ -175,20 +197,21 @@ $(document).ready(function() {
         $("#logbook-boats").html("");
         $("#marks").html("");
         
-        // extract the user id.
-        user = self._id;
-        // return if there are no documents for this user
-        if (undefined === docStore[user]) return;
+        // extract the user _id
+        selectedUser = self._id;
 
-        console.log(user);
-        console.log(docStore.user);
+        // return if there are no documents for this user
+        if (undefined === docStore[selectedUser]) return;
+
         // run through each document type and set it to the map.
         ['boat', 'route', 'mark', 'trip', 'waypoint'].forEach(function(type) {
-            if (undefined !== docStore[user][type]) {
-                keys = Object.keys(docStore[user][type]);
+            if (undefined !== docStore[selectedUser][type]) {
+                keys = Object.keys(docStore[selectedUser][type]);
                 keys.splice(keys.indexOf('_counter'), 1);
                 keys.map( function(item) {
-                    docStore[user][type][item][MAP_ID] = map.set(type, docStore[user][type][item]);
+                    // delete the old map id and get a new one.
+                    delete docStore[selectedUser][type][item][MAP_ID];
+                    docStore[selectedUser][type][item][MAP_ID] = map.set(type, docStore[selectedUser][type][item]);
                 });
             }
         });
@@ -274,6 +297,10 @@ $(document).ready(function() {
 
 	/* this callback will be called if a document (mark, route, track,...) should be removed from the server */
     map.addCallback(events.SERVER_REMOVE, function (self) {
+        // remove the entry from the docStore
+        if (docStore[self.owner] && docStore[self.owner][self.type]) {
+            delete docStore[self.owner][self.type][self._id];
+        }
         /* if there is no _id from the server, this object was not uploaded, so we do not send a server request. */
         if (null == self._id) return;
 
@@ -290,22 +317,35 @@ $(document).ready(function() {
             we set the id which will be used by the client as a handle for the object to null,
             because the server will interpret an 'id' as a '_id'.
         */
-        console.log(self);
 
         // if there is no _id actually.
         if (!self._id || null == self._id) {
+            // generate an id
             self._id = getId(self.type);
             // object is not in docStore, because it was created by the map, so set the object to the docStore
-            docStore[user][self.type][self._id] = self;
+            docStore[selectedUser][self.type][self._id] = {id : self.id};
         }
+        var obj = jQuery.extend(true, {}, self);
         // delete all object fields, which we not like to upload to the server.
-        delete self.id;
-        delete self.image_big;
+        delete obj.id;
+        delete obj.image_big;
         
-        db.put(self, function (err, response) { 
+        createDocument(self.id, obj);
+    });
+    
+    var createDocument = function (mapid, obj) {
+        db.put(obj, function (err, response) { 
+            // if document already exist and there is no _rev, there should be chosen another _id.
+            if (err && err.status == 409 && obj._rev == null) {
+                obj._id = getId(obj.type);
+                docStore[obj.owner][obj.type][obj._id] = {id : mapid};
+                console.log("use other _id");
+                // call create method again.
+                createDocument(mapid, obj);
+                return;
+            }
             if (err) {
-                console.log(err);
-                output.error(err);
+                output.error(err.message);
                 return;
             }
             console.log('ok');
@@ -323,12 +363,10 @@ $(document).ready(function() {
                 console.log("TODO : image upload should be implemented.")
             }
         });
-    });
+    }
 
     /* this callback will be called if settings (unit for distance, logging interval,...) should be saved to the server */
     map.addCallback(events.UPDATED_SETTINGS, function (self) {
-        console.log('TODO');
-        console.log(self);
         // set the id of the settings document
         self._id = seapal.user + '/settings';
         db.put(self, function(err, response) { 
