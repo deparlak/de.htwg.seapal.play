@@ -1322,7 +1322,8 @@
         */
         function initContextMenu() {
             $this.append('<div id="tooltip_helper"></div>');
-
+            
+            $this.on("click", "#getBounds", handleGetBounds);
             $this.on("click", "#addMark", handleAddMark);
             $this.on("click", "#deleteMark", handleDeleteMark);
             $this.on("click", "#deleteRoutePoint", handleDeleteRoutePoint);
@@ -1337,7 +1338,100 @@
             $this.on("click", "#addNewDistanceRoute", handleAddNewDistanceRoute);
             $this.on("click", "#hideContextMenu", handleHideContextMenu);
         }
-                
+        
+        var viewAreaBounds = null;
+        var geohash = null;
+              
+        function handleGetBounds() {
+            var spherical = google.maps.geometry.spherical, 
+            bounds = map.getBounds(), 
+            cor1 = bounds.getNorthEast(), 
+            cor2 = bounds.getSouthWest(), 
+            cor3 = new google.maps.LatLng(cor2.lat(), cor1.lng()), 
+            cor4 = new google.maps.LatLng(cor1.lat(), cor2.lng()), 
+            width = spherical.computeDistanceBetween(cor2,cor3), 
+            height = spherical.computeDistanceBetween( cor1, cor3),
+            sumWidth = 0,
+            sumHeight = 0;
+            // TODO remove
+            addNewMark(cor2);
+            addNewMark(cor3);
+            
+            if (viewAreaBounds) {
+                viewAreaBounds.setMap(null);
+            }
+            
+            viewAreaBounds = new google.maps.Rectangle({
+                strokeColor: '#FF0000',
+                strokeOpacity: 0.8,
+                strokeWeight: 2,
+                fillColor: '#FF0000',
+                fillOpacity: 0.35,
+                map: map,
+                bounds: bounds
+            });
+              
+            // if there was any geohash before, clear them
+            if (null != geohash) {
+                for (var i = 0; i < geohash.length; i++) {
+                    for (var j = 0; j < geohash[i].length; j++) {
+                        geohash[i][j].plot.setMap(null);
+                    }
+                }
+            }
+            // clear geohash field
+            geohash = [[]];
+            
+            // resolution of the geohash to use.
+            var resolution = 4;
+            // geohash for the bottom left coordinate of the actual map bounds.
+            var startHash = encodeGeoHash(cor2.lat(), cor2.lng()).substr(0,resolution);
+            
+            geohash[0][0] = getGeoHashBox(startHash);
+            
+            for (var i = 0; i < 200; i++) {
+                // get the gehoash to the right
+                geohash[0][i + 1] = getGeoHashBox(calculateAdjacent(geohash[0][i].geohash, 'right'));
+                // add the width of the added geohash box to the absolute width
+                sumWidth = spherical.computeDistanceBetween(geohash[0][1].corners.bottomleft, geohash[0][i].corners.bottomright);
+                console.log("sum width :"+sumWidth+ " and required width : "+width);
+                // TODO remove
+                addNewMark(geohash[0][i].corners.bottomright);
+                if (sumWidth >= width) {
+                    break;
+                }
+            }
+
+            
+            hideContextMenu();
+            hideCrosshairMarker();
+        }
+        
+        function getGeoHashBox(geohash) {
+            var values = {};
+            values.geohash = geohash;
+            values.box = decodeGeoHash(geohash);   
+            // calculate corners
+            values.corners = {};
+            values.corners.topleft = new google.maps.LatLng(values.box.latitude[0], values.box.longitude[0]);
+            values.corners.topright = new google.maps.LatLng(values.box.latitude[1], values.box.longitude[0]);
+            values.corners.bottomright = new google.maps.LatLng(values.box.latitude[1], values.box.longitude[1]);
+            values.corners.bottomleft = new google.maps.LatLng(values.box.latitude[0], values.box.longitude[1]);
+            values.centerPoint = new google.maps.LatLng((values.box.latitude[0] + values.box.latitude[1]) / 2, (values.box.longitude[0] + values.box.longitude[1]) / 2);
+            // plot to map
+            values.plot = new google.maps.Rectangle({
+                strokeColor: '#FF78f0',
+                strokeOpacity: 0.8,
+                strokeWeight: 2,
+                fillColor: '#0078f0',
+                fillOpacity: 0.35,
+                map: map,
+                bounds: new google.maps.LatLngBounds(values.corners.topleft, values.corners.bottomright)
+            });
+            return values;       
+        }
+
+              
         /**
         * *********************************************************************************
         * Initializes the GoogleMaps listeners (left/right click, move, ...) and defines
@@ -1799,6 +1893,7 @@
             var target = !isShowingTargetLine ? "Set as Target" : "Discard Target";
             switch(contextMenuType) {
                 case ContextMenuTypes.DEFAULT:
+                    ctx += '<button id="getBounds" type="button" class="btn"><i class="icon-map-marker"></i> Get Bounds</button>';
                     ctx += '<button id="addMark" type="button" class="btn"><i class="icon-map-marker"></i> Set Mark</button>';
                     if (state != States.ROUTE) {
                         ctx += '<button id="addNewRoute" type="button" class="btn"><i class="icon-flag"></i> Start new Route</button>';
