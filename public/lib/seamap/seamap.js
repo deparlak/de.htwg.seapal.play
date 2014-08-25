@@ -1375,13 +1375,14 @@
             // geohash for the bottom left coordinate of the actual map bounds.
             var startHash = encodeGeoHash(bottomleft.lat(), bottomleft.lng());
            
-            for (var resolution = 8; resolution >= 3; resolution--) {
+            for (var resolution = 7; resolution >= 3; resolution--) {
+                console.log("choose resolution : "+resolution);
                 // create first geohash box with chosen resolution
                 geohash[0][0] = getGeoHashBox(startHash.substr(0,resolution));
                 // fill geohash on width and continue if this fail (fail if there should be chosen a smaller resolution).
-                if (!fillGeohashWidth(width)) continue;
+                if (!fillGeohashWidth(width, bottomleft)) continue;
                 // fill geohash on height and continue if this fail (fail if there should be chosen a smaller resolution).
-                if (!fillGeohashHeight(height)) continue;
+                if (!fillGeohashHeight(height, bottomleft)) continue;
                 // geohash successfully calculated, break to quit
                 break;
             }
@@ -1403,38 +1404,43 @@
             geohash = [[]];
         }
         
-        function fillGeohashWidth(requiredWidth) {
+        function fillGeohashWidth(requiredWidth, bottomleft) {
             var spherical = google.maps.geometry.spherical;
-            for (var i = 0; i < 4; i++) {
-                // get the gehoash to the right
-                geohash[0][i + 1] = getGeoHashBox(calculateAdjacent(geohash[0][i].geohash, 'right'));
+            for (var i = 0; i < 6; i++) {
                 // add the width of the added geohash box to the absolute width
-                sumWidth = spherical.computeDistanceBetween(geohash[0][1].corners.bottomleft, geohash[0][i + 1].corners.bottomright);
+                sumWidth = spherical.computeDistanceBetween(bottomleft, new google.maps.LatLng(bottomleft.lat(), geohash[0][i].corners.bottomright.lng()));
                 console.log("sum width :"+sumWidth+ " and required width : "+requiredWidth);
-                
+                // TODO
+               // addNewMark(bottomleft);
+               // addNewMark(new google.maps.LatLng(bottomleft.lat(), geohash[0][i].corners.bottomright.lng()));
                 if (sumWidth >= requiredWidth) {
                     return true;
                 }
+                // get the gehoash to the right
+                geohash[0][i + 1] = getGeoHashBox(calculateAdjacent(geohash[0][i].geohash, 'right'));
             }
             clearGeohash();
             return false;
         }
         
-        function fillGeohashHeight(requiredHeight) {
+        function fillGeohashHeight(requiredHeight, bottomleft) {
             var spherical = google.maps.geometry.spherical;
-            for (var j = 1; j < 4; j++) {
-                geohash[j] = [];
-                for (var i = 0; i < geohash[0].length; i++) {
-                    // get the gehoash to the top
-                    geohash[j][i] = getGeoHashBox(calculateAdjacent(geohash[j - 1][i].geohash, 'top'));
-                }
+            for (var j = 0; j < 6; j++) {
                 // add the height of the added geohash box to the absolute height
-                sumHeight = spherical.computeDistanceBetween(geohash[1][0].corners.bottomleft, geohash[j][0].corners.topleft);
+                sumHeight = spherical.computeDistanceBetween(bottomleft, new google.maps.LatLng(geohash[j][0].corners.topleft.lat(), bottomleft.lng()));
                 console.log("sum height :"+sumHeight+ " and required height : "+requiredHeight);
-
+                // TODO
+                //addNewMark(bottomleft);
+                //addNewMark(new google.maps.LatLng(geohash[j][0].corners.topleft.lat(), bottomleft.lng()));
                 if (sumHeight >= requiredHeight) {
                     return true;
-                }    
+                }
+                
+                geohash[j + 1] = [];
+                for (var i = 0; i < geohash[0].length; i++) {
+                    // get the gehoash to the top
+                    geohash[j + 1][i] = getGeoHashBox(calculateAdjacent(geohash[j][i].geohash, 'top'));
+                }
             }
             clearGeohash();
             return false;
