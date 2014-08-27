@@ -31,6 +31,8 @@
             overviewMapControl: false,
             OverviewMapControlOptions: false,
             zoom: 10,
+            minZoom: 2, 
+            maxZoom: 12,
             center: new google.maps.LatLng(47.655, 9.205),
         },
         
@@ -1323,6 +1325,7 @@
         function initContextMenu() {
             $this.append('<div id="tooltip_helper"></div>');
             
+            $this.on("click", "#removeBounds", handleRemoveBounds);
             $this.on("click", "#getBounds", handleGetBounds);
             $this.on("click", "#addMark", handleAddMark);
             $this.on("click", "#deleteMark", handleDeleteMark);
@@ -1341,6 +1344,13 @@
         
         var viewAreaBounds = null;
         var geohash = null;
+              
+        function handleRemoveBounds() {
+            if (viewAreaBounds) {
+                viewAreaBounds.setMap(null);
+            }
+            clearGeohash();
+        }
               
         function handleGetBounds() {
             var spherical = google.maps.geometry.spherical, 
@@ -1375,7 +1385,7 @@
             // geohash for the bottom left coordinate of the actual map bounds.
             var startHash = encodeGeoHash(bottomleft.lat(), bottomleft.lng());
            
-            for (var resolution = 7; resolution >= 3; resolution--) {
+            for (var resolution = 7; resolution >= 1; resolution--) {
                 console.log("choose resolution : "+resolution);
                 // create first geohash box with chosen resolution
                 geohash[0][0] = getGeoHashBox(startHash.substr(0,resolution));
@@ -1387,8 +1397,9 @@
                 break;
             }
             
-            hideContextMenu();
-            hideCrosshairMarker();
+            console.log("Chosen resolution : "+resolution);
+            console.log("Total width : "+geohash[0].length);
+            console.log("Total height : "+geohash.length);
         }
         
         function clearGeohash() {
@@ -1396,7 +1407,8 @@
             if (null != geohash) {
                 for (var i = 0; i < geohash.length; i++) {
                     for (var j = 0; j < geohash[i].length; j++) {
-                        geohash[i][j].plot.setMap(null);
+                        geohash[i][j].boundPlot.setMap(null);
+                      //  geohash[i][j].centerPlot.setMap(null);
                     }
                 }
             }
@@ -1406,7 +1418,7 @@
         
         function fillGeohashWidth(requiredWidth, bottomleft) {
             var spherical = google.maps.geometry.spherical;
-            for (var i = 0; i < 6; i++) {
+            for (var i = 0; i < 100; i++) {
                 // add the width of the added geohash box to the absolute width
                 sumWidth = spherical.computeDistanceBetween(bottomleft, new google.maps.LatLng(bottomleft.lat(), geohash[0][i].corners.bottomright.lng()));
                 console.log("sum width :"+sumWidth+ " and required width : "+requiredWidth);
@@ -1425,7 +1437,7 @@
         
         function fillGeohashHeight(requiredHeight, bottomleft) {
             var spherical = google.maps.geometry.spherical;
-            for (var j = 0; j < 6; j++) {
+            for (var j = 0; j < 100; j++) {
                 // add the height of the added geohash box to the absolute height
                 sumHeight = spherical.computeDistanceBetween(bottomleft, new google.maps.LatLng(geohash[j][0].corners.topleft.lat(), bottomleft.lng()));
                 console.log("sum height :"+sumHeight+ " and required height : "+requiredHeight);
@@ -1447,6 +1459,7 @@
         }
         
         function getGeoHashBox(geohash) {
+            var spherical = google.maps.geometry.spherical;
             var values = {};
             values.geohash = geohash;
             values.box = decodeGeoHash(geohash);   
@@ -1457,16 +1470,37 @@
             values.corners.topright = new google.maps.LatLng(values.box.latitude[1], values.box.longitude[1]);
             values.corners.bottomright = new google.maps.LatLng(values.box.latitude[0], values.box.longitude[1]);
             values.centerPoint = new google.maps.LatLng((values.box.latitude[0] + values.box.latitude[1]) / 2, (values.box.longitude[0] + values.box.longitude[1]) / 2);
+            values.width = spherical.computeDistanceBetween(values.corners.bottomleft, values.corners.bottomright);
+            values.height = spherical.computeDistanceBetween(values.corners.bottomleft, values.corners.topright);
             // plot to map
-            values.plot = new google.maps.Rectangle({
-                strokeColor: '#0008f0',
-                strokeOpacity: 0.8,
-                strokeWeight: 2,
-                fillColor: '#000FFF',
-                fillOpacity: 0.35,
-                map: map,
+            values.boundPlot = new google.maps.Rectangle({
+                strokeColor     : '#0008f0',
+                strokeOpacity   : 0.8,
+                strokeWeight    : 2,
+                fillColor       : '#000FFF',
+                fillOpacity     : 0.35,
+                map             : map,
                 bounds: new google.maps.LatLngBounds(values.corners.bottomleft, values.corners.topright)
             });
+            
+
+            var radius = (values.width > values.height) ? values.height / 10 : values.width / 10;
+            /*
+            var whiteCircle = {
+                path: google.maps.SymbolPath.CIRCLE,
+                fillOpacity     : 1.0,
+                fillColor       : "0008f0",
+                strokeOpacity   : 0.0,
+                strokeWeight    : 0.0,
+                scale           : 20
+            };
+            
+            values.centerPlot = new google.maps.Marker({
+                icon        : whiteCircle,
+                position    : values.centerPoint,
+                map         : map
+            });
+            */
             return values;       
         }
 
@@ -1932,6 +1966,7 @@
             var target = !isShowingTargetLine ? "Set as Target" : "Discard Target";
             switch(contextMenuType) {
                 case ContextMenuTypes.DEFAULT:
+                    ctx += '<button id="removeBounds" type="button" class="btn"><i class="icon-map-marker"></i> Remove Bounds</button>';
                     ctx += '<button id="getBounds" type="button" class="btn"><i class="icon-map-marker"></i> Get Bounds</button>';
                     ctx += '<button id="addMark" type="button" class="btn"><i class="icon-map-marker"></i> Set Mark</button>';
                     if (state != States.ROUTE) {
