@@ -30,9 +30,9 @@
             rotateControlOptions: false,
             overviewMapControl: false,
             OverviewMapControlOptions: false,
-            zoom: 10,
-            minZoom: 2, 
-            maxZoom: 12,
+            zoom: 1,
+            minZoom: 1, 
+            maxZoom: 16,
             center: new google.maps.LatLng(47.655, 9.205),
         },
         
@@ -1363,8 +1363,19 @@
             height = spherical.computeDistanceBetween( bottomleft, topleft),
             sumWidth = 0,
             sumHeight = 0;
-          //  addNewMark(bottomleft);
-          //  addNewMark(topleft);
+
+          
+            // TODO
+            console.log("bottomleft : " + bottomleft.lat() + " : " +bottomleft.lng());
+            console.log("topright : " + topright.lat() + " : " +topright.lng());
+            
+            if (topright.lng() < bottomleft.lng()) {
+                console.log("correct lng.");
+                topright = new google.maps.LatLng(topright.lat(), 180);
+            }
+           
+            addNewMark(bottomleft);
+            addNewMark(topleft);
             
             if (viewAreaBounds) {
                 viewAreaBounds.setMap(null);
@@ -1384,8 +1395,11 @@
             clearGeohash();
             // geohash for the bottom left coordinate of the actual map bounds.
             var startHash = encodeGeoHash(bottomleft.lat(), bottomleft.lng());
+            
+
+            var start = new Date().getTime();
            
-            for (var resolution = 7; resolution >= 1; resolution--) {
+            for (var resolution = 4; resolution >= 4; resolution--) {
                 console.log("choose resolution : "+resolution);
                 // create first geohash box with chosen resolution
                 geohash[0][0] = getGeoHashBox(startHash.substr(0,resolution));
@@ -1396,10 +1410,25 @@
                 // geohash successfully calculated, break to quit
                 break;
             }
+            var end = new Date().getTime();
+            var time = end - start;
             
             console.log("Chosen resolution : "+resolution);
             console.log("Total width : "+geohash[0].length);
             console.log("Total height : "+geohash.length);
+            console.log("Total hashs : "+geohash.length * geohash[0].length);
+            console.log("Time : "+time);
+            start = new Date().getTime();
+            var tmp = ngeohash.bboxes (bottomleft.lat(), bottomleft.lng(), topright.lat(), topright.lng(), precision=4)
+            end = new Date().getTime();
+            time = end - start;
+            console.log(tmp);
+            console.log(tmp.length);
+            console.log("Time : "+time);
+            for (var i = 0; i < 100; i++) {
+                obj = ngeohash.decode(tmp[i]);
+                addNewMark(new google.maps.LatLng(obj.latitude, obj.longitude));
+            }
         }
         
         function clearGeohash() {
@@ -1407,7 +1436,7 @@
             if (null != geohash) {
                 for (var i = 0; i < geohash.length; i++) {
                     for (var j = 0; j < geohash[i].length; j++) {
-                        geohash[i][j].boundPlot.setMap(null);
+                    //    geohash[i][j].boundPlot.setMap(null);
                       //  geohash[i][j].centerPlot.setMap(null);
                     }
                 }
@@ -1418,10 +1447,10 @@
         
         function fillGeohashWidth(requiredWidth, bottomleft) {
             var spherical = google.maps.geometry.spherical;
-            for (var i = 0; i < 100; i++) {
+            for (var i = 0; i < 100000; i++) {
                 // add the width of the added geohash box to the absolute width
                 sumWidth = spherical.computeDistanceBetween(bottomleft, new google.maps.LatLng(bottomleft.lat(), geohash[0][i].corners.bottomright.lng()));
-                console.log("sum width :"+sumWidth+ " and required width : "+requiredWidth);
+             //   console.log("sum width :"+sumWidth+ " and required width : "+requiredWidth);
                 // TODO
                // addNewMark(bottomleft);
                // addNewMark(new google.maps.LatLng(bottomleft.lat(), geohash[0][i].corners.bottomright.lng()));
@@ -1437,10 +1466,10 @@
         
         function fillGeohashHeight(requiredHeight, bottomleft) {
             var spherical = google.maps.geometry.spherical;
-            for (var j = 0; j < 100; j++) {
+            for (var j = 0; j < 100000; j++) {
                 // add the height of the added geohash box to the absolute height
                 sumHeight = spherical.computeDistanceBetween(bottomleft, new google.maps.LatLng(geohash[j][0].corners.topleft.lat(), bottomleft.lng()));
-                console.log("sum height :"+sumHeight+ " and required height : "+requiredHeight);
+                //console.log("sum height :"+sumHeight+ " and required height : "+requiredHeight);
                 // TODO
                 //addNewMark(bottomleft);
                 //addNewMark(new google.maps.LatLng(geohash[j][0].corners.topleft.lat(), bottomleft.lng()));
@@ -1472,6 +1501,7 @@
             values.centerPoint = new google.maps.LatLng((values.box.latitude[0] + values.box.latitude[1]) / 2, (values.box.longitude[0] + values.box.longitude[1]) / 2);
             values.width = spherical.computeDistanceBetween(values.corners.bottomleft, values.corners.bottomright);
             values.height = spherical.computeDistanceBetween(values.corners.bottomleft, values.corners.topright);
+            return values;
             // plot to map
             values.boundPlot = new google.maps.Rectangle({
                 strokeColor     : '#0008f0',
