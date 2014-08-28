@@ -63,7 +63,14 @@
                     new google.maps.Size(42, 42),
                     new google.maps.Point(0,0),
                     new google.maps.Point(0, 35))
-            }
+            },
+            clusterOptions : {
+                image : new google.maps.MarkerImage(
+                    "/assets/images/ann_mark.png",
+                    new google.maps.Size(42, 42),
+                    new google.maps.Point(0,0),
+                    new google.maps.Point(8, 35))
+            },
         },
 
         // Default options for the target line
@@ -487,8 +494,47 @@
         }
 
         /* Sets the settings for the alarms */
-        this.setAlarmsSettings = function(settings) {
+        this.setAlarmsSettings = function (settings) {
             alarmsSettings = settings;
+        }
+        
+        this.updateGeohash = function (data) {
+            if (undefined !== geohashMarker[data.hash]) {
+                markerClusterer.removeMarkers(geohashMarker[data.hash], (0 == data.total) ? false : true);
+            }
+            geohashMarker[data.hash] = [];
+            
+            // cluster is empty
+            if (0 == data.total) return;
+            
+            // create markers for the cluster.
+            for (var i = 0; i < data.marker.length; i++) {
+                geohashMarker[data.hash][i] = new google.maps.Marker({
+                    position    : new google.maps.LatLng(data.marker[i].lat, data.marker[i].lng),
+                    icon        : options.defaultOptions.clusterOptions.image,
+                    draggable   : false,
+                    visible     : true
+                });
+            }
+            
+            var sum = (data.marker.length < data.total) ? data.total - data.marker.length : data.total;
+            
+            // check if the total number of markers in the cluster is higher than the send markers. If this
+            // is true, create a invisible marker, which has the _summarized attribute. The attribute cause
+            // the markerClusterer to count the summarized markers. (Also see the markerclustererOptions.js).
+            if (sum < data.total) {
+                sumMarker = ngeohash.decode(data.hash);
+                geohashMarker[data.hash][geohashMarker[data.hash].length] = new google.maps.Marker({
+                    position    : new google.maps.LatLng(sumMarker.latitude, sumMarker.longitude),
+                    icon        : options.defaultOptions.clusterOptions.image,
+                    draggable   : false,
+                    visible     : false,
+                    _summarized : sum
+                });
+            }
+            
+            // add markers to the cluster
+            markerClusterer.addMarkers(geohashMarker[data.hash]);
         }
 
         this.switchBoatMarker = function() {
@@ -570,6 +616,7 @@
             BOAT_POS_UPDATE         : 51,
             LEFT_SECURITY_CIRCLE    : 52,
             MAN_OVERBOARD           : 53,
+            SWITCHED_GEOHASH_CLUSTER  : 54,
             /* select or deselect any item (boat, trip, route, mark) */
             SELECTED                : 60,
             DESELECTED              : 61,
@@ -737,11 +784,11 @@
             "boat"          : null,
 			"_id"			: null,
 			"_rev" 			: null,
-            "tempCelsius"          : null,
-            "atmosPressure"      : null,
+            "tempCelsius"   : null,
+            "atmosPressure" : null,
             "humidity"      : null,
             "windSpeedBeaufort"     : null,
-            "windDirection"       : null,
+            "windDirection" : null,
 			"owner" 		: null
 		};
         
@@ -1325,8 +1372,6 @@
         function initContextMenu() {
             $this.append('<div id="tooltip_helper"></div>');
             
-            $this.on("click", "#removeBounds", handleRemoveBounds);
-            $this.on("click", "#getBounds", handleGetBounds);
             $this.on("click", "#addMark", handleAddMark);
             $this.on("click", "#deleteMark", handleDeleteMark);
             $this.on("click", "#deleteRoutePoint", handleDeleteRoutePoint);
@@ -1342,199 +1387,78 @@
             $this.on("click", "#hideContextMenu", handleHideContextMenu);
         }
         
-        var viewAreaBounds = null;
+        // an array which holds all current geohash values, which are in the view
         var geohash = null;
-              
-        function handleRemoveBounds() {
-            if (viewAreaBounds) {
-                viewAreaBounds.setMap(null);
+        // hold any markers from a specific geohash. On a geohash can be various number of markers,
+        // so each geohash has an array of markers. E.g. geohashMarker['u08'] = [marker1, marker2, ...]
+        var geohashMarker = {};
+        // cluster with markers
+        var markerClusterer = new MarkerClusterer(map, [], markerclustererOptions);
+        // handle for the timer, which calls the updateGeohashCluster after the map is a specified time in idle
+        var updateGeohashClusterTimer = null;
+
+        /**
+        * *********************************************************************************
+        * Get called when the map bounds_changed and calculates the geohashs in the actual
+        * view bounds. After that the geohashs will be send over the event.SWITCHED_GEOHASH_CLUSTER
+        * *********************************************************************************
+        */
+        function updateGeohashCluster() {
+            console.log("updateGeohashCluster");
+            // get bounds
+            var bounds;
+            if (map.getZoom() <= 3) {
+                bounds = new google.maps.LatLngBounds(new google.maps.LatLng(-85.08136444384544, -178.48388434375), new google.maps.LatLng(85.02070771743472, 178.00048865625));
+            } else {
+                bounds = map.getBounds();
             }
-            clearGeohash();
-        }
-              
-        function handleGetBounds() {
+            // calculate corners of bounds
             var spherical = google.maps.geometry.spherical, 
-            bounds = map.getBounds(), 
             topright = bounds.getNorthEast(), 
             bottomleft = bounds.getSouthWest(), 
             bottomright = new google.maps.LatLng(bottomleft.lat(), topright.lng()), 
-            topleft = new google.maps.LatLng(topright.lat(), bottomleft.lng()), 
-            width = spherical.computeDistanceBetween(bottomleft,bottomright), 
-            height = spherical.computeDistanceBetween( bottomleft, topleft),
-            sumWidth = 0,
-            sumHeight = 0;
-
-          
-            // TODO
-            console.log("bottomleft : " + bottomleft.lat() + " : " +bottomleft.lng());
-            console.log("topright : " + topright.lat() + " : " +topright.lng());
+            topleft = new google.maps.LatLng(topright.lat(), bottomleft.lng());
             
-            if (topright.lng() < bottomleft.lng()) {
-                console.log("correct lng.");
-                topright = new google.maps.LatLng(topright.lat(), 180);
-            }
-           
-            addNewMark(bottomleft);
-            addNewMark(topleft);
-            
-            if (viewAreaBounds) {
-                viewAreaBounds.setMap(null);
-            }
-            
-            viewAreaBounds = new google.maps.Rectangle({
-                strokeColor: '#FF0000',
-                strokeOpacity: 0.8,
-                strokeWeight: 2,
-                fillColor: '#FF0000',
-                fillOpacity: 0.35,
-                map: map,
-                bounds: bounds
-            });
- 
-            // clear old geohash
-            clearGeohash();
-            // geohash for the bottom left coordinate of the actual map bounds.
-            var startHash = encodeGeoHash(bottomleft.lat(), bottomleft.lng());
-            
-
-            var start = new Date().getTime();
-           
-            for (var resolution = 4; resolution >= 4; resolution--) {
-                console.log("choose resolution : "+resolution);
-                // create first geohash box with chosen resolution
-                geohash[0][0] = getGeoHashBox(startHash.substr(0,resolution));
-                // fill geohash on width and continue if this fail (fail if there should be chosen a smaller resolution).
-                if (!fillGeohashWidth(width, bottomleft)) continue;
-                // fill geohash on height and continue if this fail (fail if there should be chosen a smaller resolution).
-                if (!fillGeohashHeight(height, bottomleft)) continue;
-                // geohash successfully calculated, break to quit
-                break;
-            }
-            var end = new Date().getTime();
-            var time = end - start;
-            
-            console.log("Chosen resolution : "+resolution);
-            console.log("Total width : "+geohash[0].length);
-            console.log("Total height : "+geohash.length);
-            console.log("Total hashs : "+geohash.length * geohash[0].length);
-            console.log("Time : "+time);
-            start = new Date().getTime();
-            var tmp = ngeohash.bboxes (bottomleft.lat(), bottomleft.lng(), topright.lat(), topright.lng(), precision=4)
-            end = new Date().getTime();
-            time = end - start;
-            console.log(tmp);
-            console.log(tmp.length);
-            console.log("Time : "+time);
-            for (var i = 0; i < 100; i++) {
-                obj = ngeohash.decode(tmp[i]);
-                addNewMark(new google.maps.LatLng(obj.latitude, obj.longitude));
-            }
-        }
+            // get best fit resolution for actual borders
+            var resolution = 1;
+            var hashs = ngeohash.bboxes (bottomleft.lat(), bottomleft.lng(), topright.lat(), topright.lng(), precision=resolution);
         
-        function clearGeohash() {
-            // if there was any geohash before, clear them
-            if (null != geohash) {
-                for (var i = 0; i < geohash.length; i++) {
-                    for (var j = 0; j < geohash[i].length; j++) {
-                    //    geohash[i][j].boundPlot.setMap(null);
-                      //  geohash[i][j].centerPlot.setMap(null);
-                    }
+            for (resolution = 2; resolution < 7; resolution++) {
+                tmp = ngeohash.bboxes (bottomleft.lat(), bottomleft.lng(), topright.lat(), topright.lng(), precision=resolution);
+
+                if (tmp.length <= 32 || hashs.length < 8) {
+                    hashs = tmp;
+                } else {
+                    break;
                 }
             }
-            // clear geohash field
-            geohash = [[]];
-        }
-        
-        function fillGeohashWidth(requiredWidth, bottomleft) {
-            var spherical = google.maps.geometry.spherical;
-            for (var i = 0; i < 100000; i++) {
-                // add the width of the added geohash box to the absolute width
-                sumWidth = spherical.computeDistanceBetween(bottomleft, new google.maps.LatLng(bottomleft.lat(), geohash[0][i].corners.bottomright.lng()));
-             //   console.log("sum width :"+sumWidth+ " and required width : "+requiredWidth);
-                // TODO
-               // addNewMark(bottomleft);
-               // addNewMark(new google.maps.LatLng(bottomleft.lat(), geohash[0][i].corners.bottomright.lng()));
-                if (sumWidth >= requiredWidth) {
-                    return true;
-                }
-                // get the gehoash to the right
-                geohash[0][i + 1] = getGeoHashBox(calculateAdjacent(geohash[0][i].geohash, 'right'));
-            }
-            clearGeohash();
-            return false;
-        }
-        
-        function fillGeohashHeight(requiredHeight, bottomleft) {
-            var spherical = google.maps.geometry.spherical;
-            for (var j = 0; j < 100000; j++) {
-                // add the height of the added geohash box to the absolute height
-                sumHeight = spherical.computeDistanceBetween(bottomleft, new google.maps.LatLng(geohash[j][0].corners.topleft.lat(), bottomleft.lng()));
-                //console.log("sum height :"+sumHeight+ " and required height : "+requiredHeight);
-                // TODO
-                //addNewMark(bottomleft);
-                //addNewMark(new google.maps.LatLng(geohash[j][0].corners.topleft.lat(), bottomleft.lng()));
-                if (sumHeight >= requiredHeight) {
-                    return true;
-                }
-                
-                geohash[j + 1] = [];
-                for (var i = 0; i < geohash[0].length; i++) {
-                    // get the gehoash to the top
-                    geohash[j + 1][i] = getGeoHashBox(calculateAdjacent(geohash[j][i].geohash, 'top'));
-                }
-            }
-            clearGeohash();
-            return false;
-        }
-        
-        function getGeoHashBox(geohash) {
-            var spherical = google.maps.geometry.spherical;
-            var values = {};
-            values.geohash = geohash;
-            values.box = decodeGeoHash(geohash);   
-            // calculate corners
-            values.corners = {};
-            values.corners.bottomleft = new google.maps.LatLng(values.box.latitude[0], values.box.longitude[0]);
-            values.corners.topleft = new google.maps.LatLng(values.box.latitude[1], values.box.longitude[0]);
-            values.corners.topright = new google.maps.LatLng(values.box.latitude[1], values.box.longitude[1]);
-            values.corners.bottomright = new google.maps.LatLng(values.box.latitude[0], values.box.longitude[1]);
-            values.centerPoint = new google.maps.LatLng((values.box.latitude[0] + values.box.latitude[1]) / 2, (values.box.longitude[0] + values.box.longitude[1]) / 2);
-            values.width = spherical.computeDistanceBetween(values.corners.bottomleft, values.corners.bottomright);
-            values.height = spherical.computeDistanceBetween(values.corners.bottomleft, values.corners.topright);
-            return values;
-            // plot to map
-            values.boundPlot = new google.maps.Rectangle({
-                strokeColor     : '#0008f0',
-                strokeOpacity   : 0.8,
-                strokeWeight    : 2,
-                fillColor       : '#000FFF',
-                fillOpacity     : 0.35,
-                map             : map,
-                bounds: new google.maps.LatLngBounds(values.corners.bottomleft, values.corners.topright)
-            });
             
-
-            var radius = (values.width > values.height) ? values.height / 10 : values.width / 10;
-            /*
-            var whiteCircle = {
-                path: google.maps.SymbolPath.CIRCLE,
-                fillOpacity     : 1.0,
-                fillColor       : "0008f0",
-                strokeOpacity   : 0.0,
-                strokeWeight    : 0.0,
-                scale           : 20
-            };
-            
-            values.centerPlot = new google.maps.Marker({
-                icon        : whiteCircle,
-                position    : values.centerPoint,
-                map         : map
-            });
-            */
-            return values;       
+            // check if calculated hashs are equal to actual geohashs, so we do not have to update something.
+            console.log(hashs);
+            console.log(geohash);
+            if (arrayCompare(hashs, geohash)) return;
+            // copy the geohashs
+            geohash = hashs.slice();
+            // clear the cluster
+            markerClusterer.clearMarkers();
+            // clear the markers
+            geohashMarker = {};
+            // they are not equal, so fire a callback that the geohash changed.
+            callbacks[event.SWITCHED_GEOHASH_CLUSTER].fire(geohash.slice());
         }
-
-              
+        
+        // helper function to compare arrays.
+        function arrayCompare(a, b) {
+            if (a === b) return true;
+            if (a == null || b == null) return false;
+            if (a.length != b.length) return false;
+            
+            for (var i = 0; i < a.length; ++i) {
+                if (a[i] !== b[i]) return false;
+            }
+            return true;
+        }
+        
         /**
         * *********************************************************************************
         * Initializes the GoogleMaps listeners (left/right click, move, ...) and defines
@@ -1544,9 +1468,16 @@
         function initGoogleMapsListeners() {
             // move
             google.maps.event.addListener(map, 'bounds_changed', function() {
+                // context menu
                 if (crosshairMarker != null && contextMenuVisible) {
                     updateContextMenuPosition(crosshairMarker.getPosition());
                 }
+            });
+            // map idle
+            google.maps.event.addListener(map, 'idle', function() {
+                // start a timer, which will be triggered for the geohash cluster calculation
+                clearTimeout(updateGeohashClusterTimer);
+                updateGeohashClusterTimer=setTimeout(updateGeohashCluster, 1000);
             });
             // right-click
             google.maps.event.addListener(map, 'rightclick', function(event) {
@@ -1996,8 +1927,6 @@
             var target = !isShowingTargetLine ? "Set as Target" : "Discard Target";
             switch(contextMenuType) {
                 case ContextMenuTypes.DEFAULT:
-                    ctx += '<button id="removeBounds" type="button" class="btn"><i class="icon-map-marker"></i> Remove Bounds</button>';
-                    ctx += '<button id="getBounds" type="button" class="btn"><i class="icon-map-marker"></i> Get Bounds</button>';
                     ctx += '<button id="addMark" type="button" class="btn"><i class="icon-map-marker"></i> Set Mark</button>';
                     if (state != States.ROUTE) {
                         ctx += '<button id="addNewRoute" type="button" class="btn"><i class="icon-flag"></i> Start new Route</button>';

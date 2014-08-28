@@ -10,6 +10,8 @@ $(document).ready(function() {
     var id = 0;
     var rev = 0;
     var store = {};
+    var geohash = [];
+    var geohashTimer = null;
     
     /* setup some example data. */
     tmp = map.getTemplate('person');
@@ -99,4 +101,50 @@ $(document).ready(function() {
             map.set(store[self.owner][tmp].type, store[self.owner][tmp]);
         }
     });
+    
+    /* this callback will be called if the cluster of geohashs was updated and has to be set to the server. */
+    map.addCallback(events.SWITCHED_GEOHASH_CLUSTER, function (self) {
+        clearTimeout(geohashTimer);
+        geohash = self;
+        geohashTimer=setTimeout(simulateGeohashUpdate, 1000);
+    });
+    
+    function random (min, max) {
+        return Math.floor(Math.random() * ( max - min + 1) + min);
+    }
+    
+    function simulateGeohashUpdate() {
+        index = random(0, geohash.length - 1);
+        data = {};
+        data.hash = geohash[index];
+        data.marker = [];
+        
+        // get bbox of hash
+        console.log("Decode : "+data.hash);
+        console.log(geohash.length);
+        console.log(index);
+        console.log(geohash);
+        bbox = ngeohash.decode_bbox(data.hash);
+        
+        // calculate the total number of markers
+        data.total = random(0, 100);
+        
+        // get random number for number of markers.
+        if (data.total > 50) {
+            markers = 50;
+        } else {
+            markers = data.total;
+        }
+        
+        for (var i = 0; i < markers; i++) {
+            // create random number of markers.
+            data.marker[i] = {lat : bbox[0] + 1 / i, lng : bbox[1] + 1 / i};
+        }
+
+        // send a update to the map
+        map.updateGeohash(data);
+        
+        clearTimeout(geohashTimer);
+        geohashTimer=setTimeout(simulateGeohashUpdate, 1000);
+    }
 });

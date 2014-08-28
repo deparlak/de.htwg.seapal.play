@@ -15,7 +15,9 @@ $(document).ready(function() {
     // If the bug is fixed, we should use the replication instead of this variable.
     // See https://github.com/pouchdb/pouchdb/issues/1666
     var docStore = {};
-
+    // the geohash document which should be send on a geohash cluster update
+    var geohashSubscibe = {_id : seapal.user + '/geohashSubscibe'};
+    
     var db = new PouchDB('http://localhost:9000/database/');
     
     // initial start up code, which fetch all docs and store them to the docStore.
@@ -55,6 +57,18 @@ $(document).ready(function() {
         delete doc.id;
         // split key of document
         var obj = doc._id.split('/');
+        
+        // check if it is a settings document
+        if (2 == obj.length && obj[0] == seapal.user && obj[1] == 'geohashSubscibe') {
+            geohashSubscibe = doc;
+            return;
+        }
+        
+        // check if it is a settings document
+        if (2 == obj.length && obj[0] == seapal.user && obj[1] == 'geohashPublish') {
+            map.updateGeohash(doc);
+            return;
+        }
         
         // check if it is a settings document
         if (2 == obj.length && obj[0] == seapal.user && obj[1] == 'settings') {
@@ -370,6 +384,16 @@ $(document).ready(function() {
         // set the id of the settings document
         self._id = seapal.user + '/settings';
         db.put(self, function(err, response) { 
+            if (err) {
+                console.log(err);
+            }
+        });
+    });
+    
+    /* this callback will be called if the cluster of geohashs was updated and has to be set to the server. */
+    map.addCallback(events.SWITCHED_GEOHASH_CLUSTER, function (self) {
+        geohashSubscibe.hash = self;
+        db.put(geohashSubscibe, function(err, response) { 
             if (err) {
                 console.log(err);
             }
