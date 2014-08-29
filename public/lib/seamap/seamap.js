@@ -500,7 +500,10 @@
         
         this.updateGeohash = function (data) {
             if (undefined !== geohashMarker[data.hash]) {
-                markerClusterer.removeMarkers(geohashMarker[data.hash], (0 == data.total) ? false : true);
+                // Note that if the set opt_nodraw to true (see markerclusterer.js removeMarkers function), it
+                // causes a false displayed value. So don't set it to true here, although we draw again in the
+                // addMarkers(..) function add the end of this function.
+                markerClusterer.removeMarkers(geohashMarker[data.hash]);
             }
             geohashMarker[data.hash] = [];
             
@@ -1431,6 +1434,11 @@
                 } else {
                     break;
                 }
+            }
+            
+            // add geohash- to the hash, because on server it is stored with this prefix.
+            for (var i = 0; i < hashs.length; i++) {
+                hashs[i] = 'geohash-'+hashs[i];
             }
             
             // check if calculated hashs are equal to actual geohashs, so we do not have to update something.

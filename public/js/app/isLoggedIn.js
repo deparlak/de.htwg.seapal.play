@@ -16,7 +16,7 @@ $(document).ready(function() {
     // See https://github.com/pouchdb/pouchdb/issues/1666
     var docStore = {};
     // the geohash document which should be send on a geohash cluster update
-    var geohashSubscibe = {_id : seapal.user + '/geohashSubscibe'};
+    var subscribeGeohash = {_id : seapal.user + '/subscribeGeohash', type : 'subscribeGeohash'};
     
     var db = new PouchDB('http://localhost:9000/database/');
     
@@ -59,13 +59,13 @@ $(document).ready(function() {
         var obj = doc._id.split('/');
         
         // check if it is a settings document
-        if (2 == obj.length && obj[0] == seapal.user && obj[1] == 'geohashSubscibe') {
-            geohashSubscibe = doc;
+        if (2 == obj.length && obj[0] == seapal.user && obj[1] == 'subscribeGeohash') {
+            subscribeGeohash = doc;
             return;
         }
         
         // check if it is a settings document
-        if (2 == obj.length && obj[0] == seapal.user && obj[1] == 'geohashPublish') {
+        if (2 == obj.length && obj[0] == 'publishGeohash') {
             map.updateGeohash(doc);
             return;
         }
@@ -392,8 +392,10 @@ $(document).ready(function() {
     
     /* this callback will be called if the cluster of geohashs was updated and has to be set to the server. */
     map.addCallback(events.SWITCHED_GEOHASH_CLUSTER, function (self) {
-        geohashSubscibe.hash = self;
-        db.put(geohashSubscibe, function(err, response) { 
+        console.log("START : subscribeGeohash");
+        subscribeGeohash.hash = self;
+        db.put(subscribeGeohash, function(err, response) {
+            console.log("END : subscribeGeohash");
             if (err) {
                 console.log(err);
             }
