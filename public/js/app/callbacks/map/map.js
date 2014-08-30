@@ -24,11 +24,8 @@ $(document).ready(function() {
         if (self.type == 'route') {
             $("#routes").append(templateLoadedRoute(self));
         } else if (self.type == 'trip') {
-            /* a trip is only a track if there are some marks */
-            if (self.marks.length > 0) {
-                $("#tracks").append(templateLoadedTrip(self));
-                $("#logbook-trips").append(templateLogbook(self));
-            }     
+            $("#tracks").append(templateLoadedTrip(self));
+            $("#logbook-trips").append(templateLogbook(self));  
         } else if (self.type == 'mark') {
             $("#marks").append(templateLoadedMark(self));
         } else if (self.type == 'boat') {

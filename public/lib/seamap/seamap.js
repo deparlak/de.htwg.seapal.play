@@ -2253,9 +2253,9 @@
                 var tmp = Object.keys(data.trackpoint.list).map(function(v) { return data.trackpoint.list[v]; });
                 /* be sure the trackpoint array is sorted */
                 tmp.sort(function(a, b) {
-                    // sort by _id
-                    if (a['_id'] < b['_id']) return -1; 
-                    if (a['_id'] > b['_id']) return 1;
+                    // sort by index
+                    if (a['index'] < b['index']) return -1; 
+                    if (a['index'] > b['index']) return 1;
                     return 0;
                 });
             
@@ -2612,7 +2612,7 @@
                     obj.owner = data.person.active != null ? data.person.active.owner : "Someone";
                     obj.id = (idCounter++).toString();
                     obj.marks = data.trip.active.marks.slice(data.trip.active.trackpointPackage * TRACKPOINT_PACKAGE_SIZE, ++data.trip.active.trackpointPackage * TRACKPOINT_PACKAGE_SIZE);
-                    obj.num = data.trip.active.trackpointPackage;
+                    obj.index = data.trip.active.trackpointPackage;
                     data.trackpoint.list[obj.id] = obj;
                     data.trackpoint.count++;
                     dataCallback([event.SERVER_CREATE, event.CREATED_TRACKPOINT], obj);

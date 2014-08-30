@@ -78,7 +78,20 @@ $(document).ready(function() {
         
         // we expect username/type/id, if this is not given, we ignore the document
         // friends or friend requests have the format friend/emailUserA/emailUserB
-        if (3 != obj.length) return;    
+        if (3 != obj.length) {
+            // a trackpoint and waypoint document has a _id which is username/trip/trip_id/<trackpoint or waypoint>/id
+            if (5 == obj.length && ('trackpoint' == obj[3] || 'waypoint' == obj[3])) {
+                var user = obj[0];
+                var type = obj[3];
+                var _id = doc._id;
+            } else {
+                return;
+            }
+        } else {
+            var user = obj[0];
+            var type = obj[1];
+            var _id = doc._id;
+        }
         
         //if it is a friend, we have to save the email of the friend as the key and not the own.
         if ('friend' == obj[0]) {
@@ -132,11 +145,6 @@ $(document).ready(function() {
             }
             return;
         }
-        
-        // it is not friend document
-        var user = obj[0];
-        var type = obj[1];
-        var _id = doc._id;
 
         // check if user is already in docStore
         if (undefined === docStore[user]) docStore[user] = {};
@@ -170,10 +178,7 @@ $(document).ready(function() {
         if (undefined === docStore[selectedUser]) docStore[selectedUser] = {};
         if (undefined === docStore[selectedUser][self.type]) docStore[selectedUser][self.type] = {_counter : 0};
         docStore[selectedUser][self.type]['_counter']++;
-        idStr = docStore[selectedUser][self.type]['_counter'].toString();
-        for (var i = idStr.length; i < 6; i++) {
-            idStr = "0" + idStr;
-        }
+        var idStr = new Date().getTime().toString()
         // waypoints and trackpoint get the id of the trip additional added 
         if ('trackpoint' == self.type || 'waypoint' == self.type) {
             return self.trip + '/' + self.type + '/' + idStr;
