@@ -166,15 +166,19 @@ $(document).ready(function() {
     };
     
     // Helper function to generate the id, with which a document should be stored on the server.
-    var getId = function (type) {
+    var getId = function (self) {
         if (undefined === docStore[selectedUser]) docStore[selectedUser] = {};
-        if (undefined === docStore[selectedUser][type]) docStore[selectedUser][type] = {_counter : 0};
-        docStore[selectedUser][type]['_counter']++;
-        idStr = docStore[selectedUser][type]['_counter'].toString();
+        if (undefined === docStore[selectedUser][self.type]) docStore[selectedUser][self.type] = {_counter : 0};
+        docStore[selectedUser][self.type]['_counter']++;
+        idStr = docStore[selectedUser][self.type]['_counter'].toString();
         for (var i = idStr.length; i < 6; i++) {
             idStr = "0" + idStr;
         }
-        return selectedUser + '/' + type + '/' + idStr;
+        // waypoints and trackpoint get the id of the trip additional added 
+        if ('trackpoint' == self.type || 'waypoint' == self.type) {
+            return self.trip + '/' + self.type + '/' + idStr;
+        }
+        return selectedUser + '/' + self.type + '/' + idStr;
     }
     
     // document id's are used in many parts by the seapal-app e.g. as id's for html documents.
@@ -331,11 +335,16 @@ $(document).ready(function() {
             we set the id which will be used by the client as a handle for the object to null,
             because the server will interpret an 'id' as a '_id'.
         */
+        
+        // if this is a trip, we ignore the marks attribute which will be uploaded cyclic in another object called trackpoint
+        if (self.type == 'trip') {
+            delete self.marks;
+        }
 
         // if there is no _id actually.
         if (!self._id || null == self._id) {
             // generate an id
-            self._id = getId(self.type);
+            self._id = getId(self);
             // object is not in docStore, because it was created by the map, so set the object to the docStore
             docStore[selectedUser][self.type][self._id] = {id : self.id};
         }
@@ -351,7 +360,7 @@ $(document).ready(function() {
         db.put(obj, function (err, response) { 
             // if document already exist and there is no _rev, there should be chosen another _id.
             if (err && err.status == 409 && obj._rev == null) {
-                obj._id = getId(obj.type);
+                obj._id = getId(obj);
                 docStore[obj.owner][obj.type][obj._id] = {id : mapid};
                 console.log("use other _id");
                 // call create method again.

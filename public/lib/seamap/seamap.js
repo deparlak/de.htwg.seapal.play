@@ -5,7 +5,7 @@
 */
 
 (function( $, window ){
-
+    const TRACKPOINT_PACKAGE_SIZE = 20;
     const NUMBER_OVERLAYS = 5;
 
     /**
@@ -610,7 +610,8 @@
             CREATED_ROUTE           : 30,
             CREATED_MARK            : 31,
             CREATED_WAYPOINT        : 32,
-            CREATED_TRACK           : 33,
+            CREATED_TRACKPOINT      : 33,
+            CREATED_TRACK           : 34,
             /* edit a element */
             EDIT_MARK               : 40,
             EDIT_WAYPOINT           : 41,
@@ -763,37 +764,6 @@
 			"_rev" 			: null,
 			"owner" 		: null
 		};
-		
-		var templateWaypoint = 
-		{
-			"type"			: "waypoint",
-			"id"			: null,
-			"name" 			: null,
-			"note" 			: null,
-			"date" 			: null,
-			"lat"			: null,
-			"lng"			: null,
-			"image_big" 	: null,
-			"image_thumb" 	: null,
-            "btm"           : null,
-            "dtm"           : null,
-            "cog"           : null,
-            "sog"           : null,
-            "headedFor"     : null,
-            "maneuver"      : null,
-            "foresail"      : null,
-            "mainsail"      : null,
-            "trip"          : null,
-            "boat"          : null,
-			"_id"			: null,
-			"_rev" 			: null,
-            "tempCelsius"   : null,
-            "atmosPressure" : null,
-            "humidity"      : null,
-            "windSpeedBeaufort"     : null,
-            "windDirection" : null,
-			"owner" 		: null
-		};
         
 		var templateRoute =
 		{
@@ -828,6 +798,48 @@
 			"_rev" 			: null,
 			"owner" 		: null,
             "newTripFlag"   : null,
+		};
+        
+		var templateWaypoint = 
+		{
+			"type"			: "waypoint",
+			"id"			: null,
+			"name" 			: null,
+			"note" 			: null,
+			"date" 			: null,
+			"lat"			: null,
+			"lng"			: null,
+			"image_big" 	: null,
+			"image_thumb" 	: null,
+            "btm"           : null,
+            "dtm"           : null,
+            "cog"           : null,
+            "sog"           : null,
+            "headedFor"     : null,
+            "maneuver"      : null,
+            "foresail"      : null,
+            "mainsail"      : null,
+            "trip"          : null,     // the id of the trip, to which the waypoint belong
+            "boat"          : null,     // the id of the boat, to which the waypoint belong
+			"_id"			: null,
+			"_rev" 			: null,
+            "tempCelsius"   : null,
+            "atmosPressure" : null,
+            "humidity"      : null,
+            "windSpeedBeaufort"     : null,
+            "windDirection" : null,
+			"owner" 		: null
+		};
+        
+		var templateTrackpoint = 
+		{
+			"type"			: "trackpoint",
+			"id"			: null,
+            "marks"         : [],       // a trackpoint has multiple marks, stored as lat, lng. e.g. [lat1, lng1, lat2, lng2, lat3, lng3,...]
+            "trip"          : null,     // the id of the trip, to which the trackpoint belong
+			"_id"			: null,
+			"_rev" 			: null,
+			"owner" 		: null
 		};
         
         var templateBoat =
@@ -900,6 +912,12 @@
 			},		
 			mark : {
 				template : templateMark,
+				list : {},
+				count : 1,
+				active : null
+			},
+			trackpoint : {
+				template : templateTrackpoint,
 				list : {},
 				count : 1,
 				active : null
@@ -1767,7 +1785,7 @@
             handleAddNewTrack();
             /* call the cyclic methods for trackpoints and waypoints */
             handleAddNewWaypoint();
-            handleAddTrackpoint();
+            handleAddNewTrackpoint();
             return true;
         }
         /* stops the tracking */
@@ -2225,7 +2243,32 @@
             hideActiveTrack();
             /* important that state will be set here, because hideActiveRoute() will set the state to NORMAL */
             state = States.TRACK;
-            data.trip.active = data.trip.list[id];
+            data.trip.active = data.trip.list[id]
+            
+            /* check if the marks are not already loaded (they will be stored in a own object on the server) */
+            if (data.trip.active.marks.length <= 0) {
+                /* TODO find better solution to get all trackpoints ordered correct. 
+                   Convert the dic to a list 
+                */
+                var tmp = Object.keys(data.trackpoint.list).map(function(v) { return data.trackpoint.list[v]; });
+                /* be sure the trackpoint array is sorted */
+                tmp.sort(function(a, b) {
+                    // sort by _id
+                    if (a['_id'] < b['_id']) return -1; 
+                    if (a['_id'] > b['_id']) return 1;
+                    return 0;
+                });
+            
+                /* visible the waypoints of the track on the map */
+                for (var i in tmp) {
+                    if (tmp[i].trip != data.trip.active._id) {
+                        continue;
+                    }
+                    /* append the marks to the trip marks*/
+                    data.trip.active.marks.push.apply(data.trip.active.marks, tmp[i].marks);
+                }
+            }
+            
             if (!data.trip.active.onMap || null == data.trip.active.onMap) {
                 data.trip.active.onMap = getOnMapTrack(data.trip.active);
             } 
@@ -2299,15 +2342,6 @@
 				dataCallback([event.SERVER_CREATE], data.trip.active);
                 data.trip.active.update = false;
             }         
-        }
-        
-        /**
-        * *********************************************************************************
-        * Adds a new track point to the active track.
-        * *********************************************************************************
-        */
-        function addTrackpoint(latLng) {            
-            data.trip.active.onMap.addMarker(latLng);
         }
         
         /**
@@ -2528,7 +2562,7 @@
                         obj.image_big = image[1];
                     }
                     obj.onMap = getOnMapMark(obj);
-                    obj.owner = data.person.active != null ? data.person.active.owner : "Someone";;
+                    obj.owner = data.person.active != null ? data.person.active.owner : "Someone";
                     // temperature is in kelvin calculate to celsius
                     obj.tempCelsius = parseFloat((weatherData["temp"] - 273,15).toFixed(1));
                     obj.atmosPressure = parseFloat(weatherData["pressure"].toFixed(1));
@@ -2557,13 +2591,44 @@
         
         /**
         * *********************************************************************************
+        * Adds a new track point to the active track.
+        * *********************************************************************************
+        */
+        function addNewTrackpoint() {            
+            data.trip.active.onMap.addMarker(currentPosition);
+            
+            /* add the trackpoint only if a track is active and the track is already stored on the server */
+            if (null != data.trip.active && null != data.trip.active._id) {
+                /* check if the trackpointPackage counter is initialised */
+                if (!data.trip.active.trackpointPackage) {
+                    data.trip.active.trackpointPackage = 0;
+                }
+                
+                /* store trackpoint packages to the server. 
+                   check if enough points where created to upload a trackpoint package. One package should have TRACKPOINT_PACKAGE_SIZE markers.
+                */
+                while ((data.trip.active.marks.length - (data.trip.active.trackpointPackage * TRACKPOINT_PACKAGE_SIZE)) >= 10) {
+                    var obj = self.getTemplate('trackpoint');
+                    obj.owner = data.person.active != null ? data.person.active.owner : "Someone";
+                    obj.id = (idCounter++).toString();
+                    obj.marks = data.trip.active.marks.slice(data.trip.active.trackpointPackage * TRACKPOINT_PACKAGE_SIZE, ++data.trip.active.trackpointPackage * TRACKPOINT_PACKAGE_SIZE);
+                    obj.num = data.trip.active.trackpointPackage;
+                    data.trackpoint.list[obj.id] = obj;
+                    data.trackpoint.count++;
+                    dataCallback([event.SERVER_CREATE, event.CREATED_TRACKPOINT], obj);
+                }
+            }
+        }
+
+        /**
+        * *********************************************************************************
         * Handles the creation of a new track point
         * *********************************************************************************
         */
-        function handleAddTrackpoint() {
+        function handleAddNewTrackpoint() {
             if (isTracking) {
-                addTrackpoint(currentPosition);
-                setTimeout(handleAddTrackpoint, globalSettings.trackingDelay * 1000);
+                addNewTrackpoint();
+                setTimeout(handleAddNewTrackpoint, globalSettings.trackingDelay * 1000);
             }
         }
 
