@@ -17,6 +17,7 @@ $(document).ready(function() {
     tmp = map.getTemplate('person');
     tmp.firstname = 'Max';
     tmp.lastname = 'Mustermann';
+    tmp.email = 'max@mustermann.de';
     tmp.owner = 'ACCOUNT_1';
     tmp._id = 'SIMULATED_SERVER_ID_'+id++;
     tmp._rev = 'SIMULATED_SERVER_REV_'+rev++;
@@ -25,6 +26,7 @@ $(document).ready(function() {
     tmp = map.getTemplate('person');
     tmp.firstname = 'Friend';
     tmp.lastname = 'Account';
+    tmp.email = 'friend@account.de';
     tmp.owner = 'ACCOUNT_2';
     tmp._id = 'SIMULATED_SERVER_ID_'+id++;
     tmp._rev = 'SIMULATED_SERVER_REV_'+rev++;

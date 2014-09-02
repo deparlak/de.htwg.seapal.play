@@ -837,6 +837,7 @@
 			"id"			: null,
             "marks"         : [],       // a trackpoint has multiple marks, stored as lat, lng. e.g. [lat1, lng1, lat2, lng2, lat3, lng3,...]
             "trip"          : null,     // the id of the trip, to which the trackpoint belong
+            "geohash"       : null,     // the last mark will be saved as a geohash value.
 			"_id"			: null,
 			"_rev" 			: null,
 			"owner" 		: null
@@ -2613,6 +2614,8 @@
                     obj.id = (idCounter++).toString();
                     obj.marks = data.trip.active.marks.slice(data.trip.active.trackpointPackage * TRACKPOINT_PACKAGE_SIZE, ++data.trip.active.trackpointPackage * TRACKPOINT_PACKAGE_SIZE);
                     obj.index = data.trip.active.trackpointPackage;
+                    // generate a geohash for the last mark. With lat, lng, geohash precision.
+                    obj.geohash = ngeohash.encode(obj.marks.length - 2, obj.marks.length - 1, 9);
                     data.trackpoint.list[obj.id] = obj;
                     data.trackpoint.count++;
                     dataCallback([event.SERVER_CREATE, event.CREATED_TRACKPOINT], obj);

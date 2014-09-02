@@ -178,7 +178,12 @@ $(document).ready(function() {
         if (undefined === docStore[selectedUser]) docStore[selectedUser] = {};
         if (undefined === docStore[selectedUser][self.type]) docStore[selectedUser][self.type] = {_counter : 0};
         docStore[selectedUser][self.type]['_counter']++;
-        var idStr = new Date().getTime().toString()
+        // get the time now.
+        var now = new Date();
+        var idStr = now.getTime().toString()
+        // store the actual time as a ISO string in the document
+        self.date = now.toISOString();
+        
         // waypoints and trackpoint get the id of the trip additional added 
         if ('trackpoint' == self.type || 'waypoint' == self.type) {
             return self.trip + '/' + self.type + '/' + idStr;
