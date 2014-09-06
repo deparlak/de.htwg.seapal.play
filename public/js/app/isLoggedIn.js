@@ -425,7 +425,7 @@ $(document).ready(function() {
     /* this callback will be called if the cluster of geohashs was updated and has to be set to the server. */
     map.addCallback(events.SWITCHED_GEOHASH_CLUSTER, function (self) {
         console.log("START : subscribeGeohash");
-        subscribeGeohash.hash = self;
+        subscribeGeohash.geohash = self;
         db.put(subscribeGeohash, function(err, response) {
             console.log("END : subscribeGeohash");
             if (err) {
@@ -437,7 +437,7 @@ $(document).ready(function() {
     /* this callback will be cyclic called if tracking is enabled, and return the position of the boat in lat, lng and geohash. */
     map.addCallback(events.GEO_POSITION_UPDATE, function (self) {
         console.log("GEO_POSITION_UPDATE");
-        geoPosition.hash = self.hash;
+        geoPosition.geohash = self.geohash;
         geoPosition.lat = self.lat;
         geoPosition.lng = self.lng;
         

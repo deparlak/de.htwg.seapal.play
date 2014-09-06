@@ -2528,7 +2528,7 @@
                     obj.marks = data.trip.active.marks.slice(data.trip.active.trackpointPackage * TRACKPOINT_PACKAGE_SIZE, ++data.trip.active.trackpointPackage * TRACKPOINT_PACKAGE_SIZE);
                     obj.index = data.trip.active.trackpointPackage;
                     // generate a geohash for the last mark. With lat, lng, geohash precision.
-                    obj.geohash = ngeohash.encode(obj.marks.length - 2, obj.marks.length - 1, 9);
+                    obj.geohash = ngeohash.encode(obj.marks.length - 2, obj.marks.length - 1);
                     data.trackpoint.list[obj.id] = obj;
                     data.trackpoint.count++;
                     dataCallback([event.SERVER_CREATE, event.CREATED_TRACKPOINT], obj);
