@@ -22,8 +22,10 @@
  !( function( window ) {
     // helper function to build the default options, based on the "MarkerClustererPlus for Google Maps V3." markers
     var getOptions = function (opt) {
-        console.log(opt.index);
+        // unless which count value the chosen style should be used.
+        maxCount = [10,25,50,100,100000];
         return {
+            maxCount            : maxCount[parseInt(opt.index) - 1],
             url                 : "http://google-maps-utility-library-v3.googlecode.com/svn/trunk/markerclustererplus/images/m" + opt.index + ".png",
             height              : opt.height,
             width               : opt.width,
@@ -52,17 +54,30 @@
         if (!options) return new Error("Options are required. e.g. GeohashLabel({...})");
         if (!options.map) return new Error("options.map required! This should be the handle to google map.");
         if (!options.LatLng) return new Error("options.LatLng required!");
-        if (!options.styles) options.styles =  jQuery.extend(true, {}, defaultStyles);
+        if (!options.styles) options.styles =  jQuery.extend(true, [], defaultStyles);
         if (!options.text) options.text = options.count.toString();
         // create a div, which will contain the label
-        var div = self.div = document.createElement('div');
-        div.style.cssText = 'position: absolute; display: none';
-        // calculate the style to use.
-        self.style = options.styles[0];
+        self.div = document.createElement('div');
+        self.div.style.cssText = 'position: absolute; display: none';
         // store the options
         self.options = options;
         // set this to map
         this.setMap(options.map);
+        
+        // select the style, depending on the input parameters.
+        self.selectStyle = function () {
+            // choose the index for the chosen style
+            var index = 0;
+            for (var index; index < self.options.styles.length; index++) {
+                if (self.options.count < self.options.styles[index].maxCount) {
+                    break;
+                }
+            }
+            // calculate the style to use.
+            self.style = self.options.styles[index];
+            console.log("SELECT STYLE : "+self.style.maxCount);
+        };
+        
         // method which should be called to set the image to the correct position.
         self.redrawPosition = function () {
             var pos = self.getProjection().fromLatLngToDivPixel(self.options.LatLng);
@@ -74,10 +89,11 @@
             style += "position: absolute; top: " + pos.y + "px; left: " + pos.x + "px;";
             style += "width: " + self.style.width + "px; height: " + self.style.height + "px";
             self.div.style.cssText = style;
-        }
+        };
         
         // style innerHTML
         self.drawDiv = function () {
+            self.selectStyle();
             // create the image tag
             img = "<img src='" + self.style.url + "' style='position: absolute; top: 0px; left: 0px;'>";
             self.div.innerHTML = "";
@@ -98,7 +114,7 @@
                 "'>" + self.options.text + "</div>";
             // visible the div
             self.div.style.display = "";
-        }
+        };
     };
 
     GeohashLabel.prototype = new google.maps.OverlayView;
