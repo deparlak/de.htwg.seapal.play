@@ -129,15 +129,16 @@ $(document).ready(function() {
         bbox = ngeohash.decode_bbox(data.hash);
         
         // calculate the total number of markers
-        data.total = random(0, 100);
+        data.count = random(0, 100);
         
         // get random number for number of markers.
-        if (data.total > 50) {
+        if (data.count > 50) {
             markers = 50;
         } else {
-            markers = data.total;
+            markers = data.count;
         }
-        
+        data.marker = undefined;
+        markers = 0;
         for (var i = 0; i < markers; i++) {
             // create random number of markers.
             data.marker[i] = {lat : bbox[0] + 1 / i, lng : bbox[1] + 1 / i};
@@ -147,6 +148,6 @@ $(document).ready(function() {
         map.updateGeohash(data);
         
         clearTimeout(geohashTimer);
-        geohashTimer=setTimeout(simulateGeohashUpdate, 1000);
+        geohashTimer=setTimeout(simulateGeohashUpdate, 100000);
     }
 });

@@ -7,6 +7,8 @@
 (function( $, window ){
     const TRACKPOINT_PACKAGE_SIZE = 20;
     const NUMBER_OVERLAYS = 5;
+    // the update interval of the event, which send the boat position for the global boat position view.
+    const GEO_POSITION_UPDATE_INTERVAL = 5000;
 
     /**
     * *************************************************************************************
@@ -63,14 +65,7 @@
                     new google.maps.Size(42, 42),
                     new google.maps.Point(0,0),
                     new google.maps.Point(0, 35))
-            },
-            clusterOptions : {
-                image : new google.maps.MarkerImage(
-                    "/assets/images/ann_mark.png",
-                    new google.maps.Size(42, 42),
-                    new google.maps.Point(0,0),
-                    new google.maps.Point(8, 35))
-            },
+            }
         },
 
         // Default options for the target line
@@ -498,46 +493,9 @@
             alarmsSettings = settings;
         }
         
+        /* update geohash value, to which we subribed */
         this.updateGeohash = function (data) {
-            if (undefined !== geohashMarker[data.hash]) {
-                // Note that if the set opt_nodraw to true (see markerclusterer.js removeMarkers function), it
-                // causes a false displayed value. So don't set it to true here, although we draw again in the
-                // addMarkers(..) function add the end of this function.
-                markerClusterer.removeMarkers(geohashMarker[data.hash]);
-            }
-            geohashMarker[data.hash] = [];
-            
-            // cluster is empty
-            if (0 == data.total) return;
-            
-            // create markers for the cluster.
-            for (var i = 0; i < data.marker.length; i++) {
-                geohashMarker[data.hash][i] = new google.maps.Marker({
-                    position    : new google.maps.LatLng(data.marker[i].lat, data.marker[i].lng),
-                    icon        : options.defaultOptions.clusterOptions.image,
-                    draggable   : false,
-                    visible     : true
-                });
-            }
-            
-            var sum = (data.marker.length < data.total) ? data.total - data.marker.length : data.total;
-            
-            // check if the total number of markers in the cluster is higher than the send markers. If this
-            // is true, create a invisible marker, which has the _summarized attribute. The attribute cause
-            // the markerClusterer to count the summarized markers. (Also see the markerclustererOptions.js).
-            if (sum < data.total) {
-                sumMarker = ngeohash.decode(data.hash);
-                geohashMarker[data.hash][geohashMarker[data.hash].length] = new google.maps.Marker({
-                    position    : new google.maps.LatLng(sumMarker.latitude, sumMarker.longitude),
-                    icon        : options.defaultOptions.clusterOptions.image,
-                    draggable   : false,
-                    visible     : false,
-                    _summarized : sum
-                });
-            }
-            
-            // add markers to the cluster
-            markerClusterer.addMarkers(geohashMarker[data.hash]);
+            updateGeohashMarker(data);
         }
 
         this.switchBoatMarker = function() {
@@ -621,6 +579,7 @@
             LEFT_SECURITY_CIRCLE    : 52,
             MAN_OVERBOARD           : 53,
             SWITCHED_GEOHASH_CLUSTER  : 54,
+            GEO_POSITION_UPDATE     : 55,
             /* select or deselect any item (boat, trip, route, mark) */
             SELECTED                : 60,
             DESELECTED              : 61,
@@ -1409,83 +1368,25 @@
             $this.on("click", "#hideContextMenu", handleHideContextMenu);
         }
         
-        // an array which holds all current geohash values, which are in the view
-        var geohash = null;
-        // hold any markers from a specific geohash. On a geohash can be various number of markers,
-        // so each geohash has an array of markers. E.g. geohashMarker['u08'] = [marker1, marker2, ...]
-        var geohashMarker = {};
-        // cluster with markers
-        var markerClusterer = new MarkerClusterer(map, [], markerclustererOptions);
-        // handle for the timer, which calls the updateGeohashCluster after the map is a specified time in idle
-        var updateGeohashClusterTimer = null;
-
-        /**
-        * *********************************************************************************
-        * Get called when the map bounds_changed and calculates the geohashs in the actual
-        * view bounds. After that the geohashs will be send over the event.SWITCHED_GEOHASH_CLUSTER
-        * *********************************************************************************
-        */
-        function updateGeohashCluster() {
-            console.log("updateGeohashCluster");
-            // get bounds
-            var bounds;
-            if (map.getZoom() <= 3) {
-                bounds = new google.maps.LatLngBounds(new google.maps.LatLng(-85.08136444384544, -178.48388434375), new google.maps.LatLng(85.02070771743472, 178.00048865625));
-            } else {
-                bounds = map.getBounds();
-            }
-            // calculate corners of bounds
-            var spherical = google.maps.geometry.spherical, 
-            topright = bounds.getNorthEast(), 
-            bottomleft = bounds.getSouthWest(), 
-            bottomright = new google.maps.LatLng(bottomleft.lat(), topright.lng()), 
-            topleft = new google.maps.LatLng(topright.lat(), bottomleft.lng());
-            
-            // get best fit resolution for actual borders
-            var resolution = 1;
-            var hashs = ngeohash.bboxes (bottomleft.lat(), bottomleft.lng(), topright.lat(), topright.lng(), precision=resolution);
-        
-            for (resolution = 2; resolution < 7; resolution++) {
-                tmp = ngeohash.bboxes (bottomleft.lat(), bottomleft.lng(), topright.lat(), topright.lng(), precision=resolution);
-
-                if (tmp.length <= 32 || hashs.length < 8) {
-                    hashs = tmp;
-                } else {
-                    break;
+        // handle to the geohash cluster
+        var geohashCluster = new GeohashCluster({
+            map             : map,
+            eventListener   : {
+                'updateBounds' : function (data) {
+                    callbacks[event.SWITCHED_GEOHASH_CLUSTER].fire(data);
                 }
             }
-            
-            // add geohash- to the hash, because on server it is stored with this prefix.
-            for (var i = 0; i < hashs.length; i++) {
-                hashs[i] = 'geohash-'+hashs[i];
-            }
-            
-            // check if calculated hashs are equal to actual geohashs, so we do not have to update something.
-            console.log(hashs);
-            console.log(geohash);
-            if (arrayCompare(hashs, geohash)) return;
-            // copy the geohashs
-            geohash = hashs.slice();
-            // clear the cluster
-            markerClusterer.clearMarkers();
-            // clear the markers
-            geohashMarker = {};
-            // they are not equal, so fire a callback that the geohash changed.
-            callbacks[event.SWITCHED_GEOHASH_CLUSTER].fire(geohash.slice());
-        }
+        });
         
-        // helper function to compare arrays.
-        function arrayCompare(a, b) {
-            if (a === b) return true;
-            if (a == null || b == null) return false;
-            if (a.length != b.length) return false;
-            
-            for (var i = 0; i < a.length; ++i) {
-                if (a[i] !== b[i]) return false;
-            }
-            return true;
+        /**
+        * *********************************************************************************
+        * Get called when there is some new data, which should be updated on the map.
+        * *********************************************************************************
+        */
+        function updateGeohashMarker(data) {
+            geohashCluster.update(data);
         }
-        
+
         /**
         * *********************************************************************************
         * Initializes the GoogleMaps listeners (left/right click, move, ...) and defines
@@ -1499,12 +1400,6 @@
                 if (crosshairMarker != null && contextMenuVisible) {
                     updateContextMenuPosition(crosshairMarker.getPosition());
                 }
-            });
-            // map idle
-            google.maps.event.addListener(map, 'idle', function() {
-                // start a timer, which will be triggered for the geohash cluster calculation
-                clearTimeout(updateGeohashClusterTimer);
-                updateGeohashClusterTimer=setTimeout(updateGeohashCluster, 1000);
             });
             // right-click
             google.maps.event.addListener(map, 'rightclick', function(event) {
@@ -1787,6 +1682,8 @@
             /* call the cyclic methods for trackpoints and waypoints */
             handleAddNewWaypoint();
             handleAddNewTrackpoint();
+            /* call the cyclic method for the geo update */
+            handleGeoPosition();
             return true;
         }
         /* stops the tracking */
@@ -2585,8 +2482,24 @@
             if (isTracking) {
                 addNewWaypoint();
                 setTimeout(handleAddNewWaypoint, globalSettings.waypointDelay * 60000);
-                //TODO : check if cyclic track upload should be done.
-                //uploadTrackUpdate();
+            }
+        }
+
+        /**
+        * *********************************************************************************
+        * Fires a callback every GEO_POSITION_UPDATE_INTERVAL ms with the currentPosition.
+        * *********************************************************************************
+        */
+        function handleGeoPosition() {
+            if (isTracking) {
+                // get the actual coordinates and fire a callback with the coordinates.
+                var obj = {};
+                obj.lat = currentPosition.lat();
+                obj.lng = currentPosition.lng();
+                obj.geohash = ngeohash.encode(obj.lat, obj.lng);
+                callbacks[event.GEO_POSITION_UPDATE].fire(obj);
+                // call after GEO_POSITION_UPDATE_INTERVAL ms again.
+                setTimeout(handleGeoPosition, GEO_POSITION_UPDATE_INTERVAL);
             }
         }
         
@@ -3028,7 +2941,7 @@
         * Adds a label to the last marker.
         * *********************************************************************************
         */
-        this.addLabel = function() {        
+        this.addLabel = function() {
             this.label = new Label({map: this.googlemaps });
             this.label.bindTo('position', this.markers[this.markers.length-1], 'position');
             $(this.label.span_).css({"margin-left":"15px","padding":"7px","box-shadow":"0px 0px 3px #666","z-index":99999,"color":this.color});
@@ -3135,7 +3048,7 @@
     LongPress.prototype.onMouseUp_ = function(e) {
         clearTimeout(this.timeoutId_);
         setTimeout(function() {
-            self.map.longpressPressed = false;
+            map.longpressPressed = false;
         }, 50);
     };
 
@@ -3144,7 +3057,7 @@
         var map = this.map_;
         var event = e;
         this.timeoutId_ = setTimeout(function() {
-            self.map.longpressPressed = true;
+            map.longpressPressed = true;
             google.maps.event.trigger(map, 'longpress', event);
         }, this.length_);
     };

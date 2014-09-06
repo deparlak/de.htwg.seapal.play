@@ -17,6 +17,7 @@ $(document).ready(function() {
     var docStore = {};
     // the geohash document which should be send on a geohash cluster update
     var subscribeGeohash = {_id : seapal.user + '/subscribeGeohash', type : 'subscribeGeohash'};
+    var geoPosition = {_id : seapal.user + '/geoPosition', type : 'geoPosition'};
     
     var db = new PouchDB('http://localhost:9000/database/');
     
@@ -46,7 +47,7 @@ $(document).ready(function() {
             console.log(info);
             storeDocument(info.doc);
         }).on('complete', function (info) {
-            console.log(info);
+            console.log('complete');
         }).on('error', function (err) {
             console.log(err);
         });
@@ -58,13 +59,25 @@ $(document).ready(function() {
         // split key of document
         var obj = doc._id.split('/');
         
-        // check if it is a settings document
+        // check if it is a geoPosition document
+        if (2 == obj.length && obj[0] == seapal.user && obj[1] == 'geoPosition') {
+            geoPosition = doc;
+            return;
+        }
+        
+        // check if it is a geoPosition document
         if (2 == obj.length && obj[0] == seapal.user && obj[1] == 'subscribeGeohash') {
             subscribeGeohash = doc;
             return;
         }
         
-        // check if it is a settings document
+        // check if it is a subscribeGeohash document
+        if (2 == obj.length && obj[0] == seapal.user && obj[1] == 'subscribeGeohash') {
+            subscribeGeohash = doc;
+            return;
+        }
+        
+        // check if it is a publishGeohash document
         if (2 == obj.length && obj[0] == 'publishGeohash') {
             map.updateGeohash(doc);
             return;
@@ -402,7 +415,7 @@ $(document).ready(function() {
     map.addCallback(events.UPDATED_SETTINGS, function (self) {
         // set the id of the settings document
         self._id = seapal.user + '/settings';
-        db.put(self, function(err, response) { 
+        db.put(self, function(err, response) {   
             if (err) {
                 console.log(err);
             }
@@ -415,6 +428,20 @@ $(document).ready(function() {
         subscribeGeohash.hash = self;
         db.put(subscribeGeohash, function(err, response) {
             console.log("END : subscribeGeohash");
+            if (err) {
+                console.log(err);
+            }
+        });
+    });
+    
+    /* this callback will be cyclic called if tracking is enabled, and return the position of the boat in lat, lng and geohash. */
+    map.addCallback(events.GEO_POSITION_UPDATE, function (self) {
+        console.log("GEO_POSITION_UPDATE");
+        geoPosition.hash = self.hash;
+        geoPosition.lat = self.lat;
+        geoPosition.lng = self.lng;
+        
+        db.put(geoPosition, function(err, response) {
             if (err) {
                 console.log(err);
             }
