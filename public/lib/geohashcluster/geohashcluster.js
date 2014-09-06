@@ -158,7 +158,11 @@
     
         // a marker is already on the map, which has to be updated.
         if (undefined !== self.marker[data.hash]) {
-            console.log("update");
+            if (self.marker[data.hash].sumMarker) {
+                self.marker[data.hash].sumMarker.update(data);
+            }
+            // return, to not draw the marker twice.
+            return;
         }
         
         self.marker[data.hash] = {};
@@ -169,7 +173,6 @@
             console.log(pos);
             sumMarker = new GeohashLabel({
                 LatLng      : new google.maps.LatLng(pos.latitude, pos.longitude),
-               // icon        : options.defaultOptions.clusterOptions.image,
                 count       : data.count,
                 map         : self.options.map
             });

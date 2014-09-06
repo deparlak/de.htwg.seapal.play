@@ -47,7 +47,7 @@
     }
 
     // Constructor for GeohashLabel
-    function GeohashLabel(options) {
+    function GeohashLabel (options) {
         var self = this;
         if (!options) return new Error("Options are required. e.g. GeohashLabel({...})");
         if (!options.map) return new Error("options.map required! This should be the handle to google map.");
@@ -75,33 +75,51 @@
             style += "width: " + self.style.width + "px; height: " + self.style.height + "px";
             self.div.style.cssText = style;
         }
+        
+        // style innerHTML
+        self.drawDiv = function () {
+            // create the image tag
+            img = "<img src='" + self.style.url + "' style='position: absolute; top: 0px; left: 0px;'>";
+            self.div.innerHTML = "";
+            // create the inner html
+            self.div.innerHTML = img + "<div style='" +
+                "position: absolute;" +
+                "top: " + self.style.anchorText[0] + "px;" +
+                "left: " + self.style.anchorText[1] + "px;" +
+                "color: " + self.style.textColor + ";" +
+                "font-size: " + self.style.textSize + "px;" +
+                "font-family: " + self.style.fontFamily + ";" +
+                "font-weight: " + self.style.fontWeight + ";" +
+                "font-style: " + self.style.fontStyle + ";" +
+                "text-decoration: " + self.style.textDecoration + ";" +
+                "text-align: center;" +
+                "width: " + self.style.width + "px;" +
+                "line-height:" + self.style.height + "px;" +
+                "'>" + self.options.text + "</div>";
+            // visible the div
+            self.div.style.display = "";
+        }
     };
 
     GeohashLabel.prototype = new google.maps.OverlayView;
 
-    // Implement onAdd
-    GeohashLabel.prototype.onAdd = function() {
+    GeohashLabel.prototype.update = function (options) {
         var self = this;
-        // create the image tag
-        img = "<img src='" + self.style.url + "' style='position: absolute; top: 0px; left: 0px;'>";
-        // create the inner html
-        self.div.innerHTML = img + "<div style='" +
-            "position: absolute;" +
-            "top: " + self.style.anchorText[0] + "px;" +
-            "left: " + self.style.anchorText[1] + "px;" +
-            "color: " + self.style.textColor + ";" +
-            "font-size: " + self.style.textSize + "px;" +
-            "font-family: " + self.style.fontFamily + ";" +
-            "font-weight: " + self.style.fontWeight + ";" +
-            "font-style: " + self.style.fontStyle + ";" +
-            "text-decoration: " + self.style.textDecoration + ";" +
-            "text-align: center;" +
-            "width: " + self.style.width + "px;" +
-            "line-height:" + self.style.height + "px;" +
-            "'>" + self.options.text + "</div>";
-        // visible the div
-        self.div.style.display = "";
-        // add tpo pane
+        if (!options) return new Error("options  parameter is required. e.g. GeohashLabel.update({...})");
+        if (!options.count) return new Error("options.count is required on GeohashLabel.update({...})");
+        self.options.count = options.count;
+        if (!options.text) self.options.text = options.count.toString();
+        
+        // redraw div
+        self.drawDiv();
+    }
+    
+    // Implement onAdd
+    GeohashLabel.prototype.onAdd = function () {
+        var self = this;
+        // style the div, depending to the actual data.
+        self.drawDiv();
+        // add to pane
         var pane = this.getPanes().overlayLayer;
         pane.appendChild(self.div);
         // add listeners
@@ -111,7 +129,6 @@
             google.maps.event.addListener(this, 'text_changed',
             function() { self.draw(); })
         ];
-        
     };
 
     // Implement onRemove
@@ -126,7 +143,7 @@
     };
 
     // Implement draw
-    GeohashLabel.prototype.draw = function() {
+    GeohashLabel.prototype.draw = function () {
         this.redrawPosition();
     };
 
