@@ -60,31 +60,31 @@ $(document).ready(function() {
         var obj = doc._id.split('/');
         
         // check if it is a geoPosition document
-        if (2 == obj.length && obj[0] == seapal.user && obj[1] == 'geoPosition') {
+        if (doc.type == 'geoPosition') {
             geoPosition = doc;
             return;
         }
         
         // check if it is a geoPosition document
-        if (2 == obj.length && obj[0] == seapal.user && obj[1] == 'subscribeGeohash') {
+        if (doc.type == 'subscribeGeohash') {
             subscribeGeohash = doc;
             return;
         }
         
         // check if it is a subscribeGeohash document
-        if (2 == obj.length && obj[0] == seapal.user && obj[1] == 'subscribeGeohash') {
+        if (doc.type == 'subscribeGeohash') {
             subscribeGeohash = doc;
             return;
         }
         
         // check if it is a publishGeohash document
-        if (2 == obj.length && obj[0] == 'publishGeohash') {
+        if (doc.type == 'publishGeohash') {
             map.updateGeohash(doc);
             return;
         }
         
         // check if it is a settings document
-        if (2 == obj.length && obj[0] == seapal.user && obj[1] == 'settings') {
+        if (doc.type == 'settings') {
             map.initGlobalSettings(doc);
             return;
         }
