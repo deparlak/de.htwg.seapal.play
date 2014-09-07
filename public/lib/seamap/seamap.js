@@ -495,7 +495,7 @@
         
         /* update geohash value, to which we subribed */
         this.updateGeohash = function (data) {
-            updateGeohashMarker(data);
+            geohashCluster.update(data);
         }
 
         this.switchBoatMarker = function() {
@@ -1074,6 +1074,17 @@
 		for(var key in event) {
 			callbacks[event[key]] = $.Callbacks();
 		}
+        
+        // Create GeohashCluster, which handle clustered information about active trips.
+        var geohashCluster = new GeohashCluster({
+            map             : map,
+            eventListener   : {
+                'updateBounds' : function (data) {
+                    callbacks[event.SWITCHED_GEOHASH_CLUSTER].fire(data);
+                }
+            }
+        });
+        
 
         startBoatAnimation();
         
@@ -1366,25 +1377,6 @@
             $this.on("click", "#setWeatherForecast", handleSetWeatherForecast);
             $this.on("click", "#addNewDistanceRoute", handleAddNewDistanceRoute);
             $this.on("click", "#hideContextMenu", handleHideContextMenu);
-        }
-        
-        // handle to the geohash cluster
-        var geohashCluster = new GeohashCluster({
-            map             : map,
-            eventListener   : {
-                'updateBounds' : function (data) {
-                    callbacks[event.SWITCHED_GEOHASH_CLUSTER].fire(data);
-                }
-            }
-        });
-        
-        /**
-        * *********************************************************************************
-        * Get called when there is some new data, which should be updated on the map.
-        * *********************************************************************************
-        */
-        function updateGeohashMarker(data) {
-            geohashCluster.update(data);
         }
 
         /**

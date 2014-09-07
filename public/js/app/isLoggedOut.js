@@ -108,7 +108,7 @@ $(document).ready(function() {
     map.addCallback(events.SWITCHED_GEOHASH_CLUSTER, function (self) {
         clearTimeout(geohashTimer);
         geohash = self;
-        geohashTimer=setTimeout(simulateGeohashUpdate, 1000);
+        simulateGeohashUpdate();
     });
     
     function random (min, max) {
@@ -118,15 +118,15 @@ $(document).ready(function() {
     function simulateGeohashUpdate() {
         index = random(0, geohash.length - 1);
         data = {};
-        data.hash = geohash[index];
+        data.geohash = geohash[index];
         data.marker = [];
         
-        // get bbox of hash
-        console.log("Decode : "+data.hash);
+        // get bbox of geohash
+        console.log("Decode : "+data.geohash);
         console.log(geohash.length);
         console.log(index);
         console.log(geohash);
-        bbox = ngeohash.decode_bbox(data.hash);
+        bbox = ngeohash.decode_bbox(data.geohash);
         
         // calculate the total number of markers
         data.count = random(0, 100);
@@ -148,6 +148,6 @@ $(document).ready(function() {
         map.updateGeohash(data);
         
         clearTimeout(geohashTimer);
-        geohashTimer=setTimeout(simulateGeohashUpdate, 100000);
+        geohashTimer=setTimeout(simulateGeohashUpdate, 5000);
     }
 });

@@ -154,31 +154,52 @@
     GeohashCluster.prototype.update = function (data) {
         self = this;
         // check if required attributes are available.
-        if (!data.hash) return new Error("hash is a required attribute on calling GeohashCluster.update");
+        if (!data.geohash) return new Error("geohash is a required attribute on calling GeohashCluster.update");
+        // save the index to access from the marker storage.
+        var index = data.geohash;
     
         // a marker is already on the map, which has to be updated.
-        if (undefined !== self.marker[data.hash]) {
-            if (self.marker[data.hash].sumMarker) {
-                self.marker[data.hash].sumMarker.update(data);
+        if (undefined !== self.marker[index]) {
+            if (self.marker[index].sumMarker) {
+                self.marker[index].sumMarker.update(data);
+                clearTimeout(self.marker[index].timeout);
+                self.marker[index].timeout = setTimeout(function(){
+                    console.log("call remove");
+                    self.remove(index);
+                }, 2000); 
             }
             // return, to not draw the marker twice.
             return;
-        }
-        
-        self.marker[data.hash] = {};
-        
+        }      
         // if there are no markers, but a count value it is a summary marker
-        if (!data.marker && data.count > 0) {
-            pos = ngeohash.decode(data.hash);
+        else if (!data.marker && data.count > 0) {
+            pos = ngeohash.decode(data.geohash);
             console.log(pos);
             sumMarker = new GeohashLabel({
                 LatLng      : new google.maps.LatLng(pos.latitude, pos.longitude),
                 count       : data.count,
                 map         : self.options.map
             });
-            self.marker[data.hash].sumMarker = sumMarker;
+            self.marker[data.geohash] = {};
+            self.marker[data.geohash].sumMarker = sumMarker;
+            self.marker[index].timeout = setTimeout(function(){
+                console.log("call remove");
+                self.remove(index);
+            }, 2000); 
         } else if (data.marker) {
             
+        }
+    }
+    
+    /**
+    * *********************************************************************************
+    * Call this method if the cluster should be cleared. This method remove all visible markers.
+    * *********************************************************************************
+    */
+    GeohashCluster.prototype.remove = function (index) {
+        console.log("cluster clear");
+        if (self.marker[index] && self.marker[index].sumMarker) {
+            self.marker[index].sumMarker.remove();
         }
     }
     

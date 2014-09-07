@@ -119,6 +119,11 @@
 
     GeohashLabel.prototype = new google.maps.OverlayView;
 
+
+    GeohashLabel.prototype.remove = function (options) {
+        this.setMap(null);
+    }
+    
     GeohashLabel.prototype.update = function (options) {
         var self = this;
         if (!options) return new Error("options  parameter is required. e.g. GeohashLabel.update({...})");
@@ -149,6 +154,7 @@
 
     // Implement onRemove
     GeohashLabel.prototype.onRemove = function() {
+        console.log("onRemove");
         self = this;
         // remove div
         self.div.parentNode.removeChild(self.div );
