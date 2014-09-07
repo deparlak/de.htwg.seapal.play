@@ -120,9 +120,16 @@
     GeohashLabel.prototype = new google.maps.OverlayView;
 
 
-    GeohashLabel.prototype.remove = function (options) {
+    GeohashLabel.prototype.visible = function () {
+        this.div.style.display = "";
+    }
+    
+    GeohashLabel.prototype.hide = function () {
+        this.div.style.display = "none";
+    }
+    
+    GeohashLabel.prototype.remove = function () {
         this.setMap(null);
-        return true;
     }
     
     GeohashLabel.prototype.update = function (options) {
@@ -156,7 +163,7 @@
     // Implement onRemove
     GeohashLabel.prototype.onRemove = function() {
         console.log("onRemove");
-        self = this;
+        var self = this;
         // remove div
         self.div.parentNode.removeChild(self.div );
         // remove listeners
@@ -167,7 +174,9 @@
 
     // Implement draw
     GeohashLabel.prototype.draw = function () {
-        this.redrawPosition();
+        if ('none' != this.div.style.display) {
+            this.redrawPosition();
+        }
     };
 
     // add to global namespace

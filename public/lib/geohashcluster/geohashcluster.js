@@ -23,6 +23,8 @@
     // maximum and minum geohash resolution
     const MIN_GEOHASH_RESOLUTION = 1;
     const MAX_GEOHASH_RESOLUTION = 6;
+    // the number of milliseconds, a document is valid
+    const DOCUMENT_IS_VALID_TIME = 60000;
     
      /* All available events where a callback will be fired. */
     const event = 
@@ -69,12 +71,7 @@
         }
         // add event listener, to check if the bounds of the geohash cluster has to be updated.
         google.maps.event.addListener(self.options.map, 'idle', function() {
-            // start a timer, which will be triggered for the geohash cluster calculation
-            // The timer make sure, that we wait a moment so that we not updateBounds all the time if the user
-            // is swiping on the map.
-            clearTimeout(self.updateTimer);
-                console.log("hier");
-            self.updateTimer = setTimeout(self.updateBounds, 1000);
+            self.updateBounds();
         });
     
     
@@ -118,12 +115,18 @@
                 
             // compare new hashs and previous ones
             if (arrayCompare(hashs, self.geohash)) return;
-            // we have to clear the markers, because we are at a new position and the old markers are no longer under observation
-            self.clear();
             // copy the geohashs
             self.geohash = hashs.slice();
-            // call callbacks
-            self.callbacks['updateBounds'].fire(self.geohash.slice());
+            // we have to refresh the markers, because we are at a new position and the old markers are no longer visible
+            self.refresh();
+            
+            // The timer make sure, that we wait a moment so that we not updateBounds all the time if the user
+            // is swiping on the map.
+            clearTimeout(self.updateTimer);
+            self.updateTimer = setTimeout(function () {
+                // call callbacks
+                self.callbacks['updateBounds'].fire(self.geohash.slice());
+            }, 1000);
         }
     };
     
@@ -133,7 +136,7 @@
     * *********************************************************************************
     */
     GeohashCluster.prototype.addEventListener = function (e, method) {
-        self = this;
+        var self = this;
         if (Array.isArray(e)) {
             for (var i in e) {
                 self.addEventListener(e[i], method);
@@ -152,11 +155,20 @@
     * *********************************************************************************
     */
     GeohashCluster.prototype.update = function (data) {
-        self = this;
+        var self = this;
         // check if required attributes are available.
         if (!data.geohash) return new Error("geohash is a required attribute on calling GeohashCluster.update");
+        if (!data.date) return new Error("date is a required attribute on calling GeohashCluster.update");
+        if (!data.count) return new Error("count is a required attribute on calling GeohashCluster.update");
         // save the index to access the cache.
         var index = data.geohash;
+        // get actual time in milliseconds.
+        var now = new Date().getTime();
+        // get time when document was created in milliseconds.
+        var created = new Date(data.date).getTime();
+        
+        // if document is older than 60 seconds ignore it
+        if (now < created || (created - now) > DOCUMENT_IS_VALID_TIME) return false;
     
         // are there markers on the map, which has to be updated.
         if (undefined !== self.cache[index]) {
@@ -171,7 +183,7 @@
             if (self.cache[index].marker) {
                 // clear the marker.
                 for (var i = 0; i < self.cache[index].marker.length; i++) {
-                    this.cache[index].marker[i].remove();
+                    self.cache[index].marker[i].remove();
                 }
                 // add the new marker.
                 for (var i = 0; i < data.marker.length; i++) {
@@ -180,7 +192,7 @@
                         count       : 1,
                         map         : self.options.map
                     });
-                    this.cache[index].marker.push(marker);
+                    self.cache[index].marker.push(marker);
                 }
             }
             // return, to not draw the marker twice.
@@ -209,7 +221,8 @@
         // The timout occurr after 60 seconds.
         self.cache[index].timeout = setTimeout(function(){
             self.remove(index);
-        }, 6000); 
+        }, DOCUMENT_IS_VALID_TIME);
+        return true;
     }
     
     /**
@@ -218,28 +231,58 @@
     * *********************************************************************************
     */
     GeohashCluster.prototype.remove = function (index) {
-        // NOTE : Do not use self here. remove() method of the marker will override self with the 
-        // reference to the marker.
-        // self = this;
-
-        if (!this.cache[index]) return;
+        var self = this;
         
-        if (this.cache[index] && this.cache[index].sumMarker) {
-            this.cache[index].sumMarker.remove();
+        if (!self.cache[index]) return;
+        
+        if (self.cache[index] && self.cache[index].sumMarker) {
+            self.cache[index].sumMarker.remove();
         }
         // delete from the storage
-        delete this.cache[index];
+        delete self.cache[index];
     }
     
     /**
     * *********************************************************************************
-    * Call this method if the cluster should be cleared. This method remove all visible markers.
+    * Call this method if the cluster should be cleared.
     * *********************************************************************************
     */
     GeohashCluster.prototype.clear = function () {
         console.log("cluster clear");
     }
 
+    /**
+    * *********************************************************************************
+    * Call this method if the cluster should be refreshed. This means that all values from self.geohash
+    * will be displayed if there is still an entry in self.cache. Other values which are not in
+    * self.geohash, but in self.cache will be hidden.
+    * *********************************************************************************
+    */
+    GeohashCluster.prototype.refresh = function () {
+        var self = this;
+
+        console.log("cluster refresh");
+        // run through all entries of the cache
+        for (var i in self.cache) {
+            // check if the value is not in actual view bounds
+            if (-1 == self.geohash.indexOf(i)) {
+                // if there is a sumMarker hide it
+                if (self.cache[i].sumMarker) self.cache[i].sumMarker.hide();
+                // if there are other markers hide them.
+                for (var j in self.cache[i].marker) {
+                    self.cache[i].sumMarker[j].hide();
+                }
+            } else {
+                // if there is a sumMarker visible it
+                if (self.cache[i].sumMarker) self.cache[i].sumMarker.visible();
+                // if there are other markers visible them.
+                for (var j in self.cache[i].marker) {
+                    self.cache[i].sumMarker[j].visible();
+                }
+            }
+        }
+    }
+    
     // add to global namespace
     window.GeohashCluster = GeohashCluster;
 

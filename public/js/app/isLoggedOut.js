@@ -122,10 +122,6 @@ $(document).ready(function() {
         data.marker = [];
         
         // get bbox of geohash
-        console.log("Decode : "+data.geohash);
-        console.log(geohash.length);
-        console.log(index);
-        console.log(geohash);
         bbox = ngeohash.decode_bbox(data.geohash);
         
         // calculate the total number of markers
