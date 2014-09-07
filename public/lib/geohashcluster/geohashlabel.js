@@ -122,6 +122,7 @@
 
     GeohashLabel.prototype.remove = function (options) {
         this.setMap(null);
+        return true;
     }
     
     GeohashLabel.prototype.update = function (options) {

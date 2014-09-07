@@ -53,8 +53,8 @@
         self.updateTimer = null;
         // store geohashs which are visible at actual map bounds
         self.geohash = [];
-        // store the markers which are placed on the map for specific geohashes
-        self.marker = {};
+        // storage for the markers which are placed on the map for specific geohashes
+        self.cache = {};
         // The callbacks list can be used to get notified about events.
         self.callbacks = {};
         /* init callback list */
@@ -155,40 +155,61 @@
         self = this;
         // check if required attributes are available.
         if (!data.geohash) return new Error("geohash is a required attribute on calling GeohashCluster.update");
-        // save the index to access from the marker storage.
+        // save the index to access the cache.
         var index = data.geohash;
     
-        // a marker is already on the map, which has to be updated.
-        if (undefined !== self.marker[index]) {
-            if (self.marker[index].sumMarker) {
-                self.marker[index].sumMarker.update(data);
-                clearTimeout(self.marker[index].timeout);
-                self.marker[index].timeout = setTimeout(function(){
-                    console.log("call remove");
-                    self.remove(index);
-                }, 2000); 
+        // are there markers on the map, which has to be updated.
+        if (undefined !== self.cache[index]) {
+            // clear the timeout, when this marker will be discarded
+            clearTimeout(self.cache[index].timeout);
+            // check if there was a sumMarker
+            if (self.cache[index].sumMarker) {
+                // update the sumMarker
+                self.cache[index].sumMarker.update(data);
+            }
+            // check if there where markers
+            if (self.cache[index].marker) {
+                // clear the marker.
+                for (var i = 0; i < self.cache[index].marker.length; i++) {
+                    this.cache[index].marker[i].remove();
+                }
+                // add the new marker.
+                for (var i = 0; i < data.marker.length; i++) {
+                    marker = new GeohashLabel({
+                        LatLng      : new google.maps.LatLng(data.marker[i].lat, data.marker[i].lng),
+                        count       : 1,
+                        map         : self.options.map
+                    });
+                    this.cache[index].marker.push(marker);
+                }
             }
             // return, to not draw the marker twice.
             return;
-        }      
-        // if there are no markers, but a count value it is a summary marker
-        else if (!data.marker && data.count > 0) {
-            pos = ngeohash.decode(data.geohash);
-            console.log(pos);
-            sumMarker = new GeohashLabel({
-                LatLng      : new google.maps.LatLng(pos.latitude, pos.longitude),
-                count       : data.count,
-                map         : self.options.map
-            });
-            self.marker[data.geohash] = {};
-            self.marker[data.geohash].sumMarker = sumMarker;
-            self.marker[index].timeout = setTimeout(function(){
-                console.log("call remove");
-                self.remove(index);
-            }, 2000); 
-        } else if (data.marker) {
-            
+        } else {
+            // create a new entry in the cache
+            self.cache[index] = {};
+            // nothing to update, there are new values.
+            // if there is only a count value provided, and no markers, we have to set a sumMarker
+            if (!data.marker && data.count > 0) {
+                // decode the LatLng position with the provided geohash
+                pos = ngeohash.decode(data.geohash);
+                // create a marker
+                sumMarker = new GeohashLabel({
+                    LatLng      : new google.maps.LatLng(pos.latitude, pos.longitude),
+                    count       : data.count,
+                    map         : self.options.map
+                });
+                // add the summary marker to the cache
+                self.cache[index].sumMarker = sumMarker;    
+            }  
+
         }
+        // create a timeout, after which the data has to be removed from the cache, if
+        // no update of the data will be received
+        // The timout occurr after 60 seconds.
+        self.cache[index].timeout = setTimeout(function(){
+            self.remove(index);
+        }, 6000); 
     }
     
     /**
@@ -197,10 +218,17 @@
     * *********************************************************************************
     */
     GeohashCluster.prototype.remove = function (index) {
-        console.log("cluster clear");
-        if (self.marker[index] && self.marker[index].sumMarker) {
-            self.marker[index].sumMarker.remove();
+        // NOTE : Do not use self here. remove() method of the marker will override self with the 
+        // reference to the marker.
+        // self = this;
+
+        if (!this.cache[index]) return;
+        
+        if (this.cache[index] && this.cache[index].sumMarker) {
+            this.cache[index].sumMarker.remove();
         }
+        // delete from the storage
+        delete this.cache[index];
     }
     
     /**
