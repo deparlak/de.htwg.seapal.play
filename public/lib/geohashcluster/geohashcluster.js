@@ -24,7 +24,7 @@
     const MIN_GEOHASH_RESOLUTION = 1;
     const MAX_GEOHASH_RESOLUTION = 6;
     // the number of milliseconds, a document is valid
-    const DOCUMENT_IS_VALID_TIME = 60000;
+    const DOCUMENT_IS_VALID_TIME = 500000;
     
      /* All available events where a callback will be fired. */
     const event = 
@@ -82,7 +82,6 @@
         * *********************************************************************************
         */
         GeohashCluster.prototype.updateBounds = function () {
-            console.log(self.options);
             // get bounds
             var bounds;
             if (self.options.map.getZoom() <= 3) {
@@ -104,14 +103,16 @@
             for (resolution = MIN_GEOHASH_RESOLUTION + 1; resolution <= MAX_GEOHASH_RESOLUTION; resolution++) {
                 tmp = ngeohash.bboxes (bottomleft.lat(), bottomleft.lng(), topright.lat(), topright.lng(), precision=resolution);
 
-                if (tmp.length <= 100) {
+                if (tmp.length <= 1024) {
                     hashs = tmp;
                 } else {
+                    console.log("exit with " + tmp.length);
                     break;
                 }
             }
             console.log(self.geohash);
             console.log(hashs);
+                    if (this.disable) return;
                 
             // compare new hashs and previous ones
             if (arrayCompare(hashs, self.geohash)) return;
@@ -148,13 +149,14 @@
         }
         self.callbacks[e].add(method);
     };
-    
+    var rec = null;
     /**
     * *********************************************************************************
     * Call this method if there is some data which has to be added to the cluster.
     * *********************************************************************************
     */
     GeohashCluster.prototype.update = function (data) {
+        if (this.disable) return;
         var self = this;
         // check if required attributes are available.
         if (!data.geohash) return new Error("geohash is a required attribute on calling GeohashCluster.update");
@@ -166,10 +168,10 @@
         var now = new Date().getTime();
         // get time when document was created in milliseconds.
         var created = new Date(data.date).getTime();
-        
+        console.log( (now - created));
         // if document is older than 60 seconds ignore it
-        if (now < created || (created - now) > DOCUMENT_IS_VALID_TIME) return false;
-    
+        if (created > now || (now - created) > DOCUMENT_IS_VALID_TIME) return false;
+
         // are there markers on the map, which has to be updated.
         if (undefined !== self.cache[index]) {
             // clear the timeout, when this marker will be discarded
@@ -203,16 +205,36 @@
             // nothing to update, there are new values.
             // if there is only a count value provided, and no markers, we have to set a sumMarker
             if (!data.marker && data.count > 0) {
-                // decode the LatLng position with the provided geohash
-                pos = ngeohash.decode(data.geohash);
+                // get the bbox of the geohash and calculate the middle of the box, to set the marker there.
+                var bbox = ngeohash.decode_bbox(data.geohash);
+                var pos = ngeohash.decode (data.geohash);
+                
                 // create a marker
                 sumMarker = new GeohashLabel({
                     LatLng      : new google.maps.LatLng(pos.latitude, pos.longitude),
                     count       : data.count,
-                    map         : self.options.map
+                    map         : self.options.map,
+                    geohash     : data.geohash
                 });
                 // add the summary marker to the cache
-                self.cache[index].sumMarker = sumMarker;    
+                self.cache[index].sumMarker = sumMarker;
+                // draw once
+                if (!rec) {
+                    rec = new google.maps.Rectangle({
+                        strokeColor: '#FF0000',
+                        strokeOpacity: 0.8,
+                        strokeWeight: 2,
+                        fillColor: '#FF0000',
+                        fillOpacity: 0.35,
+                        map: self.options.map,
+                        editable: true,
+                        draggable: true,
+                        bounds: new google.maps.LatLngBounds(
+                            new google.maps.LatLng(bbox[0], bbox[1]),
+                            new google.maps.LatLng(bbox[2], bbox[3]))
+                        });
+                    rec.setMap(self.options.map);
+                }
             }  
 
         }
@@ -231,6 +253,7 @@
     * *********************************************************************************
     */
     GeohashCluster.prototype.remove = function (index) {
+        if (this.disable) return;
         var self = this;
         
         if (!self.cache[index]) return;
@@ -259,6 +282,7 @@
     * *********************************************************************************
     */
     GeohashCluster.prototype.refresh = function () {
+        if (this.disable) return;
         var self = this;
 
         console.log("cluster refresh");

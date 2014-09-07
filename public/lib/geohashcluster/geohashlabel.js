@@ -149,14 +149,24 @@
         // style the div, depending to the actual data.
         self.drawDiv();
         // add to pane
-        var pane = this.getPanes().overlayLayer;
-        pane.appendChild(self.div);
+        var panes = this.getPanes();
+        panes.overlayMouseTarget.appendChild(this.div);
+        // add the click event of to the div
+        google.maps.event.addDomListener(self.div, 'click', function() {
+            if (self.options.geohash) {
+                var bbox = ngeohash.decode_bbox(self.options.geohash);
+                var bounds = new google.maps.LatLngBounds(
+                    new google.maps.LatLng(bbox[0], bbox[1]),
+                    new google.maps.LatLng(bbox[2], bbox[3]));
+                self.options.map.fitBounds(bounds);
+            }
+        });  
         // add listeners
         this.listeners = [
             google.maps.event.addListener(this, 'position_changed',
             function() { self.draw(); }),
             google.maps.event.addListener(this, 'text_changed',
-            function() { self.draw(); })
+            function() { self.draw(); }),
         ];
     };
 
