@@ -85,7 +85,7 @@ $(document).ready(function() {
         
         // check if it is a publishGeohash document
         if (doc.type == 'publishGeohash') {
-            map.updateGeohash(doc);
+            receivedPubilishGeohash(doc);
             return;
         }
         
@@ -191,6 +191,15 @@ $(document).ready(function() {
             delete docStore[user][type][_id];
         }
     };
+    
+    // get called when a publicGeohash package will be get from the server.
+    var receivedPubilishGeohash = function (doc) {
+        map.updateGeohash({geohash : doc.geohash, count : doc.count, date : doc.date});
+        // are there any child values assigned?
+        for (var i in doc.child) {
+            map.updateGeohash({geohash : doc.child[i].geohash, count : doc.child[i].count, date : doc.date, isChild : doc.isChild});
+        }
+    }
     
     // Helper function to generate the id, with which a document should be stored on the server.
     var getId = function (self) {

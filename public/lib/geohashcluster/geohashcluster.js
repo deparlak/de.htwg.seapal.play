@@ -179,53 +179,36 @@
         if (undefined !== self.cache[index]) {
             // clear the timeout, when this marker will be discarded
             clearTimeout(self.cache[index].timeout);
-            // check if there was a sumMarker
-            if (self.cache[index].sumMarker) {
-                // update the sumMarker
-                self.cache[index].sumMarker.update(data);
-            }
-            // check if there where markers
+            // check if there was a marker
             if (self.cache[index].marker) {
-                // clear the marker.
-                for (var i = 0; i < self.cache[index].marker.length; i++) {
-                    self.cache[index].marker[i].remove();
-                }
-                // add the new marker.
-                for (var i = 0; i < data.marker.length; i++) {
-                    marker = new GeohashLabel({
-                        LatLng      : new google.maps.LatLng(data.marker[i].lat, data.marker[i].lng),
-                        count       : 1,
-                        map         : self.options.map,
-                        visible     : data.visible 
-                    });
-                    self.cache[index].marker.push(marker);
-                }
+                // update the marker
+                self.cache[index].marker.update(data);
             }
         } else {
             // create a new entry in the cache
             self.cache[index] = {};
             // nothing to update, there are new values.
             // if there is only a count value provided, and no markers, we have to set a sumMarker
-            if (!data.marker && data.count > 0) {
+            if (data.count > 0) {
                 // get the bbox of the geohash and calculate the middle of the box, to set the marker there.
-                var bbox = ngeohash.decode_bbox(data.geohash);
                 var pos = ngeohash.decode (data.geohash);
                 
                 // create a marker
-                sumMarker = new GeohashLabel({
+                marker = new GeohashLabel({
                     LatLng      : new google.maps.LatLng(pos.latitude, pos.longitude),
                     count       : data.count,
                     map         : self.options.map,
                     geohash     : data.geohash,
                     visible     : data.visible 
                 });
-                // add the summary marker to the cache
-                self.cache[index].sumMarker = sumMarker;
+                // add the marker to the cache
+                self.cache[index].marker = marker;
                 
                 // uncomment the the following lines, to see a rectangle around
                 // the geohash marker.
                 /*
                 if (!self.cache[index].rec) {
+                    var bbox = ngeohash.decode_bbox(data.geohash);
                     self.cache[index].rec = new google.maps.Rectangle({
                         strokeColor: '#FF0000',
                         strokeOpacity: 0.8,
@@ -297,19 +280,11 @@
         for (var i in self.cache) {
             // check if the value is not in actual view bounds
             if (-1 == self.geohash.indexOf(i)) {
-                // if there is a sumMarker hide it
-                if (self.cache[i].sumMarker) self.cache[i].sumMarker.hide();
-                // if there are other markers hide them.
-                for (var j in self.cache[i].marker) {
-                    self.cache[i].sumMarker[j].hide();
-                }
+                // if there is a marker hide it
+                if (self.cache[i].marker) self.cache[i].marker.hide();
             } else {
-                // if there is a sumMarker visible it
-                if (self.cache[i].sumMarker) self.cache[i].sumMarker.visible();
-                // if there are other markers visible them.
-                for (var j in self.cache[i].marker) {
-                    self.cache[i].sumMarker[j].visible();
-                }
+                // if there is a marker visible it
+                if (self.cache[i].marker) self.cache[i].marker.visible();
             }
         }
     }

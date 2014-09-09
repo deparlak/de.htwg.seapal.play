@@ -160,48 +160,54 @@
         // add to pane
         var panes = this.getPanes();
         panes.overlayMouseTarget.appendChild(this.div);
-        // add the click event of to the div
-        google.maps.event.addDomListener(self.div, 'click', function() {
-            if (self.options.geohash) {
-                var bbox = ngeohash.decode_bbox(self.options.geohash);
-                // correct bounds if they are out of map area.
-                // If we not correct this and we are at a geohash from top or
-                // bottom, we zoom out of the map.
-                // enable the uncommented code below, to see a bounding box
-                if (bbox[2] > 85) bbox[2] = 85;
-                if (bbox[0] < -85) bbox[0] = -85;
-                
-                var bounds = new google.maps.LatLngBounds(
-                    new google.maps.LatLng(bbox[0], bbox[1]),
-                    new google.maps.LatLng(bbox[2], bbox[3]));
-                // set map bounds.
-                self.options.map.fitBounds(bounds);
-                // set zoom according to the geohash length
-                self.options.map.setZoom( 4 );
-                
-                // uncomment to see a rectangle around the bbox.
-                /*
-                boundingBox = new google.maps.Rectangle({
-                    strokeColor: '#FF0000',
-                    strokeOpacity: 0.8,
-                    strokeWeight: 2,
-                    fillColor: '#FF0000',
-                    fillOpacity: 0.35,
-                    map: self.options.map,
-                    editable: true,
-                    draggable: true,
-                    bounds: new google.maps.LatLngBounds(
+        
+        // is this geohash a boat, or just a summary of multiple geohash values?
+        if (self.options.geohash.length == 9) {
+            // add the click event of to the div
+            google.maps.event.addDomListener(self.div, 'click', function() {
+                console.log("clicked boat");
+            });
+        } else {
+            // add the click event of to the div
+            google.maps.event.addDomListener(self.div, 'click', function() {
+                if (self.options.geohash) {
+                    var bbox = ngeohash.decode_bbox(self.options.geohash);
+                    // correct bounds if they are out of map area.
+                    // If we not correct this and we are at a geohash from top or
+                    // bottom, we zoom out of the map.
+                    // enable the uncommented code below, to see a bounding box
+                    if (bbox[2] > 85) bbox[2] = 85;
+                    if (bbox[0] < -85) bbox[0] = -85;
+                    
+                    var bounds = new google.maps.LatLngBounds(
                         new google.maps.LatLng(bbox[0], bbox[1]),
-                        new google.maps.LatLng(bbox[2], bbox[3]))
-                    });
+                        new google.maps.LatLng(bbox[2], bbox[3]));
+                    // set map bounds.
+                    self.options.map.fitBounds(bounds);
+                    // set zoom according to the geohash length
+                    self.options.map.setZoom( 4 );
+                    
+                    // uncomment to see a rectangle around the bbox.
+                    /*
+                    boundingBox = new google.maps.Rectangle({
+                        strokeColor: '#FF0000',
+                        strokeOpacity: 0.8,
+                        strokeWeight: 2,
+                        fillColor: '#FF0000',
+                        fillOpacity: 0.35,
+                        map: self.options.map,
+                        editable: true,
+                        draggable: true,
+                        bounds: new google.maps.LatLngBounds(
+                            new google.maps.LatLng(bbox[0], bbox[1]),
+                            new google.maps.LatLng(bbox[2], bbox[3]))
+                        });
 
-                boundingBox.setMap(self.options.map);
-                */
-                
-                
-                
-            }
-        });  
+                    boundingBox.setMap(self.options.map);
+                    */
+                }
+            });
+        }            
         // add listeners
         this.listeners = [
             google.maps.event.addListener(this, 'position_changed',
