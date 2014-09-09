@@ -22,9 +22,9 @@
 !( function( window ) {
     // maximum and minum geohash resolution
     const MIN_GEOHASH_RESOLUTION = 1;
-    const MAX_GEOHASH_RESOLUTION = 6;
+    const MAX_GEOHASH_RESOLUTION = 3;
     // the number of milliseconds, a document is valid
-    const DOCUMENT_IS_VALID_TIME = 500000;
+    const DOCUMENT_IS_VALID_TIME = 60000;
     
      /* All available events where a callback will be fired. */
     const event = 
@@ -103,7 +103,7 @@
             for (resolution = MIN_GEOHASH_RESOLUTION + 1; resolution <= MAX_GEOHASH_RESOLUTION; resolution++) {
                 tmp = ngeohash.bboxes (bottomleft.lat(), bottomleft.lng(), topright.lat(), topright.lng(), precision=resolution);
 
-                if (tmp.length <= 1024) {
+                if (tmp.length <= 100) {
                     hashs = tmp;
                 } else {
                     console.log("exit with " + tmp.length);
@@ -220,6 +220,7 @@
                 self.cache[index].sumMarker = sumMarker;
                 // draw once
                 if (!rec) {
+                    return;
                     rec = new google.maps.Rectangle({
                         strokeColor: '#FF0000',
                         strokeOpacity: 0.8,
