@@ -149,7 +149,7 @@
         }
         self.callbacks[e].add(method);
     };
-    var rec = null;
+
     /**
     * *********************************************************************************
     * Call this method if there is some data which has to be added to the cluster.
@@ -159,9 +159,9 @@
         if (this.disable) return;
         var self = this;
         // check if required attributes are available.
-        if (!data.geohash) return new Error("geohash is a required attribute on calling GeohashCluster.update");
-        if (!data.date) return new Error("date is a required attribute on calling GeohashCluster.update");
-        if (!data.count) return new Error("count is a required attribute on calling GeohashCluster.update");
+        if (!data.geohash) throw new Error("geohash is a required attribute on calling GeohashCluster.update");
+        if (!data.date) throw new Error("date is a required attribute on calling GeohashCluster.update");
+        if (!data.count) throw new Error("count is a required attribute on calling GeohashCluster.update");
         // save the index to access the cache.
         var index = data.geohash;
         // get actual time in milliseconds.
@@ -171,7 +171,10 @@
         console.log( (now - created));
         // if document is older than 60 seconds ignore it
         if (created > now || (now - created) > DOCUMENT_IS_VALID_TIME) return false;
-
+        // is geohash actually visible?
+        data.visible = (-1 != self.geohash.indexOf(data.geohash)) ? true : false;
+        
+        console.log("UPDATE " + data.geohash + " - "+data.visible);
         // are there markers on the map, which has to be updated.
         if (undefined !== self.cache[index]) {
             // clear the timeout, when this marker will be discarded
@@ -192,13 +195,12 @@
                     marker = new GeohashLabel({
                         LatLng      : new google.maps.LatLng(data.marker[i].lat, data.marker[i].lng),
                         count       : 1,
-                        map         : self.options.map
+                        map         : self.options.map,
+                        visible     : data.visible 
                     });
                     self.cache[index].marker.push(marker);
                 }
             }
-            // return, to not draw the marker twice.
-            return;
         } else {
             // create a new entry in the cache
             self.cache[index] = {};
@@ -214,14 +216,17 @@
                     LatLng      : new google.maps.LatLng(pos.latitude, pos.longitude),
                     count       : data.count,
                     map         : self.options.map,
-                    geohash     : data.geohash
+                    geohash     : data.geohash,
+                    visible     : data.visible 
                 });
                 // add the summary marker to the cache
                 self.cache[index].sumMarker = sumMarker;
-                // draw once
-                if (!rec) {
-                    return;
-                    rec = new google.maps.Rectangle({
+                
+                // uncomment the the following lines, to see a rectangle around
+                // the geohash marker.
+                /*
+                if (!self.cache[index].rec) {
+                    self.cache[index].rec = new google.maps.Rectangle({
                         strokeColor: '#FF0000',
                         strokeOpacity: 0.8,
                         strokeWeight: 2,
@@ -234,8 +239,9 @@
                             new google.maps.LatLng(bbox[0], bbox[1]),
                             new google.maps.LatLng(bbox[2], bbox[3]))
                         });
-                    rec.setMap(self.options.map);
+                    self.cache[index].rec.setMap(self.options.map);
                 }
+                */
             }  
 
         }

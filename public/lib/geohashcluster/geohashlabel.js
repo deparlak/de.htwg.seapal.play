@@ -51,9 +51,11 @@
     // Constructor for GeohashLabel
     function GeohashLabel (options) {
         var self = this;
-        if (!options) return new Error("Options are required. e.g. GeohashLabel({...})");
-        if (!options.map) return new Error("options.map required! This should be the handle to google map.");
-        if (!options.LatLng) return new Error("options.LatLng required!");
+        if (undefined === options) throw new Error("Options are required. e.g. GeohashLabel({...})");
+        if (undefined === options.map) throw new Error("options.map required! This should be the handle to google map.");
+        if (undefined === options.LatLng) throw new Error("options.LatLng required!");
+        if (undefined === options.visible) throw new Error("options.visible required!");
+
         if (!options.styles) options.styles =  jQuery.extend(true, [], defaultStyles);
         if (!options.text) options.text = options.count.toString();
         // create a div, which will contain the label
@@ -113,7 +115,11 @@
                 "line-height:" + self.style.height + "px;" +
                 "'>" + self.options.text + "</div>";
             // visible the div
-            self.div.style.display = "";
+            if (self.options.visible) {
+                self.div.style.display = "";
+            } else {
+                self.div.style.display = "none";
+            }
         };
     };
 
@@ -134,9 +140,12 @@
     
     GeohashLabel.prototype.update = function (options) {
         var self = this;
-        if (!options) return new Error("options  parameter is required. e.g. GeohashLabel.update({...})");
-        if (!options.count) return new Error("options.count is required on GeohashLabel.update({...})");
+        if (undefined === options) throw new Error("options  parameter is required. e.g. GeohashLabel.update({...})");
+        if (undefined === options.count) throw new Error("options.count is required on GeohashLabel.update({...})");
+        if (undefined === options.visible) throw new Error("options.visible is required on GeohashLabel.update({...})"+options);
+        
         self.options.count = options.count;
+        self.options.visible = options.visible;
         if (!options.text) self.options.text = options.count.toString();
         
         // redraw div
@@ -162,13 +171,16 @@
                 if (bbox[2] > 85) bbox[2] = 85;
                 if (bbox[0] < -85) bbox[0] = -85;
                 
-                /*
                 var bounds = new google.maps.LatLngBounds(
                     new google.maps.LatLng(bbox[0], bbox[1]),
                     new google.maps.LatLng(bbox[2], bbox[3]));
-                console.log(bbox);
-
+                // set map bounds.
                 self.options.map.fitBounds(bounds);
+                // set zoom according to the geohash length
+                self.options.map.setZoom( 4 );
+                
+                // uncomment to see a rectangle around the bbox.
+                /*
                 boundingBox = new google.maps.Rectangle({
                     strokeColor: '#FF0000',
                     strokeOpacity: 0.8,

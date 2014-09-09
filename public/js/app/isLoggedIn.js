@@ -40,6 +40,7 @@ $(document).ready(function() {
             }
             map.select('person', docStore[seapal.user]['person'][MAP_ID]);
             console.log(docStore);
+            complete = true;
         }
     });
     
