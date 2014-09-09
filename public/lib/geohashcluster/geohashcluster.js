@@ -73,15 +73,14 @@
         google.maps.event.addListener(self.options.map, 'idle', function() {
             self.updateBounds();
         });
-    
-    
+
         /**
         * *********************************************************************************
         * Call this method if the bounds of the map changed and the visible geohashs has to be calculated.
         * Note : This method get automatically called by the map idle listener.
         * *********************************************************************************
         */
-        GeohashCluster.prototype.updateBounds = function () {
+        self.updateBounds = function () {
             // get bounds
             var bounds;
             if (self.options.map.getZoom() <= 3) {
@@ -129,6 +128,32 @@
                 self.callbacks['updateBounds'].fire(self.geohash.slice());
             }, 1000);
         }
+        
+    
+        /**
+        * *********************************************************************************
+        * Call this method to add a marker
+        * *********************************************************************************
+        */
+        self.addMarker = function (data) {
+            var self = this;
+            var index = data.geohash;
+            // get the bbox of the geohash and calculate the middle of the box, to set the marker there.
+            console.log("ADD_MARKER "+data.geohash);
+            var pos = ngeohash.decode (data.geohash);
+            // add a marker
+            
+            // create a marker
+            marker = new GeohashLabel({
+                LatLng      : new google.maps.LatLng(pos.latitude, pos.longitude),
+                count       : data.count,
+                map         : self.options.map,
+                geohash     : data.geohash,
+                visible     : data.visible 
+            });
+            // add the marker to the cache
+            self.cache[index].marker = marker;
+        };
     };
     
     /**
@@ -174,66 +199,39 @@
         // is geohash actually visible?
         data.visible = (-1 != self.geohash.indexOf(data.geohash)) ? true : false;
         
-        console.log("UPDATE " + data.geohash + " - "+data.visible);
         // are there markers on the map, which has to be updated.
         if (undefined !== self.cache[index]) {
+            console.log("UPDATE " + data.geohash + " - "+data.visible);    
             // clear the timeout, when this marker will be discarded
             clearTimeout(self.cache[index].timeout);
-            // check if there was a marker
-            if (self.cache[index].marker) {
-                // update the marker
+            // store the data in the cache
+            self.cache[index].data = data;
+            // no marker, but visible now?
+            if (undefined === self.cache[index].marker && data.visible) {
+                self.addMarker(data);
+            }
+            // marker already there and should be updated
+            if (undefined !== self.cache[index].marker && data.visible) {
                 self.cache[index].marker.update(data);
             }
         } else {
             // create a new entry in the cache
             self.cache[index] = {};
-            // nothing to update, there are new values.
-            // if there is only a count value provided, and no markers, we have to set a sumMarker
-            if (data.count > 0) {
-                // get the bbox of the geohash and calculate the middle of the box, to set the marker there.
-                var pos = ngeohash.decode (data.geohash);
-                
-                // create a marker
-                marker = new GeohashLabel({
-                    LatLng      : new google.maps.LatLng(pos.latitude, pos.longitude),
-                    count       : data.count,
-                    map         : self.options.map,
-                    geohash     : data.geohash,
-                    visible     : data.visible 
-                });
-                // add the marker to the cache
-                self.cache[index].marker = marker;
-                
-                // uncomment the the following lines, to see a rectangle around
-                // the geohash marker.
-                /*
-                if (!self.cache[index].rec) {
-                    var bbox = ngeohash.decode_bbox(data.geohash);
-                    self.cache[index].rec = new google.maps.Rectangle({
-                        strokeColor: '#FF0000',
-                        strokeOpacity: 0.8,
-                        strokeWeight: 2,
-                        fillColor: '#FF0000',
-                        fillOpacity: 0.35,
-                        map: self.options.map,
-                        editable: true,
-                        draggable: true,
-                        bounds: new google.maps.LatLngBounds(
-                            new google.maps.LatLng(bbox[0], bbox[1]),
-                            new google.maps.LatLng(bbox[2], bbox[3]))
-                        });
-                    self.cache[index].rec.setMap(self.options.map);
-                }
-                */
-            }  
-
+            // store the data to the cache, because if this marker is not visible, we have to create the marker
+            // with this data later.
+            self.cache[index].data =  data;
+            // create marker if it should be visible
+            if (data.visible) self.addMarker(data);
         }
-        // create a timeout, after which the data has to be removed from the cache, if
-        // no update of the data will be received
-        // The timout occurr after 60 seconds.
-        self.cache[index].timeout = setTimeout(function(){
-            self.remove(index);
-        }, DOCUMENT_IS_VALID_TIME);
+        // timeouts are only required for visible items
+        if (data.visible) {
+            // create a timeout, after which the data has to be removed from the cache, if
+            // no update of the data will be received
+            // The timout occurr after 60 seconds.
+            self.cache[index].timeout = setTimeout(function(){
+                self.remove(index);
+            }, DOCUMENT_IS_VALID_TIME);
+        }    
         return true;
     }
     
@@ -248,8 +246,8 @@
         
         if (!self.cache[index]) return;
         
-        if (self.cache[index] && self.cache[index].sumMarker) {
-            self.cache[index].sumMarker.remove();
+        if (self.cache[index] && self.cache[index].marker) {
+            self.cache[index].marker.remove();
         }
         // delete from the storage
         delete self.cache[index];
@@ -283,8 +281,15 @@
                 // if there is a marker hide it
                 if (self.cache[i].marker) self.cache[i].marker.hide();
             } else {
-                // if there is a marker visible it
-                if (self.cache[i].marker) self.cache[i].marker.visible();
+                // marker should be visible.
+                self.cache[i].data.visible = true;
+                // Is the marker already on the map, just visible it.
+                if (self.cache[i].marker) {
+                    self.cache[i].marker.visible();
+                } else {
+                    // marker was not created, create it now.
+                    self.addMarker(self.cache[i].data);
+                }
             }
         }
     }

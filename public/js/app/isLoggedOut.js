@@ -119,7 +119,7 @@ $(document).ready(function() {
         index = random(0, geohash.length - 1);
         data = {};
         data.geohash = geohash[index];
-        data.marker = [];
+        data.date = new Date().toISOString();
         
         // get bbox of geohash
         bbox = ngeohash.decode_bbox(data.geohash);

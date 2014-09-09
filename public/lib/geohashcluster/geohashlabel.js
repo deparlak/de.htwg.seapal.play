@@ -98,7 +98,6 @@
             self.selectStyle();
             // create the image tag
             img = "<img src='" + self.style.url + "' style='position: absolute; top: 0px; left: 0px;'>";
-            self.div.innerHTML = "";
             // create the inner html
             self.div.innerHTML = img + "<div style='" +
                 "position: absolute;" +
@@ -125,7 +124,10 @@
 
     GeohashLabel.prototype = new google.maps.OverlayView;
 
-
+    GeohashLabel.prototype.isVisible = function () {
+        return ("" === this.div.style.display);
+    }
+    
     GeohashLabel.prototype.visible = function () {
         this.div.style.display = "";
     }
@@ -150,6 +152,7 @@
         
         // redraw div
         self.drawDiv();
+        self.redrawPosition();
     }
     
     // Implement onAdd
