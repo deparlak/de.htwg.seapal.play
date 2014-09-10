@@ -10,9 +10,9 @@
     
     const defaultOptions = {
         cluster : {
-            gridSize            : 50, 
+            gridSize            : 200, 
             maxZoom             : 15, 
-            minimumClusterSize  : 2
+            minimumClusterSize  : 5
         },
         
         marker : {
@@ -131,6 +131,7 @@
             // boat position not changed?
             var oldPos = self.cache.boats[boat];
             if (oldPos && geohash === oldPos.geohash) {
+                oldPos.created = created;
                 continue;
             }
             // get latLng
@@ -140,6 +141,7 @@
                 console.log("position update");
                 if ("trackSimulationBot1" == boat) console.log(latLng.toString());
                 oldPos.marker.setPosition(latLng);
+                oldPos.created = created;
                 continue;
             }
             // add the boat to the cluster
