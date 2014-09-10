@@ -104,13 +104,6 @@ $(document).ready(function() {
         }
     });
     
-    /* this callback will be called if the cluster of geohashs was updated and has to be set to the server. */
-    map.addCallback(events.SWITCHED_GEOHASH_CLUSTER, function (self) {
-        clearTimeout(geohashTimer);
-        geohash = self;
-        simulateGeohashUpdate();
-    });
-    
     function random (min, max) {
         return Math.floor(Math.random() * ( max - min + 1) + min);
     }
@@ -126,19 +119,6 @@ $(document).ready(function() {
         
         // calculate the total number of markers
         data.count = random(0, 100);
-        
-        // get random number for number of markers.
-        if (data.count > 50) {
-            markers = 50;
-        } else {
-            markers = data.count;
-        }
-        data.marker = undefined;
-        markers = 0;
-        for (var i = 0; i < markers; i++) {
-            // create random number of markers.
-            data.marker[i] = {lat : bbox[0] + 1 / i, lng : bbox[1] + 1 / i};
-        }
 
         // send a update to the map
         map.updateGeohash(data);

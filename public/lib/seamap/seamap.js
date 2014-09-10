@@ -493,9 +493,9 @@
             alarmsSettings = settings;
         }
         
-        /* update geohash value, to which we subribed */
-        this.updateGeohash = function (data) {
-            geohashCluster.update(data);
+        /* update boat cluster data */
+        this.updateBoatCluster = function (data) {
+            boatCluster.update(data);
         }
 
         this.switchBoatMarker = function() {
@@ -578,8 +578,7 @@
             BOAT_POS_UPDATE         : 51,
             LEFT_SECURITY_CIRCLE    : 52,
             MAN_OVERBOARD           : 53,
-            SWITCHED_GEOHASH_CLUSTER  : 54,
-            GEO_POSITION_UPDATE     : 55,
+            GEO_POSITION_UPDATE     : 54,
             /* select or deselect any item (boat, trip, route, mark) */
             SELECTED                : 60,
             DESELECTED              : 61,
@@ -1075,16 +1074,8 @@
 			callbacks[event[key]] = $.Callbacks();
 		}
         
-        // Create GeohashCluster, which handle clustered information about active trips.
-        var geohashCluster = new GeohashCluster({
-            map             : map,
-            eventListener   : {
-                'updateBounds' : function (data) {
-                    callbacks[event.SWITCHED_GEOHASH_CLUSTER].fire(data);
-                }
-            }
-        });
-        
+        // Create cluster, which handle clustered information about active boats.
+        var boatCluster =  new BoatCluster({map : map});
 
         startBoatAnimation();
         

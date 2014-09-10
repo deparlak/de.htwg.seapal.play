@@ -16,7 +16,7 @@ $(document).ready(function() {
     // See https://github.com/pouchdb/pouchdb/issues/1666
     var docStore = {};
     // the geohash document which should be send on a geohash cluster update
-    var subscribeGeohash = {_id : seapal.user + '/subscribeGeohash', type : 'subscribeGeohash', owner : seapal.user};
+    var subscribeGeohash = {type : 'subscribeGeohash', owner : seapal.user};
     var geoPosition = {_id : seapal.user + '/geoPosition', type : 'geoPosition', owner : seapal.user};
     // variable indicating when syncing is complete
     var complete = false;
@@ -41,6 +41,17 @@ $(document).ready(function() {
             map.select('person', docStore[seapal.user]['person'][MAP_ID]);
             console.log(docStore);
             complete = true;
+            // if we have not subscribed since yet, do it now.
+            if (!subscribeGeohash._rev) {
+                callSubscribeGeohash();
+            } else {
+                // TODO remove complete else case. only for test added.
+                return;
+                db.remove(subscribeGeohash, function (err, response) { 
+                    console.log(err);
+                    console.log(response);
+                });
+            }
         }
     });
     
@@ -48,7 +59,6 @@ $(document).ready(function() {
     db.changes({since : 'now', live : true, include_docs : true})
         .on('change', function (info) {
             complete = false;
-            console.log(info);
             storeDocument(info.doc);
         }).on('complete', function (info) {
             complete = true;
@@ -64,6 +74,12 @@ $(document).ready(function() {
         delete doc.id;
         // split key of document
         var obj = doc._id.split('/');
+        console.log(doc);
+        
+        // we will be notified about documents which removed channels
+        if (doc._removed && 3 == obj.length && 'publishGeohash' == obj[1]) {
+            return;
+        }
         
         // check if it is a geoPosition document
         if (doc.type == 'geoPosition') {
@@ -171,7 +187,6 @@ $(document).ready(function() {
         if (undefined === docStore[user][type]) docStore[user][type] = {_counter : 0};
         // check if it was not a document deletion
         if (undefined === doc._deleted) {
-
             // check if it is a new document
             if (undefined === docStore[user][type][_id]) {
                 docStore[user][type]['_counter']++;
@@ -194,11 +209,7 @@ $(document).ready(function() {
     
     // get called when a publicGeohash package will be get from the server.
     var receivedPubilishGeohash = function (doc) {
-        map.updateGeohash({geohash : doc.geohash, count : doc.count, date : doc.date});
-        // are there any child values assigned?
-        for (var i in doc.child) {
-            map.updateGeohash({geohash : doc.child[i].geohash, count : doc.child[i].count, date : doc.date, isChild : doc.isChild});
-        }
+        map.updateBoatCluster(doc);
     }
     
     // Helper function to generate the id, with which a document should be stored on the server.
@@ -394,6 +405,17 @@ $(document).ready(function() {
         createDocument(self.id, obj);
     });
     
+    var callSubscribeGeohash = function () {
+        subscribeGeohash._id = seapal.user + '/subscribeGeohash/' + new Date().toISOString();
+        subscribeGeohash._rev = null;
+        subscribeGeohash.channels = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'j', 'k', 'm', 'n', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z'];
+        db.put(subscribeGeohash, function (err, response) { 
+            if (err) {
+                console.log(err);
+            }
+        });
+    }
+    
     var createDocument = function (mapid, obj) {
         db.put(obj, function (err, response) { 
             // if document already exist and there is no _rev, there should be chosen another _id.
@@ -437,20 +459,7 @@ $(document).ready(function() {
             }
         });
     });
-    
-    /* this callback will be called if the cluster of geohashs was updated and has to be set to the server. */
-    map.addCallback(events.SWITCHED_GEOHASH_CLUSTER, function (self) {
-        if (!complete) return;
-        console.log("START : subscribeGeohash");
-        subscribeGeohash.geohash = self;
-        db.put(subscribeGeohash, function(err, response) {
-            console.log("END : subscribeGeohash");
-            if (err) {
-                console.log(err);
-            }
-        });
-    });
-    
+
     /* this callback will be cyclic called if tracking is enabled, and return the position of the boat in lat, lng and geohash. */
     map.addCallback(events.GEO_POSITION_UPDATE, function (self) {
         if (!complete) return;
