@@ -20,7 +20,8 @@ $(document).ready(function() {
     var geoPosition = {_id : seapal.user + '/geoPosition', type : 'geoPosition', owner : seapal.user};
     // variable indicating when syncing is complete
     var complete = false;
-    
+    var called = 0;
+    window.called = called;
     var db = new PouchDB('http://localhost:9000/database/');
     
     // initial start up code, which fetch all docs and store them to the docStore.
@@ -70,6 +71,7 @@ $(document).ready(function() {
     
     //helper function to store a document in the docStore variable
     var storeDocument = function (doc) {
+        window.called++;
         // id which come are set here are invalid
         delete doc.id;
         // split key of document

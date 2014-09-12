@@ -1,6 +1,6 @@
 !( function( window ) {
     // number of milliseconds a document is valid
-    const DOCUMENT_IS_VALID_TIME = 60000;
+    const DOCUMENT_IS_VALID_TIME = 600000;
 
     // All available events where a callback will be fired.
     const event = 
@@ -10,9 +10,9 @@
     
     const defaultOptions = {
         cluster : {
-            gridSize            : 200, 
-            maxZoom             : 15, 
-            minimumClusterSize  : 5
+            gridSize            : 50, 
+            maxZoom             : 5, 
+            minimumClusterSize  : 2
         },
         
         marker : {
@@ -60,7 +60,7 @@
         }
         
         // initialise the cluster
-        self.cluster = new MarkerClusterer(self.options.map, [], self.options);
+        self.cluster = new MarkerClusterer(self.options.map, [], self.options.cluster);
         
         // this is a cyclic method, which will check if markers are obsolete to remove them from the cluster
         self.cylicDocumentCheck = function () {
@@ -72,6 +72,8 @@
                 if (self.cache.boats[boat].created > now || (now - self.cache.boats[boat].created) > DOCUMENT_IS_VALID_TIME) {
                     // remove marker, and prevent redrawing (is the second parameter which is set to true)
                     self.cluster.removeMarker(self.cache.boats[boat].marker, true);
+                    // delete boat from the boats list.
+                    delete self.cache.boats[boat];
                 }
             }    
             self.cluster.repaint();
