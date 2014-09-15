@@ -20,8 +20,7 @@ $(document).ready(function() {
     var geoPosition = {_id : seapal.user + '/geoPosition', type : 'geoPosition', owner : seapal.user};
     // variable indicating when syncing is complete
     var complete = false;
-    var called = 0;
-    window.called = called;
+    // connect to database
     var db = new PouchDB('http://localhost:9000/database/');
     
     // initial start up code, which fetch all docs and store them to the docStore.
@@ -71,12 +70,11 @@ $(document).ready(function() {
     
     //helper function to store a document in the docStore variable
     var storeDocument = function (doc) {
-        window.called++;
         // id which come are set here are invalid
         delete doc.id;
         // split key of document
         var obj = doc._id.split('/');
-        console.log(doc);
+        console.log(doc.id);
         
         // we will be notified about documents which removed channels
         if (doc._removed && 3 == obj.length && 'publishGeohash' == obj[1]) {
@@ -113,59 +111,33 @@ $(document).ready(function() {
             return;
         }
         
-        // we expect username/type/id, if this is not given, we ignore the document
-        // friends or friend requests have the format friend/emailUserA/emailUserB
-        if (3 != obj.length) {
-            // a trackpoint and waypoint document has a _id which is username/trip/trip_id/<trackpoint or waypoint>/id
-            if (5 == obj.length && ('trackpoint' == obj[3] || 'waypoint' == obj[3])) {
-                var user = obj[0];
-                var type = obj[3];
-                var _id = doc._id;
-            } else {
-                return;
-            }
-        } else {
-            var user = obj[0];
-            var type = obj[1];
-            var _id = doc._id;
-        }
-        
-        //if it is a friend, we have to save the email of the friend as the key and not the own.
-        if ('friend' == obj[0]) {
-            var type = obj[0];
-            var mailA = obj[1];
-            var mailB = obj[2];
-            var friendMail = (mailA == seapal.user) ? mailB : mailA;
+        //if it is a crew request or member
+        if ('crew' === doc.type) {
+            var type = doc.type;
+            var friendMail = (doc.from == seapal.user) ? doc.to : doc.from;
+            // transform the id to a unique hex string, because we need to set the crew document
+            // to the html, and there are some characters like '@' not allowed for id's.
             var id = idtoHex(friendMail);
             // some checks to build docStore correct
             if (undefined === docStore[type]) docStore[type] = {_counter : 0};
             
             // check if the friend request is in the html and has be removed.
-            if ( $("#friendRequests"+id).length != 0) {
-                $("#friendRequests"+id).remove();
-                if ($("#friendRequests li").text() == "") {
-                    $("#logbook-friendRequests").hide();
-                }
-            }
+            removeCrewRequest(id);
             
-            if (undefined === doc._deleted) {
-                if (undefined === docStore[type][friendMail]) docStore[type]['_counter']++;
-                if (docStore[type][friendMail] && docStore[type][friendMail][MAP_ID]) {
-                    doc[MAP_ID] = docStore[type][friendMail][MAP_ID];
-                }
-                // store the document
-                docStore[type][friendMail] = doc;
-                // check if it is a friend request, because than the access rights are not set.
-                if (false == doc.access && doc.from != seapal.user && $("#friendRequests"+id).length == 0) {
+            // is it a request to ask to be a crew member.
+            if ('request' === doc.access) {
+                if (seapal.user !== doc.from) {
                     $("#friendRequests").append(templateFriendRequests({from : doc.from, id : id}));
                     $("#logbook-friendRequests").show();
-                } else if (doc.from == seapal.user) {
-                    // this request was sent by us. Don't set it to any list and wait for a request of the user which we asked.
-                } else {
-                    // no friend request, already a friend.
-                    docStore[type][friendMail][MAP_ID] = map.set('person', {id : doc[MAP_ID], type : 'person', _id : friendMail, _rev : 'some_rev', email : friendMail, owner : friendMail});
+                    docStore[type][friendMail] = doc;
                 }
-            } else {
+            // access grant
+            } else if ('grant' === doc.access && undefined === docStore[type][friendMail]) {
+                if (undefined === docStore[type][friendMail]) docStore[type]['_counter']++;
+                if (undefined === docStore[type][friendMail]) docStore[type][friendMail] = {};
+                docStore[type][friendMail][MAP_ID] = map.set('person', {id : doc[MAP_ID], type : 'person', _id : friendMail, _rev : 'some_rev', email : friendMail, owner : friendMail});
+            // access rejected
+            } else if ('reject' === doc.access) {
                 // remove the document from the map
                 if (docStore[type][friendMail] && docStore[type][friendMail][MAP_ID]) {
                     map.remove('person', docStore[type][friendMail][MAP_ID], true);
@@ -179,33 +151,53 @@ $(document).ready(function() {
                 }
                 // remove the document from the docStore
                 delete docStore[type][friendMail];
+            } else {
+                console.log("unknown crew document");
+                console.log(doc);
             }
             return;
         }
 
-        // check if user is already in docStore
-        if (undefined === docStore[user]) docStore[user] = {};
-        // check if document type is in docStore
-        if (undefined === docStore[user][type]) docStore[user][type] = {_counter : 0};
-        // check if it was not a document deletion
-        if (undefined === doc._deleted) {
-            // check if it is a new document
-            if (undefined === docStore[user][type][_id]) {
-                docStore[user][type]['_counter']++;
-                docStore[user][type][_id] = {};
+        // other documentes
+        if (-1 != ['boat', 'mark', 'route', 'trip', 'waypoint', 'trackpoint'].indexOf(doc.type)) {
+            var type = doc.type;
+            var user = doc.owner;
+            var _id = doc._id;
+            // check if user is already in docStore
+            if (undefined === docStore[user]) docStore[user] = {};
+            // check if document type is in docStore
+            if (undefined === docStore[user][type]) docStore[user][type] = {_counter : 0};
+            // check if it was not a document deletion
+            if (undefined === doc._deleted) {
+                // check if it is a new document
+                if (undefined === docStore[user][type][_id]) {
+                    docStore[user][type]['_counter']++;
+                    docStore[user][type][_id] = {};
+                }
+                // get the id if it exist.
+                var tmp = docStore[user][type][_id][MAP_ID];
+                // store the document
+                docStore[user][type][_id] = doc;
+                docStore[user][type][_id][MAP_ID] = tmp;
+                if (user === selectedUser) {
+                    // call the set method in the map
+                    docStore[user][type][_id][MAP_ID] = map.set(type, docStore[user][type][_id]);
+                }
+            } else {
+                // call remove method in the map
+                if (docStore[user][type][_id] && docStore[user][type][_id][MAP_ID]) map.remove(type, docStore[user][type][_id][MAP_ID], true);
+                // remove the document from the docStore
+                delete docStore[user][type][_id];
             }
-            // get the id if it exist.
-            var tmp = docStore[user][type][_id][MAP_ID];
-            // store the document
-            docStore[user][type][_id] = doc;
-            docStore[user][type][_id][MAP_ID] = tmp;
-            // call the set method in the map
-            docStore[user][type][_id][MAP_ID] = map.set(type, docStore[user][type][_id]);
-        } else {
-            // call remove method in the map
-            if (docStore[user][type][_id] && docStore[user][type][_id][MAP_ID]) map.remove(type, docStore[user][type][_id][MAP_ID], true);
-            // remove the document from the docStore
-            delete docStore[user][type][_id];
+        }
+    };
+    
+    var removeCrewRequest = function (id) {
+        if ( $("#friendRequests"+id).length != 0) {
+            $("#friendRequests"+id).remove();
+            if ($("#friendRequests li").text() == "") {
+                $("#logbook-friendRequests").hide();
+            }
         }
     };
     
@@ -286,44 +278,45 @@ $(document).ready(function() {
         });
     });
 
-    /* callback to open the modal with which a friend request can be send */
+    /* callback to open the modal with which a crew request can be send */
     menu.addCallback('leftclick', 'logbookCrewAdd', function (self) {
         menu.disableAutoClose();
         $('#modal-form_addCrewman').modal('show');
     });
 
-    /* on click of button to sent a friend request */
+    /* on click of button to sent a crew request */
     $('#modal-form_addCrewman').submit(function(event) {
         $('#modal-form_addCrewman').modal('hide');
 
         from = seapal.user;
         to = $('#email_addCrewman').val();
         // set same ordering, no matter from which address the request will be sent
-        first = (to > from) ? to : from;
-        second = (first == to) ? from : to;
+        first = (to < from) ? to : from;
+        second = (to < from) ? from : to;
         
         var doc = 
         {
-            type        : 'friend',
+            type        : 'crew',
             to          : to,
             from        : from,
-            access      : false,
-            _id         : 'friend'+'/'+first+'/'+second,
-            _rev        : null
+            access      : 'request',
+            _id         : 'crew'+'/'+first+'/'+second,
+            _rev        : "2-1b199798404fc0e717c4faf05e512aaf"
         };
-
+        
         db.put(doc, function (err, response) { 
             if (err) {
-                output.error("Friend request failed: " + err);
+                if (err.message) err = err.message;
+                output.error("Crew request failed with " + err);
             } else {
-                output.info("Friend request send");
+                output.info("Crew request send");
             }
         });
         
         return false;
     });
 
-    /* Callback for confirm crew request */
+    /* Callback for confirm / reject crew request */
     menu.addCallback('leftclick', 'icon-friendRequests', function (self) {
         var template = Handlebars.compile($("#confirmCrewRequest_Template").text());
         var html = template(self.data);
@@ -334,11 +327,12 @@ $(document).ready(function() {
 
         $('#rejectCrewRequest').on('click', function() {
             $('#modal-form_confirmCrewRequest').modal('hide');
-            doc = docStore['friend'][self.data('from')];
-            doc.access = false;
+            doc = docStore['crew'][self.data('from')];
+            doc.access = 'reject';
             
-            db.remove(doc, function(err, response) { 
+            db.put(doc, function(err, response) { 
                 if (err) {
+                    if (err.message) err = err.message;
                     output.error(err);
                 }
             });
@@ -346,11 +340,12 @@ $(document).ready(function() {
 
         $('#confirmCrewRequest').on('click', function() {
             $('#modal-form_confirmCrewRequest').modal('hide');
-            doc = docStore['friend'][self.data('from')];
-            doc.access = true;
+            doc = docStore['crew'][self.data('from')];
+            doc.access = 'grant';
             
             db.put(doc, function(err, response) { 
                 if (err) {
+                    if (err.message) err = err.message;
                     output.error(err);
                 }
             });
