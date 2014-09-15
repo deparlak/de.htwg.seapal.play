@@ -21,7 +21,7 @@ $(document).ready(function() {
     // variable indicating when syncing is complete
     var complete = false;
     // connect to database
-    var db = new PouchDB('http://localhost:9000/database/');
+    var db = new PouchDB('http://' + location.hostname + ':9000/database/');
     
     // initial start up code, which fetch all docs and store them to the docStore.
     // This call should be replaced with a PouchDB.sync()
