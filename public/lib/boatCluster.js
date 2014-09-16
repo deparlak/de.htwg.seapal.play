@@ -1,6 +1,6 @@
 !( function( window ) {
     // number of milliseconds a document is valid
-    const DOCUMENT_IS_VALID_TIME = 600000;
+    const DOCUMENT_IS_VALID_TIME = 200000;
 
     // All available events where a callback will be fired.
     const event = 
