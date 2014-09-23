@@ -66,8 +66,8 @@ $(document).ready(function() {
             complete = false;
             console.log("DB:CHANGES - error");
             console.log(err);
-            if (err.message) {
-                output.error(err.message);
+            if (err.statusText) {
+                output.error(err.statusText);
             } else {
                 output.error(err);
             }
