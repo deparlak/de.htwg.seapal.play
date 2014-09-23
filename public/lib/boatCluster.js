@@ -78,7 +78,7 @@
             }    
             self.cluster.repaint();
             // call after a timeout again
-            setTimeout(self.cylicDocumentCheck, DOCUMENT_IS_VALID_TIME); 
+            //setTimeout(self.cylicDocumentCheck, DOCUMENT_IS_VALID_TIME); 
         }
         
         // call cyclicDocumetCheck first time
@@ -119,7 +119,7 @@
         // if document is older than 60 seconds ignore it
         var now = new Date().getTime();
         var created = new Date(data.date).getTime();
-        if (created > now || (now - created) > DOCUMENT_IS_VALID_TIME) return false;
+        //if (created > now || (now - created) > DOCUMENT_IS_VALID_TIME) return false;
 
         var last = data.boats.length;
         
@@ -140,8 +140,6 @@
             var latLng = new google.maps.LatLng(coord.latitude, coord.longitude);
             // an old position exist
             if (oldPos) {
-                console.log("position update");
-                if ("trackSimulationBot1" == boat) console.log(latLng.toString());
                 oldPos.marker.setPosition(latLng);
                 oldPos.created = created;
                 continue;

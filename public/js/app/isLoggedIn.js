@@ -28,7 +28,13 @@ $(document).ready(function() {
     db.allDocs({include_docs : true}, function(err, response) {
         console.log("FETCH DOCS RESULT");
         if (err) {
-            output.error(err);
+            console.log("FETCH DOCS RESULT - error");
+            console.log(err);
+            if (err.message) {
+                output.error(err.message);
+            } else {
+                output.error(err);
+            }
         } else {
             console.log(response);
             // set the active person, to the logged in user.
@@ -44,13 +50,6 @@ $(document).ready(function() {
             // if we have not subscribed since yet, do it now.
             if (!subscribeGeohash._rev) {
                 callSubscribeGeohash();
-            } else {
-                // TODO remove complete else case. only for test added.
-                return;
-                db.remove(subscribeGeohash, function (err, response) { 
-                    console.log(err);
-                    console.log(response);
-                });
             }
         }
     });
@@ -65,7 +64,13 @@ $(document).ready(function() {
             console.log('complete');
         }).on('error', function (err) {
             complete = false;
+            console.log("DB:CHANGES - error");
             console.log(err);
+            if (err.message) {
+                output.error(err.message);
+            } else {
+                output.error(err);
+            }
         });
     
     //helper function to store a document in the docStore variable
@@ -74,8 +79,7 @@ $(document).ready(function() {
         delete doc.id;
         // split key of document
         var obj = doc._id.split('/');
-        console.log(doc.id);
-        
+
         // we will be notified about documents which removed channels
         if (doc._removed && 3 == obj.length && 'publishGeohash' == obj[1]) {
             return;
@@ -213,7 +217,7 @@ $(document).ready(function() {
         docStore[selectedUser][self.type]['_counter']++;
         // get the time now.
         var now = new Date();
-        var idStr = now.getTime().toString()
+        var idStr = now.getTime().toString();
         // store the actual time as a ISO string in the document
         self.date = now.toISOString();
         
@@ -425,6 +429,8 @@ $(document).ready(function() {
                 return;
             }
             if (err) {
+                console.log("createDocument - error");
+                console.log(err);
                 output.error(err.message);
                 return;
             }
