@@ -12,7 +12,7 @@
         cluster : {
             gridSize            : 50, 
             maxZoom             : 5, 
-            minimumClusterSize  : 2
+            minimumClusterSize  : 10
         },
         
         marker : {
