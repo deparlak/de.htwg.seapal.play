@@ -1,0 +1,1226 @@
+{
+   "interface":":4984",
+   "adminInterface":":4985",
+   "log":["REST"],
+   "databases":{
+        "sync_gateway" : {
+            "revs_limit"   : 10,
+        
+            "server": "walrus:local",
+        
+            "sync":`function(doc, oldDoc) {                
+                // helper method, which check for a required _id pattern
+                var requireId = function () {
+                    var document = doc._id.split('/');
+                    if (document.length !== arguments.length) {
+                        throw( { forbidden : 'Invalid document _id'} );
+                    }
+                    // now check if the pattern is matching.
+                    for (var i = 0; i < arguments.length; i++) {
+                        if (document[i] !== arguments[i] && '*' !== arguments[i]) {
+                            throw( { forbidden : 'Invalid document _id. Expected : ' + arguments[i]} );
+                        }
+                    }
+                };
+            
+                if (-1 != ['boat', 'mark', 'route', 'trip'].indexOf(doc.type)) {
+                    // user need access to the channel of the owner
+                    requireAccess('docs-' + doc.owner);
+                    // check for a valid _id
+                    requireId(doc.owner, doc.type, '*');
+                    // documents are mapped to the docs channel.
+                    channel('docs-' + doc.owner);     
+                }
+                
+                else if ('trackpoint' == doc.type || 'waypoint' == doc.type) {
+                    // user need access to the channel of the owner
+                    requireAccess('docs-' + doc.owner);
+                    // check for a valid _id
+                    requireId(doc.owner, 'trip', '*', doc.type, '*');
+                    // documents are mapped to the docs channel.
+                    channel('docs-' + doc.owner);     
+                }
+                
+                // The boat position of a user, where the position is stored as a geohash
+                else if ('geoPosition' == doc.type) {
+                    // users can only modify there own settings document
+                    requireUser(doc.owner);
+                    // check for a valid _id
+                    requireId(doc.owner, doc.type);
+                    // add to private channel of user
+                    channel ('private-' + doc.owner);
+                    // add to worker channel
+                    for (var i = 1; i <= doc.geohash.length; i++) {
+                        channel ('processGeohash-' + doc.geohash.substr(0, i));
+                    }
+                }
+                
+                // each user can have his own settings doc
+                else if ('settings' == doc.type) {
+                    // users can only modify there own settings document
+                    requireUser(doc.owner);  
+                    // check for a valid _id
+                    requireId(doc.owner, 'settings');
+                    // add to private channel of user
+                    channel('private-' + doc.owner);
+                }
+                
+                // each user can have his own person doc
+                else if ('person' == doc.type) {
+                    // users can only modify there own person document
+                    requireUser(doc.owner);
+                    // check for a valid _id
+                    requireId(doc.owner, 'person');
+                    // add to docs channel (so friends can access the person details)
+                    channel('docs-' + doc.owner);
+                }
+                
+                else if ('crew' == doc.type) {
+                    var first  = (doc.from < doc.to) ? doc.from : doc.to;
+                    var second = (doc.from < doc.to) ? doc.to : doc.from;
+                    // check for doc id
+                    requireId('crew', first, second);
+                    // friend request
+                    if ('request' === doc.access) {
+                        // check that the user, who send the request has to be logged in.
+                        requireUser(doc.from);
+                        // map this document to the channel of the sender and receiver
+                        channel('friends-'+doc.from);
+                        channel('friends-'+doc.to);
+                    }
+                    // request rejected
+                    else if ('reject' === doc.access){
+                        // request was rejected , check if it was rejected by a valid user
+                        // both user can reject a friend request.
+                        requireUser([oldDoc.from, oldDoc.to]);
+                        // map this document to the channel of the sender and receiver
+                        channel('friends-'+doc.from);
+                        channel('friends-'+doc.to);
+                    }
+                    // Access was granted
+                    else if ('grant' === doc.access && 'request' === oldDoc.access) {
+                        // response can only come from the user, who is the receiver of the request
+                        requireUser(doc.to);
+                        // grand access to the main channels of the users.
+                        access(doc.to, 'docs-'+doc.from);
+                        access(doc.from, 'docs-'+doc.to);
+                        // map this document to the channel of the sender and receiver
+                        channel('friends-'+doc.from);
+                        channel('friends-'+doc.to);
+                    // Illegal state
+                    } else {
+                        throw( { forbidden : 'Illegal crew member document.'} );
+                    }                    
+                }
+
+                else if (doc._deleted) {
+                    if (oldDoc.type != 'someDocType') {
+                        throw( { forbidden : 'Documents with this type cannot be deleted.'} );
+                    }
+                    // need access to the document to delete it
+                    requireAccess('docs-' + oldDoc.owner);
+                } 
+                
+                // Bot Server can process geohash channels, which mean that they observe these channels and
+                // create summary documents out of the data.
+                else if ('processGeohash' == doc.type) {
+                    // users (or in this case bots) can only modify there own processGeohash
+                    requireUser(doc.owner);
+                    // processGeohash documents can only be written by with access.
+                    requireAccess('processGeohash');
+                    // check for a valid _id
+                    requireId(doc.owner, doc.type);
+                    // map to processGeohash
+                    channel('processGeohash');
+                    // Get access to the geohash channels, to listen to changes on these channels.
+                    for (var i in doc.channels) {
+                        access(doc.owner, 'processGeohash-' + doc.channels[i]);
+                    }
+                }
+                
+                // Clients can subscribe to geohash channels
+                else if ('subscribeGeohash' == doc.type) {
+                    // users can only modify there own subscribeGeohash
+                    requireUser(doc.owner);
+                    // check for a valid _id
+                    requireId(doc.owner, 'subscribeGeohash', '*');                    
+                    // add to private channel of user
+                    channel('private-' + doc.owner);
+                    // geohashs which we have access to
+                    for (var i in doc.channels) {
+                        access(doc.owner, 'geohash-' + doc.channels[i]);
+                    }
+                }
+                
+                // Bot Server create publishGeohash docs, which are summary documents
+                else if ('publishGeohash' == doc.type) {
+                    // users (or in this case bots) can only modify there own publishGeohash
+                    requireUser(doc.owner);
+                    // publishGeohash documents can only be written by with access.
+                    requireAccess('publishGeohash');
+                    // check for a valid _id
+                    requireId(doc.owner, doc.type);
+                    // map to the publishGeohash channel
+                    channel('publishGeohash');
+                    // Map to the geohash channels, so that users which subscribed to these
+                    // channels get notified.
+                    // map to geohash channels.
+                    for (var i in doc.channels) {
+                        channel('geohash-' + i);
+                    }
+                }
+                
+                else {
+                    // illegal document
+                    throw( { forbidden : 'Illegal document structure.'} );
+                }
+            }`,
+
+            "users": {
+                "test@test.de": {
+                    "admin_channels": ["test@test.de", "friends-test@test.de", "docs-test@test.de", "private-test@test.de"],
+                    "admin_roles": [],
+                    "password": "12345678"
+                },
+                "user@user.de": {
+                    "admin_channels": ["user@user.de", "friends-user@user.de", "docs-user@user.de", "private-user@user.de"],
+                    "admin_roles": [],
+                    "password": "12345678"
+                },
+                "GUEST": {"disabled": true},
+                          
+                  "trackObserverBot1": {
+                    "admin_channels": [
+                      "trackObserverBot1",
+                      "friends-trackObserverBot1",
+                      "docs-trackObserverBot1",
+                      "private-trackObserverBot1",
+                      "publishGeohash",
+                      "processGeohash"
+                    ],
+                    "admin_roles": [],
+                    "password": "TBD_A_PASSWORD"
+                  },
+                  
+                  "trackObserverBot2": {
+                    "admin_channels": [
+                      "trackObserverBot2",
+                      "friends-trackObserverBot2",
+                      "docs-trackObserverBot2",
+                      "private-trackObserverBot2",
+                      "publishGeohash",
+                      "processGeohash"
+                    ],
+                    "admin_roles": [],
+                    "password": "TBD_A_PASSWORD"
+                  },
+                  
+                                      
+                          "trackSimulationBot1": {
+                            "admin_channels": [
+                              "trackSimulationBot1",
+                              "friends-trackSimulationBot1",
+                              "docs-trackSimulationBot1",
+                              "private-trackSimulationBot1"
+                            ],
+                            "admin_roles": [],
+                            "password": "TBD_A_PASSWORD"
+                          },
+                          "trackSimulationBot2": {
+                            "admin_channels": [
+                              "trackSimulationBot2",
+                              "friends-trackSimulationBot2",
+                              "docs-trackSimulationBot2",
+                              "private-trackSimulationBot2"
+                            ],
+                            "admin_roles": [],
+                            "password": "TBD_A_PASSWORD"
+                          },
+                          "trackSimulationBot3": {
+                            "admin_channels": [
+                              "trackSimulationBot3",
+                              "friends-trackSimulationBot3",
+                              "docs-trackSimulationBot3",
+                              "private-trackSimulationBot3"
+                            ],
+                            "admin_roles": [],
+                            "password": "TBD_A_PASSWORD"
+                          },
+                          "trackSimulationBot4": {
+                            "admin_channels": [
+                              "trackSimulationBot4",
+                              "friends-trackSimulationBot4",
+                              "docs-trackSimulationBot4",
+                              "private-trackSimulationBot4"
+                            ],
+                            "admin_roles": [],
+                            "password": "TBD_A_PASSWORD"
+                          },
+                          "trackSimulationBot5": {
+                            "admin_channels": [
+                              "trackSimulationBot5",
+                              "friends-trackSimulationBot5",
+                              "docs-trackSimulationBot5",
+                              "private-trackSimulationBot5"
+                            ],
+                            "admin_roles": [],
+                            "password": "TBD_A_PASSWORD"
+                          },
+                          "trackSimulationBot6": {
+                            "admin_channels": [
+                              "trackSimulationBot6",
+                              "friends-trackSimulationBot6",
+                              "docs-trackSimulationBot6",
+                              "private-trackSimulationBot6"
+                            ],
+                            "admin_roles": [],
+                            "password": "TBD_A_PASSWORD"
+                          },
+                          "trackSimulationBot7": {
+                            "admin_channels": [
+                              "trackSimulationBot7",
+                              "friends-trackSimulationBot7",
+                              "docs-trackSimulationBot7",
+                              "private-trackSimulationBot7"
+                            ],
+                            "admin_roles": [],
+                            "password": "TBD_A_PASSWORD"
+                          },
+                          "trackSimulationBot8": {
+                            "admin_channels": [
+                              "trackSimulationBot8",
+                              "friends-trackSimulationBot8",
+                              "docs-trackSimulationBot8",
+                              "private-trackSimulationBot8"
+                            ],
+                            "admin_roles": [],
+                            "password": "TBD_A_PASSWORD"
+                          },
+                          "trackSimulationBot9": {
+                            "admin_channels": [
+                              "trackSimulationBot9",
+                              "friends-trackSimulationBot9",
+                              "docs-trackSimulationBot9",
+                              "private-trackSimulationBot9"
+                            ],
+                            "admin_roles": [],
+                            "password": "TBD_A_PASSWORD"
+                          },
+                          "trackSimulationBot10": {
+                            "admin_channels": [
+                              "trackSimulationBot10",
+                              "friends-trackSimulationBot10",
+                              "docs-trackSimulationBot10",
+                              "private-trackSimulationBot10"
+                            ],
+                            "admin_roles": [],
+                            "password": "TBD_A_PASSWORD"
+                          },
+                          "trackSimulationBot11": {
+                            "admin_channels": [
+                              "trackSimulationBot11",
+                              "friends-trackSimulationBot11",
+                              "docs-trackSimulationBot11",
+                              "private-trackSimulationBot11"
+                            ],
+                            "admin_roles": [],
+                            "password": "TBD_A_PASSWORD"
+                          },
+                          "trackSimulationBot12": {
+                            "admin_channels": [
+                              "trackSimulationBot12",
+                              "friends-trackSimulationBot12",
+                              "docs-trackSimulationBot12",
+                              "private-trackSimulationBot12"
+                            ],
+                            "admin_roles": [],
+                            "password": "TBD_A_PASSWORD"
+                          },
+                          "trackSimulationBot13": {
+                            "admin_channels": [
+                              "trackSimulationBot13",
+                              "friends-trackSimulationBot13",
+                              "docs-trackSimulationBot13",
+                              "private-trackSimulationBot13"
+                            ],
+                            "admin_roles": [],
+                            "password": "TBD_A_PASSWORD"
+                          },
+                          "trackSimulationBot14": {
+                            "admin_channels": [
+                              "trackSimulationBot14",
+                              "friends-trackSimulationBot14",
+                              "docs-trackSimulationBot14",
+                              "private-trackSimulationBot14"
+                            ],
+                            "admin_roles": [],
+                            "password": "TBD_A_PASSWORD"
+                          },
+                          "trackSimulationBot15": {
+                            "admin_channels": [
+                              "trackSimulationBot15",
+                              "friends-trackSimulationBot15",
+                              "docs-trackSimulationBot15",
+                              "private-trackSimulationBot15"
+                            ],
+                            "admin_roles": [],
+                            "password": "TBD_A_PASSWORD"
+                          },
+                          "trackSimulationBot16": {
+                            "admin_channels": [
+                              "trackSimulationBot16",
+                              "friends-trackSimulationBot16",
+                              "docs-trackSimulationBot16",
+                              "private-trackSimulationBot16"
+                            ],
+                            "admin_roles": [],
+                            "password": "TBD_A_PASSWORD"
+                          },
+                          "trackSimulationBot17": {
+                            "admin_channels": [
+                              "trackSimulationBot17",
+                              "friends-trackSimulationBot17",
+                              "docs-trackSimulationBot17",
+                              "private-trackSimulationBot17"
+                            ],
+                            "admin_roles": [],
+                            "password": "TBD_A_PASSWORD"
+                          },
+                          "trackSimulationBot18": {
+                            "admin_channels": [
+                              "trackSimulationBot18",
+                              "friends-trackSimulationBot18",
+                              "docs-trackSimulationBot18",
+                              "private-trackSimulationBot18"
+                            ],
+                            "admin_roles": [],
+                            "password": "TBD_A_PASSWORD"
+                          },
+                          "trackSimulationBot19": {
+                            "admin_channels": [
+                              "trackSimulationBot19",
+                              "friends-trackSimulationBot19",
+                              "docs-trackSimulationBot19",
+                              "private-trackSimulationBot19"
+                            ],
+                            "admin_roles": [],
+                            "password": "TBD_A_PASSWORD"
+                          },
+                          "trackSimulationBot20": {
+                            "admin_channels": [
+                              "trackSimulationBot20",
+                              "friends-trackSimulationBot20",
+                              "docs-trackSimulationBot20",
+                              "private-trackSimulationBot20"
+                            ],
+                            "admin_roles": [],
+                            "password": "TBD_A_PASSWORD"
+                          },
+                          "trackSimulationBot21": {
+                            "admin_channels": [
+                              "trackSimulationBot21",
+                              "friends-trackSimulationBot21",
+                              "docs-trackSimulationBot21",
+                              "private-trackSimulationBot21"
+                            ],
+                            "admin_roles": [],
+                            "password": "TBD_A_PASSWORD"
+                          },
+                          "trackSimulationBot22": {
+                            "admin_channels": [
+                              "trackSimulationBot22",
+                              "friends-trackSimulationBot22",
+                              "docs-trackSimulationBot22",
+                              "private-trackSimulationBot22"
+                            ],
+                            "admin_roles": [],
+                            "password": "TBD_A_PASSWORD"
+                          },
+                          "trackSimulationBot23": {
+                            "admin_channels": [
+                              "trackSimulationBot23",
+                              "friends-trackSimulationBot23",
+                              "docs-trackSimulationBot23",
+                              "private-trackSimulationBot23"
+                            ],
+                            "admin_roles": [],
+                            "password": "TBD_A_PASSWORD"
+                          },
+                          "trackSimulationBot24": {
+                            "admin_channels": [
+                              "trackSimulationBot24",
+                              "friends-trackSimulationBot24",
+                              "docs-trackSimulationBot24",
+                              "private-trackSimulationBot24"
+                            ],
+                            "admin_roles": [],
+                            "password": "TBD_A_PASSWORD"
+                          },
+                          "trackSimulationBot25": {
+                            "admin_channels": [
+                              "trackSimulationBot25",
+                              "friends-trackSimulationBot25",
+                              "docs-trackSimulationBot25",
+                              "private-trackSimulationBot25"
+                            ],
+                            "admin_roles": [],
+                            "password": "TBD_A_PASSWORD"
+                          },
+                          "trackSimulationBot26": {
+                            "admin_channels": [
+                              "trackSimulationBot26",
+                              "friends-trackSimulationBot26",
+                              "docs-trackSimulationBot26",
+                              "private-trackSimulationBot26"
+                            ],
+                            "admin_roles": [],
+                            "password": "TBD_A_PASSWORD"
+                          },
+                          "trackSimulationBot27": {
+                            "admin_channels": [
+                              "trackSimulationBot27",
+                              "friends-trackSimulationBot27",
+                              "docs-trackSimulationBot27",
+                              "private-trackSimulationBot27"
+                            ],
+                            "admin_roles": [],
+                            "password": "TBD_A_PASSWORD"
+                          },
+                          "trackSimulationBot28": {
+                            "admin_channels": [
+                              "trackSimulationBot28",
+                              "friends-trackSimulationBot28",
+                              "docs-trackSimulationBot28",
+                              "private-trackSimulationBot28"
+                            ],
+                            "admin_roles": [],
+                            "password": "TBD_A_PASSWORD"
+                          },
+                          "trackSimulationBot29": {
+                            "admin_channels": [
+                              "trackSimulationBot29",
+                              "friends-trackSimulationBot29",
+                              "docs-trackSimulationBot29",
+                              "private-trackSimulationBot29"
+                            ],
+                            "admin_roles": [],
+                            "password": "TBD_A_PASSWORD"
+                          },
+                          "trackSimulationBot30": {
+                            "admin_channels": [
+                              "trackSimulationBot30",
+                              "friends-trackSimulationBot30",
+                              "docs-trackSimulationBot30",
+                              "private-trackSimulationBot30"
+                            ],
+                            "admin_roles": [],
+                            "password": "TBD_A_PASSWORD"
+                          },
+                          "trackSimulationBot31": {
+                            "admin_channels": [
+                              "trackSimulationBot31",
+                              "friends-trackSimulationBot31",
+                              "docs-trackSimulationBot31",
+                              "private-trackSimulationBot31"
+                            ],
+                            "admin_roles": [],
+                            "password": "TBD_A_PASSWORD"
+                          },
+                          "trackSimulationBot32": {
+                            "admin_channels": [
+                              "trackSimulationBot32",
+                              "friends-trackSimulationBot32",
+                              "docs-trackSimulationBot32",
+                              "private-trackSimulationBot32"
+                            ],
+                            "admin_roles": [],
+                            "password": "TBD_A_PASSWORD"
+                          },
+                          "trackSimulationBot33": {
+                            "admin_channels": [
+                              "trackSimulationBot33",
+                              "friends-trackSimulationBot33",
+                              "docs-trackSimulationBot33",
+                              "private-trackSimulationBot33"
+                            ],
+                            "admin_roles": [],
+                            "password": "TBD_A_PASSWORD"
+                          },
+                          "trackSimulationBot34": {
+                            "admin_channels": [
+                              "trackSimulationBot34",
+                              "friends-trackSimulationBot34",
+                              "docs-trackSimulationBot34",
+                              "private-trackSimulationBot34"
+                            ],
+                            "admin_roles": [],
+                            "password": "TBD_A_PASSWORD"
+                          },
+                          "trackSimulationBot35": {
+                            "admin_channels": [
+                              "trackSimulationBot35",
+                              "friends-trackSimulationBot35",
+                              "docs-trackSimulationBot35",
+                              "private-trackSimulationBot35"
+                            ],
+                            "admin_roles": [],
+                            "password": "TBD_A_PASSWORD"
+                          },
+                          "trackSimulationBot36": {
+                            "admin_channels": [
+                              "trackSimulationBot36",
+                              "friends-trackSimulationBot36",
+                              "docs-trackSimulationBot36",
+                              "private-trackSimulationBot36"
+                            ],
+                            "admin_roles": [],
+                            "password": "TBD_A_PASSWORD"
+                          },
+                          "trackSimulationBot37": {
+                            "admin_channels": [
+                              "trackSimulationBot37",
+                              "friends-trackSimulationBot37",
+                              "docs-trackSimulationBot37",
+                              "private-trackSimulationBot37"
+                            ],
+                            "admin_roles": [],
+                            "password": "TBD_A_PASSWORD"
+                          },
+                          "trackSimulationBot38": {
+                            "admin_channels": [
+                              "trackSimulationBot38",
+                              "friends-trackSimulationBot38",
+                              "docs-trackSimulationBot38",
+                              "private-trackSimulationBot38"
+                            ],
+                            "admin_roles": [],
+                            "password": "TBD_A_PASSWORD"
+                          },
+                          "trackSimulationBot39": {
+                            "admin_channels": [
+                              "trackSimulationBot39",
+                              "friends-trackSimulationBot39",
+                              "docs-trackSimulationBot39",
+                              "private-trackSimulationBot39"
+                            ],
+                            "admin_roles": [],
+                            "password": "TBD_A_PASSWORD"
+                          },
+                          "trackSimulationBot40": {
+                            "admin_channels": [
+                              "trackSimulationBot40",
+                              "friends-trackSimulationBot40",
+                              "docs-trackSimulationBot40",
+                              "private-trackSimulationBot40"
+                            ],
+                            "admin_roles": [],
+                            "password": "TBD_A_PASSWORD"
+                          },
+                          "trackSimulationBot41": {
+                            "admin_channels": [
+                              "trackSimulationBot41",
+                              "friends-trackSimulationBot41",
+                              "docs-trackSimulationBot41",
+                              "private-trackSimulationBot41"
+                            ],
+                            "admin_roles": [],
+                            "password": "TBD_A_PASSWORD"
+                          },
+                          "trackSimulationBot42": {
+                            "admin_channels": [
+                              "trackSimulationBot42",
+                              "friends-trackSimulationBot42",
+                              "docs-trackSimulationBot42",
+                              "private-trackSimulationBot42"
+                            ],
+                            "admin_roles": [],
+                            "password": "TBD_A_PASSWORD"
+                          },
+                          "trackSimulationBot43": {
+                            "admin_channels": [
+                              "trackSimulationBot43",
+                              "friends-trackSimulationBot43",
+                              "docs-trackSimulationBot43",
+                              "private-trackSimulationBot43"
+                            ],
+                            "admin_roles": [],
+                            "password": "TBD_A_PASSWORD"
+                          },
+                          "trackSimulationBot44": {
+                            "admin_channels": [
+                              "trackSimulationBot44",
+                              "friends-trackSimulationBot44",
+                              "docs-trackSimulationBot44",
+                              "private-trackSimulationBot44"
+                            ],
+                            "admin_roles": [],
+                            "password": "TBD_A_PASSWORD"
+                          },
+                          "trackSimulationBot45": {
+                            "admin_channels": [
+                              "trackSimulationBot45",
+                              "friends-trackSimulationBot45",
+                              "docs-trackSimulationBot45",
+                              "private-trackSimulationBot45"
+                            ],
+                            "admin_roles": [],
+                            "password": "TBD_A_PASSWORD"
+                          },
+                          "trackSimulationBot46": {
+                            "admin_channels": [
+                              "trackSimulationBot46",
+                              "friends-trackSimulationBot46",
+                              "docs-trackSimulationBot46",
+                              "private-trackSimulationBot46"
+                            ],
+                            "admin_roles": [],
+                            "password": "TBD_A_PASSWORD"
+                          },
+                          "trackSimulationBot47": {
+                            "admin_channels": [
+                              "trackSimulationBot47",
+                              "friends-trackSimulationBot47",
+                              "docs-trackSimulationBot47",
+                              "private-trackSimulationBot47"
+                            ],
+                            "admin_roles": [],
+                            "password": "TBD_A_PASSWORD"
+                          },
+                          "trackSimulationBot48": {
+                            "admin_channels": [
+                              "trackSimulationBot48",
+                              "friends-trackSimulationBot48",
+                              "docs-trackSimulationBot48",
+                              "private-trackSimulationBot48"
+                            ],
+                            "admin_roles": [],
+                            "password": "TBD_A_PASSWORD"
+                          },
+                          "trackSimulationBot49": {
+                            "admin_channels": [
+                              "trackSimulationBot49",
+                              "friends-trackSimulationBot49",
+                              "docs-trackSimulationBot49",
+                              "private-trackSimulationBot49"
+                            ],
+                            "admin_roles": [],
+                            "password": "TBD_A_PASSWORD"
+                          },
+                          "trackSimulationBot50": {
+                            "admin_channels": [
+                              "trackSimulationBot50",
+                              "friends-trackSimulationBot50",
+                              "docs-trackSimulationBot50",
+                              "private-trackSimulationBot50"
+                            ],
+                            "admin_roles": [],
+                            "password": "TBD_A_PASSWORD"
+                          },
+                          "trackSimulationBot51": {
+                            "admin_channels": [
+                              "trackSimulationBot51",
+                              "friends-trackSimulationBot51",
+                              "docs-trackSimulationBot51",
+                              "private-trackSimulationBot51"
+                            ],
+                            "admin_roles": [],
+                            "password": "TBD_A_PASSWORD"
+                          },
+                          "trackSimulationBot52": {
+                            "admin_channels": [
+                              "trackSimulationBot52",
+                              "friends-trackSimulationBot52",
+                              "docs-trackSimulationBot52",
+                              "private-trackSimulationBot52"
+                            ],
+                            "admin_roles": [],
+                            "password": "TBD_A_PASSWORD"
+                          },
+                          "trackSimulationBot53": {
+                            "admin_channels": [
+                              "trackSimulationBot53",
+                              "friends-trackSimulationBot53",
+                              "docs-trackSimulationBot53",
+                              "private-trackSimulationBot53"
+                            ],
+                            "admin_roles": [],
+                            "password": "TBD_A_PASSWORD"
+                          },
+                          "trackSimulationBot54": {
+                            "admin_channels": [
+                              "trackSimulationBot54",
+                              "friends-trackSimulationBot54",
+                              "docs-trackSimulationBot54",
+                              "private-trackSimulationBot54"
+                            ],
+                            "admin_roles": [],
+                            "password": "TBD_A_PASSWORD"
+                          },
+                          "trackSimulationBot55": {
+                            "admin_channels": [
+                              "trackSimulationBot55",
+                              "friends-trackSimulationBot55",
+                              "docs-trackSimulationBot55",
+                              "private-trackSimulationBot55"
+                            ],
+                            "admin_roles": [],
+                            "password": "TBD_A_PASSWORD"
+                          },
+                          "trackSimulationBot56": {
+                            "admin_channels": [
+                              "trackSimulationBot56",
+                              "friends-trackSimulationBot56",
+                              "docs-trackSimulationBot56",
+                              "private-trackSimulationBot56"
+                            ],
+                            "admin_roles": [],
+                            "password": "TBD_A_PASSWORD"
+                          },
+                          "trackSimulationBot57": {
+                            "admin_channels": [
+                              "trackSimulationBot57",
+                              "friends-trackSimulationBot57",
+                              "docs-trackSimulationBot57",
+                              "private-trackSimulationBot57"
+                            ],
+                            "admin_roles": [],
+                            "password": "TBD_A_PASSWORD"
+                          },
+                          "trackSimulationBot58": {
+                            "admin_channels": [
+                              "trackSimulationBot58",
+                              "friends-trackSimulationBot58",
+                              "docs-trackSimulationBot58",
+                              "private-trackSimulationBot58"
+                            ],
+                            "admin_roles": [],
+                            "password": "TBD_A_PASSWORD"
+                          },
+                          "trackSimulationBot59": {
+                            "admin_channels": [
+                              "trackSimulationBot59",
+                              "friends-trackSimulationBot59",
+                              "docs-trackSimulationBot59",
+                              "private-trackSimulationBot59"
+                            ],
+                            "admin_roles": [],
+                            "password": "TBD_A_PASSWORD"
+                          },
+                          "trackSimulationBot60": {
+                            "admin_channels": [
+                              "trackSimulationBot60",
+                              "friends-trackSimulationBot60",
+                              "docs-trackSimulationBot60",
+                              "private-trackSimulationBot60"
+                            ],
+                            "admin_roles": [],
+                            "password": "TBD_A_PASSWORD"
+                          },
+                          "trackSimulationBot61": {
+                            "admin_channels": [
+                              "trackSimulationBot61",
+                              "friends-trackSimulationBot61",
+                              "docs-trackSimulationBot61",
+                              "private-trackSimulationBot61"
+                            ],
+                            "admin_roles": [],
+                            "password": "TBD_A_PASSWORD"
+                          },
+                          "trackSimulationBot62": {
+                            "admin_channels": [
+                              "trackSimulationBot62",
+                              "friends-trackSimulationBot62",
+                              "docs-trackSimulationBot62",
+                              "private-trackSimulationBot62"
+                            ],
+                            "admin_roles": [],
+                            "password": "TBD_A_PASSWORD"
+                          },
+                          "trackSimulationBot63": {
+                            "admin_channels": [
+                              "trackSimulationBot63",
+                              "friends-trackSimulationBot63",
+                              "docs-trackSimulationBot63",
+                              "private-trackSimulationBot63"
+                            ],
+                            "admin_roles": [],
+                            "password": "TBD_A_PASSWORD"
+                          },
+                          "trackSimulationBot64": {
+                            "admin_channels": [
+                              "trackSimulationBot64",
+                              "friends-trackSimulationBot64",
+                              "docs-trackSimulationBot64",
+                              "private-trackSimulationBot64"
+                            ],
+                            "admin_roles": [],
+                            "password": "TBD_A_PASSWORD"
+                          },
+                          "trackSimulationBot65": {
+                            "admin_channels": [
+                              "trackSimulationBot65",
+                              "friends-trackSimulationBot65",
+                              "docs-trackSimulationBot65",
+                              "private-trackSimulationBot65"
+                            ],
+                            "admin_roles": [],
+                            "password": "TBD_A_PASSWORD"
+                          },
+                          "trackSimulationBot66": {
+                            "admin_channels": [
+                              "trackSimulationBot66",
+                              "friends-trackSimulationBot66",
+                              "docs-trackSimulationBot66",
+                              "private-trackSimulationBot66"
+                            ],
+                            "admin_roles": [],
+                            "password": "TBD_A_PASSWORD"
+                          },
+                          "trackSimulationBot67": {
+                            "admin_channels": [
+                              "trackSimulationBot67",
+                              "friends-trackSimulationBot67",
+                              "docs-trackSimulationBot67",
+                              "private-trackSimulationBot67"
+                            ],
+                            "admin_roles": [],
+                            "password": "TBD_A_PASSWORD"
+                          },
+                          "trackSimulationBot68": {
+                            "admin_channels": [
+                              "trackSimulationBot68",
+                              "friends-trackSimulationBot68",
+                              "docs-trackSimulationBot68",
+                              "private-trackSimulationBot68"
+                            ],
+                            "admin_roles": [],
+                            "password": "TBD_A_PASSWORD"
+                          },
+                          "trackSimulationBot69": {
+                            "admin_channels": [
+                              "trackSimulationBot69",
+                              "friends-trackSimulationBot69",
+                              "docs-trackSimulationBot69",
+                              "private-trackSimulationBot69"
+                            ],
+                            "admin_roles": [],
+                            "password": "TBD_A_PASSWORD"
+                          },
+                          "trackSimulationBot70": {
+                            "admin_channels": [
+                              "trackSimulationBot70",
+                              "friends-trackSimulationBot70",
+                              "docs-trackSimulationBot70",
+                              "private-trackSimulationBot70"
+                            ],
+                            "admin_roles": [],
+                            "password": "TBD_A_PASSWORD"
+                          },
+                          "trackSimulationBot71": {
+                            "admin_channels": [
+                              "trackSimulationBot71",
+                              "friends-trackSimulationBot71",
+                              "docs-trackSimulationBot71",
+                              "private-trackSimulationBot71"
+                            ],
+                            "admin_roles": [],
+                            "password": "TBD_A_PASSWORD"
+                          },
+                          "trackSimulationBot72": {
+                            "admin_channels": [
+                              "trackSimulationBot72",
+                              "friends-trackSimulationBot72",
+                              "docs-trackSimulationBot72",
+                              "private-trackSimulationBot72"
+                            ],
+                            "admin_roles": [],
+                            "password": "TBD_A_PASSWORD"
+                          },
+                          "trackSimulationBot73": {
+                            "admin_channels": [
+                              "trackSimulationBot73",
+                              "friends-trackSimulationBot73",
+                              "docs-trackSimulationBot73",
+                              "private-trackSimulationBot73"
+                            ],
+                            "admin_roles": [],
+                            "password": "TBD_A_PASSWORD"
+                          },
+                          "trackSimulationBot74": {
+                            "admin_channels": [
+                              "trackSimulationBot74",
+                              "friends-trackSimulationBot74",
+                              "docs-trackSimulationBot74",
+                              "private-trackSimulationBot74"
+                            ],
+                            "admin_roles": [],
+                            "password": "TBD_A_PASSWORD"
+                          },
+                          "trackSimulationBot75": {
+                            "admin_channels": [
+                              "trackSimulationBot75",
+                              "friends-trackSimulationBot75",
+                              "docs-trackSimulationBot75",
+                              "private-trackSimulationBot75"
+                            ],
+                            "admin_roles": [],
+                            "password": "TBD_A_PASSWORD"
+                          },
+                          "trackSimulationBot76": {
+                            "admin_channels": [
+                              "trackSimulationBot76",
+                              "friends-trackSimulationBot76",
+                              "docs-trackSimulationBot76",
+                              "private-trackSimulationBot76"
+                            ],
+                            "admin_roles": [],
+                            "password": "TBD_A_PASSWORD"
+                          },
+                          "trackSimulationBot77": {
+                            "admin_channels": [
+                              "trackSimulationBot77",
+                              "friends-trackSimulationBot77",
+                              "docs-trackSimulationBot77",
+                              "private-trackSimulationBot77"
+                            ],
+                            "admin_roles": [],
+                            "password": "TBD_A_PASSWORD"
+                          },
+                          "trackSimulationBot78": {
+                            "admin_channels": [
+                              "trackSimulationBot78",
+                              "friends-trackSimulationBot78",
+                              "docs-trackSimulationBot78",
+                              "private-trackSimulationBot78"
+                            ],
+                            "admin_roles": [],
+                            "password": "TBD_A_PASSWORD"
+                          },
+                          "trackSimulationBot79": {
+                            "admin_channels": [
+                              "trackSimulationBot79",
+                              "friends-trackSimulationBot79",
+                              "docs-trackSimulationBot79",
+                              "private-trackSimulationBot79"
+                            ],
+                            "admin_roles": [],
+                            "password": "TBD_A_PASSWORD"
+                          },
+                          "trackSimulationBot80": {
+                            "admin_channels": [
+                              "trackSimulationBot80",
+                              "friends-trackSimulationBot80",
+                              "docs-trackSimulationBot80",
+                              "private-trackSimulationBot80"
+                            ],
+                            "admin_roles": [],
+                            "password": "TBD_A_PASSWORD"
+                          },
+                          "trackSimulationBot81": {
+                            "admin_channels": [
+                              "trackSimulationBot81",
+                              "friends-trackSimulationBot81",
+                              "docs-trackSimulationBot81",
+                              "private-trackSimulationBot81"
+                            ],
+                            "admin_roles": [],
+                            "password": "TBD_A_PASSWORD"
+                          },
+                          "trackSimulationBot82": {
+                            "admin_channels": [
+                              "trackSimulationBot82",
+                              "friends-trackSimulationBot82",
+                              "docs-trackSimulationBot82",
+                              "private-trackSimulationBot82"
+                            ],
+                            "admin_roles": [],
+                            "password": "TBD_A_PASSWORD"
+                          },
+                          "trackSimulationBot83": {
+                            "admin_channels": [
+                              "trackSimulationBot83",
+                              "friends-trackSimulationBot83",
+                              "docs-trackSimulationBot83",
+                              "private-trackSimulationBot83"
+                            ],
+                            "admin_roles": [],
+                            "password": "TBD_A_PASSWORD"
+                          },
+                          "trackSimulationBot84": {
+                            "admin_channels": [
+                              "trackSimulationBot84",
+                              "friends-trackSimulationBot84",
+                              "docs-trackSimulationBot84",
+                              "private-trackSimulationBot84"
+                            ],
+                            "admin_roles": [],
+                            "password": "TBD_A_PASSWORD"
+                          },
+                          "trackSimulationBot85": {
+                            "admin_channels": [
+                              "trackSimulationBot85",
+                              "friends-trackSimulationBot85",
+                              "docs-trackSimulationBot85",
+                              "private-trackSimulationBot85"
+                            ],
+                            "admin_roles": [],
+                            "password": "TBD_A_PASSWORD"
+                          },
+                          "trackSimulationBot86": {
+                            "admin_channels": [
+                              "trackSimulationBot86",
+                              "friends-trackSimulationBot86",
+                              "docs-trackSimulationBot86",
+                              "private-trackSimulationBot86"
+                            ],
+                            "admin_roles": [],
+                            "password": "TBD_A_PASSWORD"
+                          },
+                          "trackSimulationBot87": {
+                            "admin_channels": [
+                              "trackSimulationBot87",
+                              "friends-trackSimulationBot87",
+                              "docs-trackSimulationBot87",
+                              "private-trackSimulationBot87"
+                            ],
+                            "admin_roles": [],
+                            "password": "TBD_A_PASSWORD"
+                          },
+                          "trackSimulationBot88": {
+                            "admin_channels": [
+                              "trackSimulationBot88",
+                              "friends-trackSimulationBot88",
+                              "docs-trackSimulationBot88",
+                              "private-trackSimulationBot88"
+                            ],
+                            "admin_roles": [],
+                            "password": "TBD_A_PASSWORD"
+                          },
+                          "trackSimulationBot89": {
+                            "admin_channels": [
+                              "trackSimulationBot89",
+                              "friends-trackSimulationBot89",
+                              "docs-trackSimulationBot89",
+                              "private-trackSimulationBot89"
+                            ],
+                            "admin_roles": [],
+                            "password": "TBD_A_PASSWORD"
+                          },
+                          "trackSimulationBot90": {
+                            "admin_channels": [
+                              "trackSimulationBot90",
+                              "friends-trackSimulationBot90",
+                              "docs-trackSimulationBot90",
+                              "private-trackSimulationBot90"
+                            ],
+                            "admin_roles": [],
+                            "password": "TBD_A_PASSWORD"
+                          },
+                          "trackSimulationBot91": {
+                            "admin_channels": [
+                              "trackSimulationBot91",
+                              "friends-trackSimulationBot91",
+                              "docs-trackSimulationBot91",
+                              "private-trackSimulationBot91"
+                            ],
+                            "admin_roles": [],
+                            "password": "TBD_A_PASSWORD"
+                          },
+                          "trackSimulationBot92": {
+                            "admin_channels": [
+                              "trackSimulationBot92",
+                              "friends-trackSimulationBot92",
+                              "docs-trackSimulationBot92",
+                              "private-trackSimulationBot92"
+                            ],
+                            "admin_roles": [],
+                            "password": "TBD_A_PASSWORD"
+                          },
+                          "trackSimulationBot93": {
+                            "admin_channels": [
+                              "trackSimulationBot93",
+                              "friends-trackSimulationBot93",
+                              "docs-trackSimulationBot93",
+                              "private-trackSimulationBot93"
+                            ],
+                            "admin_roles": [],
+                            "password": "TBD_A_PASSWORD"
+                          },
+                          "trackSimulationBot94": {
+                            "admin_channels": [
+                              "trackSimulationBot94",
+                              "friends-trackSimulationBot94",
+                              "docs-trackSimulationBot94",
+                              "private-trackSimulationBot94"
+                            ],
+                            "admin_roles": [],
+                            "password": "TBD_A_PASSWORD"
+                          },
+                          "trackSimulationBot95": {
+                            "admin_channels": [
+                              "trackSimulationBot95",
+                              "friends-trackSimulationBot95",
+                              "docs-trackSimulationBot95",
+                              "private-trackSimulationBot95"
+                            ],
+                            "admin_roles": [],
+                            "password": "TBD_A_PASSWORD"
+                          },
+                          "trackSimulationBot96": {
+                            "admin_channels": [
+                              "trackSimulationBot96",
+                              "friends-trackSimulationBot96",
+                              "docs-trackSimulationBot96",
+                              "private-trackSimulationBot96"
+                            ],
+                            "admin_roles": [],
+                            "password": "TBD_A_PASSWORD"
+                          },
+                          "trackSimulationBot97": {
+                            "admin_channels": [
+                              "trackSimulationBot97",
+                              "friends-trackSimulationBot97",
+                              "docs-trackSimulationBot97",
+                              "private-trackSimulationBot97"
+                            ],
+                            "admin_roles": [],
+                            "password": "TBD_A_PASSWORD"
+                          },
+                          "trackSimulationBot98": {
+                            "admin_channels": [
+                              "trackSimulationBot98",
+                              "friends-trackSimulationBot98",
+                              "docs-trackSimulationBot98",
+                              "private-trackSimulationBot98"
+                            ],
+                            "admin_roles": [],
+                            "password": "TBD_A_PASSWORD"
+                          },
+                          "trackSimulationBot99": {
+                            "admin_channels": [
+                              "trackSimulationBot99",
+                              "friends-trackSimulationBot99",
+                              "docs-trackSimulationBot99",
+                              "private-trackSimulationBot99"
+                            ],
+                            "admin_roles": [],
+                            "password": "TBD_A_PASSWORD"
+                          },
+                          "trackSimulationBot100": {
+                            "admin_channels": [
+                              "trackSimulationBot100",
+                              "friends-trackSimulationBot100",
+                              "docs-trackSimulationBot100",
+                              "private-trackSimulationBot100"
+                            ],
+                            "admin_roles": [],
+                            "password": "TBD_A_PASSWORD"
+                          }
+                  
+            },
+            "roles": {
+                "admin": {"admin_channels": ["publishGeohash", "processGeohash"]}
+            }
+        }
+   }
+}

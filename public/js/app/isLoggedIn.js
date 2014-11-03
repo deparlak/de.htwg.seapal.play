@@ -305,17 +305,31 @@ $(document).ready(function() {
             from        : from,
             access      : 'request',
             _id         : 'crew'+'/'+first+'/'+second,
-            _rev        : "2-1b199798404fc0e717c4faf05e512aaf"
+            _rev        : null
         };
         
-        db.put(doc, function (err, response) { 
-            if (err) {
-                if (err.message) err = err.message;
-                output.error("Crew request failed with " + err);
+        db.get(doc._id, function (err, response) {
+            // if we get an error, which is not because of a missing doc 
+            // (missing doc is ok if it's the first created document by this user)
+            if (err && err.status !== 404) {
+                output.error(err);
+                return;
+            } else if (err && err.status === 404){
+                doc._rev = null;
             } else {
-                output.info("Crew request send");
+                doc._rev = response._rev;
             }
-        });
+        
+            db.put(doc, function (err, response) { 
+                if (err) {
+                    if (err.message) err = err.message;
+                    output.error("Crew request failed with " + err);
+                } else {
+                    output.info("Crew request send");
+                }
+            });
+        })
+
         
         return false;
     });
@@ -334,12 +348,21 @@ $(document).ready(function() {
             doc = docStore['crew'][self.data('from')];
             doc.access = 'reject';
             
-            db.put(doc, function(err, response) { 
+            db.get(doc._id, function (err, response) {
                 if (err) {
-                    if (err.message) err = err.message;
                     output.error(err);
-                }
-            });
+                    return;
+                } else {
+                    doc._rev = response._rev;
+                } 
+                
+                db.put(doc, function(err, response) { 
+                    if (err) {
+                        if (err.message) err = err.message;
+                        output.error(err);
+                    }
+                });
+             });
         });
 
         $('#confirmCrewRequest').on('click', function() {
@@ -347,11 +370,20 @@ $(document).ready(function() {
             doc = docStore['crew'][self.data('from')];
             doc.access = 'grant';
             
-            db.put(doc, function(err, response) { 
+            db.get(doc._id, function (err, response) {
                 if (err) {
-                    if (err.message) err = err.message;
                     output.error(err);
-                }
+                    return;
+                } else {
+                    doc._rev = response._rev;
+                } 
+            
+                db.put(doc, function(err, response) { 
+                    if (err) {
+                        if (err.message) err = err.message;
+                        output.error(err);
+                    }
+                });
             });
         });
     });
