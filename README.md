@@ -10,10 +10,10 @@ a WebApp.
 The WebApp can be reached under localhost:9000/app
 
 #Configuration
-Before you can start, you have to start the sync Gateway with the following [configuration](URL)
+Before you can start, you have to start the sync Gateway with the following [configuration](https://github.com/deparlak/de.htwg.seapal.play/blob/app/Sync%20Gateway/config.json)
 Also make sure that the path to Sync Gateway is correctly set, so that the WebApp can use the
 Sync Gateway. This should be done
-by setting the variable "syncGatewayInterface" and "syncGatewayAdminInterface" to the correct URL in
+by setting the variable **syncGatewayInterface** and **syncGatewayAdminInterface** to the correct URL in
 [this file](https://github.com/deparlak/de.htwg.seapal.play/blob/app/app/de/htwg/seapal/web/global/module/TestModule.java)
 The default URL is set to **http://localhost:4984/sync_gateway/** and **http://localhost:4985/sync_gateway/**.
 
