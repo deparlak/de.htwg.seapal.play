@@ -19,7 +19,7 @@ The default URL is set to **http://localhost:4984/sync_gateway/** and **http://l
 
 If you like to see the feature for viewing all active users on the map,
 you have to start an [Observer](https://github.com/deparlak/de.htwg.seapal.worker.trip.observer) and any number of 
-[trip simulation bots](https://github.com/deparlak/de.htwg.seapal.worker.trip.observer). Also do not forget to login, 
+[trip simulation bots](https://github.com/deparlak/de.htwg.seapal.worker.trip.simulation). Also do not forget to login, 
 because only a logged in user can see other users (localhost:9000/login).
 The document handling on the client side can be found [here](https://github.com/deparlak/de.htwg.seapal.play/blob/app/public/js/app/isLoggedIn.js)
 To display the boats on the map, we use the [MarkerClustererPlus for Google Maps V3 library](http://google-maps-utility-library-v3.googlecode.com/svn/trunk/markerclusterer/docs/examples.html).
