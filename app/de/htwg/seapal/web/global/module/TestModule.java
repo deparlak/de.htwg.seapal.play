@@ -14,6 +14,11 @@ public class TestModule extends AbstractModule {
 
     @Override
     protected void configure() {
+        // TODO : set the URL to the Sync Gateway
+        String syncGatewayInterface = "http://localhost:4984/sync_gateway/";
+        String syncGatewayAdminInterface = "http://localhost:4985/sync_gateway/";
+    
+    
         // configure database configuration
         bind(new TypeLiteral<ReturnWrapper<ObjectNode>>(){}).annotatedWith(Names.named("CouchbaseAccountRepository - ReturnWrapper")).to(JsonReturnWrapper.class);
         bind(new TypeLiteral<Repository<ObjectNode, Account>>(){}).annotatedWith(Names.named("AccountRepository")).to(new TypeLiteral<CouchbaseAccountRepository<ObjectNode>>(){});
@@ -24,19 +29,12 @@ public class TestModule extends AbstractModule {
         bind(new TypeLiteral<ReturnWrapper<ObjectNode>>(){}).annotatedWith(Names.named("CouchbaseBasicHttpAuthRepository - ReturnWrapper")).to(JsonReturnWrapper.class);
         bind(new TypeLiteral<Repository<ObjectNode, Account>>(){}).annotatedWith(Names.named("AuthRepository")).to(new TypeLiteral<CouchbaseBasicHttpAuthRepository<ObjectNode>>(){});
          
-         
-        
-        bind(String.class).annotatedWith(Names.named("SyncGateway - URL")).toInstance("http://localhost:4984/sync_gateway/");
-        bind(String.class).annotatedWith(Names.named("SyncGateway - User URL")).toInstance("http://localhost:4985/sync_gateway/_user/"); 
-        bind(String.class).annotatedWith(Names.named("SyncGateway - Session URL")).toInstance("http://localhost:4985/sync_gateway/_session");
-        bind(String.class).annotatedWith(Names.named("SyncGateway - Basic Http Auth URL")).toInstance("http://localhost:4985/sync_gateway/_session");
+        // configure Sync Gateway Routes.
+        bind(String.class).annotatedWith(Names.named("SyncGateway - URL")).toInstance(syncGatewayInterface);
+        bind(String.class).annotatedWith(Names.named("SyncGateway - User URL")).toInstance(syncGatewayAdminInterface+"_user/"); 
+        bind(String.class).annotatedWith(Names.named("SyncGateway - Session URL")).toInstance(syncGatewayAdminInterface+"_session");
+        bind(String.class).annotatedWith(Names.named("SyncGateway - Basic Http Auth URL")).toInstance(syncGatewayAdminInterface+"_session");
         
         bind(String.class).annotatedWith(Names.named("SyncGatewayCookieName")).toInstance("SyncGatewaySession");
-        
-//        bind(Integer.class).annotatedWith(Names.named("databasePort")).toInstance(80);
-//        bind(String.class).annotatedWith(Names.named("databaseURL")).toInstance("http://roroettg.iriscouch.com");        
-//        // Use an empty implementation of the test data generator in production mode
-//        bind(ISimulator.class).to(SimpleSimulator.class);
-//        bind(SimulationAPI.class).to(SimulationAPIFake.class).in(Singleton.class);
     }
 }

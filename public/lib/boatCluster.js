@@ -1,5 +1,5 @@
 !( function( window ) {
-    // number of milliseconds a document is valid
+    // number of milliseconds a document is valid (disabled this option actually)
     const DOCUMENT_IS_VALID_TIME = 200000;
 
     // All available events where a callback will be fired.
@@ -12,7 +12,7 @@
         cluster : {
             gridSize            : 50, 
             maxZoom             : 5, 
-            minimumClusterSize  : 10
+            minimumClusterSize  : 5
         },
         
         marker : {
