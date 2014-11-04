@@ -21,6 +21,10 @@ If you like to see the feature for viewing all active users on the map,
 you have to start an [Observer](https://github.com/deparlak/de.htwg.seapal.worker.trip.observer) and any number of 
 [trip simulation bots](https://github.com/deparlak/de.htwg.seapal.worker.trip.simulator). Also do not forget to login, 
 because only a logged in user can see other users (localhost:9000/login).
+If you like to use a Couchbase Server Backend you should enter the server address into the Sync Gateway Configuration, instead
+of using walrus. This is especially necessary if you use an Observer which uses the View Mechanism. Read more about the Observer
+[here](https://github.com/deparlak/de.htwg.seapal.worker.trip.observer).
+
 The document handling on the client side can be found [here](https://github.com/deparlak/de.htwg.seapal.play/blob/app/public/js/app/isLoggedIn.js)
 To display the boats on the map, we use the [MarkerClustererPlus for Google Maps V3 library](http://google-maps-utility-library-v3.googlecode.com/svn/trunk/markerclusterer/docs/examples.html).
 The MarkerClustererPlus lib will be used in [this](https://github.com/deparlak/de.htwg.seapal.play/blob/app/public/lib/boatCluster.js) file.
@@ -28,7 +32,7 @@ The MarkerClustererPlus lib will be used in [this](https://github.com/deparlak/d
 #Execute
 To run the application you should start a command line and switch to the root folder
 of the project.
-Before you start, make sure that the Sync Gateway is running with [this](TODO) configuration.
+Before you start, make sure that the Sync Gateway is running with [this](https://github.com/deparlak/de.htwg.seapal.play/blob/app/Sync%20Gateway/config.json) configuration.
 ``` 
 # run the project
 activator run
