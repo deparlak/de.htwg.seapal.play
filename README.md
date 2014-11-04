@@ -19,8 +19,10 @@ The default URL is set to **http://localhost:4984/sync_gateway/** and **http://l
 
 If you like to see the feature for viewing all active users on the map,
 you have to start an [Observer](https://github.com/deparlak/de.htwg.seapal.worker.trip.observer) and any number of 
-[trip simulation bots](https://github.com/deparlak/de.htwg.seapal.worker.trip.simulator). Also do not forget to login, 
-because only a logged in user can see other users (localhost:9000/login).
+[trip simulation bots](https://github.com/deparlak/de.htwg.seapal.worker.trip.simulator). Please note that
+the Sync Gateway Configuration contain some Test User Accounts which are required for the Bot Servers.
+Also do not forget to login, because only a logged in user can see other users (localhost:9000/login). For the login we could
+use the Account "test@test.de" with the Password "12345678".
 If you like to use a Couchbase Server Backend you should enter the server address into the Sync Gateway Configuration, instead
 of using walrus. This is especially necessary if you use an Observer which uses the View Mechanism. Read more about the Observer
 [here](https://github.com/deparlak/de.htwg.seapal.worker.trip.observer).
